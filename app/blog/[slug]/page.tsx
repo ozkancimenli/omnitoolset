@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AdSense from '@/components/AdSense';
+import { BlogTopAd, BlogMiddleAd, BlogBottomAd } from '@/components/OptimizedAd';
 import { getBlogPost, getBlogPosts } from '@/lib/blog';
 
 interface PageProps {
@@ -151,16 +152,12 @@ export default async function BlogPostPage({ params }: PageProps) {
               </span>
             </div>
 
-            {/* AdSense - Top */}
+            {/* Blog Top Ad */}
             <div className="mb-8">
-              <AdSense
-                adFormat="auto"
-                fullWidthResponsive={true}
-                className="min-h-[100px] bg-slate-900 rounded-xl"
-              />
+              <BlogTopAd />
             </div>
 
-            {/* Post Content */}
+            {/* Post Content with In-Article Ad */}
             <div
               className="prose prose-invert prose-indigo max-w-none
                 prose-headings:text-slate-100
@@ -176,13 +173,14 @@ export default async function BlogPostPage({ params }: PageProps) {
               dangerouslySetInnerHTML={{ __html: contentHtml }}
             />
 
-            {/* AdSense - Middle */}
+            {/* Blog Middle Ad (In-Article) */}
             <div className="my-8">
-              <AdSense
-                adFormat="auto"
-                fullWidthResponsive={true}
-                className="min-h-[100px] bg-slate-900 rounded-xl"
-              />
+              <BlogMiddleAd />
+            </div>
+            
+            {/* Blog Bottom Ad */}
+            <div className="my-8">
+              <BlogBottomAd />
             </div>
 
             {/* Related Tools CTA with Smartlink */}

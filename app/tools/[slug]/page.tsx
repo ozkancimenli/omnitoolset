@@ -6,6 +6,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import RelatedTools from '@/components/RelatedTools';
 import SocialShare from '@/components/SocialShare';
 import AdSense from '@/components/AdSense';
+import { ToolTopAd, ToolBottomAd, ToolSidebarAd } from '@/components/OptimizedAd';
 import { Metadata } from 'next';
 import ToolWrapper from '@/components/ToolWrapper';
 import ToolTracker from '@/components/ToolTracker';
@@ -132,19 +133,27 @@ export default async function ToolPage({ params }: PageProps) {
       <Header />
       
       <main className="flex-1 container py-8">
-        <div className="max-w-4xl mx-auto">
-          <Breadcrumbs 
-            items={[
-              { label: 'Home', href: '/' },
-              { label: 'Tools', href: '/#tools' },
-              { label: tool.category, href: `/categories#${tool.category.toLowerCase()}` },
-              { label: tool.title },
-            ]} 
-          />
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Main Content */}
+            <div className="lg:col-span-3">
+              <Breadcrumbs 
+                items={[
+                  { label: 'Home', href: '/' },
+                  { label: 'Tools', href: '/#tools' },
+                  { label: tool.category, href: `/categories#${tool.category.toLowerCase()}` },
+                  { label: tool.title },
+                ]} 
+              />
 
-          <ToolTracker tool={tool} />
-          
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8">
+              <ToolTracker tool={tool} />
+              
+              {/* Tool Top Ad */}
+              <div className="mb-6">
+                <ToolTopAd />
+              </div>
+              
+              <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8">
             <div className="flex items-start justify-between mb-6">
               <div>
                 <div className="text-6xl mb-4">{tool.icon}</div>
@@ -163,25 +172,30 @@ export default async function ToolPage({ params }: PageProps) {
               </div>
             </div>
             
-            <ToolWrapper toolId={tool.id} />
-            
-            {/* AdSense - Bottom of Tool (Single ad, less intrusive) */}
-            <div className="mt-8">
-              <AdSense
-                adFormat="auto"
-                fullWidthResponsive={true}
-                className="min-h-[100px] bg-slate-900 rounded-xl"
-              />
+                <ToolWrapper toolId={tool.id} />
+                
+                {/* Tool Bottom Ad */}
+                <div className="mt-8">
+                  <ToolBottomAd />
+                </div>
+                
+                <SocialShare 
+                  title={tool.title}
+                  description={tool.description}
+                  url={url}
+                />
+              </div>
+
+              <RelatedTools currentTool={tool} />
             </div>
             
-            <SocialShare 
-              title={tool.title}
-              description={tool.description}
-              url={url}
-            />
+            {/* Sidebar - Desktop Only */}
+            <div className="hidden lg:block lg:col-span-1">
+              <div className="sticky top-4">
+                <ToolSidebarAd />
+              </div>
+            </div>
           </div>
-
-          <RelatedTools currentTool={tool} />
         </div>
       </main>
 

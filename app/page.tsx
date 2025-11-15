@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ToolCard from '@/components/ToolCard';
 import AdSense from '@/components/AdSense';
+import { HomeHeroAd, HomeBottomAd, HomeSidebarAd } from '@/components/OptimizedAd';
 import Link from 'next/link';
 import { tools } from '@/data/tools';
 import { useKeyboardShortcuts, ShortcutAction } from '@/lib/keyboard-shortcuts';
@@ -84,6 +85,11 @@ export default function Home() {
         {/* Hero Section with Stats */}
         <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 py-16 mb-12">
           <div className="container">
+            {/* Hero Ad - Above Fold (High Value) */}
+            <div className="mb-6 max-w-4xl mx-auto">
+              <HomeHeroAd />
+            </div>
+            
             <div className="text-center text-white mb-8">
               <h1 className="text-5xl md:text-6xl font-bold mb-4">
                 100% FREE {tools.length}+ Online Tools
@@ -132,6 +138,11 @@ export default function Home() {
         </div>
 
         <div className="container py-12" id="tools">
+          {/* Tools Grid Top Ad */}
+          <div className="mb-8 max-w-7xl mx-auto">
+            <HomeBottomAd />
+          </div>
+          
           {/* Quick Actions */}
           <div className="mb-12">
             <h2 className="text-2xl font-bold mb-6 text-center text-slate-200">🚀 Quick Actions</h2>
@@ -258,15 +269,6 @@ export default function Home() {
           {/* Recent Tools */}
           <RecentTools />
 
-          {/* AdSense Banner - Top (Single ad, less intrusive) */}
-          <div className="max-w-7xl mx-auto mb-8">
-            <AdSense
-              adFormat="auto"
-              fullWidthResponsive={true}
-              className="min-h-[100px] bg-slate-800 rounded-xl flex items-center justify-center"
-            />
-          </div>
-
           {/* All Tools Grid */}
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-slate-200">
@@ -283,13 +285,9 @@ export default function Home() {
             ))}
           </div>
 
-        {/* AdSense Banner - Bottom */}
+        {/* Homepage Bottom Ad */}
         <div className="max-w-7xl mx-auto mt-8">
-          <AdSense
-            adFormat="auto"
-            fullWidthResponsive={true}
-            className="min-h-[100px] bg-slate-800 rounded-xl flex items-center justify-center"
-          />
+          <HomeBottomAd />
         </div>
 
         {filteredTools.length === 0 && (
