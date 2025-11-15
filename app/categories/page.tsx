@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import Adsterra from '@/components/Adsterra';
 import Link from 'next/link';
 import { tools } from '@/data/tools';
 import ToolCard from '@/components/ToolCard';
@@ -57,11 +56,6 @@ export default function CategoriesPage() {
           <p className="text-xl text-slate-400">
             Find the perfect tool for your needs
           </p>
-        </div>
-
-        {/* Adsterra Banner - Top (4:1 Layout) */}
-        <div className="mb-8">
-          <Adsterra layout="4x1" className="bg-slate-800 rounded-xl" />
         </div>
 
         <div className="space-y-16">
