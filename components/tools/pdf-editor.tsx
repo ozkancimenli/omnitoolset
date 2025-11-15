@@ -246,7 +246,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               y: height - annotation.y - fontSize, // PDF coordinates are bottom-up
               size: fontSize,
               font: helveticaFont,
-              color: rgb.rgb(rgbColor.r / 255, rgbColor.g / 255, rgbColor.b / 255),
+              color: rgb(rgbColor.r / 255, rgbColor.g / 255, rgbColor.b / 255),
             });
           } else if (annotation.type === 'highlight' && annotation.width && annotation.height) {
             page.drawRectangle({
