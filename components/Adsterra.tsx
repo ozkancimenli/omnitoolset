@@ -3,29 +3,49 @@
 import { useEffect, useRef } from 'react';
 
 interface AdsterraProps {
-  format?: 'banner' | 'native' | 'popunder';
+  format?: 'banner' | 'native' | 'popunder' | 'text' | 'button' | 'image';
   className?: string;
   width?: number;
   height?: number;
+  text?: string; // Custom text for text/button formats
+  imageUrl?: string; // Image URL for image format
 }
 
+/**
+ * Adsterra Smart Direct Link Component
+ * 
+ * Smart Direct Link is just a URL - no visual format.
+ * It automatically selects the best ad offer based on:
+ * - User's location (GEO)
+ * - Device type (mobile/desktop)
+ * - Traffic quality
+ * - Highest CPM/CPA rates
+ * 
+ * Usage:
+ * - Text link: <Adsterra format="text" text="Click here" />
+ * - Button: <Adsterra format="button" text="Download Now" />
+ * - Image: <Adsterra format="image" imageUrl="/banner.jpg" />
+ * - Banner area: <Adsterra format="banner" />
+ */
 export default function Adsterra({ 
   format = 'banner', 
   className = '',
   width = 728,
-  height = 90 
+  height = 90,
+  text = 'Advertisement',
+  imageUrl
 }: AdsterraProps) {
   const adRef = useRef<HTMLDivElement>(null);
   const scriptLoaded = useRef(false);
 
+  // Adsterra Smart Direct Link URL
+  const smartlinkUrl = 'https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd';
+
   useEffect(() => {
     if (!adRef.current || scriptLoaded.current) return;
 
-    // Adsterra Smartlink
-    const smartlinkUrl = 'https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd';
-
     if (format === 'popunder') {
-      // Popunder ad - loads on page interaction (only once per session)
+      // Popunder - opens on user interaction (once per session)
       const handleInteraction = () => {
         if (!scriptLoaded.current && !sessionStorage.getItem('adsterra_popunder_shown')) {
           scriptLoaded.current = true;
@@ -34,20 +54,79 @@ export default function Adsterra({
         }
       };
 
-      // Add event listeners for user interaction
       const timer = setTimeout(() => {
         document.addEventListener('click', handleInteraction, { once: true });
         document.addEventListener('keydown', handleInteraction, { once: true });
-      }, 2000); // Wait 2 seconds before enabling
+      }, 2000);
 
       return () => {
         clearTimeout(timer);
         document.removeEventListener('click', handleInteraction);
         document.removeEventListener('keydown', handleInteraction);
       };
+    } else if (format === 'text') {
+      // Text link - simple <a> tag with smartlink
+      const link = document.createElement('a');
+      link.href = smartlinkUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = text;
+      link.className = `text-indigo-400 hover:text-indigo-300 underline ${className}`;
+      
+      adRef.current.appendChild(link);
+      scriptLoaded.current = true;
+
+      return () => {
+        if (adRef.current && link.parentNode) {
+          adRef.current.removeChild(link);
+        }
+      };
+    } else if (format === 'button') {
+      // Button with smartlink
+      const button = document.createElement('button');
+      button.onclick = (e) => {
+        e.preventDefault();
+        window.open(smartlinkUrl, '_blank', 'noopener,noreferrer');
+      };
+      button.textContent = text;
+      button.className = `px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors ${className}`;
+      
+      adRef.current.appendChild(button);
+      scriptLoaded.current = true;
+
+      return () => {
+        if (adRef.current && button.parentNode) {
+          adRef.current.removeChild(button);
+        }
+      };
+    } else if (format === 'image') {
+      // Image with smartlink
+      const link = document.createElement('a');
+      link.href = smartlinkUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.style.display = 'block';
+      link.style.width = '100%';
+      
+      const img = document.createElement('img');
+      img.src = imageUrl || '/placeholder-banner.jpg';
+      img.alt = 'Advertisement';
+      img.style.width = '100%';
+      img.style.height = 'auto';
+      img.style.cursor = 'pointer';
+      
+      link.appendChild(img);
+      adRef.current.appendChild(link);
+      scriptLoaded.current = true;
+
+      return () => {
+        if (adRef.current && link.parentNode) {
+          adRef.current.removeChild(link);
+        }
+      };
     } else if (format === 'banner') {
-      // Banner ad - Use Adsterra smartlink with redirect
-      // Create clickable banner that redirects to smartlink
+      // Banner area - clickable banner that redirects to smartlink
+      // This creates a visible banner area that uses the smartlink
       const banner = document.createElement('a');
       banner.href = smartlinkUrl;
       banner.target = '_blank';
@@ -66,22 +145,16 @@ export default function Adsterra({
       banner.style.cursor = 'pointer';
       banner.style.position = 'relative';
       banner.style.overflow = 'hidden';
+      banner.className = className;
       
-      // Add animated text
-      const text = document.createElement('div');
-      text.textContent = 'Advertisement';
-      text.style.position = 'absolute';
-      text.style.top = '50%';
-      text.style.left = '50%';
-      text.style.transform = 'translate(-50%, -50%)';
-      text.style.zIndex = '1';
-      banner.appendChild(text);
-      
-      // Add click handler
-      banner.onclick = (e) => {
-        e.preventDefault();
-        window.open(smartlinkUrl, '_blank', 'noopener,noreferrer');
-      };
+      const textEl = document.createElement('div');
+      textEl.textContent = text;
+      textEl.style.position = 'absolute';
+      textEl.style.top = '50%';
+      textEl.style.left = '50%';
+      textEl.style.transform = 'translate(-50%, -50%)';
+      textEl.style.zIndex = '1';
+      banner.appendChild(textEl);
       
       adRef.current.appendChild(banner);
       scriptLoaded.current = true;
@@ -92,7 +165,7 @@ export default function Adsterra({
         }
       };
     } else if (format === 'native') {
-      // Native ad - clickable banner
+      // Native ad - inline clickable area
       const link = document.createElement('a');
       link.href = smartlinkUrl;
       link.target = '_blank';
@@ -109,11 +182,8 @@ export default function Adsterra({
       link.style.fontSize = '18px';
       link.style.fontWeight = 'bold';
       link.style.cursor = 'pointer';
-      link.textContent = 'Advertisement';
-      link.onclick = (e) => {
-        e.preventDefault();
-        window.open(smartlinkUrl, '_blank', 'noopener,noreferrer');
-      };
+      link.textContent = text;
+      link.className = className;
 
       adRef.current.appendChild(link);
       scriptLoaded.current = true;
@@ -124,7 +194,7 @@ export default function Adsterra({
         }
       };
     }
-  }, [format, width, height]);
+  }, [format, width, height, text, imageUrl, className]);
 
   if (format === 'popunder') {
     // Popunder doesn't need a visible element
@@ -134,9 +204,9 @@ export default function Adsterra({
   return (
     <div 
       ref={adRef} 
-      className={`adsterra-container ${className}`}
+      className={`adsterra-smartlink-container ${className}`}
       style={{ 
-        minHeight: format === 'native' ? '250px' : `${height}px`,
+        minHeight: format === 'native' ? '250px' : format === 'banner' ? `${height}px` : 'auto',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
