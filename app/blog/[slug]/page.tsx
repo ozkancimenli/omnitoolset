@@ -57,24 +57,54 @@ export default async function BlogPostPage({ params }: PageProps) {
     notFound();
   }
 
-  // Simple markdown to HTML conversion
-  let contentHtml = post.content
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-    .replace(/^\*(.*)\*/gim, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" class="text-indigo-400 hover:text-indigo-300">$1</a>')
-    .replace(/^\- (.*$)/gim, '<li>$1</li>')
-    .replace(/^(\d+)\. (.*$)/gim, '<li>$2</li>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>');
+  // Enhanced markdown to HTML conversion
+  let contentHtml = post.content;
   
-  // Wrap in paragraphs
-  contentHtml = `<p>${contentHtml}</p>`;
+  // Process code blocks first (to avoid interfering with other patterns)
+  contentHtml = contentHtml.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
   
-  // Fix list wrapping
-  contentHtml = contentHtml.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+  // Process inline code
+  contentHtml = contentHtml.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  // Process headers (must be before other replacements)
+  contentHtml = contentHtml.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+  contentHtml = contentHtml.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+  contentHtml = contentHtml.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+  
+  // Process links (before bold/italic to avoid conflicts)
+  contentHtml = contentHtml.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" class="text-indigo-400 hover:text-indigo-300">$1</a>');
+  
+  // Process bold text (anywhere in the text, not just line start)
+  // Must be before italic to avoid conflicts
+  contentHtml = contentHtml.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
+  
+  // Process italic text (single asterisk, not part of bold)
+  // Match single * that's not preceded or followed by another *
+  // Use a workaround: replace remaining single asterisks that aren't part of **
+  contentHtml = contentHtml.replace(/([^*]|^)\*([^*\n]+?)\*([^*]|$)/gim, '$1<em>$2</em>$3');
+  
+  // Process lists
+  contentHtml = contentHtml.replace(/^\- (.*$)/gim, '<li>$1</li>');
+  contentHtml = contentHtml.replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+  
+  // Wrap consecutive list items in <ul>
+  contentHtml = contentHtml.replace(/(<li>.*?<\/li>(\s*<li>.*?<\/li>)*)/gim, '<ul>$1</ul>');
+  
+  // Split into paragraphs (double newlines)
+  const paragraphs = contentHtml.split(/\n\n+/);
+  contentHtml = paragraphs
+    .map(p => {
+      const trimmed = p.trim();
+      // Don't wrap headers, lists, or code blocks in <p>
+      if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<pre') || trimmed.startsWith('<ol')) {
+        return trimmed;
+      }
+      return trimmed ? `<p>${trimmed}</p>` : '';
+    })
+    .join('\n\n');
+  
+  // Replace single newlines with <br> (but not in code blocks)
+  contentHtml = contentHtml.replace(/(?<!<\/code>)\n(?!<pre>)/g, '<br>');
 
   const structuredData = {
     '@context': 'https://schema.org',
