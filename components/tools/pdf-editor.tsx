@@ -159,6 +159,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [showTextFormatPanel, setShowTextFormatPanel] = useState(false);
   const [multiLineEditing, setMultiLineEditing] = useState(false);
   
+  // Phase 6: Performance & Advanced Features
+  const [textRunsCache, setTextRunsCache] = useState<Record<number, { runs: PdfTextRun[]; timestamp: number }>>({});
+  const [textEditHistory, setTextEditHistory] = useState<Array<{ runId: string; oldText: string; newText: string; format?: any }>>([]);
+  const [textEditHistoryIndex, setTextEditHistoryIndex] = useState(-1);
+  const [showTextStats, setShowTextStats] = useState(false);
+  const [textStyles, setTextStyles] = useState<Array<{ name: string; format: any }>>([]);
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -377,6 +384,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       // Phase 2.2: Map text items to text runs (grouped by line/paragraph)
       const textRuns = mapTextItemsToRuns(textItems, pageNumber);
       setPdfTextRuns(prev => ({ ...prev, [pageNumber]: textRuns }));
+      
+      // Phase 6: Cache text runs for performance
+      setTextRunsCache(prev => ({
+        ...prev,
+        [pageNumber]: { runs: textRuns, timestamp: Date.now() }
+      }));
     } catch (error) {
       console.error('Error extracting text layer:', error);
     }
@@ -1744,6 +1757,16 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     const newAnnotations = [...annotations, whiteRect, newAnnotation];
     setAnnotations(newAnnotations);
     saveToHistory(newAnnotations);
+    
+    // Phase 6: Save to text edit history for undo/redo
+    const oldText = run.text;
+    setTextEditHistory(prev => {
+      const newHistory = prev.slice(0, textEditHistoryIndex + 1);
+      newHistory.push({ runId, oldText, newText, format });
+      return newHistory;
+    });
+    setTextEditHistoryIndex(prev => prev + 1);
+    
     toast.success('PDF text updated');
   };
 
@@ -1759,6 +1782,75 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   }) => {
     // Try Phase 3 (content stream editing) first, fallback to Phase 2 (overlay)
     updatePdfTextInStream(runId, newText, format);
+  };
+
+  // Phase 6: Undo/Redo for text edits
+  const undoTextEdit = useCallback(() => {
+    if (textEditHistoryIndex < 0) {
+      toast.info('No text edits to undo');
+      return;
+    }
+    
+    const edit = textEditHistory[textEditHistoryIndex];
+    const runs = pdfTextRuns[pageNum] || [];
+    const run = runs.find(r => r.id === edit.runId);
+    
+    if (run) {
+      updatePdfTextOverlay(edit.runId, edit.oldText, edit.format);
+      setTextEditHistoryIndex(prev => prev - 1);
+      toast.success('Text edit undone');
+    }
+  }, [textEditHistory, textEditHistoryIndex, pageNum, pdfTextRuns]);
+
+  const redoTextEdit = useCallback(() => {
+    if (textEditHistoryIndex >= textEditHistory.length - 1) {
+      toast.info('No text edits to redo');
+      return;
+    }
+    
+    const nextIndex = textEditHistoryIndex + 1;
+    const edit = textEditHistory[nextIndex];
+    const runs = pdfTextRuns[pageNum] || [];
+    const run = runs.find(r => r.id === edit.runId);
+    
+    if (run) {
+      updatePdfTextOverlay(edit.runId, edit.newText, edit.format);
+      setTextEditHistoryIndex(nextIndex);
+      toast.success('Text edit redone');
+    }
+  }, [textEditHistory, textEditHistoryIndex, pageNum, pdfTextRuns]);
+
+  // Phase 6: Calculate text statistics
+  const calculateTextStats = () => {
+    const runs = pdfTextRuns[pageNum] || [];
+    let totalChars = 0;
+    let totalWords = 0;
+    let totalRuns = runs.length;
+    
+    runs.forEach(run => {
+      totalChars += run.text.length;
+      const words = run.text.trim().split(/\s+/).filter(w => w.length > 0);
+      totalWords += words.length;
+    });
+    
+    return { totalChars, totalWords, totalRuns };
+  };
+
+  // Phase 6: Save text style
+  const saveTextStyle = (name: string) => {
+    if (!editingTextFormat || Object.keys(editingTextFormat).length === 0) {
+      toast.warning('No format to save');
+      return;
+    }
+    
+    setTextStyles(prev => [...prev, { name, format: { ...editingTextFormat } }]);
+    toast.success(`Text style "${name}" saved`);
+  };
+
+  // Phase 6: Apply text style
+  const applyTextStyle = (style: { name: string; format: any }) => {
+    setEditingTextFormat(style.format);
+    toast.success(`Applied style "${style.name}"`);
   };
 
   // Phase 4.6: Find text in PDF
@@ -2867,6 +2959,45 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                     </button>
                                   ))}
                                 </div>
+                              </div>
+                              {/* Phase 6: Text Statistics & Style Management */}
+                              <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
+                                <button
+                                  onClick={() => {
+                                    const stats = calculateTextStats();
+                                    toast.info(`${stats.totalWords} words, ${stats.totalChars} chars, ${stats.totalRuns} runs`);
+                                    setShowTextStats(!showTextStats);
+                                  }}
+                                  className="px-3 py-1 rounded text-sm bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                  title="Text Statistics"
+                                >
+                                  📊 Stats
+                                </button>
+                                {textStyles.length > 0 && (
+                                  <select
+                                    onChange={(e) => {
+                                      const style = textStyles.find(s => s.name === e.target.value);
+                                      if (style) applyTextStyle(style);
+                                    }}
+                                    className="flex-1 px-2 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                                    defaultValue=""
+                                  >
+                                    <option value="">Styles...</option>
+                                    {textStyles.map(style => (
+                                      <option key={style.name} value={style.name}>{style.name}</option>
+                                    ))}
+                                  </select>
+                                )}
+                                <button
+                                  onClick={() => {
+                                    const name = prompt('Style name:');
+                                    if (name) saveTextStyle(name);
+                                  }}
+                                  className="px-3 py-1 rounded text-sm bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                  title="Save Style"
+                                >
+                                  💾 Save
+                                </button>
                               </div>
                             </div>
                           </div>
