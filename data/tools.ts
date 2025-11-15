@@ -47,6 +47,15 @@ export const tools: Tool[] = [
     keywords: 'pdf to word, pdf to docx, convert pdf to word, pdf to word converter, pdf to word online, pdf to word free, convert pdf word, pdf word converter, pdf to docx converter, how to convert pdf to word, best pdf to word converter, pdf to word tool, free pdf to word, online pdf to word, pdf to word no registration, convert pdf to docx online, pdf to word editor',
   },
   {
+    id: 'edit-pdf',
+    title: 'Edit PDF',
+    description: 'Reorder, rotate, and delete PDF pages',
+    icon: '✏️',
+    category: 'PDF',
+    slug: 'edit-pdf',
+    keywords: 'edit pdf, pdf editor, reorder pdf pages, rotate pdf pages, delete pdf pages, pdf page editor, edit pdf online, free pdf editor, pdf editor online, edit pdf pages, reorder pdf, rotate pdf, delete pdf pages online, pdf page manager, edit pdf file, pdf editing tool, online pdf editor free, edit pdf no registration, pdf page editor online, best pdf editor',
+  },
+  {
     id: 'pdf-to-jpg',
     title: 'PDF to JPG',
     description: 'Convert PDF pages to JPG format',
