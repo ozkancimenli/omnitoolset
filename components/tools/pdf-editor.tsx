@@ -130,6 +130,17 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [textSelection, setTextSelection] = useState<{ start: number; end: number; runId: string } | null>(null);
   const [textEditMode, setTextEditMode] = useState(false); // True when editing existing PDF text
   
+  // Advanced Text Editing - Phase 4
+  const [isSelectingText, setIsSelectingText] = useState(false);
+  const [textSelectionStart, setTextSelectionStart] = useState<{ x: number; y: number; runId: string; charIndex: number } | null>(null);
+  const [textSelectionEnd, setTextSelectionEnd] = useState<{ x: number; y: number; runId: string; charIndex: number } | null>(null);
+  const [editingCharIndex, setEditingCharIndex] = useState<number | null>(null);
+  const [showFindReplace, setShowFindReplace] = useState(false);
+  const [findText, setFindText] = useState('');
+  const [replaceText, setReplaceText] = useState('');
+  const [findResults, setFindResults] = useState<Array<{ runId: string; startIndex: number; endIndex: number }>>([]);
+  const [currentFindIndex, setCurrentFindIndex] = useState(-1);
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -438,6 +449,74 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }) || null;
   };
 
+  // Phase 4.1: Find character index at position within a text run
+  const findCharIndexAtPosition = (x: number, run: PdfTextRun, pageNumber: number): number => {
+    if (!canvasRef.current) return 0;
+    
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    if (!context) return 0;
+    
+    // Measure text to find character position
+    context.font = `${run.fontSize}px ${run.fontName}`;
+    const relativeX = x - run.x;
+    
+    // Binary search for character position
+    let low = 0;
+    let high = run.text.length;
+    let charIndex = 0;
+    
+    for (let i = 0; i <= run.text.length; i++) {
+      const substr = run.text.substring(0, i);
+      const width = context.measureText(substr).width;
+      if (width >= relativeX) {
+        charIndex = i;
+        break;
+      }
+    }
+    
+    return Math.max(0, Math.min(run.text.length, charIndex));
+  };
+
+  // Phase 4.1: Get text selection rectangle
+  const getTextSelectionRect = (start: { runId: string; charIndex: number }, end: { runId: string; charIndex: number }, pageNumber: number) => {
+    const runs = pdfTextRuns[pageNumber] || [];
+    const startRun = runs.find(r => r.id === start.runId);
+    const endRun = runs.find(r => r.id === end.runId);
+    
+    if (!startRun || !endRun) return null;
+    
+    if (!canvasRef.current) return null;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    if (!context) return null;
+    
+    context.font = `${startRun.fontSize}px ${startRun.fontName}`;
+    
+    if (start.runId === end.runId) {
+      // Same run - single selection
+      const startText = startRun.text.substring(0, start.charIndex);
+      const endText = startRun.text.substring(0, end.charIndex);
+      const startX = startRun.x + context.measureText(startText).width;
+      const endX = startRun.x + context.measureText(endText).width;
+      
+      return {
+        x: Math.min(startX, endX),
+        y: startRun.y - startRun.height,
+        width: Math.abs(endX - startX),
+        height: startRun.height,
+      };
+    } else {
+      // Multi-run selection (simplified - just highlight runs)
+      return {
+        x: startRun.x,
+        y: startRun.y - startRun.height,
+        width: endRun.x + endRun.width - startRun.x,
+        height: startRun.height,
+      };
+    }
+  };
+
   const renderPage = async (pageNumber: number) => {
     if (!pdfDocRef.current || !canvasRef.current || !containerRef.current) return;
 
@@ -676,9 +755,36 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         context.restore();
       });
       
-      // Phase 2.4: Draw text run highlights (for PDF text editing)
-      if (textEditMode && pdfTextRuns[pageNumber]) {
+      // Phase 2.4 & 4.1: Draw text run highlights and selections (for PDF text editing)
+      if ((textEditMode || tool === 'edit-text') && pdfTextRuns[pageNumber]) {
         const runs = pdfTextRuns[pageNumber];
+        
+        // Draw text selection (character-level)
+        if (textSelectionStart && textSelectionEnd && textSelectionStart.runId === textSelectionEnd.runId) {
+          const run = runs.find(r => r.id === textSelectionStart.runId);
+          if (run) {
+            context.save();
+            context.font = `${run.fontSize}px ${run.fontName}`;
+            const startIdx = Math.min(textSelectionStart.charIndex, textSelectionEnd.charIndex);
+            const endIdx = Math.max(textSelectionStart.charIndex, textSelectionEnd.charIndex);
+            const startText = run.text.substring(0, startIdx);
+            const endText = run.text.substring(0, endIdx);
+            const startX = run.x + context.measureText(startText).width;
+            const endX = run.x + context.measureText(endText).width;
+            
+            // Draw selection highlight
+            context.fillStyle = 'rgba(59, 130, 246, 0.3)'; // Blue selection
+            context.fillRect(
+              Math.min(startX, endX),
+              run.y - run.height,
+              Math.abs(endX - startX),
+              run.height
+            );
+            context.restore();
+          }
+        }
+        
+        // Draw run highlights
         runs.forEach(run => {
           if (selectedTextRun === run.id || editingTextRun === run.id) {
             context.save();
@@ -737,14 +843,30 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const coords = getCanvasCoordinates(e);
     
-    // Phase 2.3: Check if clicking on PDF text (edit mode)
+    // Phase 2.3 & 4.1: Check if clicking on PDF text (edit mode)
     if (tool === 'edit-text' || textEditMode) {
       const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
       if (clickedRun) {
-        setSelectedTextRun(clickedRun.id);
-        setEditingTextRun(clickedRun.id);
-        setTextEditMode(true);
-        toast.info('Click on text to edit. Double-click to start editing.');
+        // Phase 4.1: Start text selection on drag
+        if (e.shiftKey) {
+          // Shift+click: Extend selection
+          const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
+          setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+        } else {
+          // Normal click: Start new selection or edit
+          const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
+          setTextSelectionStart({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+          setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+          setIsSelectingText(true);
+          setSelectedTextRun(clickedRun.id);
+          setEditingCharIndex(charIndex);
+          
+          // Double-click: Start editing
+          if (e.detail === 2) {
+            setEditingTextRun(clickedRun.id);
+            setTextEditMode(true);
+          }
+        }
         return;
       }
     }
@@ -860,6 +982,18 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // Phase 4.1: Handle text selection drag
+    if (isSelectingText && textSelectionStart && (tool === 'edit-text' || textEditMode)) {
+      const coords = getCanvasCoordinates(e);
+      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+      if (clickedRun) {
+        const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
+        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+        // Trigger re-render to show selection
+        renderPage(pageNum);
+      }
+    }
+    
     const coords = getCanvasCoordinates(e);
     
     // Handle dragging annotations
@@ -908,6 +1042,25 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   const handleCanvasMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // Phase 4.1: End text selection
+    if (isSelectingText) {
+      setIsSelectingText(false);
+      // Copy selected text to clipboard if Ctrl+C
+      if (e.ctrlKey || e.metaKey) {
+        if (textSelectionStart && textSelectionEnd) {
+          const runs = pdfTextRuns[pageNum] || [];
+          const startRun = runs.find(r => r.id === textSelectionStart.runId);
+          if (startRun && textSelectionStart.runId === textSelectionEnd.runId) {
+            const startIdx = Math.min(textSelectionStart.charIndex, textSelectionEnd.charIndex);
+            const endIdx = Math.max(textSelectionStart.charIndex, textSelectionEnd.charIndex);
+            const selectedText = startRun.text.substring(startIdx, endIdx);
+            navigator.clipboard.writeText(selectedText);
+            toast.success('Text copied to clipboard');
+          }
+        }
+      }
+    }
+    
     // Handle drag end
     if (isDragging) {
       setIsDragging(false);
@@ -1564,6 +1717,94 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const updatePdfText = (runId: string, newText: string) => {
     // Try Phase 3 (content stream editing) first, fallback to Phase 2 (overlay)
     updatePdfTextInStream(runId, newText);
+  };
+
+  // Phase 4.6: Find text in PDF
+  const findTextInPdf = (searchText: string) => {
+    if (!searchText.trim()) {
+      setFindResults([]);
+      setCurrentFindIndex(-1);
+      return;
+    }
+    
+    const results: Array<{ runId: string; startIndex: number; endIndex: number }> = [];
+    const runs = pdfTextRuns[pageNum] || [];
+    const lowerSearch = searchText.toLowerCase();
+    
+    runs.forEach(run => {
+      const lowerText = run.text.toLowerCase();
+      let index = 0;
+      while ((index = lowerText.indexOf(lowerSearch, index)) !== -1) {
+        results.push({
+          runId: run.id,
+          startIndex: index,
+          endIndex: index + searchText.length,
+        });
+        index += searchText.length;
+      }
+    });
+    
+    setFindResults(results);
+    if (results.length > 0) {
+      setCurrentFindIndex(0);
+      // Highlight first result
+      const firstResult = results[0];
+      const run = runs.find(r => r.id === firstResult.runId);
+      if (run) {
+        setSelectedTextRun(run.id);
+        setTextSelectionStart({ x: 0, y: 0, runId: run.id, charIndex: firstResult.startIndex });
+        setTextSelectionEnd({ x: 0, y: 0, runId: run.id, charIndex: firstResult.endIndex });
+        renderPage(pageNum);
+      }
+      toast.success(`Found ${results.length} result(s)`);
+    } else {
+      toast.info('No results found');
+    }
+  };
+
+  // Phase 4.6: Replace text in PDF
+  const replaceTextInPdf = (searchText: string, replaceText: string) => {
+    if (!searchText.trim()) return;
+    
+    const runs = pdfTextRuns[pageNum] || [];
+    let replaced = 0;
+    
+    runs.forEach(run => {
+      if (run.text.includes(searchText)) {
+        const newText = run.text.replace(new RegExp(searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), replaceText);
+        if (newText !== run.text) {
+          updatePdfText(run.id, newText);
+          replaced++;
+        }
+      }
+    });
+    
+    if (replaced > 0) {
+      toast.success(`Replaced ${replaced} occurrence(s)`);
+      findTextInPdf(searchText); // Refresh find results
+    } else {
+      toast.info('No text to replace');
+    }
+  };
+
+  // Phase 4.6: Navigate find results
+  const navigateFindResults = (direction: 'next' | 'prev') => {
+    if (findResults.length === 0) return;
+    
+    const newIndex = direction === 'next' 
+      ? (currentFindIndex + 1) % findResults.length
+      : (currentFindIndex - 1 + findResults.length) % findResults.length;
+    
+    setCurrentFindIndex(newIndex);
+    const result = findResults[newIndex];
+    const runs = pdfTextRuns[pageNum] || [];
+    const run = runs.find(r => r.id === result.runId);
+    if (run) {
+      setSelectedTextRun(run.id);
+      setTextSelectionStart({ x: 0, y: 0, runId: run.id, charIndex: result.startIndex });
+      setTextSelectionEnd({ x: 0, y: 0, runId: run.id, charIndex: result.endIndex });
+      renderPage(pageNum);
+    }
   };
 
   // Copy/Paste annotations
@@ -2342,6 +2583,81 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   </div>
                 </div>
               </div>
+
+              {/* Phase 4.6: Find & Replace Panel */}
+              {showFindReplace && (
+                <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-2xl border border-slate-300 dark:border-slate-700 p-4 min-w-[400px]">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Find & Replace</h3>
+                    <button
+                      onClick={() => setShowFindReplace(false)}
+                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={findText}
+                        onChange={(e) => setFindText(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            findTextInPdf(findText);
+                          }
+                        }}
+                        placeholder="Find..."
+                        className="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      />
+                      <button
+                        onClick={() => findTextInPdf(findText)}
+                        className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
+                      >
+                        Find
+                      </button>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={replaceText}
+                        onChange={(e) => setReplaceText(e.target.value)}
+                        placeholder="Replace with..."
+                        className="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      />
+                      <button
+                        onClick={() => replaceTextInPdf(findText, replaceText)}
+                        className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors"
+                      >
+                        Replace
+                      </button>
+                    </div>
+                    {findResults.length > 0 && (
+                      <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                        <span>
+                          {currentFindIndex + 1} of {findResults.length} result(s)
+                        </span>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => navigateFindResults('prev')}
+                            className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded hover:bg-slate-200 dark:hover:bg-slate-600"
+                          >
+                            ↑ Prev
+                          </button>
+                          <button
+                            onClick={() => navigateFindResults('next')}
+                            className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded hover:bg-slate-200 dark:hover:bg-slate-600"
+                          >
+                            Next ↓
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* PDF Canvas - iLovePDF Style Full Screen */}
               <div
