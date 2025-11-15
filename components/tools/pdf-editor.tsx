@@ -72,6 +72,11 @@ interface PdfTextRun {
   endIndex: number; // End index in original text
   isSelected?: boolean;
   isEditing?: boolean;
+  fontWeight?: 'normal' | 'bold';
+  fontStyle?: 'normal' | 'italic';
+  textDecoration?: 'none' | 'underline';
+  color?: string;
+  textAlign?: 'left' | 'center' | 'right';
 }
 
 export default function PdfEditor({ toolId }: PdfEditorProps) {
@@ -140,6 +145,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [replaceText, setReplaceText] = useState('');
   const [findResults, setFindResults] = useState<Array<{ runId: string; startIndex: number; endIndex: number }>>([]);
   const [currentFindIndex, setCurrentFindIndex] = useState(-1);
+  
+  // Phase 5: Advanced Text Formatting
+  const [editingTextFormat, setEditingTextFormat] = useState<{
+    fontWeight?: 'normal' | 'bold';
+    fontStyle?: 'normal' | 'italic';
+    textDecoration?: 'none' | 'underline';
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    textAlign?: 'left' | 'center' | 'right';
+  }>({});
+  const [showTextFormatPanel, setShowTextFormatPanel] = useState(false);
+  const [multiLineEditing, setMultiLineEditing] = useState(false);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1638,10 +1656,18 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   // Phase 3.2: Update PDF text in content stream (true editing)
-  const updatePdfTextInStream = async (runId: string, newText: string) => {
+  const updatePdfTextInStream = async (runId: string, newText: string, format?: {
+    fontWeight?: 'normal' | 'bold';
+    fontStyle?: 'normal' | 'italic';
+    textDecoration?: 'none' | 'underline';
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    textAlign?: 'left' | 'center' | 'right';
+  }) => {
     if (!pdfLibDocRef.current) {
       // Fallback to overlay mode
-      updatePdfTextOverlay(runId, newText);
+      updatePdfTextOverlay(runId, newText, format);
       return;
     }
     
@@ -1656,7 +1682,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       if (operators.length === 0) {
         // Fallback to overlay if parsing fails
         toast.warning('Content stream parsing not available, using overlay mode');
-        updatePdfTextOverlay(runId, newText);
+        updatePdfTextOverlay(runId, newText, format);
         return;
       }
       
@@ -1664,17 +1690,25 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       // For now, we'll use overlay approach as pdf-lib doesn't support direct content stream editing
       // True content stream editing would require rebuilding the PDF structure
       toast.info('True content stream editing requires PDF rebuilding. Using optimized overlay.');
-      updatePdfTextOverlay(runId, newText);
+      updatePdfTextOverlay(runId, newText, format);
       
     } catch (error) {
       console.error('Error updating PDF text in stream:', error);
       toast.error('Failed to update PDF text. Using overlay mode.');
-      updatePdfTextOverlay(runId, newText);
+      updatePdfTextOverlay(runId, newText, format);
     }
   };
 
   // Phase 2.5: Update PDF text content (overlay mode - fallback)
-  const updatePdfTextOverlay = (runId: string, newText: string) => {
+  const updatePdfTextOverlay = (runId: string, newText: string, format?: {
+    fontWeight?: 'normal' | 'bold';
+    fontStyle?: 'normal' | 'italic';
+    textDecoration?: 'none' | 'underline';
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    textAlign?: 'left' | 'center' | 'right';
+  }) => {
     const runs = pdfTextRuns[pageNum] || [];
     const run = runs.find(r => r.id === runId);
     if (!run) return;
@@ -1714,9 +1748,17 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   // Phase 2.5: Update PDF text content (wrapper - tries Phase 3 first)
-  const updatePdfText = (runId: string, newText: string) => {
+  const updatePdfText = (runId: string, newText: string, format?: {
+    fontWeight?: 'normal' | 'bold';
+    fontStyle?: 'normal' | 'italic';
+    textDecoration?: 'none' | 'underline';
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    textAlign?: 'left' | 'center' | 'right';
+  }) => {
     // Try Phase 3 (content stream editing) first, fallback to Phase 2 (overlay)
-    updatePdfTextInStream(runId, newText);
+    updatePdfTextInStream(runId, newText, format);
   };
 
   // Phase 4.6: Find text in PDF
@@ -2675,7 +2717,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default', display: 'block' }}
                   />
                   
-                  {/* Phase 2.5: PDF Text Editor - Inline editing for PDF text */}
+                  {/* Phase 2.5 & 5: PDF Text Editor - Inline editing for PDF text */}
                   {editingTextRun && pdfTextRuns[pageNum] && (() => {
                     const run = pdfTextRuns[pageNum].find(r => r.id === editingTextRun);
                     if (!run || run.page !== pageNum) return null;
@@ -2692,44 +2734,144 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     const textX = run.x / scaleX;
                     const textY = (run.y - run.height) / scaleY;
                     
-                    return (
-                      <input
-                        ref={textInputRef}
-                        type="text"
-                        defaultValue={run.text}
-                        onBlur={(e) => {
-                          if (editingTextRun && e.target.value !== run.text) {
-                            // Phase 2.5: Update PDF text
-                            updatePdfText(run.id, e.target.value);
-                          }
+                    // Phase 5: Multi-line editing support
+                    const InputComponent = multiLineEditing ? 'textarea' : 'input';
+                    const inputProps: any = {
+                      ref: textInputRef,
+                      defaultValue: run.text,
+                      onBlur: (e: any) => {
+                        if (editingTextRun && e.target.value !== run.text) {
+                          // Phase 2.5: Update PDF text with formatting
+                          updatePdfText(run.id, e.target.value, editingTextFormat);
+                        }
+                        setEditingTextRun(null);
+                        setTextEditMode(false);
+                        setShowTextFormatPanel(false);
+                        setEditingTextFormat({});
+                      },
+                      onKeyDown: (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                        if (e.key === 'Enter' && !multiLineEditing) {
+                          (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).blur();
+                        } else if (e.key === 'Escape') {
                           setEditingTextRun(null);
                           setTextEditMode(false);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.currentTarget.blur();
-                          } else if (e.key === 'Escape') {
-                            setEditingTextRun(null);
-                            setTextEditMode(false);
-                          }
-                        }}
-                        style={{
-                          position: 'absolute',
-                          left: `${rect.left + textX}px`,
-                          top: `${rect.top + textY}px`,
-                          fontSize: `${run.fontSize}px`,
-                          fontFamily: run.fontName,
-                          color: '#000000',
-                          background: 'rgba(255, 255, 255, 0.95)',
-                          border: '2px solid #3b82f6',
-                          outline: 'none',
-                          padding: '2px 4px',
-                          minWidth: `${run.width / scaleX}px`,
-                          borderRadius: '4px',
-                        }}
-                        className="pdf-text-editor-input"
-                        autoFocus
-                      />
+                          setShowTextFormatPanel(false);
+                          setEditingTextFormat({});
+                        } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && multiLineEditing) {
+                          (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).blur();
+                        }
+                      },
+                      style: {
+                        position: 'absolute',
+                        left: `${rect.left + textX}px`,
+                        top: `${rect.top + textY}px`,
+                        fontSize: `${editingTextFormat.fontSize || run.fontSize}px`,
+                        fontFamily: editingTextFormat.fontFamily || run.fontName,
+                        fontWeight: editingTextFormat.fontWeight || run.fontWeight || 'normal',
+                        fontStyle: editingTextFormat.fontStyle || run.fontStyle || 'normal',
+                        textDecoration: editingTextFormat.textDecoration || run.textDecoration || 'none',
+                        color: editingTextFormat.color || run.color || '#000000',
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        border: '2px solid #3b82f6',
+                        outline: 'none',
+                        padding: '2px 4px',
+                        minWidth: `${run.width / scaleX}px`,
+                        borderRadius: '4px',
+                        ...(multiLineEditing && {
+                          minHeight: `${run.height * 2 / scaleY}px`,
+                          resize: 'both',
+                        }),
+                      },
+                      className: "pdf-text-editor-input",
+                      autoFocus: true,
+                    };
+                    
+                    return (
+                      <div style={{ position: 'absolute', left: `${rect.left + textX}px`, top: `${rect.top + textY}px` }}>
+                        <InputComponent {...inputProps} />
+                        {/* Phase 5: Text Format Panel */}
+                        {showTextFormatPanel && (
+                          <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-300 dark:border-slate-700 p-3 z-50 min-w-[300px]">
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Font Size:</label>
+                                <input
+                                  type="number"
+                                  min="8"
+                                  max="72"
+                                  value={editingTextFormat.fontSize || run.fontSize}
+                                  onChange={(e) => setEditingTextFormat({ ...editingTextFormat, fontSize: Number(e.target.value) })}
+                                  className="flex-1 px-2 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                                />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Font:</label>
+                                <select
+                                  value={editingTextFormat.fontFamily || run.fontName}
+                                  onChange={(e) => setEditingTextFormat({ ...editingTextFormat, fontFamily: e.target.value })}
+                                  className="flex-1 px-2 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                                >
+                                  <option value="Arial">Arial</option>
+                                  <option value="Times New Roman">Times New Roman</option>
+                                  <option value="Courier New">Courier New</option>
+                                  <option value="Helvetica">Helvetica</option>
+                                  <option value="Georgia">Georgia</option>
+                                </select>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Color:</label>
+                                <input
+                                  type="color"
+                                  value={editingTextFormat.color || run.color || '#000000'}
+                                  onChange={(e) => setEditingTextFormat({ ...editingTextFormat, color: e.target.value })}
+                                  className="w-12 h-8 border border-slate-300 dark:border-slate-600 rounded cursor-pointer"
+                                />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => setEditingTextFormat({ ...editingTextFormat, fontWeight: editingTextFormat.fontWeight === 'bold' ? 'normal' : 'bold' })}
+                                  className={`px-3 py-1 rounded text-sm ${editingTextFormat.fontWeight === 'bold' ? 'bg-gray-900 text-white' : 'bg-slate-100 dark:bg-slate-700'}`}
+                                >
+                                  <strong>B</strong>
+                                </button>
+                                <button
+                                  onClick={() => setEditingTextFormat({ ...editingTextFormat, fontStyle: editingTextFormat.fontStyle === 'italic' ? 'normal' : 'italic' })}
+                                  className={`px-3 py-1 rounded text-sm ${editingTextFormat.fontStyle === 'italic' ? 'bg-gray-900 text-white' : 'bg-slate-100 dark:bg-slate-700'}`}
+                                >
+                                  <em>I</em>
+                                </button>
+                                <button
+                                  onClick={() => setEditingTextFormat({ ...editingTextFormat, textDecoration: editingTextFormat.textDecoration === 'underline' ? 'none' : 'underline' })}
+                                  className={`px-3 py-1 rounded text-sm ${editingTextFormat.textDecoration === 'underline' ? 'bg-gray-900 text-white' : 'bg-slate-100 dark:bg-slate-700'}`}
+                                >
+                                  <u>U</u>
+                                </button>
+                                <button
+                                  onClick={() => setMultiLineEditing(!multiLineEditing)}
+                                  className={`px-3 py-1 rounded text-sm ${multiLineEditing ? 'bg-gray-900 text-white' : 'bg-slate-100 dark:bg-slate-700'}`}
+                                  title="Multi-line"
+                                >
+                                  ⤶
+                                </button>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Align:</label>
+                                <div className="flex gap-1">
+                                  {(['left', 'center', 'right'] as const).map(align => (
+                                    <button
+                                      key={align}
+                                      onClick={() => setEditingTextFormat({ ...editingTextFormat, textAlign: align })}
+                                      className={`px-3 py-1 rounded text-sm ${editingTextFormat.textAlign === align ? 'bg-gray-900 text-white' : 'bg-slate-100 dark:bg-slate-700'}`}
+                                    >
+                                      {align === 'left' ? '⬅' : align === 'center' ? '⬌' : '➡'}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     );
                   })()}
                   
