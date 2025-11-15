@@ -541,13 +541,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               color: rgb(rgbColor.r / 255, rgbColor.g / 255, rgbColor.b / 255),
             });
           } else if (annotation.type === 'highlight' && annotation.width && annotation.height) {
-            const rgb = hexToRgb(annotation.color || highlightColor);
+            const rgbColor = hexToRgb(annotation.color || highlightColor);
             page.drawRectangle({
               x: annotation.x,
               y: height - annotation.y - annotation.height,
               width: annotation.width,
               height: annotation.height,
-              color: rgb(rgb.r / 255, rgb.g / 255, rgb.b / 255),
+              color: rgb(rgbColor.r / 255, rgbColor.g / 255, rgbColor.b / 255),
               opacity: 0.3,
             });
           } else if (annotation.type === 'image' && annotation.imageData && annotation.width && annotation.height) {
