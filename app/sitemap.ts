@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next'
 import { tools } from '@/data/tools'
+import { getBlogPosts } from '@/lib/blog'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://omnitoolset.com'
   
   const toolPages = tools.map((tool) => ({
@@ -9,6 +10,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
+  }))
+
+  // Get blog posts
+  const blogPosts = await getBlogPosts()
+  const blogPages = blogPosts.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
   }))
 
   return [
@@ -25,12 +35,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
     },
     {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/categories`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     ...toolPages,
+    ...blogPages,
   ]
 }
 

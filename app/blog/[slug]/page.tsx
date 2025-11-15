@@ -1,0 +1,194 @@
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import AdSense from '@/components/AdSense';
+import { getBlogPost, getBlogPosts } from '@/lib/blog';
+
+interface PageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+export async function generateStaticParams() {
+  const posts = await getBlogPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
+
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+    };
+  }
+
+  return {
+    title: `${post.title} | OmniToolset Blog`,
+    description: post.excerpt,
+    keywords: post.keywords,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      url: `https://omnitoolset.com/blog/${slug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt,
+    },
+    alternates: {
+      canonical: `https://omnitoolset.com/blog/${slug}`,
+    },
+  };
+}
+
+export default async function BlogPostPage({ params }: PageProps) {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  // Simple markdown to HTML conversion
+  let contentHtml = post.content
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+    .replace(/^\*(.*)\*/gim, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" class="text-indigo-400 hover:text-indigo-300">$1</a>')
+    .replace(/^\- (.*$)/gim, '<li>$1</li>')
+    .replace(/^(\d+)\. (.*$)/gim, '<li>$2</li>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+  
+  // Wrap in paragraphs
+  contentHtml = `<p>${contentHtml}</p>`;
+  
+  // Fix list wrapping
+  contentHtml = contentHtml.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    author: {
+      '@type': 'Organization',
+      name: 'OmniToolset',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'OmniToolset',
+    },
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      
+      <main className="flex-1 container py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Breadcrumbs */}
+          <div className="mb-6 text-sm text-slate-400">
+            <Link href="/" className="hover:text-slate-200">Home</Link>
+            {' / '}
+            <Link href="/blog" className="hover:text-slate-200">Blog</Link>
+            {' / '}
+            <span className="text-slate-200">{post.title}</span>
+          </div>
+
+          {/* Post Header */}
+          <article className="bg-slate-800 border border-slate-700 rounded-2xl p-8 mb-8">
+            <div className="text-5xl mb-4">{post.icon}</div>
+            <h1 className="text-4xl font-bold mb-4 text-slate-100">{post.title}</h1>
+            <div className="flex items-center gap-4 mb-6 text-sm text-slate-400">
+              <span>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span>•</span>
+              <span>{post.readingTime} min read</span>
+              <span>•</span>
+              <span className="px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-full">
+                {post.category}
+              </span>
+            </div>
+
+            {/* AdSense - Top */}
+            <div className="mb-8">
+              <AdSense
+                adFormat="auto"
+                fullWidthResponsive={true}
+                className="min-h-[100px] bg-slate-900 rounded-xl"
+              />
+            </div>
+
+            {/* Post Content */}
+            <div
+              className="prose prose-invert prose-indigo max-w-none
+                prose-headings:text-slate-100
+                prose-p:text-slate-300
+                prose-a:text-indigo-400 hover:prose-a:text-indigo-300
+                prose-strong:text-slate-100
+                prose-code:text-indigo-300
+                prose-pre:bg-slate-900
+                prose-blockquote:border-indigo-500
+                prose-ul:text-slate-300
+                prose-ol:text-slate-300
+                prose-li:text-slate-300"
+              dangerouslySetInnerHTML={{ __html: contentHtml }}
+            />
+
+            {/* AdSense - Middle */}
+            <div className="my-8">
+              <AdSense
+                adFormat="auto"
+                fullWidthResponsive={true}
+                className="min-h-[100px] bg-slate-900 rounded-xl"
+              />
+            </div>
+
+            {/* Related Tools CTA */}
+            <div className="mt-8 p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+              <h3 className="text-xl font-semibold mb-3 text-indigo-300">Try Our Tools</h3>
+              <p className="text-slate-300 mb-4 text-sm">
+                Use our free online tools to {post.title.toLowerCase()}. No registration required!
+              </p>
+              <Link
+                href="/#tools"
+                className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors"
+              >
+                Explore All Tools →
+              </Link>
+            </div>
+          </article>
+
+          {/* Back to Blog */}
+          <div className="text-center">
+            <Link
+              href="/blog"
+              className="text-indigo-400 hover:text-indigo-300 transition-colors"
+            >
+              ← Back to Blog
+            </Link>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+    </div>
+  );
+}
+

@@ -686,11 +686,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* File Upload */}
+    <div className="space-y-0">
+      {/* File Upload - Minimal Design */}
       {!file && (
         <div
-          className="upload-area"
+          className="border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-xl p-16 text-center hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-all duration-200 cursor-pointer"
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
@@ -704,41 +704,44 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           />
           <div className="text-center">
             <div className="text-6xl mb-4">📄</div>
-            <p className="text-xl font-semibold mb-2">
+            <p className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
               Click or drag PDF file here
             </p>
-            <p className="text-slate-400 text-sm">
-              Select a PDF file to edit
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              Select a PDF file to edit • Max 50MB
             </p>
           </div>
         </div>
       )}
 
       {file && (
-        <>
+        <div className="h-[calc(100vh-200px)] flex flex-col">
           {!isEditable && (
-            <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-xl p-4 mb-4">
-              <p className="text-yellow-300 text-sm">
+            <div className="bg-yellow-50 dark:bg-yellow-950/30 border-l-4 border-yellow-500 rounded-r-lg p-4 mb-4 mx-6 mt-6">
+              <p className="text-yellow-800 dark:text-yellow-300 text-sm font-medium">
                 ⚠️ This PDF cannot be edited (may be password-protected). You can view it, but editing features are disabled.
               </p>
             </div>
           )}
 
-          {/* Main Editor Layout */}
-          <div className="flex gap-4">
+          {/* Main Editor Layout - Full Screen Design */}
+          <div className="flex-1 flex gap-0 overflow-hidden">
             {/* Sidebar - Page Thumbnails */}
             {showThumbnails && (
-              <div className="w-48 bg-slate-800 border border-slate-700 rounded-xl p-4 overflow-y-auto max-h-[800px]">
-                <h3 className="text-sm font-semibold text-slate-300 mb-3">Pages</h3>
+              <div className="w-56 bg-gray-50 dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 p-4 overflow-y-auto">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center justify-between">
+                  <span>Pages</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-normal">{numPages} total</span>
+                </h3>
                 <div className="space-y-2">
                   {Array.from({ length: numPages }, (_, i) => i + 1).map((page) => (
                     <button
                       key={page}
                       onClick={() => setPageNum(page)}
-                      className={`w-full p-2 rounded-lg border-2 transition-colors ${
+                      className={`w-full p-2 rounded-lg border-2 transition-all ${
                         page === pageNum
-                          ? 'border-indigo-500 bg-indigo-500/20'
-                          : 'border-slate-700 hover:border-slate-600'
+                          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 shadow-md'
+                          : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700 bg-white dark:bg-slate-800'
                       }`}
                     >
                       {pageThumbnails[page - 1] ? (
@@ -748,27 +751,29 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           className="w-full h-auto rounded"
                         />
                       ) : (
-                        <div className="w-full h-32 bg-slate-700 rounded flex items-center justify-center text-slate-400">
+                        <div className="w-full h-32 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-gray-400 dark:text-gray-600">
                           Page {page}
                         </div>
                       )}
-                      <p className="text-xs text-slate-400 mt-1">Page {page}</p>
+                      <p className={`text-xs mt-1 ${page === pageNum ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-gray-500 dark:text-gray-400'}`}>
+                        Page {page}
+                      </p>
                     </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Main Editor Area */}
-            <div className="flex-1 bg-slate-800 border border-slate-700 rounded-xl p-4">
-              {/* Top Toolbar */}
-              <div className="flex flex-wrap gap-2 items-center justify-between mb-4 pb-4 border-b border-slate-700">
+            {/* Main Editor Area - Clean White Design */}
+            <div className="flex-1 flex flex-col bg-white dark:bg-slate-900">
+              {/* Top Toolbar - Modern Clean Design */}
+              <div className="flex flex-wrap gap-2 items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-800/50">
                 <div className="flex gap-2 flex-wrap items-center">
                   {/* Undo/Redo */}
                   <button
                     onClick={undo}
                     disabled={historyIndex <= 0}
-                    className="px-3 py-2 bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                     title="Undo (Ctrl+Z)"
                   >
                     ↶ Undo
@@ -776,22 +781,22 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   <button
                     onClick={redo}
                     disabled={historyIndex >= history.length - 1}
-                    className="px-3 py-2 bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                     title="Redo (Ctrl+Y)"
                   >
                     ↷ Redo
                   </button>
                   
-                  <div className="w-px h-6 bg-slate-600 mx-1" />
+                  <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
                   
-                  {/* Tools */}
+                  {/* Tools - Clean Button Design */}
                   <button
                     onClick={() => setTool(tool === 'text' ? null : 'text')}
                     disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
+                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
                       tool === 'text'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                     } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                     title="Add Text (T)"
                   >
@@ -801,10 +806,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   <button
                     onClick={() => setTool(tool === 'highlight' ? null : 'highlight')}
                     disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
+                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
                       tool === 'highlight'
-                        ? 'bg-yellow-600 text-white'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                        ? 'bg-yellow-500 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                     } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                     title="Highlight (H)"
                   >
@@ -813,14 +818,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   
                   <button
                     onClick={() => {
-                      setTool(tool === 'rectangle' ? null : 'rectangle');
+                      setTool(tool === 'image' ? null : 'image');
                       imageInputRef.current?.click();
                     }}
                     disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
-                      tool === 'rectangle'
-                        ? 'bg-green-600 text-white'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
+                      tool === 'image'
+                        ? 'bg-green-600 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                     } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                     title="Add Image (I)"
                   >
@@ -830,10 +835,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   <button
                     onClick={() => setTool(tool === 'rectangle' ? null : 'rectangle')}
                     disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
+                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
                       tool === 'rectangle'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                     } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                     title="Rectangle (R)"
                   >
@@ -843,10 +848,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   <button
                     onClick={() => setTool(tool === 'circle' ? null : 'circle')}
                     disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
+                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
                       tool === 'circle'
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                     } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                     title="Circle (C)"
                   >
@@ -856,10 +861,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   <button
                     onClick={() => setTool(tool === 'line' ? null : 'line')}
                     disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
+                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
                       tool === 'line'
-                        ? 'bg-pink-600 text-white'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                        ? 'bg-pink-600 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                     } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                     title="Line (L)"
                   >
@@ -869,10 +874,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   <button
                     onClick={() => setTool(tool === 'arrow' ? null : 'arrow')}
                     disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
+                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
                       tool === 'arrow'
-                        ? 'bg-red-600 text-white'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                        ? 'bg-red-600 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                     } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                     title="Arrow (A)"
                   >
@@ -894,7 +899,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         value={currentText}
                         onChange={(e) => setCurrentText(e.target.value)}
                         placeholder="Enter text..."
-                        className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:outline-none focus:border-indigo-500 text-sm w-32"
+                        className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm w-32"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && currentText.trim()) {
                             setTool(null);
@@ -907,13 +912,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         onChange={(e) => setFontSize(Number(e.target.value))}
                         min="8"
                         max="72"
-                        className="w-16 px-2 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:outline-none focus:border-indigo-500 text-sm"
+                        className="w-16 px-2 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 text-sm"
                       />
                       <input
                         type="color"
                         value={textColor}
                         onChange={(e) => setTextColor(e.target.value)}
-                        className="w-10 h-10 bg-slate-700 border border-slate-600 rounded-lg cursor-pointer"
+                        className="w-10 h-10 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg cursor-pointer"
                       />
                     </div>
                   )}
@@ -927,7 +932,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           if (tool === 'highlight') setHighlightColor(e.target.value);
                           else setStrokeColor(e.target.value);
                         }}
-                        className="w-10 h-10 bg-slate-700 border border-slate-600 rounded-lg cursor-pointer"
+                        className="w-10 h-10 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg cursor-pointer"
                         title="Color"
                       />
                       {tool !== 'highlight' && (
@@ -938,7 +943,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                             onChange={(e) => setStrokeWidth(Number(e.target.value))}
                             min="1"
                             max="10"
-                            className="w-16 px-2 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:outline-none focus:border-indigo-500 text-sm"
+                            className="w-16 px-2 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 text-sm"
                             title="Stroke Width"
                           />
                         </>
@@ -951,56 +956,56 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   {/* Zoom Controls */}
                   <button
                     onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-                    className="px-3 py-2 bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600 transition-colors"
+                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
                     title="Zoom Out"
                   >
                     −
                   </button>
-                  <span className="text-slate-300 text-sm min-w-[60px] text-center">
+                  <span className="text-gray-700 dark:text-gray-300 text-sm min-w-[60px] text-center font-medium">
                     {Math.round(zoom * 100)}%
                   </span>
                   <button
                     onClick={() => setZoom(Math.min(3, zoom + 0.25))}
-                    className="px-3 py-2 bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600 transition-colors"
+                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
                     title="Zoom In"
                   >
                     +
                   </button>
                   <button
                     onClick={() => setZoom(1)}
-                    className="px-3 py-2 bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600 transition-colors text-sm"
+                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
                     title="Reset Zoom"
                   >
                     Fit
                   </button>
                   
-                  <div className="w-px h-6 bg-slate-600 mx-1" />
+                  <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
                   
                   {/* Page Navigation */}
                   <button
                     onClick={() => setPageNum(Math.max(1, pageNum - 1))}
                     disabled={pageNum <= 1}
-                    className="px-3 py-2 bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                   >
                     ← Prev
                   </button>
-                  <span className="text-slate-300 text-sm min-w-[80px] text-center">
+                  <span className="text-gray-700 dark:text-gray-300 text-sm min-w-[80px] text-center font-medium">
                     {pageNum} / {numPages}
                   </span>
                   <button
                     onClick={() => setPageNum(Math.min(numPages, pageNum + 1))}
                     disabled={pageNum >= numPages}
-                    className="px-3 py-2 bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                   >
                     Next →
                   </button>
                   
                   <button
                     onClick={() => setShowThumbnails(!showThumbnails)}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
+                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
                       showThumbnails
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                     }`}
                     title="Toggle Thumbnails"
                   >
@@ -1009,53 +1014,55 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 </div>
               </div>
 
-              {/* PDF Canvas */}
+              {/* PDF Canvas - Clean White Background */}
               <div
                 ref={containerRef}
-                className="bg-slate-900 rounded-lg p-4 overflow-auto max-h-[700px] flex justify-center"
+                className="flex-1 bg-gray-100 dark:bg-slate-950 p-6 overflow-auto flex justify-center items-start"
               >
-                <canvas
-                  ref={canvasRef}
-                  onMouseDown={handleCanvasMouseDown}
-                  onMouseMove={handleCanvasMouseMove}
-                  onMouseUp={handleCanvasMouseUp}
-                  className="border border-slate-700 rounded shadow-2xl"
-                  style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default' }}
-                />
+                <div className="bg-white dark:bg-slate-900 rounded-lg shadow-2xl p-4 border border-gray-200 dark:border-slate-800">
+                  <canvas
+                    ref={canvasRef}
+                    onMouseDown={handleCanvasMouseDown}
+                    onMouseMove={handleCanvasMouseMove}
+                    onMouseUp={handleCanvasMouseUp}
+                    className="rounded shadow-lg"
+                    style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default' }}
+                  />
+                </div>
               </div>
 
-              {/* Annotations List */}
+              {/* Annotations List - Bottom Bar */}
               {annotations.filter(ann => ann.page === pageNum).length > 0 && (
-                <div className="mt-4 p-3 bg-slate-900 rounded-lg">
+                <div className="px-6 py-3 bg-gray-50 dark:bg-slate-800/50 border-t border-gray-200 dark:border-slate-800">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-slate-200">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                       Annotations (Page {pageNum}) - {annotations.filter(ann => ann.page === pageNum).length} items
                     </h3>
                     <button
                       onClick={clearAllAnnotations}
-                      className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                      className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors font-medium"
                     >
                       Clear All
                     </button>
                   </div>
-                  <div className="space-y-1 max-h-32 overflow-y-auto">
+                  <div className="space-y-1 max-h-24 overflow-y-auto">
                     {annotations
                       .filter(ann => ann.page === pageNum)
                       .map((ann) => (
                         <div
                           key={ann.id}
-                          className={`flex items-center justify-between p-2 rounded transition-colors ${
+                          className={`flex items-center justify-between p-2 rounded transition-colors cursor-pointer ${
                             selectedAnnotation === ann.id
-                              ? 'bg-indigo-500/20 border border-indigo-500'
-                              : 'bg-slate-800 hover:bg-slate-700'
+                              ? 'bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-500'
+                              : 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
                           }`}
                           onClick={() => setSelectedAnnotation(ann.id === selectedAnnotation ? null : ann.id)}
                         >
                           <div className="flex items-center gap-2">
-                            <span className="text-xs px-2 py-1 bg-indigo-500/20 text-indigo-300 rounded">
+                            <span className="text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 rounded font-medium">
                               {ann.type}
                             </span>
-                            <span className="text-slate-300 text-sm">
+                            <span className="text-gray-700 dark:text-gray-300 text-sm">
                               {ann.text || `${ann.type} annotation`}
                             </span>
                           </div>
@@ -1064,7 +1071,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                               e.stopPropagation();
                               removeAnnotation(ann.id);
                             }}
-                            className="text-red-400 hover:text-red-300 text-sm transition-colors"
+                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm transition-colors"
                           >
                             ✕
                           </button>
@@ -1074,66 +1081,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 </div>
               )}
 
-              {/* Download Button */}
-              <div className="mt-6 flex justify-center gap-3">
+              {/* Download Button - Fixed Bottom */}
+              <div className="px-6 py-4 bg-gray-50 dark:bg-slate-800/50 border-t border-gray-200 dark:border-slate-800 flex justify-center">
                 <button
                   onClick={handleDownload}
                   disabled={isProcessing || annotations.length === 0}
-                  className="btn px-8 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105"
                 >
                   {isProcessing ? 'Processing...' : 'Download Edited PDF'}
                 </button>
               </div>
             </div>
           </div>
-
-          {/* Feature Info */}
-          <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-6">
-            <h3 className="text-xl font-semibold mb-4 text-indigo-300">🚀 Advanced PDF Editor Features:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-slate-300 text-sm">
-              <div>
-                <h4 className="font-semibold text-indigo-400 mb-2">✏️ Text & Annotations</h4>
-                <ul className="list-disc list-inside space-y-1 text-xs">
-                  <li>Add custom text with color & size</li>
-                  <li>Highlight important sections</li>
-                  <li>Draw shapes (rectangles, circles)</li>
-                  <li>Add lines and arrows</li>
-                  <li>Insert images</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold text-yellow-400 mb-2">🎨 Professional Tools</h4>
-                <ul className="list-disc list-inside space-y-1 text-xs">
-                  <li>Undo/Redo system</li>
-                  <li>Zoom controls (50%-300%)</li>
-                  <li>Page thumbnails sidebar</li>
-                  <li>Annotation selection & deletion</li>
-                  <li>Real-time preview</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold text-green-400 mb-2">💾 Export & Quality</h4>
-                <ul className="list-disc list-inside space-y-1 text-xs">
-                  <li>Real PDF modification (not overlay)</li>
-                  <li>All edits permanently saved</li>
-                  <li>High-quality output</li>
-                  <li>Works with all PDF readers</li>
-                  <li>Professional-grade editing</li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-4 p-3 bg-indigo-500/20 rounded-lg">
-              <p className="text-xs text-indigo-300 font-semibold mb-1">💡 Pro Tips:</p>
-              <ul className="text-xs text-slate-300 space-y-1">
-                <li>• Use keyboard shortcuts: T (Text), H (Highlight), R (Rectangle), C (Circle), L (Line), A (Arrow)</li>
-                <li>• Drag to create highlights, shapes, and lines</li>
-                <li>• Click annotations to select and delete them</li>
-                <li>• Use zoom controls for precise editing</li>
-                <li>• All changes are saved directly to the PDF file</li>
-              </ul>
-            </div>
-          </div>
-        </>
+        </div>
       )}
 
       {isProcessing && !file && (

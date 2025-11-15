@@ -23,6 +23,12 @@ export default function Header() {
               ✏️ PDF Editor
             </Link>
             <Link 
+              href="/blog" 
+              className="text-slate-300 dark:text-slate-300 light:text-gray-700 hover:text-slate-100 dark:hover:text-slate-100 light:hover:text-gray-900 transition-colors font-medium"
+            >
+              Blog
+            </Link>
+            <Link 
               href="/categories" 
               className="text-slate-300 dark:text-slate-300 light:text-gray-700 hover:text-slate-100 dark:hover:text-slate-100 light:hover:text-gray-900 transition-colors font-medium"
             >
