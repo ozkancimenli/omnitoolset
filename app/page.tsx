@@ -1,16 +1,22 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ToolCard from '@/components/ToolCard';
 import AdSense from '@/components/AdSense';
 import Link from 'next/link';
 import { tools } from '@/data/tools';
+import { useKeyboardShortcuts, ShortcutAction } from '@/lib/keyboard-shortcuts';
+import { toast } from '@/components/Toast';
+import RecentTools from '@/components/RecentTools';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const filteredTools = useMemo(() => {
     let filtered = tools;
@@ -35,6 +41,27 @@ export default function Home() {
   }, [searchQuery, selectedCategory]);
 
   const categories = Array.from(new Set(tools.map(t => t.category))).sort();
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts((action: ShortcutAction) => {
+    switch (action) {
+      case 'search':
+        searchInputRef.current?.focus();
+        toast.info('Search focused! Press Esc to clear');
+        break;
+      case 'home':
+        router.push('/');
+        break;
+      case 'categories':
+        router.push('/categories');
+        break;
+      case 'clear':
+        setSearchQuery('');
+        setSelectedCategory(null);
+        searchInputRef.current?.blur();
+        break;
+    }
+  });
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -97,12 +124,13 @@ export default function Home() {
         <div className="max-w-2xl mx-auto mb-12">
           <div className="relative">
             <input
+              ref={searchInputRef}
               type="text"
-              placeholder="Search tools..."
+              placeholder="Search tools... (⌘K or Ctrl+K)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-6 py-4 bg-slate-800 border-2 border-slate-700 rounded-xl 
-                       text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 
+              className="w-full px-6 py-4 bg-slate-800 dark:bg-slate-800 light:bg-white border-2 border-slate-700 dark:border-slate-700 light:border-gray-300 rounded-xl 
+                       text-slate-100 dark:text-slate-100 light:text-gray-900 placeholder-slate-500 dark:placeholder-slate-500 light:placeholder-gray-400 focus:outline-none focus:border-indigo-500 
                        focus:ring-2 focus:ring-indigo-500/20 transition-all"
               aria-label="Search tools"
             />
@@ -127,6 +155,9 @@ export default function Home() {
             </p>
           )}
         </div>
+
+        {/* Recent Tools */}
+        <RecentTools />
 
         {/* AdSense Banner - Top (Single ad, less intrusive) */}
         <div className="max-w-7xl mx-auto mb-8">

@@ -8,6 +8,7 @@ import SocialShare from '@/components/SocialShare';
 import AdSense from '@/components/AdSense';
 import { Metadata } from 'next';
 import ToolWrapper from '@/components/ToolWrapper';
+import ToolTracker from '@/components/ToolTracker';
 
 interface PageProps {
   params: Promise<{
@@ -141,6 +142,8 @@ export default async function ToolPage({ params }: PageProps) {
             ]} 
           />
 
+          <ToolTracker tool={tool} />
+          
           <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8">
             <div className="flex items-start justify-between mb-6">
               <div>

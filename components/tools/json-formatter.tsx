@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from '@/components/Toast';
 
 export default function JsonFormatter() {
   const [input, setInput] = useState('');
@@ -12,8 +13,11 @@ export default function JsonFormatter() {
       const formatted = JSON.stringify(parsed, null, 2);
       setInput(formatted);
       setError('');
+      toast.success('JSON formatted successfully!');
     } catch (err) {
-      setError('Invalid JSON: ' + (err as Error).message);
+      const errorMsg = 'Invalid JSON: ' + (err as Error).message;
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
@@ -23,8 +27,11 @@ export default function JsonFormatter() {
       const minified = JSON.stringify(parsed);
       setInput(minified);
       setError('');
+      toast.success('JSON minified successfully!');
     } catch (err) {
-      setError('Invalid JSON: ' + (err as Error).message);
+      const errorMsg = 'Invalid JSON: ' + (err as Error).message;
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
@@ -32,15 +39,21 @@ export default function JsonFormatter() {
     try {
       JSON.parse(input);
       setError('');
-      alert('✓ Valid JSON!');
+      toast.success('✓ Valid JSON!');
     } catch (err) {
-      setError('✗ Invalid JSON: ' + (err as Error).message);
+      const errorMsg = '✗ Invalid JSON: ' + (err as Error).message;
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
   const copyToClipboard = () => {
+    if (!input.trim()) {
+      toast.warning('Nothing to copy!');
+      return;
+    }
     navigator.clipboard.writeText(input);
-    alert('Copied!');
+    toast.success('Copied to clipboard!');
   };
 
   return (
