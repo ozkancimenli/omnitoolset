@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://omnitoolset.com/sitemap.xml
+
+# Crawl-delay (opsiyonel, gerekirse ayarlayın)
+# Crawl-delay: 1

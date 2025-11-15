@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word'den PDF'e - OmniToolset</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        <div class="tool-container">
+            <h2>📝 Word'den PDF'e</h2>
+            <p>Word (.docx) dosyanızı PDF formatına dönüştürün.</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <p>Word dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <input type="file" id="fileInput" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;">
+            </div>
+
+            <div id="fileInfo" class="result-area" style="display: none;">
+                <h3>Seçilen Dosya</h3>
+                <p id="fileName"></p>
+                <p id="fileSize"></p>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin-top: 1rem;" disabled>PDF'e Dönüştür</button>
+
+            <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
+                <h3>Dönüştürme Tamamlandı!</h3>
+                <p id="resultInfo"></p>
+                <button class="btn" onclick="downloadPDF()" style="width: 100%;">PDF Dosyasını İndir</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let wordFile = null;
+        let pdfBlob = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultArea = document.getElementById('resultArea');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && (file.name.endsWith('.docx') || file.type.includes('wordprocessingml'))) {
+                handleFile(file);
+            } else {
+                alert('Lütfen geçerli bir Word (.docx) dosyası seçin!');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            wordFile = file;
+            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Boyut: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            fileInfo.style.display = 'block';
+            convertBtn.disabled = false;
+            resultArea.style.display = 'none';
+        }
+
+        async function convertToPDF() {
+            if (!wordFile) return;
+
+            convertBtn.disabled = true;
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            try {
+                progressFill.style.width = '30%';
+                
+                const arrayBuffer = await wordFile.arrayBuffer();
+                
+                progressFill.style.width = '50%';
+                
+                // Convert Word to HTML
+                const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+                const html = result.value;
+                
+                progressFill.style.width = '70%';
+                
+                // Convert HTML to PDF using jsPDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                
+                // Create a temporary div to render HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.left = '-9999px';
+                document.body.appendChild(tempDiv);
+                
+                // Simple text extraction for PDF
+                const text = tempDiv.innerText || tempDiv.textContent || '';
+                const lines = pdf.splitTextToSize(text, 180);
+                
+                let y = 20;
+                for (let i = 0; i < lines.length; i++) {
+                    if (y > 270) {
+                        pdf.addPage();
+                        y = 20;
+                    }
+                    pdf.text(lines[i], 10, y);
+                    y += 7;
+                }
+                
+                document.body.removeChild(tempDiv);
+                
+                pdfBlob = pdf.output('blob');
+                
+                progressFill.style.width = '100%';
+                document.getElementById('resultInfo').textContent = 
+                    'Not: Karmaşık formatlamalar (tablolar, resimler) tam olarak korunmayabilir.';
+                
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    resultArea.style.display = 'block';
+                    convertBtn.disabled = false;
+                }, 500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Dönüştürme sırasında bir hata oluştu: ' + error.message);
+                convertBtn.disabled = false;
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function downloadPDF() {
+            if (!pdfBlob) return;
+            
+            const url = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = wordFile.name.replace('.docx', '') + '.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

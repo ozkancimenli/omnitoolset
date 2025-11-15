@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF'den JPG'e - OmniToolset</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        <div class="tool-container">
+            <h2>🖼️ PDF'den JPG'e</h2>
+            <p>PDF sayfalarınızı JPG resim formatına dönüştürün.</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <p>PDF dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+            </div>
+
+            <div class="input-group">
+                <label for="quality">JPG Kalitesi:</label>
+                <input type="range" id="quality" min="0.1" max="1" step="0.1" value="0.9">
+                <span id="qualityValue">90%</span>
+            </div>
+
+            <div class="input-group">
+                <label for="scale">Ölçek:</label>
+                <input type="range" id="scale" min="1" max="3" step="0.5" value="2">
+                <span id="scaleValue">2x</span>
+            </div>
+
+            <div id="fileInfo" class="result-area" style="display: none;">
+                <h3>Seçilen Dosya</h3>
+                <p id="fileName"></p>
+                <p id="pageCount"></p>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertPDF()" style="width: 100%; margin-top: 1rem;" disabled>JPG'e Dönüştür</button>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem;">
+                <h3>Dönüştürülen Sayfalar</h3>
+                <div id="imagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;"></div>
+                <button class="btn" onclick="downloadAll()" style="width: 100%; margin-top: 1rem;">Tümünü ZIP Olarak İndir</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        let pdfData = null;
+        let images = [];
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultArea = document.getElementById('resultArea');
+        const imagesContainer = document.getElementById('imagesContainer');
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') {
+                handleFile(file);
+            } else {
+                alert('Lütfen geçerli bir PDF dosyası seçin!');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        document.getElementById('quality').addEventListener('input', (e) => {
+            document.getElementById('qualityValue').textContent = Math.round(e.target.value * 100) + '%';
+        });
+
+        document.getElementById('scale').addEventListener('input', (e) => {
+            document.getElementById('scaleValue').textContent = e.target.value + 'x';
+        });
+
+        async function handleFile(file) {
+            pdfData = file;
+            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
+            
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            document.getElementById('pageCount').textContent = `Sayfa Sayısı: ${pdf.numPages}`;
+            
+            fileInfo.style.display = 'block';
+            convertBtn.disabled = false;
+            resultArea.style.display = 'none';
+        }
+
+        async function convertPDF() {
+            if (!pdfData) return;
+
+            convertBtn.disabled = true;
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+            images = [];
+            imagesContainer.innerHTML = '';
+
+            try {
+                const arrayBuffer = await pdfData.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const numPages = pdf.numPages;
+                const quality = parseFloat(document.getElementById('quality').value);
+                const scale = parseFloat(document.getElementById('scale').value);
+
+                for (let i = 1; i <= numPages; i++) {
+                    progressFill.style.width = `${(i / numPages) * 100}%`;
+                    
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale: scale });
+                    
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+                    
+                    const imgData = canvas.toDataURL('image/jpeg', quality);
+                    images.push({
+                        data: imgData,
+                        page: i
+                    });
+
+                    const img = document.createElement('img');
+                    img.src = imgData;
+                    img.style.width = '100%';
+                    img.style.borderRadius = '8px';
+                    img.style.cursor = 'pointer';
+                    img.onclick = () => downloadImage(i - 1);
+                    
+                    const div = document.createElement('div');
+                    div.style.textAlign = 'center';
+                    div.innerHTML = `<p style="margin-top: 0.5rem; color: var(--text-secondary);">Sayfa ${i}</p>`;
+                    div.insertBefore(img, div.firstChild);
+                    imagesContainer.appendChild(div);
+                }
+
+                progressFill.style.width = '100%';
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    resultArea.style.display = 'block';
+                    convertBtn.disabled = false;
+                }, 500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Dönüştürme sırasında bir hata oluştu: ' + error.message);
+                convertBtn.disabled = false;
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function downloadImage(index) {
+            const img = images[index];
+            const link = document.createElement('a');
+            link.href = img.data;
+            link.download = `${pdfData.name.replace('.pdf', '')}_sayfa_${img.page}.jpg`;
+            link.click();
+        }
+
+        async function downloadAll() {
+            if (images.length === 0) return;
+
+            const zip = new JSZip();
+            
+            for (let i = 0; i < images.length; i++) {
+                const img = images[i];
+                const base64Data = img.data.split(',')[1];
+                zip.file(`${pdfData.name.replace('.pdf', '')}_sayfa_${img.page}.jpg`, base64Data, { base64: true });
+            }
+
+            const blob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = pdfData.name.replace('.pdf', '') + '_images.zip';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

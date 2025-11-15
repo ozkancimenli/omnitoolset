@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPG'den PDF'e - OmniToolset</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        <div class="tool-container">
+            <h2>📄 JPG'den PDF'e</h2>
+            <p>JPG resimlerinizi PDF formatına dönüştürün.</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🖼️</div>
+                <p>JPG dosyalarınızı buraya sürükleyin veya tıklayarak seçin</p>
+                <input type="file" id="fileInput" accept="image/jpeg,image/jpg" multiple style="display: none;">
+            </div>
+
+            <div class="input-group">
+                <label for="pageSize">Sayfa Boyutu:</label>
+                <select id="pageSize">
+                    <option value="a4">A4</option>
+                    <option value="letter">Letter</option>
+                    <option value="legal">Legal</option>
+                    <option value="fit">Resme Uygun</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="orientation">Yönlendirme:</label>
+                <select id="orientation">
+                    <option value="portrait">Dikey</option>
+                    <option value="landscape">Yatay</option>
+                </select>
+            </div>
+
+            <div id="fileList" class="result-area" style="display: none; margin-top: 1rem;">
+                <h3>Seçilen Dosyalar</h3>
+                <div id="filesContainer"></div>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin-top: 1rem;" disabled>PDF'e Dönüştür</button>
+
+            <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
+                <h3>Dönüştürme Tamamlandı!</h3>
+                <button class="btn" onclick="downloadPDF()" style="width: 100%;">PDF Dosyasını İndir</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let selectedFiles = [];
+        let pdfBlob = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const filesContainer = document.getElementById('filesContainer');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultArea = document.getElementById('resultArea');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files).filter(f => 
+                f.type === 'image/jpeg' || f.type === 'image/jpg'
+            );
+            if (files.length > 0) {
+                handleFiles(files);
+            } else {
+                alert('Lütfen geçerli JPG dosyaları seçin!');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        });
+
+        function handleFiles(files) {
+            selectedFiles = files;
+            filesContainer.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.justifyContent = 'space-between';
+                div.style.alignItems = 'center';
+                div.style.padding = '0.5rem';
+                div.style.marginBottom = '0.5rem';
+                div.style.background = 'var(--bg-color)';
+                div.style.borderRadius = '8px';
+                
+                const info = document.createElement('span');
+                info.textContent = `${index + 1}. ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = '✕';
+                removeBtn.style.background = 'var(--error)';
+                removeBtn.style.border = 'none';
+                removeBtn.style.color = 'white';
+                removeBtn.style.borderRadius = '4px';
+                removeBtn.style.width = '30px';
+                removeBtn.style.height = '30px';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.onclick = () => {
+                    selectedFiles.splice(index, 1);
+                    handleFiles(selectedFiles);
+                };
+                
+                div.appendChild(info);
+                div.appendChild(removeBtn);
+                filesContainer.appendChild(div);
+            });
+            
+            fileList.style.display = 'block';
+            convertBtn.disabled = false;
+            resultArea.style.display = 'none';
+        }
+
+        async function convertToPDF() {
+            if (selectedFiles.length === 0) return;
+
+            convertBtn.disabled = true;
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                const pageSize = document.getElementById('pageSize').value;
+                const orientation = document.getElementById('orientation').value;
+
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    progressFill.style.width = `${((i + 1) / selectedFiles.length) * 100}%`;
+                    
+                    const file = selectedFiles[i];
+                    const img = await loadImage(file);
+                    
+                    if (i > 0) {
+                        pdf.addPage();
+                    }
+
+                    let imgWidth, imgHeight;
+                    let pdfWidth, pdfHeight;
+
+                    if (pageSize === 'fit') {
+                        pdfWidth = pdf.internal.pageSize.getWidth();
+                        pdfHeight = pdf.internal.pageSize.getHeight();
+                        const ratio = Math.min(pdfWidth / img.width, pdfHeight / img.height);
+                        imgWidth = img.width * ratio;
+                        imgHeight = img.height * ratio;
+                    } else {
+                        if (orientation === 'landscape') {
+                            pdfWidth = pdf.internal.pageSize.getHeight();
+                            pdfHeight = pdf.internal.pageSize.getWidth();
+                        } else {
+                            pdfWidth = pdf.internal.pageSize.getWidth();
+                            pdfHeight = pdf.internal.pageSize.getHeight();
+                        }
+                        
+                        const ratio = Math.min(pdfWidth / img.width, pdfHeight / img.height);
+                        imgWidth = img.width * ratio;
+                        imgHeight = img.height * ratio;
+                    }
+
+                    const x = (pdfWidth - imgWidth) / 2;
+                    const y = (pdfHeight - imgHeight) / 2;
+
+                    pdf.addImage(img, 'JPEG', x, y, imgWidth, imgHeight);
+                }
+
+                pdfBlob = pdf.output('blob');
+                
+                progressFill.style.width = '100%';
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    resultArea.style.display = 'block';
+                    convertBtn.disabled = false;
+                }, 500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Dönüştürme sırasında bir hata oluştu: ' + error.message);
+                convertBtn.disabled = false;
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function loadImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function downloadPDF() {
+            if (!pdfBlob) return;
+            
+            const url = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'images.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Decode - OmniToolset</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        <div class="tool-container">
+            <h2>🔓 Base64 Decode</h2>
+            <p>Base64 kodunu metne dönüştürün.</p>
+            
+            <div class="input-group">
+                <label for="inputText">Base64 kodunu girin:</label>
+                <textarea id="inputText" rows="8" placeholder="Decode etmek istediğiniz Base64 kodunu buraya yapıştırın..."></textarea>
+            </div>
+
+            <button class="btn" onclick="decodeText()" style="width: 100%; margin-bottom: 1rem;">Decode Et</button>
+
+            <div class="input-group">
+                <label for="outputText">Decode Sonucu:</label>
+                <textarea id="outputText" rows="8" readonly></textarea>
+            </div>
+
+            <button class="btn" onclick="copyToClipboard()" style="width: 100%;">Kopyala</button>
+        </div>
+    </main>
+
+    <script>
+        function decodeText() {
+            const input = document.getElementById('inputText').value.trim();
+            try {
+                const decoded = decodeURIComponent(escape(atob(input)));
+                document.getElementById('outputText').value = decoded;
+            } catch (error) {
+                alert('Geçersiz Base64 formatı! Lütfen kontrol edin.');
+            }
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('outputText');
+            output.select();
+            document.execCommand('copy');
+            alert('Kopyalandı!');
+        }
+
+        // Auto decode on input
+        document.getElementById('inputText').addEventListener('input', decodeText);
+    </script>
+</body>
+</html>

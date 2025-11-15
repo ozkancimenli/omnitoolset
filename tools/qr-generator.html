@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Kod Oluştur - OmniToolset</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        <div class="tool-container">
+            <h2>📱 QR Kod Oluştur</h2>
+            <p>Metin, URL veya herhangi bir veri için QR kod oluşturun.</p>
+            
+            <div class="input-group">
+                <label for="qrInput">QR Kod İçeriği:</label>
+                <textarea id="qrInput" rows="4" placeholder="URL, metin veya veri girin..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="qrSize">Boyut:</label>
+                <input type="range" id="qrSize" min="100" max="500" value="200" oninput="updateQR()">
+                <span id="sizeValue">200x200</span>
+            </div>
+
+            <button class="btn" onclick="generateQR()" style="width: 100%; margin-bottom: 2rem;">QR Kod Oluştur</button>
+
+            <div id="qrcode" style="text-align: center; margin: 2rem 0;"></div>
+
+            <div class="result-area" id="downloadArea" style="display: none;">
+                <button class="btn" onclick="downloadQR()" style="width: 100%;">QR Kodu İndir</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let qrCode = null;
+
+        function updateQR() {
+            const size = document.getElementById('qrSize').value;
+            document.getElementById('sizeValue').textContent = size + 'x' + size;
+        }
+
+        function generateQR() {
+            const input = document.getElementById('qrInput').value.trim();
+            
+            if (!input) {
+                alert('Lütfen bir içerik girin!');
+                return;
+            }
+
+            const size = parseInt(document.getElementById('qrSize').value);
+            const container = document.getElementById('qrcode');
+            
+            container.innerHTML = '';
+            
+            qrCode = new QRCode(container, {
+                text: input,
+                width: size,
+                height: size,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('downloadArea').style.display = 'block';
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) {
+                alert('Önce bir QR kod oluşturun!');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // Generate on input change
+        document.getElementById('qrInput').addEventListener('input', () => {
+            if (document.getElementById('qrInput').value.trim()) {
+                generateQR();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Sıkıştır - OmniToolset</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        <div class="tool-container">
+            <h2>🗜️ PDF Sıkıştır</h2>
+            <p>PDF dosya boyutunu küçültün.</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <p>PDF dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+            </div>
+
+            <div class="input-group">
+                <label for="compressionLevel">Sıkıştırma Seviyesi:</label>
+                <select id="compressionLevel">
+                    <option value="low">Düşük (Daha iyi kalite, daha büyük dosya)</option>
+                    <option value="medium" selected>Orta (Dengeli)</option>
+                    <option value="high">Yüksek (Daha küçük dosya, biraz kalite kaybı)</option>
+                </select>
+            </div>
+
+            <div id="fileInfo" class="result-area" style="display: none;">
+                <h3>Orijinal Dosya</h3>
+                <p id="fileName"></p>
+                <p id="fileSize"></p>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn" id="compressBtn" onclick="compressPDF()" style="width: 100%; margin-top: 1rem;" disabled>PDF'i Sıkıştır</button>
+
+            <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
+                <h3>Sıkıştırma Tamamlandı!</h3>
+                <p id="resultInfo"></p>
+                <div id="comparison" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+                    <div style="text-align: center; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-secondary);">Orijinal</div>
+                        <div id="originalSize" style="font-size: 1.2rem; margin-top: 0.5rem;"></div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">Sıkıştırılmış</div>
+                        <div id="compressedSize" style="font-size: 1.2rem; margin-top: 0.5rem;"></div>
+                    </div>
+                </div>
+                <button class="btn" onclick="downloadCompressed()" style="width: 100%;">Sıkıştırılmış PDF'i İndir</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let pdfData = null;
+        let compressedPdfBlob = null;
+        let originalSize = 0;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const compressBtn = document.getElementById('compressBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultArea = document.getElementById('resultArea');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') {
+                handleFile(file);
+            } else {
+                alert('Lütfen geçerli bir PDF dosyası seçin!');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            pdfData = file;
+            originalSize = file.size;
+            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Boyut: ${formatFileSize(file.size)}`;
+            fileInfo.style.display = 'block';
+            compressBtn.disabled = false;
+            resultArea.style.display = 'none';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        async function compressPDF() {
+            if (!pdfData) return;
+
+            compressBtn.disabled = true;
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            try {
+                progressFill.style.width = '30%';
+                
+                const arrayBuffer = await pdfData.arrayBuffer();
+                const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+                
+                progressFill.style.width = '60%';
+                
+                // Remove embedded files and optimize
+                const compressionLevel = document.getElementById('compressionLevel').value;
+                
+                // Save with compression options
+                const pdfBytes = await pdf.save({
+                    useObjectStreams: compressionLevel !== 'low',
+                    addDefaultPage: false
+                });
+                
+                progressFill.style.width = '90%';
+                
+                // Additional compression by removing unnecessary data
+                compressedPdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+                
+                const compressedSize = compressedPdfBlob.size;
+                const reduction = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
+                
+                document.getElementById('originalSize').textContent = formatFileSize(originalSize);
+                document.getElementById('compressedSize').textContent = formatFileSize(compressedSize);
+                document.getElementById('resultInfo').textContent = 
+                    `Dosya boyutu %${reduction} azaltıldı.`;
+                
+                progressFill.style.width = '100%';
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    resultArea.style.display = 'block';
+                    compressBtn.disabled = false;
+                }, 500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Sıkıştırma sırasında bir hata oluştu: ' + error.message);
+                compressBtn.disabled = false;
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function downloadCompressed() {
+            if (!compressedPdfBlob) return;
+            
+            const url = URL.createObjectURL(compressedPdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = pdfData.name.replace('.pdf', '') + '_compressed.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

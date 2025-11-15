@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metin Dönüştürücü - OmniToolset</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        <div class="tool-container">
+            <h2>🔤 Metin Dönüştürücü</h2>
+            <p>Metninizi büyük harf, küçük harf, başlık formatı ve daha fazlasına dönüştürün.</p>
+            
+            <div class="input-group">
+                <label for="inputText">Metninizi girin:</label>
+                <textarea id="inputText" rows="8" placeholder="Dönüştürmek istediğiniz metni buraya yapıştırın..."></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <button class="btn" onclick="convertText('uppercase')">BÜYÜK HARF</button>
+                <button class="btn" onclick="convertText('lowercase')">küçük harf</button>
+                <button class="btn" onclick="convertText('title')">Başlık Formatı</button>
+                <button class="btn" onclick="convertText('sentence')">Cümle formatı</button>
+                <button class="btn" onclick="convertText('alternating')">AlTeRnAtİf</button>
+                <button class="btn" onclick="convertText('inverse')">tERSİ</button>
+            </div>
+
+            <div class="input-group">
+                <label for="outputText">Sonuç:</label>
+                <textarea id="outputText" rows="8" readonly></textarea>
+            </div>
+
+            <button class="btn" onclick="copyToClipboard()" style="width: 100%;">Kopyala</button>
+        </div>
+    </main>
+
+    <script>
+        function convertText(type) {
+            const input = document.getElementById('inputText').value;
+            let output = '';
+
+            switch(type) {
+                case 'uppercase':
+                    output = input.toUpperCase();
+                    break;
+                case 'lowercase':
+                    output = input.toLowerCase();
+                    break;
+                case 'title':
+                    output = input.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+                    break;
+                case 'sentence':
+                    output = input.toLowerCase().replace(/^\w|\.\s+\w/g, l => l.toUpperCase());
+                    break;
+                case 'alternating':
+                    output = input.split('').map((char, i) => 
+                        i % 2 === 0 ? char.toUpperCase() : char.toLowerCase()
+                    ).join('');
+                    break;
+                case 'inverse':
+                    output = input.split('').map(char => {
+                        if (char === char.toUpperCase()) return char.toLowerCase();
+                        if (char === char.toLowerCase()) return char.toUpperCase();
+                        return char;
+                    }).join('');
+                    break;
+            }
+
+            document.getElementById('outputText').value = output;
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('outputText');
+            output.select();
+            document.execCommand('copy');
+            alert('Kopyalandı!');
+        }
+    </script>
+</body>
+</html>

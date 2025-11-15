@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP4'den MP3'e - OmniToolset</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        <div class="tool-container">
+            <h2>🎵 MP4'den MP3'e</h2>
+            <p>Video dosyasından ses çıkarın ve MP3 formatına dönüştürün.</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🎬</div>
+                <p>MP4 video dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <input type="file" id="fileInput" accept="video/mp4,video/*" style="display: none;">
+            </div>
+
+            <div class="input-group">
+                <label for="bitrate">Bitrate:</label>
+                <select id="bitrate">
+                    <option value="128">128 kbps (Standart)</option>
+                    <option value="192" selected>192 kbps (İyi Kalite)</option>
+                    <option value="256">256 kbps (Yüksek Kalite)</option>
+                    <option value="320">320 kbps (En Yüksek Kalite)</option>
+                </select>
+            </div>
+
+            <div id="fileInfo" class="result-area" style="display: none;">
+                <h3>Seçilen Dosya</h3>
+                <p id="fileName"></p>
+                <p id="fileSize"></p>
+                <video id="previewVideo" controls style="width: 100%; max-height: 400px; margin-top: 1rem; border-radius: 8px;"></video>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertToMP3()" style="width: 100%; margin-top: 1rem;" disabled>MP3'e Dönüştür</button>
+
+            <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
+                <h3>Dönüştürme Tamamlandı!</h3>
+                <p id="resultInfo"></p>
+                <audio id="previewAudio" controls style="width: 100%; margin: 1rem 0;"></audio>
+                <button class="btn" onclick="downloadMP3()" style="width: 100%;">MP3 Dosyasını İndir</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let videoFile = null;
+        let audioBlob = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultArea = document.getElementById('resultArea');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/')) {
+                handleFile(file);
+            } else {
+                alert('Lütfen geçerli bir video dosyası seçin!');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            videoFile = file;
+            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Boyut: ${formatFileSize(file.size)}`;
+            
+            const url = URL.createObjectURL(file);
+            document.getElementById('previewVideo').src = url;
+            
+            fileInfo.style.display = 'block';
+            convertBtn.disabled = false;
+            resultArea.style.display = 'none';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        async function convertToMP3() {
+            if (!videoFile) return;
+
+            convertBtn.disabled = true;
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            try {
+                // Create video element
+                const video = document.createElement('video');
+                video.src = URL.createObjectURL(videoFile);
+                video.crossOrigin = 'anonymous';
+                
+                await new Promise((resolve) => {
+                    video.onloadedmetadata = () => {
+                        video.currentTime = 0;
+                        resolve();
+                    };
+                });
+
+                progressFill.style.width = '30%';
+
+                // Create audio context
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaElementSource(video);
+                const destination = audioContext.createMediaStreamDestination();
+                source.connect(destination);
+                source.connect(audioContext.destination);
+
+                progressFill.style.width = '60%';
+
+                // Use MediaRecorder to capture audio
+                const mediaRecorder = new MediaRecorder(destination.stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+
+                const chunks = [];
+                mediaRecorder.ondataavailable = (e) => {
+                    chunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    // Convert to MP3 using a workaround
+                    // Note: Browser doesn't support MP3 encoding directly
+                    // This is a simplified version - for production, use a backend service
+                    audioBlob = blob;
+                    
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('previewAudio').src = url;
+                    document.getElementById('resultInfo').textContent = 
+                        'Not: Tarayıcı sınırlamaları nedeniyle WebM formatında kaydedildi. Tam MP3 dönüştürme için backend servisi gereklidir.';
+                    
+                    progressFill.style.width = '100%';
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        resultArea.style.display = 'block';
+                        convertBtn.disabled = false;
+                    }, 500);
+                };
+
+                video.play();
+                mediaRecorder.start();
+                
+                video.onended = () => {
+                    mediaRecorder.stop();
+                    source.disconnect();
+                };
+
+                progressFill.style.width = '80%';
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Dönüştürme sırasında bir hata oluştu. Tarayıcı desteği sınırlı olabilir. Alternatif olarak FFmpeg kullanabilirsiniz.');
+                convertBtn.disabled = false;
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function downloadMP3() {
+            if (!audioBlob) return;
+            
+            const url = URL.createObjectURL(audioBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = videoFile.name.replace(/\.[^/.]+$/, '') + '.webm';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

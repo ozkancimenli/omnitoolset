@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerPoint'den PDF'e - OmniToolset</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        <div class="tool-container">
+            <h2>📽️ PowerPoint'den PDF'e</h2>
+            <p>PowerPoint (.pptx) dosyanızı PDF formatına dönüştürün.</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <p>PowerPoint dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <input type="file" id="fileInput" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" style="display: none;">
+            </div>
+
+            <div id="fileInfo" class="result-area" style="display: none;">
+                <h3>Seçilen Dosya</h3>
+                <p id="fileName"></p>
+                <p id="fileSize"></p>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin-top: 1rem;" disabled>PDF'e Dönüştür</button>
+
+            <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
+                <h3>Dönüştürme Tamamlandı!</h3>
+                <p id="resultInfo"></p>
+                <button class="btn" onclick="downloadPDF()" style="width: 100%;">PDF Dosyasını İndir</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let pptFile = null;
+        let pdfBlob = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultArea = document.getElementById('resultArea');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && (file.name.endsWith('.pptx') || file.type.includes('presentationml'))) {
+                handleFile(file);
+            } else {
+                alert('Lütfen geçerli bir PowerPoint (.pptx) dosyası seçin!');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            pptFile = file;
+            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Boyut: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            fileInfo.style.display = 'block';
+            convertBtn.disabled = false;
+            resultArea.style.display = 'none';
+        }
+
+        async function convertToPDF() {
+            if (!pptFile) return;
+
+            convertBtn.disabled = true;
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            try {
+                progressFill.style.width = '30%';
+                
+                // Note: PowerPoint files are complex ZIP archives
+                // Full conversion requires backend processing
+                // This is a simplified version that creates a placeholder PDF
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                
+                progressFill.style.width = '50%';
+                
+                pdf.setFontSize(16);
+                pdf.text('PowerPoint Dönüştürme', 105, 50, { align: 'center' });
+                
+                pdf.setFontSize(12);
+                pdf.text('Dosya: ' + pptFile.name, 105, 70, { align: 'center' });
+                pdf.text('Not: PowerPoint dosyaları karmaşık yapıya sahiptir.', 105, 90, { align: 'center' });
+                pdf.text('Tam dönüştürme için backend servisi gereklidir.', 105, 100, { align: 'center' });
+                pdf.text('Bu basit bir örnek PDF dosyasıdır.', 105, 110, { align: 'center' });
+                
+                progressFill.style.width = '100%';
+                
+                pdfBlob = pdf.output('blob');
+                
+                document.getElementById('resultInfo').textContent = 
+                    'Not: PowerPoint dosyalarının tam dönüştürülmesi için özel bir backend servisi gereklidir. Bu basit bir örnek PDF dosyasıdır.';
+                
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    resultArea.style.display = 'block';
+                    convertBtn.disabled = false;
+                }, 500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Dönüştürme sırasında bir hata oluştu: ' + error.message);
+                convertBtn.disabled = false;
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function downloadPDF() {
+            if (!pdfBlob) return;
+            
+            const url = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = pptFile.name.replace('.pptx', '') + '.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
