@@ -8,18 +8,21 @@ interface PdfEditorProps {
   toolId?: string;
 }
 
-type ToolType = 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'eraser' | null;
+type ToolType = 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'eraser' | 'signature' | 'watermark' | 'redaction' | null;
 type ShapeType = 'rectangle' | 'circle' | 'line' | 'arrow';
 
 interface Annotation {
   id: string;
-  type: 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand';
+  type: 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'signature' | 'watermark' | 'redaction';
   x: number;
   y: number;
   text?: string;
   fontSize?: number;
   fontFamily?: string; // Font family (Arial, Times, Helvetica, Courier)
   textAlign?: 'left' | 'center' | 'right'; // Text alignment
+  fontWeight?: 'normal' | 'bold'; // Text weight
+  fontStyle?: 'normal' | 'italic'; // Text style
+  textDecoration?: 'none' | 'underline'; // Text decoration
   color?: string;
   strokeColor?: string;
   fillColor?: string;
@@ -34,6 +37,10 @@ interface Annotation {
   isEditing?: boolean; // For inline text editing
   freehandPath?: { x: number; y: number }[]; // For freehand drawing
   zIndex?: number; // Layer order
+  opacity?: number; // Opacity (0-1)
+  rotation?: number; // Rotation in degrees
+  watermarkText?: string; // For watermark
+  watermarkOpacity?: number; // Watermark opacity
 }
 
 export default function PdfEditor({ toolId }: PdfEditorProps) {
@@ -69,8 +76,20 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
   const [fontFamily, setFontFamily] = useState('Arial');
   const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
+  const [fontWeight, setFontWeight] = useState<'normal' | 'bold'>('normal');
+  const [fontStyle, setFontStyle] = useState<'normal' | 'italic'>('normal');
+  const [textDecoration, setTextDecoration] = useState<'none' | 'underline'>('none');
   const [freehandPath, setFreehandPath] = useState<{ x: number; y: number }[]>([]);
   const [isDrawingFreehand, setIsDrawingFreehand] = useState(false);
+  const [selectedAnnotations, setSelectedAnnotations] = useState<Set<string>>(new Set());
+  const [showPageManager, setShowPageManager] = useState(false);
+  const [pageRotations, setPageRotations] = useState<Record<number, number>>({});
+  const [copiedAnnotations, setCopiedAnnotations] = useState<Annotation[]>([]);
+  const [showGrid, setShowGrid] = useState(false);
+  const [snapToGrid, setSnapToGrid] = useState(false);
+  const [gridSize, setGridSize] = useState(20);
+  const [watermarkText, setWatermarkText] = useState('DRAFT');
+  const [watermarkOpacity, setWatermarkOpacity] = useState(0.3);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -396,10 +415,36 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             context.lineTo(ann.freehandPath[i].x, ann.freehandPath[i].y);
           }
           context.stroke();
+        } else if (ann.type === 'watermark' && ann.watermarkText) {
+          // Draw watermark
+          context.save();
+          context.globalAlpha = ann.watermarkOpacity || 0.3;
+          context.fillStyle = ann.color || '#CCCCCC';
+          context.font = `${ann.fontSize || 48}px ${ann.fontFamily || 'Arial'}`;
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+          context.rotate(-Math.PI / 4); // Rotate 45 degrees
+          context.fillText(ann.watermarkText, ann.x, ann.y);
+          context.restore();
+        } else if (ann.type === 'signature' && ann.width && ann.height) {
+          // Draw signature area (dashed border)
+          context.strokeStyle = ann.strokeColor || '#000000';
+          context.lineWidth = 2;
+          context.setLineDash([5, 5]);
+          context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+          context.setLineDash([]);
+          context.fillStyle = '#000000';
+          context.font = '12px Arial';
+          context.textAlign = 'center';
+          context.fillText('Signature', ann.x + ann.width / 2, ann.y + ann.height / 2);
+        } else if (ann.type === 'redaction' && ann.width && ann.height) {
+          // Draw redaction (black rectangle)
+          context.fillStyle = ann.fillColor || '#000000';
+          context.fillRect(ann.x, ann.y, ann.width, ann.height);
         }
         
         // Selection highlight
-        if (selectedAnnotation === ann.id) {
+        if (selectedAnnotation === ann.id || selectedAnnotations.has(ann.id)) {
           context.strokeStyle = '#3b82f6';
           context.lineWidth = 2;
           context.setLineDash([5, 5]);
@@ -625,6 +670,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         fontSize,
         fontFamily,
         textAlign,
+        fontWeight,
+        fontStyle,
+        textDecoration,
         color: textColor,
         page: pageNum,
       };
@@ -779,6 +827,59 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         setTool(null);
         return;
       }
+    } else if (tool === 'signature') {
+      // Signature tool - draw signature area
+      const width = Math.abs(coords.x - drawStart.x);
+      const height = Math.abs(coords.y - drawStart.y);
+      if (width > 10 && height > 10) {
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          type: 'signature',
+          x: Math.min(drawStart.x, coords.x),
+          y: Math.min(drawStart.y, coords.y),
+          width,
+          height,
+          strokeColor: '#000000',
+          page: pageNum,
+        };
+        newAnnotations.push(newAnnotation);
+        toast.success('Signature area added - Draw your signature');
+      }
+    } else if (tool === 'watermark') {
+      // Watermark tool - add watermark text
+      const newAnnotation: Annotation = {
+        id: Date.now().toString(),
+        type: 'watermark',
+        x: coords.x,
+        y: coords.y,
+        watermarkText: watermarkText,
+        watermarkOpacity: watermarkOpacity,
+        fontSize: 48,
+        fontFamily: 'Arial',
+        color: '#CCCCCC',
+        page: pageNum,
+      };
+      newAnnotations.push(newAnnotation);
+      toast.success('Watermark added');
+    } else if (tool === 'redaction') {
+      // Redaction tool - permanently black out content
+      const width = Math.abs(coords.x - drawStart.x);
+      const height = Math.abs(coords.y - drawStart.y);
+      if (width > 5 && height > 5) {
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          type: 'redaction',
+          x: Math.min(drawStart.x, coords.x),
+          y: Math.min(drawStart.y, coords.y),
+          width,
+          height,
+          fillColor: '#000000',
+          strokeColor: '#000000',
+          page: pageNum,
+        };
+        newAnnotations.push(newAnnotation);
+        toast.success('Redaction added');
+      }
     }
     
     setAnnotations(newAnnotations);
@@ -844,6 +945,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             const color = annotation.color || '#000000';
             const rgbColor = hexToRgb(color);
             const fontFamily = annotation.fontFamily || 'Arial';
+            const fontWeight = annotation.fontWeight || 'normal';
+            const fontStyle = annotation.fontStyle || 'normal';
             
             // Use appropriate font based on selection
             let font = helveticaFont;
@@ -873,6 +976,24 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               font: font,
               color: rgb(rgbColor.r / 255, rgbColor.g / 255, rgbColor.b / 255),
             });
+            
+            // Draw underline if needed (PDF-lib doesn't support underline directly, so we draw a line)
+            if (annotation.textDecoration === 'underline') {
+              const textWidth = font.widthOfTextAtSize(annotation.text, fontSize);
+              const underlineY = height - annotation.y - fontSize - 2;
+              let underlineX = textX;
+              if (annotation.textAlign === 'center') {
+                underlineX = annotation.x - textWidth / 2;
+              } else if (annotation.textAlign === 'right') {
+                underlineX = annotation.x - textWidth;
+              }
+              page.drawLine({
+                start: { x: underlineX, y: underlineY },
+                end: { x: underlineX + textWidth, y: underlineY },
+                thickness: 1,
+                color: rgb(rgbColor.r / 255, rgbColor.g / 255, rgbColor.b / 255),
+              });
+            }
           } else if (annotation.type === 'highlight' && annotation.width && annotation.height) {
             const rgbColor = hexToRgb(annotation.color || highlightColor);
             page.drawRectangle({
@@ -970,6 +1091,47 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               thickness: strokeWidth,
               color: strokeColorRgb,
             });
+          } else if (annotation.type === 'watermark' && annotation.watermarkText) {
+            // Draw watermark
+            const watermarkFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            const watermarkRgb = hexToRgb(annotation.color || '#CCCCCC');
+            const watermarkOpacity = annotation.watermarkOpacity || 0.3;
+            page.drawText(annotation.watermarkText, {
+              x: annotation.x,
+              y: height - annotation.y,
+              size: annotation.fontSize || 48,
+              font: watermarkFont,
+              color: rgb(watermarkRgb.r / 255, watermarkRgb.g / 255, watermarkRgb.b / 255),
+              opacity: watermarkOpacity,
+              rotate: { angleDegrees: -45 },
+            });
+          } else if (annotation.type === 'signature' && annotation.width && annotation.height) {
+            // Draw signature area (dashed border - PDF-lib doesn't support dashed, so we use solid)
+            page.drawRectangle({
+              x: annotation.x,
+              y: height - annotation.y - annotation.height,
+              width: annotation.width,
+              height: annotation.height,
+              borderColor: rgb(0, 0, 0),
+              borderWidth: 2,
+            });
+            const signatureFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            page.drawText('Signature', {
+              x: annotation.x + annotation.width / 2 - 30,
+              y: height - annotation.y - annotation.height / 2,
+              size: 12,
+              font: signatureFont,
+              color: rgb(0, 0, 0),
+            });
+          } else if (annotation.type === 'redaction' && annotation.width && annotation.height) {
+            // Draw redaction (black rectangle)
+            page.drawRectangle({
+              x: annotation.x,
+              y: height - annotation.y - annotation.height,
+              width: annotation.width,
+              height: annotation.height,
+              color: rgb(0, 0, 0),
+            });
           }
         }
       }
@@ -1017,6 +1179,94 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       toast.success('All annotations cleared');
     }
   };
+
+  // Copy/Paste annotations
+  const copyAnnotations = () => {
+    if (selectedAnnotations.size > 0) {
+      const copied = annotations.filter(ann => selectedAnnotations.has(ann.id));
+      setCopiedAnnotations(copied);
+      toast.success(`${copied.length} annotation(s) copied`);
+    } else if (selectedAnnotation) {
+      const copied = annotations.find(ann => ann.id === selectedAnnotation);
+      if (copied) {
+        setCopiedAnnotations([copied]);
+        toast.success('Annotation copied');
+      }
+    }
+  };
+
+  const pasteAnnotations = () => {
+    if (copiedAnnotations.length === 0) return;
+    const newAnnotations = [...annotations];
+    copiedAnnotations.forEach(copied => {
+      const newAnnotation: Annotation = {
+        ...copied,
+        id: Date.now().toString() + Math.random(),
+        page: pageNum,
+        x: copied.x + 20, // Offset slightly
+        y: copied.y + 20,
+      };
+      newAnnotations.push(newAnnotation);
+    });
+    setAnnotations(newAnnotations);
+    saveToHistory(newAnnotations);
+    toast.success(`${copiedAnnotations.length} annotation(s) pasted`);
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd combinations
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'z' && !e.shiftKey) {
+          e.preventDefault();
+          undo();
+        } else if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) {
+          e.preventDefault();
+          redo();
+        } else if (e.key === 'c') {
+          e.preventDefault();
+          copyAnnotations();
+        } else if (e.key === 'v') {
+          e.preventDefault();
+          pasteAnnotations();
+        } else if (e.key === 'b') {
+          e.preventDefault();
+          if (tool === 'text') setFontWeight(fontWeight === 'bold' ? 'normal' : 'bold');
+        } else if (e.key === 'i') {
+          e.preventDefault();
+          if (tool === 'text') setFontStyle(fontStyle === 'italic' ? 'normal' : 'italic');
+        } else if (e.key === 'u') {
+          e.preventDefault();
+          if (tool === 'text') setTextDecoration(textDecoration === 'underline' ? 'none' : 'underline');
+        }
+      }
+      
+      // Single key shortcuts (only when not typing)
+      if (!e.ctrlKey && !e.metaKey && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          if (selectedAnnotations.size > 0) {
+            const newAnnotations = annotations.filter(ann => !selectedAnnotations.has(ann.id));
+            setAnnotations(newAnnotations);
+            saveToHistory(newAnnotations);
+            setSelectedAnnotations(new Set());
+            toast.success('Annotations deleted');
+          } else if (selectedAnnotation) {
+            removeAnnotation(selectedAnnotation);
+          }
+        } else if (e.key === 'g' || e.key === 'G') {
+          e.preventDefault();
+          setShowGrid(!showGrid);
+        } else if (e.key === 'p' || e.key === 'P') {
+          e.preventDefault();
+          setShowPageManager(!showPageManager);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo, copyAnnotations, pasteAnnotations, tool, fontWeight, fontStyle, textDecoration, selectedAnnotations, selectedAnnotation, annotations, showGrid, showPageManager]);
 
   return (
     <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 overflow-hidden" style={{ height: '100%', minHeight: '800px' }}>
@@ -1133,6 +1383,32 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   <div className="flex items-center justify-between gap-4">
                     {/* Left: History & Tools */}
                     <div className="flex items-center gap-2 flex-wrap">
+                      {/* Copy/Paste */}
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                        <button
+                          onClick={copyAnnotations}
+                          disabled={!selectedAnnotation && selectedAnnotations.size === 0}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
+                          title="Copy (Ctrl+C)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={pasteAnnotations}
+                          disabled={copiedAnnotations.length === 0}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
+                          title="Paste (Ctrl+V)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+
                       {/* Undo/Redo - Icon Buttons */}
                       <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
                         <button
@@ -1326,6 +1602,80 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         </button>
                       </div>
 
+                      <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+
+                      {/* Professional Tools */}
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                        <button
+                          onClick={() => setTool(tool === 'signature' ? null : 'signature')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'signature'
+                              ? 'bg-gray-900 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Signature (S)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'watermark' ? null : 'watermark')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'watermark'
+                              ? 'bg-gray-900 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Watermark (W)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'redaction' ? null : 'redaction')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'redaction'
+                              ? 'bg-red-700 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Redaction (X)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setShowPageManager(!showPageManager)}
+                          className={`p-2.5 rounded-md transition-all ${
+                            showPageManager
+                              ? 'bg-gray-900 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          }`}
+                          title="Page Manager (P)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setShowGrid(!showGrid)}
+                          className={`p-2.5 rounded-md transition-all ${
+                            showGrid
+                              ? 'bg-gray-900 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          }`}
+                          title="Toggle Grid (G)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                          </svg>
+                        </button>
+                      </div>
+
                       <input
                         ref={imageInputRef}
                         type="file"
@@ -1415,6 +1765,63 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                 className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md cursor-pointer"
                                 title="Text Color"
                               />
+                              <div className="flex items-center gap-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md p-1">
+                                <button
+                                  onClick={() => setFontWeight(fontWeight === 'bold' ? 'normal' : 'bold')}
+                                  className={`px-2 py-1 rounded text-sm transition-all ${
+                                    fontWeight === 'bold'
+                                      ? 'bg-gray-900 text-white'
+                                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                                  }`}
+                                  title="Bold (Ctrl+B)"
+                                >
+                                  <strong>B</strong>
+                                </button>
+                                <button
+                                  onClick={() => setFontStyle(fontStyle === 'italic' ? 'normal' : 'italic')}
+                                  className={`px-2 py-1 rounded text-sm transition-all ${
+                                    fontStyle === 'italic'
+                                      ? 'bg-gray-900 text-white'
+                                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                                  }`}
+                                  title="Italic (Ctrl+I)"
+                                >
+                                  <em>I</em>
+                                </button>
+                                <button
+                                  onClick={() => setTextDecoration(textDecoration === 'underline' ? 'none' : 'underline')}
+                                  className={`px-2 py-1 rounded text-sm transition-all ${
+                                    textDecoration === 'underline'
+                                      ? 'bg-gray-900 text-white'
+                                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                                  }`}
+                                  title="Underline (Ctrl+U)"
+                                >
+                                  <u>U</u>
+                                </button>
+                              </div>
+                            </>
+                          )}
+                          {tool === 'watermark' && (
+                            <>
+                              <input
+                                type="text"
+                                value={watermarkText}
+                                onChange={(e) => setWatermarkText(e.target.value)}
+                                placeholder="Watermark text"
+                                className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm w-32"
+                              />
+                              <input
+                                type="range"
+                                min="0.1"
+                                max="1"
+                                step="0.1"
+                                value={watermarkOpacity}
+                                onChange={(e) => setWatermarkOpacity(Number(e.target.value))}
+                                className="w-24"
+                                title="Opacity"
+                              />
+                              <span className="text-xs text-gray-600 dark:text-gray-400">{Math.round(watermarkOpacity * 100)}%</span>
                             </>
                           )}
                           {(tool === 'highlight' || tool === 'rectangle' || tool === 'circle' || tool === 'line' || tool === 'arrow') && (
