@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AdSense from '@/components/AdSense';
+import Adsterra from '@/components/Adsterra';
 import { tools } from '@/data/tools';
 
 export default function Footer() {
@@ -8,6 +9,11 @@ export default function Footer() {
 
   return (
     <footer className="bg-slate-800/80 backdrop-blur-lg border-t border-slate-700 py-12 mt-16">
+      {/* Adsterra Native Banner - Above Footer */}
+      <div className="container mb-8">
+        <Adsterra className="bg-slate-900 rounded-xl min-h-[100px]" />
+      </div>
+      
       {/* AdSense - Above Footer */}
       <div className="container mb-8">
         <AdSense
