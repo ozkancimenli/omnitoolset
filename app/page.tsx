@@ -106,11 +106,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Adsterra Banner - Bottom (4:1 Layout) */}
-        <div className="max-w-7xl mx-auto mt-8">
-          <Adsterra layout="4x1" className="bg-slate-800 rounded-xl" />
-        </div>
-
         {/* AdSense Banner - Bottom */}
         <div className="max-w-7xl mx-auto mt-8">
           <AdSense
