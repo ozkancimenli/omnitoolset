@@ -75,10 +75,19 @@ export default function AdSlot({
   }
 
   // Production: Use actual AdSense component
+  // Map our format types to AdSense format types
+  const adSenseFormat = format === 'auto' 
+    ? 'auto' 
+    : format === 'banner' 
+    ? 'horizontal' 
+    : format === 'sidebar'
+    ? 'vertical'
+    : 'auto'; // Default to auto for in-article and others
+
   return (
     <div className={baseClasses}>
       <AdSense
-        adFormat={format === 'auto' ? 'auto' : format}
+        adFormat={adSenseFormat}
         fullWidthResponsive={true}
         className="w-full"
       />
