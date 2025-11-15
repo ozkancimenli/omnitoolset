@@ -76,12 +76,6 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="beforeInteractive"
         />
-        {/* Adsterra Popunder Script */}
-        <Script
-          type="text/javascript"
-          src="//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js"
-          strategy="beforeInteractive"
-        />
         {children}
         <Analytics 
           googleAnalyticsId={googleAnalyticsId}
