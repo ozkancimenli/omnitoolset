@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ToastContainer } from '@/components/Toast'
 import AdsterraSocialbar from '@/components/AdsterraSocialbar'
 import './globals.css'
@@ -101,6 +102,7 @@ export default function RootLayout({
         {children}
         <ToastContainer />
         <AdsterraSocialbar />
+        <SpeedInsights />
       </body>
     </html>
   )
