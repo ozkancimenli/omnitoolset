@@ -17,6 +17,12 @@ export default function Header() {
           
           <div className="flex items-center gap-4">
             <Link 
+              href="/pdf-editor" 
+              className="px-3 py-1.5 bg-indigo-500/20 dark:bg-indigo-500/20 light:bg-indigo-100 hover:bg-indigo-500/30 dark:hover:bg-indigo-500/30 light:hover:bg-indigo-200 text-indigo-300 dark:text-indigo-300 light:text-indigo-700 rounded-lg text-sm font-medium transition-colors"
+            >
+              ✏️ PDF Editor
+            </Link>
+            <Link 
               href="/categories" 
               className="text-slate-300 dark:text-slate-300 light:text-gray-700 hover:text-slate-100 dark:hover:text-slate-100 light:hover:text-gray-900 transition-colors font-medium"
             >
