@@ -61,32 +61,15 @@ export default function StandaloneClient() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
       <Navbar />
       
-      <main className="flex-1">
-        {/* Hero Section */}
-        <Hero onFileSelect={handleFileSelect} />
-
-        {/* Editor Section */}
-        <section className="py-12 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" style={{ minHeight: '800px' }}>
-              <PdfEditor />
-            </div>
-          </div>
-        </section>
-
-        {/* How It Works Section */}
-        <HowItWorksSection />
-
-        {/* FAQ Section */}
-        <section id="faq" className="py-16 bg-white">
-          <FaqSection faqs={faqs} />
-        </section>
+      {/* Full Screen Editor */}
+      <main className="flex-1 overflow-hidden">
+        <div className="h-full w-full">
+          <PdfEditor />
+        </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
