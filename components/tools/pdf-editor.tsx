@@ -41,6 +41,10 @@ interface Annotation {
   rotation?: number; // Rotation in degrees
   watermarkText?: string; // For watermark
   watermarkOpacity?: number; // Watermark opacity
+  letterSpacing?: number; // Letter spacing (Phase 8)
+  lineHeight?: number; // Line height (Phase 8)
+  textShadow?: { offsetX: number; offsetY: number; blur: number; color: string }; // Text shadow (Phase 8)
+  textOutline?: { width: number; color: string }; // Text outline (Phase 8)
 }
 
 // PDF Text Layer - Extracted from PDF content
@@ -155,9 +159,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     fontFamily?: string;
     color?: string;
     textAlign?: 'left' | 'center' | 'right';
+    letterSpacing?: number;
+    lineHeight?: number;
+    textShadow?: { offsetX: number; offsetY: number; blur: number; color: string };
+    textOutline?: { width: number; color: string };
   }>({});
   const [showTextFormatPanel, setShowTextFormatPanel] = useState(false);
   const [multiLineEditing, setMultiLineEditing] = useState(false);
+  
+  // Phase 8: Advanced Features
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false);
+  const [autoSaveInterval, setAutoSaveInterval] = useState<NodeJS.Timeout | null>(null);
+  const [textTemplates, setTextTemplates] = useState<Array<{ name: string; text: string; format?: any }>>([
+    { name: 'Header', text: 'Document Header', format: { fontSize: 24, fontWeight: 'bold' } },
+    { name: 'Subheader', text: 'Section Title', format: { fontSize: 18, fontWeight: 'bold' } },
+    { name: 'Body', text: 'Body text', format: { fontSize: 12, fontWeight: 'normal' } },
+    { name: 'Footer', text: 'Page Footer', format: { fontSize: 10, fontWeight: 'normal', color: '#666666' } },
+  ]);
   
   // Phase 6: Performance & Advanced Features
   const [textRunsCache, setTextRunsCache] = useState<Record<number, { runs: PdfTextRun[]; timestamp: number }>>({});
@@ -609,32 +627,74 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         context.save();
         
         if (ann.type === 'text' && ann.text) {
+          context.save();
+          
+          // Phase 8: Apply text shadow
+          if (ann.textShadow) {
+            context.shadowOffsetX = ann.textShadow.offsetX;
+            context.shadowOffsetY = ann.textShadow.offsetY;
+            context.shadowBlur = ann.textShadow.blur;
+            context.shadowColor = ann.textShadow.color;
+          }
+          
           context.fillStyle = ann.color || '#000000';
           const fontFamily = ann.fontFamily || 'Arial';
           const fontSize = ann.fontSize || 16;
           const fontWeight = ann.fontWeight || 'normal';
           const fontStyle = ann.fontStyle || 'normal';
+          
+          // Phase 8: Apply letter spacing (simulated with manual spacing)
+          const letterSpacing = ann.letterSpacing || 0;
           context.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
           context.textAlign = (ann.textAlign || 'left') as CanvasTextAlign;
           context.textBaseline = 'bottom';
           
           // Calculate text position based on alignment
           let textX = ann.x;
-          if (ann.textAlign === 'center') {
-            const metrics = context.measureText(ann.text);
-            textX = ann.x - metrics.width / 2;
-          } else if (ann.textAlign === 'right') {
-            const metrics = context.measureText(ann.text);
-            textX = ann.x - metrics.width;
+          
+          // Phase 8: Draw text with letter spacing
+          const textContent = ann.text || '';
+          if (letterSpacing > 0 && textContent) {
+            const chars = textContent.split('');
+            let currentX = textX;
+            chars.forEach((char, index) => {
+              if (ann.textAlign === 'center') {
+                const metrics = context.measureText(textContent);
+                currentX = ann.x - metrics.width / 2 + (index * (fontSize * 0.6 + letterSpacing));
+              } else if (ann.textAlign === 'right') {
+                const metrics = context.measureText(textContent);
+                currentX = ann.x - metrics.width + (index * (fontSize * 0.6 + letterSpacing));
+              } else {
+                currentX = ann.x + (index * (fontSize * 0.6 + letterSpacing));
+              }
+              context.fillText(char, currentX, ann.y);
+            });
+          } else if (textContent) {
+            if (ann.textAlign === 'center') {
+              const metrics = context.measureText(textContent);
+              textX = ann.x - metrics.width / 2;
+            } else if (ann.textAlign === 'right') {
+              const metrics = context.measureText(textContent);
+              textX = ann.x - metrics.width;
+            }
+            context.fillText(textContent, textX, ann.y);
           }
           
-          context.fillText(ann.text, textX, ann.y);
+          // Phase 8: Apply text outline
+          if (ann.textOutline && ann.textOutline.width > 0 && textContent) {
+            context.strokeStyle = ann.textOutline.color;
+            context.lineWidth = ann.textOutline.width;
+            context.strokeText(textContent, textX, ann.y);
+          }
           
           // Apply text decoration
-          if (ann.textDecoration === 'underline') {
-            const metrics = context.measureText(ann.text);
+          if (ann.textDecoration === 'underline' && textContent) {
+            const metrics = context.measureText(textContent);
             context.strokeStyle = ann.color || '#000000';
             context.lineWidth = 1;
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 0;
+            context.shadowBlur = 0;
             context.beginPath();
             const underlineY = ann.y + 2;
             if (ann.textAlign === 'center') {
@@ -649,6 +709,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             }
             context.stroke();
           }
+          
+          context.restore();
         } else if (ann.type === 'highlight' && ann.width && ann.height) {
           const rgbColor = hexToRgb(ann.color || highlightColor);
           context.fillStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.3)`;
@@ -1664,8 +1726,17 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   // Phase 3.1: Parse content stream for text operators
-  // Note: pdf-lib doesn't expose content stream directly, so we use pdf.js for parsing
-  const parseContentStream = async (pageNumber: number): Promise<Array<{ operator: string; operands: any[]; position: number }>> => {
+  // Enhanced parsing with position and font information
+  const parseContentStream = async (pageNumber: number): Promise<Array<{
+    operator: string;
+    operands: any[];
+    position: number;
+    x: number;
+    y: number;
+    fontSize: number;
+    fontName: string;
+    transform: number[];
+  }>> => {
     if (!pdfDocRef.current) return [];
     
     try {
@@ -1673,8 +1744,17 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       const page = await pdfDocRef.current.getPage(pageNumber);
       const textContent = await page.getTextContent();
       
-      // Map text items to operators (simplified - pdf.js already parsed them)
-      const operators: Array<{ operator: string; operands: any[]; position: number }> = [];
+      // Map text items to operators with full context
+      const operators: Array<{
+        operator: string;
+        operands: any[];
+        position: number;
+        x: number;
+        y: number;
+        fontSize: number;
+        fontName: string;
+        transform: number[];
+      }> = [];
       
       textContent.items.forEach((item: any, index: number) => {
         if (item.str && item.str.trim()) {
@@ -1682,6 +1762,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             operator: 'Tj', // Text show operator
             operands: [item.str],
             position: index,
+            x: item.transform[4] || 0,
+            y: item.transform[5] || 0,
+            fontSize: item.height || item.fontSize || 12,
+            fontName: item.fontName || 'Helvetica',
+            transform: item.transform || [1, 0, 0, 1, 0, 0],
           });
         }
       });
@@ -1690,6 +1775,135 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     } catch (error) {
       console.error('Error parsing content stream:', error);
       return [];
+    }
+  };
+
+  // Phase 3.3: Rebuild PDF page with modified text
+  const rebuildPdfPageWithText = async (
+    pageNumber: number,
+    textModifications: Array<{ runId: string; newText: string; format?: any }>
+  ) => {
+    if (!pdfLibDocRef.current || !pdfDocRef.current) return false;
+    
+    try {
+      const pdfDoc = pdfLibDocRef.current;
+      const pages = pdfDoc.getPages();
+      const page = pages[pageNumber - 1];
+      
+      if (!page) return false;
+      
+      // Get page dimensions
+      const { width, height } = page.getSize();
+      
+      // Phase 3.3.1: Get all text runs for this page
+      const runs = pdfTextRuns[pageNumber] || [];
+      const operators = await parseContentStream(pageNumber);
+      
+      // Phase 3.3.2: Create a map of modifications
+      const modificationMap = new Map<string, { newText: string; format?: any }>();
+      textModifications.forEach(mod => {
+        modificationMap.set(mod.runId, { newText: mod.newText, format: mod.format });
+      });
+      
+      // Phase 3.3.3: Find text runs that need modification
+      const runsToModify = runs.filter(run => modificationMap.has(run.id));
+      
+      if (runsToModify.length === 0) return false;
+      
+      // Phase 3.3.4: For each modified run, draw white rectangle + new text
+      // This is a hybrid approach: we modify the page content by drawing over old text
+      for (const run of runsToModify) {
+        const mod = modificationMap.get(run.id);
+        if (!mod) continue;
+        
+        const format = mod.format || {};
+        const newText = mod.newText;
+        
+        // Get font properties
+        const fontSize = format.fontSize || run.fontSize || 12;
+        const fontFamily = format.fontFamily || run.fontName || 'Helvetica';
+        const fontWeight = format.fontWeight || run.fontWeight || 'normal';
+        const fontStyle = format.fontStyle || run.fontStyle || 'normal';
+        
+        // Map font family to pdf-lib StandardFonts
+        let pdfFont = StandardFonts.Helvetica;
+        if (fontFamily.toLowerCase().includes('times')) {
+          pdfFont = fontWeight === 'bold' && fontStyle === 'italic' ? StandardFonts.TimesRomanBoldItalic :
+                   fontWeight === 'bold' ? StandardFonts.TimesRomanBold :
+                   fontStyle === 'italic' ? StandardFonts.TimesRomanItalic :
+                   StandardFonts.TimesRoman;
+        } else if (fontFamily.toLowerCase().includes('courier')) {
+          pdfFont = fontWeight === 'bold' ? StandardFonts.CourierBold :
+                   fontStyle === 'italic' ? StandardFonts.CourierOblique :
+                   StandardFonts.Courier;
+        } else {
+          pdfFont = fontWeight === 'bold' && fontStyle === 'italic' ? StandardFonts.HelveticaBoldOblique :
+                   fontWeight === 'bold' ? StandardFonts.HelveticaBold :
+                   fontStyle === 'italic' ? StandardFonts.HelveticaOblique :
+                   StandardFonts.Helvetica;
+        }
+        
+        const font = await pdfDoc.embedFont(pdfFont);
+        
+        // Calculate text bounds accurately
+        const textWidth = font.widthOfTextAtSize(newText, fontSize);
+        const textHeight = fontSize;
+        
+        // Draw white rectangle to cover old text (with padding)
+        page.drawRectangle({
+          x: run.x - 5,
+          y: run.y - textHeight - 2,
+          width: Math.max(textWidth + 10, run.width || textWidth + 10),
+          height: textHeight + 4,
+          color: rgb(1, 1, 1),
+          opacity: 1,
+        });
+        
+        // Parse color
+        let textColor = rgb(0, 0, 0);
+        if (format.color) {
+          const hex = format.color.replace('#', '');
+          const r = parseInt(hex.substr(0, 2), 16) / 255;
+          const g = parseInt(hex.substr(2, 2), 16) / 255;
+          const b = parseInt(hex.substr(4, 2), 16) / 255;
+          textColor = rgb(r, g, b);
+        }
+        
+        // Calculate text position based on alignment
+        let textX = run.x;
+        if (format.textAlign === 'center') {
+          const textWidth = font.widthOfTextAtSize(newText, fontSize);
+          textX = run.x - textWidth / 2;
+        } else if (format.textAlign === 'right') {
+          const textWidth = font.widthOfTextAtSize(newText, fontSize);
+          textX = run.x - textWidth;
+        }
+        
+        // Draw new text
+        page.drawText(newText, {
+          x: textX,
+          y: run.y,
+          size: fontSize,
+          font: font,
+          color: textColor,
+        });
+        
+        // Draw underline if needed
+        if (format.textDecoration === 'underline') {
+          const textWidth = font.widthOfTextAtSize(newText, fontSize);
+          page.drawLine({
+            start: { x: textX, y: run.y - 2 },
+            end: { x: textX + textWidth, y: run.y - 2 },
+            thickness: 1,
+            color: textColor,
+          });
+        }
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error rebuilding PDF page:', error);
+      return false;
     }
   };
 
@@ -1702,6 +1916,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     fontFamily?: string;
     color?: string;
     textAlign?: 'left' | 'center' | 'right';
+    letterSpacing?: number;
+    lineHeight?: number;
+    textShadow?: { offsetX: number; offsetY: number; blur: number; color: string };
+    textOutline?: { width: number; color: string };
   }) => {
     if (!pdfLibDocRef.current) {
       // Fallback to overlay mode
@@ -1714,21 +1932,49 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     if (!run) return;
     
     try {
-      // Phase 3.1: Parse content stream
-      const operators = await parseContentStream(pageNum);
+      // Phase 3.3: Rebuild PDF page with modified text
+      const success = await rebuildPdfPageWithText(pageNum, [{
+        runId,
+        newText,
+        format,
+      }]);
       
-      if (operators.length === 0) {
-        // Fallback to overlay if parsing fails
-        toast.warning('Content stream parsing not available, using overlay mode');
+      if (success) {
+        // Update the text run in our state
+        setPdfTextRuns(prev => {
+          const pageRuns = prev[pageNum] || [];
+          const updatedRuns = pageRuns.map(r => {
+            if (r.id === runId) {
+              return {
+                ...r,
+                text: newText,
+                fontSize: format?.fontSize || r.fontSize,
+                fontName: format?.fontFamily || r.fontName,
+                fontWeight: format?.fontWeight || r.fontWeight,
+                fontStyle: format?.fontStyle || r.fontStyle,
+                color: format?.color || r.color,
+              };
+            }
+            return r;
+          });
+          return {
+            ...prev,
+            [pageNum]: updatedRuns,
+          };
+        });
+        
+        // Re-render the page to show changes
+        await renderPage(pageNum);
+        
+        // Save to text edit history
+        saveTextEditToHistory(runId, run.text, newText, format);
+        
+        toast.success('PDF text updated successfully!');
+      } else {
+        // Fallback to overlay mode
+        toast.warning('Using overlay mode for text editing');
         updatePdfTextOverlay(runId, newText, format);
-        return;
       }
-      
-      // Phase 3.2: Find and replace text operator
-      // For now, we'll use overlay approach as pdf-lib doesn't support direct content stream editing
-      // True content stream editing would require rebuilding the PDF structure
-      toast.info('True content stream editing requires PDF rebuilding. Using optimized overlay.');
-      updatePdfTextOverlay(runId, newText, format);
       
     } catch (error) {
       console.error('Error updating PDF text in stream:', error);
@@ -1920,6 +2166,70 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
+  // Phase 8: Auto-save functionality
+  useEffect(() => {
+    if (autoSaveEnabled && annotations.length > 0) {
+      const interval = setInterval(async () => {
+        try {
+          if (pdfLibDocRef.current && file) {
+            // Auto-save to localStorage as backup
+            const saveData = {
+              annotations,
+              timestamp: Date.now(),
+              pageNum,
+            };
+            localStorage.setItem(`pdf-editor-autosave-${file.name}`, JSON.stringify(saveData));
+            console.log('Auto-saved');
+          }
+        } catch (error) {
+          console.error('Auto-save error:', error);
+        }
+      }, 30000); // Auto-save every 30 seconds
+      
+      setAutoSaveInterval(interval);
+      return () => {
+        if (interval) clearInterval(interval);
+      };
+    } else {
+      if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+        setAutoSaveInterval(null);
+      }
+    }
+  }, [autoSaveEnabled, annotations, file, pageNum]);
+
+  // Phase 8: Load auto-saved data
+  const loadAutoSave = () => {
+    if (!file) return;
+    try {
+      const saved = localStorage.getItem(`pdf-editor-autosave-${file.name}`);
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (confirm('Found auto-saved data. Load it?')) {
+          setAnnotations(data.annotations || []);
+          setPageNum(data.pageNum || 1);
+          toast.success('Auto-saved data loaded');
+        }
+      }
+    } catch (error) {
+      console.error('Error loading auto-save:', error);
+    }
+  };
+
+  // Phase 8: Apply text template
+  const applyTextTemplate = (template: { name: string; text: string; format?: any }) => {
+    setCurrentText(template.text);
+    if (template.format) {
+      setFontSize(template.format.fontSize || fontSize);
+      setFontFamily(template.format.fontFamily || fontFamily);
+      setFontWeight(template.format.fontWeight || fontWeight);
+      setFontStyle(template.format.fontStyle || fontStyle);
+      setTextColor(template.format.color || textColor);
+    }
+    setTool('text');
+    toast.success(`Template "${template.name}" applied`);
+  };
+
   // Phase 7: Export PDF with options
   const exportPdfWithOptions = async () => {
     if (!pdfLibDocRef.current) {
@@ -1956,6 +2266,18 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       toast.error('Failed to export PDF');
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  // Phase 3.4: Save text edit to history
+  const saveTextEditToHistory = (runId?: string, oldText?: string, newText?: string, format?: any) => {
+    if (runId && oldText !== undefined && newText !== undefined) {
+      setTextEditHistory(prev => {
+        const newHistory = prev.slice(0, textEditHistoryIndex + 1);
+        newHistory.push({ runId, oldText, newText, format });
+        return newHistory;
+      });
+      setTextEditHistoryIndex(prev => prev + 1);
     }
   };
 
@@ -2606,6 +2928,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         <div className="flex items-center gap-2 ml-2 px-3 py-2 bg-gray-50 dark:bg-gray-950/30 rounded-lg border border-gray-200 dark:border-gray-800">
                           {tool === 'text' && (
                             <>
+                              {/* Phase 8: Text Templates Quick Access */}
+                              {textTemplates.length > 0 && (
+                                <select
+                                  onChange={(e) => {
+                                    const template = textTemplates.find(t => t.name === e.target.value);
+                                    if (template) applyTextTemplate(template);
+                                  }}
+                                  className="px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 text-sm"
+                                  defaultValue=""
+                                  title="Templates"
+                                >
+                                  <option value="">📝 Templates</option>
+                                  {textTemplates.map(template => (
+                                    <option key={template.name} value={template.name}>{template.name}</option>
+                                  ))}
+                                </select>
+                              )}
                               <input
                                 type="text"
                                 value={currentText}
@@ -2999,6 +3338,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         fontStyle: editingTextFormat.fontStyle || run.fontStyle || 'normal',
                         textDecoration: editingTextFormat.textDecoration || run.textDecoration || 'none',
                         color: editingTextFormat.color || run.color || '#000000',
+                        letterSpacing: editingTextFormat.letterSpacing ? `${editingTextFormat.letterSpacing}px` : 'normal',
+                        lineHeight: editingTextFormat.lineHeight || 1.2,
+                        textShadow: editingTextFormat.textShadow 
+                          ? `${editingTextFormat.textShadow.offsetX}px ${editingTextFormat.textShadow.offsetY}px ${editingTextFormat.textShadow.blur}px ${editingTextFormat.textShadow.color}`
+                          : 'none',
+                        WebkitTextStroke: editingTextFormat.textOutline 
+                          ? `${editingTextFormat.textOutline.width}px ${editingTextFormat.textOutline.color}`
+                          : 'none',
                         background: 'rgba(255, 255, 255, 0.95)',
                         border: '2px solid #3b82f6',
                         outline: 'none',
@@ -3096,6 +3443,70 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                   ))}
                                 </div>
                               </div>
+                              {/* Phase 8: Text Spacing */}
+                              <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
+                                <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Spacing:</label>
+                                <div className="flex gap-2 flex-1">
+                                  <div className="flex-1">
+                                    <label className="text-xs text-gray-600 dark:text-gray-400">Letter</label>
+                                    <input
+                                      type="range"
+                                      min="0"
+                                      max="10"
+                                      step="0.5"
+                                      value={editingTextFormat.letterSpacing || 0}
+                                      onChange={(e) => setEditingTextFormat({ ...editingTextFormat, letterSpacing: Number(e.target.value) })}
+                                      className="w-full"
+                                    />
+                                  </div>
+                                  <div className="flex-1">
+                                    <label className="text-xs text-gray-600 dark:text-gray-400">Line</label>
+                                    <input
+                                      type="range"
+                                      min="0.8"
+                                      max="3"
+                                      step="0.1"
+                                      value={editingTextFormat.lineHeight || 1.2}
+                                      onChange={(e) => setEditingTextFormat({ ...editingTextFormat, lineHeight: Number(e.target.value) })}
+                                      className="w-full"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Phase 8: Text Effects */}
+                              <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
+                                <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Effects:</label>
+                                <div className="flex gap-2 flex-1">
+                                  <button
+                                    onClick={() => {
+                                      const hasShadow = editingTextFormat.textShadow;
+                                      setEditingTextFormat({
+                                        ...editingTextFormat,
+                                        textShadow: hasShadow ? undefined : { offsetX: 2, offsetY: 2, blur: 4, color: 'rgba(0,0,0,0.3)' }
+                                      });
+                                    }}
+                                    className={`px-3 py-1 rounded text-sm ${editingTextFormat.textShadow ? 'bg-gray-900 text-white' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600'}`}
+                                    title="Text Shadow"
+                                  >
+                                    🌑 Shadow
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      const hasOutline = editingTextFormat.textOutline;
+                                      setEditingTextFormat({
+                                        ...editingTextFormat,
+                                        textOutline: hasOutline ? undefined : { width: 1, color: '#000000' }
+                                      });
+                                    }}
+                                    className={`px-3 py-1 rounded text-sm ${editingTextFormat.textOutline ? 'bg-gray-900 text-white' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600'}`}
+                                    title="Text Outline"
+                                  >
+                                    ⭕ Outline
+                                  </button>
+                                </div>
+                              </div>
+                              
                               {/* Phase 7: Text Transformation */}
                               <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
                                 <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Transform:</label>
@@ -3117,6 +3528,26 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                   ))}
                                 </div>
                               </div>
+                              
+                              {/* Phase 8: Text Templates */}
+                              {textTemplates.length > 0 && (
+                                <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
+                                  <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Templates:</label>
+                                  <select
+                                    onChange={(e) => {
+                                      const template = textTemplates.find(t => t.name === e.target.value);
+                                      if (template) applyTextTemplate(template);
+                                    }}
+                                    className="flex-1 px-2 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                                    defaultValue=""
+                                  >
+                                    <option value="">Templates...</option>
+                                    {textTemplates.map(template => (
+                                      <option key={template.name} value={template.name}>{template.name}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
                               
                               {/* Phase 6: Text Statistics & Style Management */}
                               <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
