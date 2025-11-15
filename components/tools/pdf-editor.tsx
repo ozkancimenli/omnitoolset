@@ -261,8 +261,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           context.font = `${ann.fontSize || 16}px Arial`;
           context.fillText(ann.text, ann.x, ann.y);
         } else if (ann.type === 'highlight' && ann.width && ann.height) {
-          const rgb = hexToRgb(ann.color || highlightColor);
-          context.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`;
+          const rgbColor = hexToRgb(ann.color || highlightColor);
+          context.fillStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.3)`;
           context.fillRect(ann.x, ann.y, ann.width, ann.height);
         } else if (ann.type === 'image' && ann.imageData && ann.width && ann.height) {
           const img = new Image();
