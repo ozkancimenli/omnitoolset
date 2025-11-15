@@ -125,43 +125,56 @@ export default function Adsterra({
         }
       };
     } else if (format === 'banner') {
-      // Banner area - clickable banner that redirects to smartlink
-      // This creates a visible banner area that uses the smartlink
-      const banner = document.createElement('a');
-      banner.href = smartlinkUrl;
-      banner.target = '_blank';
-      banner.rel = 'noopener noreferrer';
-      banner.style.display = 'block';
-      banner.style.width = '100%';
-      banner.style.minHeight = `${height}px`;
-      banner.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-      banner.style.borderRadius = '8px';
-      banner.style.textDecoration = 'none';
-      banner.style.color = 'white';
-      banner.style.padding = '20px';
-      banner.style.textAlign = 'center';
-      banner.style.fontSize = '16px';
-      banner.style.fontWeight = 'bold';
-      banner.style.cursor = 'pointer';
-      banner.style.position = 'relative';
-      banner.style.overflow = 'hidden';
-      banner.className = className;
+      // Banner area - Use iframe to load Smart Direct Link properly
+      // Smart Direct Link will automatically show the best ad offer
+      const iframe = document.createElement('iframe');
+      iframe.src = smartlinkUrl;
+      iframe.width = width.toString();
+      iframe.height = height.toString();
+      iframe.frameBorder = '0';
+      iframe.scrolling = 'no';
+      iframe.style.border = 'none';
+      iframe.style.display = 'block';
+      iframe.style.margin = '0 auto';
+      iframe.style.maxWidth = '100%';
+      iframe.style.borderRadius = '8px';
+      iframe.allow = 'autoplay; encrypted-media';
+      iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation';
+      iframe.className = className;
       
-      const textEl = document.createElement('div');
-      textEl.textContent = text;
-      textEl.style.position = 'absolute';
-      textEl.style.top = '50%';
-      textEl.style.left = '50%';
-      textEl.style.transform = 'translate(-50%, -50%)';
-      textEl.style.zIndex = '1';
-      banner.appendChild(textEl);
+      // Fallback: If iframe doesn't load, show clickable banner
+      iframe.onerror = () => {
+        const banner = document.createElement('a');
+        banner.href = smartlinkUrl;
+        banner.target = '_blank';
+        banner.rel = 'noopener noreferrer';
+        banner.style.display = 'block';
+        banner.style.width = '100%';
+        banner.style.minHeight = `${height}px`;
+        banner.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        banner.style.borderRadius = '8px';
+        banner.style.textDecoration = 'none';
+        banner.style.color = 'white';
+        banner.style.padding = '20px';
+        banner.style.textAlign = 'center';
+        banner.style.fontSize = '16px';
+        banner.style.fontWeight = 'bold';
+        banner.style.cursor = 'pointer';
+        banner.textContent = '🎁 Click for Exclusive Offers';
+        banner.className = className;
+        
+        if (adRef.current) {
+          adRef.current.innerHTML = '';
+          adRef.current.appendChild(banner);
+        }
+      };
       
-      adRef.current.appendChild(banner);
+      adRef.current.appendChild(iframe);
       scriptLoaded.current = true;
 
       return () => {
-        if (adRef.current && banner.parentNode) {
-          adRef.current.removeChild(banner);
+        if (adRef.current && iframe.parentNode) {
+          adRef.current.removeChild(iframe);
         }
       };
     } else if (format === 'native') {
