@@ -128,6 +128,11 @@ export const toolComponents: Record<string, React.ComponentType> = {
   // New PDF Tools
   'pdf-page-count': dynamic(() => import('@/components/tools/pdf-page-count'), { ssr: false }),
   'pdf-merge-images': dynamic(() => import('@/components/tools/pdf-merge-images'), { ssr: false }),
+  
+  // Unit Converters
+  'length-converter': dynamic(() => import('@/components/tools/length-converter'), { ssr: false }),
+  'temperature-converter': dynamic(() => import('@/components/tools/temperature-converter'), { ssr: false }),
+  'salary-calculator': dynamic(() => import('@/components/tools/salary-calculator'), { ssr: false }),
 };
 
 export function getToolComponent(toolId: string): React.ComponentType<any> {

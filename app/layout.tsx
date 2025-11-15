@@ -65,6 +65,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#4f46e5" />
+        <meta name="google-adsense-account" content="ca-pub-8640955536193345" />
       </head>
       <body className={inter.className}>
         {children}

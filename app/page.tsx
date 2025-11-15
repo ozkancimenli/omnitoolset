@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ToolCard from '@/components/ToolCard';
+import AdSense from '@/components/AdSense';
 import Link from 'next/link';
 import { tools } from '@/data/tools';
 
@@ -90,10 +91,28 @@ export default function Home() {
           )}
         </div>
 
+        {/* AdSense Banner - Top */}
+        <div className="max-w-7xl mx-auto mb-8">
+          <AdSense
+            adFormat="auto"
+            fullWidthResponsive={true}
+            className="min-h-[100px] bg-slate-800 rounded-xl flex items-center justify-center"
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredTools.map((tool) => (
             <ToolCard key={tool.id} tool={tool} />
           ))}
+        </div>
+
+        {/* AdSense Banner - Bottom */}
+        <div className="max-w-7xl mx-auto mt-8">
+          <AdSense
+            adFormat="auto"
+            fullWidthResponsive={true}
+            className="min-h-[100px] bg-slate-800 rounded-xl flex items-center justify-center"
+          />
         </div>
 
         {filteredTools.length === 0 && (

@@ -938,4 +938,32 @@ export const tools: Tool[] = [
     slug: 'contrast-checker',
     keywords: 'contrast checker, accessibility, wcag',
   },
+  // Unit Converters
+  {
+    id: 'length-converter',
+    title: 'Length Converter',
+    description: 'Convert between length units: meter, kilometer, mile, foot, inch, yard',
+    icon: '📏',
+    category: 'Other',
+    slug: 'length-converter',
+    keywords: 'length converter, meter, kilometer, mile, foot, inch, yard converter',
+  },
+  {
+    id: 'temperature-converter',
+    title: 'Temperature Converter',
+    description: 'Convert between Celsius, Fahrenheit, and Kelvin',
+    icon: '🌡️',
+    category: 'Other',
+    slug: 'temperature-converter',
+    keywords: 'temperature converter, celsius, fahrenheit, kelvin converter',
+  },
+  {
+    id: 'salary-calculator',
+    title: 'Salary Calculator',
+    description: 'Calculate weekly, monthly, and yearly salary from hourly rate',
+    icon: '💰',
+    category: 'Other',
+    slug: 'salary-calculator',
+    keywords: 'salary calculator, hourly wage, weekly salary, monthly salary, yearly salary',
+  },
 ];

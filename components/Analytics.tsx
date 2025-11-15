@@ -29,14 +29,12 @@ export default function Analytics({ googleAnalyticsId, googleAdsenseId }: Analyt
       )}
 
       {/* Google AdSense */}
-      {googleAdsenseId && (
-        <Script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${googleAdsenseId}`}
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-      )}
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+        crossOrigin="anonymous"
+        strategy="afterInteractive"
+      />
     </>
   );
 }

@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import RelatedTools from '@/components/RelatedTools';
 import SocialShare from '@/components/SocialShare';
+import AdSense from '@/components/AdSense';
 import { Metadata } from 'next';
 import ToolWrapper from '@/components/ToolWrapper';
 
@@ -105,7 +106,25 @@ export default async function ToolPage({ params }: PageProps) {
               </div>
             </div>
             
+            {/* AdSense - Top of Tool */}
+            <div className="mb-6">
+              <AdSense
+                adFormat="auto"
+                fullWidthResponsive={true}
+                className="min-h-[100px] bg-slate-900 rounded-xl"
+              />
+            </div>
+            
             <ToolWrapper toolId={tool.id} />
+            
+            {/* AdSense - Bottom of Tool */}
+            <div className="mt-6">
+              <AdSense
+                adFormat="auto"
+                fullWidthResponsive={true}
+                className="min-h-[100px] bg-slate-900 rounded-xl"
+              />
+            </div>
             
             <SocialShare 
               title={tool.title}
