@@ -8,7 +8,7 @@ interface PdfEditorProps {
   toolId?: string;
 }
 
-type ToolType = 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'eraser' | 'signature' | 'watermark' | 'redaction' | null;
+type ToolType = 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'eraser' | 'signature' | 'watermark' | 'redaction' | 'edit-text' | null;
 type ShapeType = 'rectangle' | 'circle' | 'line' | 'arrow';
 
 interface Annotation {
@@ -41,6 +41,37 @@ interface Annotation {
   rotation?: number; // Rotation in degrees
   watermarkText?: string; // For watermark
   watermarkOpacity?: number; // Watermark opacity
+}
+
+// PDF Text Layer - Extracted from PDF content
+interface PdfTextItem {
+  str: string; // Text content
+  x: number; // X position in PDF coordinates
+  y: number; // Y position in PDF coordinates
+  width: number; // Text width
+  height: number; // Text height
+  fontName: string; // Font name
+  fontSize: number; // Font size
+  transform: number[]; // Transformation matrix [a, b, c, d, e, f]
+  page: number; // Page number
+  dir: string; // Text direction ('ltr' or 'rtl')
+  hasEOL?: boolean; // End of line
+}
+
+interface PdfTextRun {
+  id: string;
+  text: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fontSize: number;
+  fontName: string;
+  page: number;
+  startIndex: number; // Start index in original text
+  endIndex: number; // End index in original text
+  isSelected?: boolean;
+  isEditing?: boolean;
 }
 
 export default function PdfEditor({ toolId }: PdfEditorProps) {
@@ -91,6 +122,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [watermarkText, setWatermarkText] = useState('DRAFT');
   const [watermarkOpacity, setWatermarkOpacity] = useState(0.3);
   
+  // PDF Text Layer - Phase 2
+  const [pdfTextItems, setPdfTextItems] = useState<Record<number, PdfTextItem[]>>({});
+  const [pdfTextRuns, setPdfTextRuns] = useState<Record<number, PdfTextRun[]>>({});
+  const [selectedTextRun, setSelectedTextRun] = useState<string | null>(null);
+  const [editingTextRun, setEditingTextRun] = useState<string | null>(null);
+  const [textSelection, setTextSelection] = useState<{ start: number; end: number; runId: string } | null>(null);
+  const [textEditMode, setTextEditMode] = useState(false); // True when editing existing PDF text
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -98,6 +137,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const pdfDocRef = useRef<any>(null);
   const pdfLibDocRef = useRef<PDFDocument | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const textLayerRef = useRef<HTMLDivElement>(null);
 
   // Undo/Redo system
   const saveToHistory = useCallback((newAnnotations: Annotation[]) => {
@@ -503,6 +543,22 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         
         context.restore();
       });
+      
+      // Phase 2.4: Draw text run highlights (for PDF text editing)
+      if (textEditMode && pdfTextRuns[pageNumber]) {
+        const runs = pdfTextRuns[pageNumber];
+        runs.forEach(run => {
+          if (selectedTextRun === run.id || editingTextRun === run.id) {
+            context.save();
+            context.fillStyle = 'rgba(59, 130, 246, 0.2)'; // Blue highlight
+            context.fillRect(run.x, run.y - run.height, run.width, run.height);
+            context.strokeStyle = '#3b82f6';
+            context.lineWidth = 1;
+            context.strokeRect(run.x, run.y - run.height, run.width, run.height);
+            context.restore();
+          }
+        });
+      }
     } catch (error) {
       console.error('Error rendering page:', error);
     }
@@ -548,6 +604,18 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const coords = getCanvasCoordinates(e);
+    
+    // Phase 2.3: Check if clicking on PDF text (edit mode)
+    if (tool === 'edit-text' || textEditMode) {
+      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+      if (clickedRun) {
+        setSelectedTextRun(clickedRun.id);
+        setEditingTextRun(clickedRun.id);
+        setTextEditMode(true);
+        toast.info('Click on text to edit. Double-click to start editing.');
+        return;
+      }
+    }
     
     // Check if double-clicking on text annotation to edit
     if (e.detail === 2) {
@@ -1252,6 +1320,47 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       saveToHistory([]);
       toast.success('All annotations cleared');
     }
+  };
+
+  // Phase 2.5: Update PDF text content
+  const updatePdfText = (runId: string, newText: string) => {
+    const runs = pdfTextRuns[pageNum] || [];
+    const run = runs.find(r => r.id === runId);
+    if (!run) return;
+    
+    // For now, we'll use overlay approach (white rectangle + new text)
+    // Phase 3 will implement true content stream editing
+    const newAnnotation: Annotation = {
+      id: `pdf-text-edit-${Date.now()}`,
+      type: 'text',
+      x: run.x,
+      y: run.y,
+      text: newText,
+      fontSize: run.fontSize,
+      fontFamily: run.fontName,
+      color: '#000000',
+      page: pageNum,
+      width: run.width,
+      height: run.height,
+    };
+    
+    // Add white rectangle to cover old text
+    const whiteRect: Annotation = {
+      id: `pdf-text-cover-${Date.now()}`,
+      type: 'rectangle',
+      x: run.x - 2,
+      y: run.y - run.height - 2,
+      width: run.width + 4,
+      height: run.height + 4,
+      fillColor: '#FFFFFF',
+      strokeColor: '#FFFFFF',
+      page: pageNum,
+    };
+    
+    const newAnnotations = [...annotations, whiteRect, newAnnotation];
+    setAnnotations(newAnnotations);
+    saveToHistory(newAnnotations);
+    toast.success('PDF text updated (overlay mode)');
   };
 
   // Copy/Paste annotations
