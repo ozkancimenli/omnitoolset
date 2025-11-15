@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface AdSenseProps {
   adSlot?: string;
@@ -17,10 +17,21 @@ export default function AdSense({
   className = '',
   fullWidthResponsive = true,
 }: AdSenseProps) {
+  const adRef = useRef<HTMLDivElement>(null);
+  const pushedRef = useRef(false);
+
   useEffect(() => {
+    // Only push once per container
+    if (pushedRef.current) return;
+    
     try {
-      if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
-        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+      if (typeof window !== 'undefined' && (window as any).adsbygoogle && adRef.current) {
+        // Check if this container already has ads
+        const insElement = adRef.current.querySelector('.adsbygoogle');
+        if (insElement && !insElement.hasAttribute('data-adsbygoogle-status')) {
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+          pushedRef.current = true;
+        }
       }
     } catch (err) {
       console.error('AdSense error:', err);
@@ -28,7 +39,7 @@ export default function AdSense({
   }, []);
 
   return (
-    <div className={`adsense-container ${className}`} style={style}>
+    <div ref={adRef} className={`adsense-container ${className}`} style={style}>
       <ins
         className="adsbygoogle"
         style={{
@@ -43,4 +54,3 @@ export default function AdSense({
     </div>
   );
 }
-
