@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import Analytics from '@/components/Analytics'
 
@@ -66,14 +67,15 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#4f46e5" />
         <meta name="google-adsense-account" content="ca-pub-8640955536193345" />
-        {/* Adsterra Popunder Script */}
-        <script
-          type="text/javascript"
-          src="//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js"
-        />
       </head>
       <body className={inter.className}>
         {children}
+        {/* Adsterra Popunder Script */}
+        <Script
+          type="text/javascript"
+          src="//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js"
+          strategy="afterInteractive"
+        />
         <Analytics 
           googleAnalyticsId={googleAnalyticsId}
           googleAdsenseId={googleAdsenseId}
