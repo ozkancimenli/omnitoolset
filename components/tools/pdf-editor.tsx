@@ -247,6 +247,42 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [freehandPath, setFreehandPath] = useState<{ x: number; y: number }[]>([]);
   const [isDrawingFreehand, setIsDrawingFreehand] = useState(false);
   const [selectedAnnotations, setSelectedAnnotations] = useState<Set<string>>(new Set());
+  
+  // Production: Batch operations
+  const [batchMode, setBatchMode] = useState(false);
+  const batchSelectAnnotations = useCallback((annotationIds: string[]) => {
+    setSelectedAnnotations(new Set(annotationIds));
+  }, []);
+  
+  const batchDeleteAnnotations = useCallback(() => {
+    if (selectedAnnotations.size === 0) {
+      toast.info('No annotations selected');
+      return;
+    }
+    if (confirm(`Delete ${selectedAnnotations.size} annotation(s)?`)) {
+      const newAnnotations = annotations.filter(ann => !selectedAnnotations.has(ann.id));
+      setAnnotations(newAnnotations);
+      saveToHistory(newAnnotations);
+      setSelectedAnnotations(new Set());
+      toast.success(`${selectedAnnotations.size} annotation(s) deleted`);
+    }
+  }, [selectedAnnotations, annotations]);
+  
+  const batchApplyFormat = useCallback((format: Partial<Annotation>) => {
+    if (selectedAnnotations.size === 0) {
+      toast.info('No annotations selected');
+      return;
+    }
+    const newAnnotations = annotations.map(ann => {
+      if (selectedAnnotations.has(ann.id) && ann.type === 'text') {
+        return { ...ann, ...format };
+      }
+      return ann;
+    });
+    setAnnotations(newAnnotations);
+    saveToHistory(newAnnotations);
+    toast.success(`Format applied to ${selectedAnnotations.size} annotation(s)`);
+  }, [selectedAnnotations, annotations]);
   const [showPageManager, setShowPageManager] = useState(false);
   const [pageRotations, setPageRotations] = useState<Record<number, number>>({});
   const [copiedAnnotations, setCopiedAnnotations] = useState<Annotation[]>([]);
@@ -304,6 +340,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   
   // Phase 6: Performance & Advanced Features
   const [textRunsCache, setTextRunsCache] = useState<Record<number, { runs: PdfTextRun[]; timestamp: number }>>({});
+  
+  // Production: Render cache for pages
+  const renderCacheRef = useRef<Map<number, { imageData: string; timestamp: number }>>(new Map());
+  const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
   const [textEditHistory, setTextEditHistory] = useState<Array<{ runId: string; oldText: string; newText: string; format?: any }>>([]);
   const [textEditHistoryIndex, setTextEditHistoryIndex] = useState(-1);
   const [showTextStats, setShowTextStats] = useState(false);
@@ -803,8 +843,31 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
-  const renderPage = async (pageNumber: number) => {
+  const renderPage = async (pageNumber: number, useCache: boolean = true) => {
     if (!pdfDocRef.current || !canvasRef.current || !containerRef.current) return;
+    
+    // Production: Check render cache
+    if (useCache && renderCacheRef.current.has(pageNumber)) {
+      const cached = renderCacheRef.current.get(pageNumber)!;
+      const now = Date.now();
+      if (now - cached.timestamp < CACHE_EXPIRY && annotations.filter(a => a.page === pageNumber).length === 0) {
+        // Use cached render if no annotations on this page
+        const canvas = canvasRef.current;
+        const img = new Image();
+        img.onload = () => {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+          }
+        };
+        img.src = cached.imageData;
+        return;
+      } else {
+        // Cache expired or annotations exist, remove from cache
+        renderCacheRef.current.delete(pageNumber);
+      }
+    }
 
     try {
       const page = await pdfDocRef.current.getPage(pageNumber);
@@ -1144,6 +1207,26 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             context.restore();
           }
         });
+      }
+      
+      // Production: Cache rendered page if no annotations
+      if (annotations.filter(a => a.page === pageNumber).length === 0) {
+        const imageData = canvas.toDataURL('image/png');
+        renderCacheRef.current.set(pageNumber, {
+          imageData,
+          timestamp: Date.now(),
+        });
+        
+        // Limit cache size
+        if (renderCacheRef.current.size > RENDER_CACHE_SIZE) {
+          const oldestKey = Array.from(renderCacheRef.current.keys())
+            .sort((a, b) => {
+              const aTime = renderCacheRef.current.get(a)!.timestamp;
+              const bTime = renderCacheRef.current.get(b)!.timestamp;
+              return aTime - bTime;
+            })[0];
+          renderCacheRef.current.delete(oldestKey);
+        }
       }
     } catch (error) {
       console.error('Error rendering page:', error);
