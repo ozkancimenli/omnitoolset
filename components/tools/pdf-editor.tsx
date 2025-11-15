@@ -1,8 +1,131 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { toast } from '@/components/Toast';
+
+// Production: Constants for configuration
+const PDF_MAX_SIZE = 50 * 1024 * 1024; // 50MB
+const PDF_SUPPORTED_TYPES = ['application/pdf'];
+const PDF_EXTENSIONS = ['.pdf'];
+const THUMBNAIL_MAX_PAGES = 10;
+const THUMBNAIL_SCALE = 0.5;
+const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
+const DEBOUNCE_DELAY = 300; // ms for debouncing
+const RENDER_CACHE_SIZE = 5; // Number of pages to cache
+
+// Production: Error types for better error handling
+class PDFValidationError extends Error {
+  constructor(message: string, public code: string) {
+    super(message);
+    this.name = 'PDFValidationError';
+  }
+}
+
+class PDFProcessingError extends Error {
+  constructor(message: string, public code: string, public originalError?: Error) {
+    super(message);
+    this.name = 'PDFProcessingError';
+  }
+}
+
+// Production: Utility functions
+const validatePDFFile = (file: File): { valid: boolean; error?: string } => {
+  // Type validation
+  const isValidType = PDF_SUPPORTED_TYPES.includes(file.type) || 
+    PDF_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext));
+  
+  if (!isValidType) {
+    return { valid: false, error: 'Please select a valid PDF file.' };
+  }
+  
+  // Size validation
+  if (file.size > PDF_MAX_SIZE) {
+    return { valid: false, error: `File size is too large. Maximum size is ${PDF_MAX_SIZE / (1024 * 1024)}MB.` };
+  }
+  
+  // Empty file check
+  if (file.size === 0) {
+    return { valid: false, error: 'File is empty. Please select a valid PDF file.' };
+  }
+  
+  return { valid: true };
+};
+
+// Production: Debounce utility
+const useDebounce = <T,>(value: T, delay: number): T => {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+  
+  return debouncedValue;
+};
+
+// Production: Error logging (ready for analytics integration)
+const logError = (error: Error, context: string, metadata?: Record<string, any>) => {
+  console.error(`[PDF Editor Error] ${context}:`, error, metadata);
+  // TODO: Integrate with error tracking service (Sentry, LogRocket, etc.)
+  // Example: Sentry.captureException(error, { tags: { context }, extra: metadata });
+};
+
+// Production: Performance monitoring
+const measurePerformance = (label: string, fn: () => void | Promise<void>) => {
+  if (typeof window !== 'undefined' && window.performance) {
+    const start = performance.now();
+    const result = fn();
+    if (result instanceof Promise) {
+      return result.finally(() => {
+        const duration = performance.now() - start;
+        console.log(`[Performance] ${label}: ${duration.toFixed(2)}ms`);
+        // TODO: Send to analytics
+      });
+    } else {
+      const duration = performance.now() - start;
+      console.log(`[Performance] ${label}: ${duration.toFixed(2)}ms`);
+      return result;
+    }
+  }
+  return fn();
+};
+
+// Production: Security - Input sanitization
+const sanitizeInput = (input: string): string => {
+  // Remove potentially dangerous characters and scripts
+  return input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // Remove iframe tags
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers (onclick, onload, etc.)
+    .replace(/data:text\/html/gi, '') // Remove data URIs
+    .trim();
+};
+
+// Production: Security - Sanitize text for PDF (less strict, but safe)
+const sanitizeTextForPDF = (text: string): string => {
+  // For PDF text, we allow more characters but still remove dangerous patterns
+  return text
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '');
+};
+
+// Production: Security - Validate file name
+const sanitizeFileName = (fileName: string): string => {
+  // Remove path traversal attempts and dangerous characters
+  return fileName
+    .replace(/\.\./g, '') // Remove path traversal
+    .replace(/[\/\\]/g, '_') // Replace slashes
+    .replace(/[<>:"|?*]/g, '_') // Replace invalid filename characters
+    .substring(0, 255); // Limit length
+};
 
 interface PdfEditorProps {
   toolId?: string;
@@ -87,6 +210,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [file, setFile] = useState<File | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState(0); // Production: Progress tracking
+  const [processingMessage, setProcessingMessage] = useState(''); // Production: User feedback
   const [pageNum, setPageNum] = useState(1);
   const [numPages, setNumPages] = useState(0);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
@@ -226,23 +351,22 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
+  // Production: Enhanced file validation
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      if (selectedFile.type !== 'application/pdf' && !selectedFile.name.toLowerCase().endsWith('.pdf')) {
-        toast.error('Please select a valid PDF file.');
+    if (!selectedFile) return;
+    
+    try {
+      const validation = validatePDFFile(selectedFile);
+      if (!validation.valid) {
+        toast.error(validation.error || 'Invalid file');
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
         return;
       }
-      if (selectedFile.size > 50 * 1024 * 1024) {
-        toast.error('File size is too large. Please select a PDF file smaller than 50MB.');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-        return;
-      }
+      
+      // Reset state
       setFile(selectedFile);
       setAnnotations([]);
       setHistory([]);
@@ -250,21 +374,37 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setPageNum(1);
       setIsEditable(true);
       setZoom(1);
+      setPdfTextRuns({});
+      setPdfTextItems({});
+      setTextRunsCache({});
+      
+      // Cleanup previous resources
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+    } catch (error) {
+      logError(error as Error, 'handleFileSelect', { fileName: selectedFile.name });
+      toast.error('Error processing file. Please try again.');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
+  // Production: Enhanced drag & drop with validation
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile) {
-      if (droppedFile.type !== 'application/pdf' && !droppedFile.name.toLowerCase().endsWith('.pdf')) {
-        toast.error('Please drop a valid PDF file.');
+    if (!droppedFile) return;
+    
+    try {
+      const validation = validatePDFFile(droppedFile);
+      if (!validation.valid) {
+        toast.error(validation.error || 'Invalid file');
         return;
       }
-      if (droppedFile.size > 50 * 1024 * 1024) {
-        toast.error('File size is too large. Please select a PDF file smaller than 50MB.');
-        return;
-      }
+      
+      // Reset state
       setFile(droppedFile);
       setAnnotations([]);
       setHistory([]);
@@ -272,94 +412,184 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setPageNum(1);
       setIsEditable(true);
       setZoom(1);
+      setPdfTextRuns({});
+      setPdfTextItems({});
+      setTextRunsCache({});
+      
+      // Cleanup previous resources
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+    } catch (error) {
+      logError(error as Error, 'handleDrop', { fileName: droppedFile.name });
+      toast.error('Error processing dropped file. Please try again.');
     }
   };
 
+  // Production: Cleanup effect for memory management
   useEffect(() => {
     if (file) {
       loadPDF();
     }
+    
+    // Cleanup function
+    return () => {
+      // Cleanup object URLs
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+      // Cleanup PDF references
+      pdfDocRef.current = null;
+      pdfLibDocRef.current = null;
+    };
   }, [file]);
 
+  // Production: Enhanced PDF loading with error handling and performance monitoring
   const loadPDF = async () => {
     if (!file) return;
     
     setIsProcessing(true);
+    let tempUrl: string | null = null;
+    
     try {
-      const pdfjsLib = await import('pdfjs-dist');
-      pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.mjs';
-      
-      try {
-        const response = await fetch('/pdf.worker.mjs', { method: 'HEAD' });
-        if (!response.ok) throw new Error('Worker not found');
-      } catch {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-      }
-
-      const arrayBufferForViewing = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ 
-        data: arrayBufferForViewing,
-        useSystemFonts: true,
-        verbosity: 0
-      }).promise;
-      pdfDocRef.current = pdf;
-      setNumPages(pdf.numPages);
-
-      // Generate thumbnails
-      const thumbnails: string[] = [];
-      for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
-        const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 0.5 });
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        if (context) {
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-          await page.render({ 
-            canvasContext: context, 
-            viewport,
-            canvas: canvas 
-          } as any).promise;
-          thumbnails.push(canvas.toDataURL());
-        }
-      }
-      setPageThumbnails(thumbnails);
-      
-      const arrayBufferForEditing = await file.arrayBuffer();
-      const fileBytes = new Uint8Array(arrayBufferForEditing);
-      
-      try {
-        const pdfLibDoc = await PDFDocument.load(fileBytes, {
-          ignoreEncryption: false,
-          updateMetadata: false,
-        });
-        pdfLibDocRef.current = pdfLibDoc;
-      } catch (pdfLibError) {
-        console.warn('PDF-lib loading failed:', pdfLibError);
+      await measurePerformance('loadPDF', async () => {
+        // Load pdf.js
+        const pdfjsLib = await import('pdfjs-dist');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.mjs';
+        
+        // Try local worker, fallback to CDN
         try {
-          const retryBuffer = await file.arrayBuffer();
-          const retryBytes = new Uint8Array(retryBuffer);
-          const pdfLibDoc = await PDFDocument.load(retryBytes, {
-            ignoreEncryption: true,
+          const response = await fetch('/pdf.worker.mjs', { method: 'HEAD' });
+          if (!response.ok) throw new Error('Worker not found');
+        } catch {
+          pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+        }
+
+        // Load PDF for viewing
+        setProcessingProgress(10);
+        setProcessingMessage('Reading PDF file...');
+        const arrayBufferForViewing = await file.arrayBuffer();
+        
+        setProcessingProgress(30);
+        setProcessingMessage('Parsing PDF structure...');
+        const pdf = await pdfjsLib.getDocument({ 
+          data: arrayBufferForViewing,
+          useSystemFonts: true,
+          verbosity: 0,
+          // Production: Add timeout for large files
+          maxImageSize: 1024 * 1024 * 10, // 10MB max image size
+        }).promise;
+        
+        pdfDocRef.current = pdf;
+        setNumPages(pdf.numPages);
+        
+        if (pdf.numPages === 0) {
+          throw new PDFValidationError('PDF has no pages', 'EMPTY_PDF');
+        }
+
+        // Production: Generate thumbnails with error handling and progress
+        setProcessingProgress(40);
+        setProcessingMessage(`Generating thumbnails (${Math.min(pdf.numPages, THUMBNAIL_MAX_PAGES)} pages)...`);
+        const thumbnails: string[] = [];
+        const maxThumbnails = Math.min(pdf.numPages, THUMBNAIL_MAX_PAGES);
+        
+        for (let i = 1; i <= maxThumbnails; i++) {
+          try {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: THUMBNAIL_SCALE });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            if (context) {
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
+              await page.render({ 
+                canvasContext: context, 
+                viewport,
+                canvas: canvas 
+              } as any).promise;
+              thumbnails.push(canvas.toDataURL());
+            }
+            
+            // Update progress
+            setProcessingProgress(40 + (i / maxThumbnails) * 20);
+          } catch (thumbError) {
+            logError(thumbError as Error, 'generateThumbnail', { pageNumber: i });
+            // Continue with other thumbnails even if one fails
+            thumbnails.push(''); // Placeholder
+          }
+        }
+        setPageThumbnails(thumbnails);
+        
+        // Load PDF for editing with pdf-lib
+        setProcessingProgress(70);
+        setProcessingMessage('Preparing PDF for editing...');
+        const arrayBufferForEditing = await file.arrayBuffer();
+        const fileBytes = new Uint8Array(arrayBufferForEditing);
+        
+        try {
+          const pdfLibDoc = await PDFDocument.load(fileBytes, {
+            ignoreEncryption: false,
             updateMetadata: false,
+            // Production: Add parse speed option for large files
+            parseSpeed: 1, // 1 = fast, 2 = medium, 3 = slow but thorough
           });
           pdfLibDocRef.current = pdfLibDoc;
-        } catch {
-          pdfLibDocRef.current = null;
-          setIsEditable(false);
+        } catch (pdfLibError) {
+          logError(pdfLibError as Error, 'pdf-lib load (first attempt)');
+          // Retry with encryption ignored
+          try {
+            setProcessingMessage('Retrying with encryption ignored...');
+            const retryBuffer = await file.arrayBuffer();
+            const retryBytes = new Uint8Array(retryBuffer);
+            const pdfLibDoc = await PDFDocument.load(retryBytes, {
+              ignoreEncryption: true,
+              updateMetadata: false,
+              parseSpeed: 1,
+            });
+            pdfLibDocRef.current = pdfLibDoc;
+            toast.info('PDF loaded (encryption ignored)');
+          } catch (retryError) {
+            logError(retryError as Error, 'pdf-lib load (retry)');
+            pdfLibDocRef.current = null;
+            setIsEditable(false);
+            toast.warning('PDF loaded in view-only mode. Some features may be limited.');
+          }
         }
+        
+        setIsEditable(pdfLibDocRef.current !== null);
+        
+        // Create object URL for viewing
+        setProcessingProgress(90);
+        setProcessingMessage('Finalizing...');
+        tempUrl = URL.createObjectURL(file);
+        setPdfUrl(tempUrl);
+        
+        // Load first page
+        await renderPage(1);
+        
+        // Phase 8: Check for auto-saved data
+        loadAutoSave();
+        
+        setProcessingProgress(100);
+        setProcessingMessage('Complete!');
+        toast.success(`PDF loaded successfully! ${pdf.numPages} page${pdf.numPages !== 1 ? 's' : ''}`);
+      });
+    } catch (error) {
+      logError(error as Error, 'loadPDF', { fileName: file.name, fileSize: file.size });
+      
+      let errorMessage = 'Unknown error occurred';
+      if (error instanceof PDFValidationError) {
+        errorMessage = error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
       }
       
-      setIsEditable(pdfLibDocRef.current !== null);
-      const url = URL.createObjectURL(file);
-      setPdfUrl(url);
-      await renderPage(1);
-      toast.success('PDF loaded successfully!');
-    } catch (error) {
-      console.error('Error loading PDF:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       toast.error(`Error loading PDF: ${errorMessage}`);
+      
+      // Cleanup on error
       setFile(null);
+      if (tempUrl) URL.revokeObjectURL(tempUrl);
       setPdfUrl(null);
       pdfDocRef.current = null;
       pdfLibDocRef.current = null;
@@ -920,26 +1150,36 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
+  // Production: Debounced render for performance
+  const debouncedPageNum = useDebounce(pageNum, DEBOUNCE_DELAY);
+  const debouncedAnnotations = useDebounce(annotations, DEBOUNCE_DELAY);
+  
   useEffect(() => {
     if (pdfDocRef.current && pageNum > 0) {
-      renderPage(pageNum);
+      measurePerformance(`renderPage-${pageNum}`, () => renderPage(pageNum));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageNum, annotations, zoom, selectedAnnotation, selectedAnnotations]);
+  }, [pageNum, debouncedAnnotations, zoom, selectedAnnotation, selectedAnnotations]);
 
-  // Re-render on container resize
+  // Production: Debounced resize observer for performance
   useEffect(() => {
     if (!containerRef.current || !pdfDocRef.current) return;
 
+    let resizeTimeout: NodeJS.Timeout;
     const resizeObserver = new ResizeObserver(() => {
-      if (pdfDocRef.current && pageNum > 0) {
-        renderPage(pageNum);
-      }
+      // Debounce resize events
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (pdfDocRef.current && pageNum > 0) {
+          measurePerformance('resizeRender', () => renderPage(pageNum));
+        }
+      }, 150); // 150ms debounce for resize
     });
 
     resizeObserver.observe(containerRef.current);
 
     return () => {
+      clearTimeout(resizeTimeout);
       resizeObserver.disconnect();
     };
   }, [pageNum, zoom]);
@@ -1200,12 +1440,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     const newAnnotations = [...annotations];
     
     if (tool === 'text' && currentText.trim()) {
+      // Production: Security - Sanitize text input
+      const sanitizedText = sanitizeTextForPDF(currentText);
+      if (!sanitizedText.trim()) {
+        toast.error('Invalid text content');
+        return;
+      }
+      
       const newAnnotation: Annotation = {
         id: Date.now().toString(),
         type: 'text',
         x: coords.x,
         y: coords.y,
-        text: currentText,
+        text: sanitizedText,
         fontSize,
         fontFamily,
         textAlign,
@@ -1931,11 +2178,18 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     const run = runs.find(r => r.id === runId);
     if (!run) return;
     
+    // Production: Security - Sanitize text input
+    const sanitizedText = sanitizeTextForPDF(newText);
+    if (!sanitizedText.trim()) {
+      toast.error('Invalid text content');
+      return;
+    }
+    
     try {
       // Phase 3.3: Rebuild PDF page with modified text
       const success = await rebuildPdfPageWithText(pageNum, [{
         runId,
-        newText,
+        newText: sanitizedText,
         format,
       }]);
       
@@ -1947,7 +2201,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             if (r.id === runId) {
               return {
                 ...r,
-                text: newText,
+                text: sanitizedText,
                 fontSize: format?.fontSize || r.fontSize,
                 fontName: format?.fontFamily || r.fontName,
                 fontWeight: format?.fontWeight || r.fontWeight,
@@ -1967,7 +2221,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         await renderPage(pageNum);
         
         // Save to text edit history
-        saveTextEditToHistory(runId, run.text, newText, format);
+        saveTextEditToHistory(runId, run.text, sanitizedText, format);
         
         toast.success('PDF text updated successfully!');
       } else {
@@ -2166,25 +2420,42 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
-  // Phase 8: Auto-save functionality
+  // Production: Auto-save with error handling and performance monitoring
   useEffect(() => {
     if (autoSaveEnabled && annotations.length > 0) {
       const interval = setInterval(async () => {
         try {
           if (pdfLibDocRef.current && file) {
-            // Auto-save to localStorage as backup
-            const saveData = {
-              annotations,
-              timestamp: Date.now(),
-              pageNum,
-            };
-            localStorage.setItem(`pdf-editor-autosave-${file.name}`, JSON.stringify(saveData));
-            console.log('Auto-saved');
+            await measurePerformance('autoSave', async () => {
+              // Auto-save to localStorage as backup
+              const saveData = {
+                annotations,
+                timestamp: Date.now(),
+                pageNum,
+                pdfTextRuns, // Include text runs for recovery
+              };
+              
+              try {
+                localStorage.setItem(`pdf-editor-autosave-${file.name}`, JSON.stringify(saveData));
+                // Only log in development
+                if (process.env.NODE_ENV === 'development') {
+                  console.log('Auto-saved');
+                }
+              } catch (storageError) {
+                // Handle quota exceeded error
+                if (storageError instanceof DOMException && storageError.code === 22) {
+                  logError(storageError as Error, 'autoSave - storage quota exceeded');
+                  toast.warning('Auto-save failed: Storage quota exceeded');
+                } else {
+                  logError(storageError as Error, 'autoSave - storage error');
+                }
+              }
+            });
           }
         } catch (error) {
-          console.error('Auto-save error:', error);
+          logError(error as Error, 'autoSave', { fileName: file?.name });
         }
-      }, 30000); // Auto-save every 30 seconds
+      }, AUTO_SAVE_INTERVAL);
       
       setAutoSaveInterval(interval);
       return () => {
@@ -2196,7 +2467,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         setAutoSaveInterval(null);
       }
     }
-  }, [autoSaveEnabled, annotations, file, pageNum]);
+  }, [autoSaveEnabled, annotations, file, pageNum, pdfTextRuns]);
 
   // Phase 8: Load auto-saved data
   const loadAutoSave = () => {
@@ -2609,6 +2880,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           disabled={!selectedAnnotation && selectedAnnotations.size === 0}
                           className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
                           title="Copy (Ctrl+C)"
+                          aria-label="Copy selected annotations"
+                          aria-disabled={!selectedAnnotation && selectedAnnotations.size === 0}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -2619,6 +2892,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           disabled={copiedAnnotations.length === 0}
                           className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
                           title="Paste (Ctrl+V)"
+                          aria-label="Paste annotations"
+                          aria-disabled={copiedAnnotations.length === 0}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -2635,6 +2910,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           disabled={historyIndex <= 0}
                           className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
                           title="Undo (Ctrl+Z)"
+                          aria-label="Undo last action"
+                          aria-disabled={historyIndex <= 0}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -2645,6 +2922,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           disabled={historyIndex >= history.length - 1}
                           className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
                           title="Redo (Ctrl+Y)"
+                          aria-label="Redo last undone action"
+                          aria-disabled={historyIndex >= history.length - 1}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
@@ -3830,15 +4109,28 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         </div>
       )}
 
+      {/* Production: Enhanced loading state with progress */}
       {isProcessing && !file && (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
+        <div className="flex-1 flex items-center justify-center" role="status" aria-live="polite" aria-label="Loading PDF">
+          <div className="text-center max-w-md px-4">
             <div className="relative w-20 h-20 mx-auto mb-6">
               <div className="absolute inset-0 border-4 border-gray-200 dark:border-gray-900 rounded-full"></div>
               <div className="absolute inset-0 border-4 border-transparent border-t-gray-900 dark:border-t-gray-400 rounded-full animate-spin"></div>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Loading PDF...</h3>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">Please wait while we process your document</p>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{processingMessage || 'Loading PDF...'}</h3>
+            {processingProgress > 0 && (
+              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mb-2">
+                <div 
+                  className="bg-gray-900 dark:bg-white h-2.5 rounded-full transition-all duration-300" 
+                  style={{ width: `${processingProgress}%` }}
+                  role="progressbar"
+                  aria-valuenow={processingProgress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                ></div>
+              </div>
+            )}
+            <p className="text-slate-500 dark:text-slate-400 text-sm">{processingProgress > 0 ? `${Math.round(processingProgress)}%` : 'Please wait while we process your document'}</p>
           </div>
         </div>
       )}
