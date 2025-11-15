@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ToolCard from '@/components/ToolCard';
 import AdSense from '@/components/AdSense';
+import Adsterra from '@/components/Adsterra';
 import Link from 'next/link';
 import { tools } from '@/data/tools';
 
@@ -91,6 +92,11 @@ export default function Home() {
           )}
         </div>
 
+        {/* Adsterra Banner - Top (4:1 Layout) */}
+        <div className="max-w-7xl mx-auto mb-8">
+          <Adsterra layout="4x1" className="bg-slate-800 rounded-xl" />
+        </div>
+
         {/* AdSense Banner - Top */}
         <div className="max-w-7xl mx-auto mb-8">
           <AdSense
@@ -104,6 +110,11 @@ export default function Home() {
           {filteredTools.map((tool) => (
             <ToolCard key={tool.id} tool={tool} />
           ))}
+        </div>
+
+        {/* Adsterra Banner - Bottom (4:1 Layout) */}
+        <div className="max-w-7xl mx-auto mt-8">
+          <Adsterra layout="4x1" className="bg-slate-800 rounded-xl" />
         </div>
 
         {/* AdSense Banner - Bottom */}

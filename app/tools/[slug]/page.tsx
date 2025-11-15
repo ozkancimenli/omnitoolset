@@ -6,6 +6,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import RelatedTools from '@/components/RelatedTools';
 import SocialShare from '@/components/SocialShare';
 import AdSense from '@/components/AdSense';
+import Adsterra from '@/components/Adsterra';
 import { Metadata } from 'next';
 import ToolWrapper from '@/components/ToolWrapper';
 
@@ -106,6 +107,11 @@ export default async function ToolPage({ params }: PageProps) {
               </div>
             </div>
             
+            {/* Adsterra - Top of Tool (2:1 Layout) */}
+            <div className="mb-6">
+              <Adsterra layout="2x1" className="bg-slate-900 rounded-xl" />
+            </div>
+            
             {/* AdSense - Top of Tool */}
             <div className="mb-6">
               <AdSense
@@ -116,6 +122,11 @@ export default async function ToolPage({ params }: PageProps) {
             </div>
             
             <ToolWrapper toolId={tool.id} />
+            
+            {/* Adsterra - Bottom of Tool (2:1 Layout) */}
+            <div className="mt-6">
+              <Adsterra layout="2x1" className="bg-slate-900 rounded-xl" />
+            </div>
             
             {/* AdSense - Bottom of Tool */}
             <div className="mt-6">
