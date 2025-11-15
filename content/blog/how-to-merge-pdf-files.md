@@ -1,7 +1,7 @@
 ---
 title: "How to Merge PDF Files - Complete Guide 2024"
 excerpt: "Learn how to merge pdf files with our free online tools."
-date: "2025-11-15T15:00:05.608Z"
+date: "2025-11-15T15:00:23.915Z"
 category: "PDF Guide"
 icon: "📄"
 keywords: "how to merge pdf, merge pdf files, combine pdf, pdf merger guide, merge pdf tutorial, combine pdf files online"
@@ -10,7 +10,7 @@ keywords: "how to merge pdf, merge pdf files, combine pdf, pdf merger guide, mer
 ---
 title: "How to Merge PDF Files - Complete Guide 2024"
 excerpt: "Learn how to merge pdf files with our free online tools. Step-by-step guide with screenshots and tips."
-date: "2025-11-15T15:00:05.607Z"
+date: "2025-11-15T15:00:23.914Z"
 category: "PDF Guide"
 icon: "📄"
 keywords: "how to merge pdf, merge pdf files, combine pdf, pdf merger guide, merge pdf tutorial, combine pdf files online"

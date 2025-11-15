@@ -1,7 +1,7 @@
 ---
 title: "How to Convert PDF to Word - Free Online Method"
 excerpt: "Learn how to convert pdf to word with our free online tools."
-date: "2025-11-15T15:00:05.608Z"
+date: "2025-11-15T15:00:23.915Z"
 category: "PDF Guide"
 icon: "📝"
 keywords: "pdf to word, convert pdf to word, pdf to docx, pdf word converter guide, how to convert pdf to word"
@@ -10,7 +10,7 @@ keywords: "pdf to word, convert pdf to word, pdf to docx, pdf word converter gui
 ---
 title: "How to Convert PDF to Word - Free Online Method"
 excerpt: "Learn how to convert pdf to word with our free online tools. Step-by-step guide with screenshots and tips."
-date: "2025-11-15T15:00:05.608Z"
+date: "2025-11-15T15:00:23.915Z"
 category: "PDF Guide"
 icon: "📝"
 keywords: "pdf to word, convert pdf to word, pdf to docx, pdf word converter guide, how to convert pdf to word"

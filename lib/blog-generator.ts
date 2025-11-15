@@ -76,9 +76,13 @@ function generateBlogContent(template: Omit<BlogPostTemplate, 'content'>): strin
     t.keywords?.toLowerCase().includes(template.title.toLowerCase().split(' ')[0])
   ).slice(0, 5);
 
+  const excerpt = template.title.includes('How to') 
+    ? `Learn how to ${template.title.toLowerCase().replace('how to ', '').replace(' - complete guide 2024', '').replace(' - free online method', '').replace(' - reduce file size guide', '').replace(' - free pdf editor guide', '')} with our free online tools. Step-by-step guide with screenshots and tips.`
+    : 'Discover the best free PDF tools and learn how to use them effectively.';
+
   const content = `---
 title: "${template.title}"
-excerpt: "Learn how to ${template.title.toLowerCase().replace('how to ', '').replace(' - complete guide 2024', '').replace(' - free online method', '').replace(' - reduce file size guide', '').replace(' - complete list 2024', '').replace(' - free pdf editor guide', '')} with our free online tools. Step-by-step guide with screenshots and tips."
+excerpt: "${excerpt}"
 date: "${new Date().toISOString()}"
 category: "${template.category}"
 icon: "${template.icon}"

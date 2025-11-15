@@ -1,7 +1,7 @@
 ---
 title: "How to Compress PDF Files - Reduce File Size Guide"
 excerpt: "Learn how to compress pdf files with our free online tools."
-date: "2025-11-15T15:00:05.609Z"
+date: "2025-11-15T15:00:23.915Z"
 category: "PDF Guide"
 icon: "🗜️"
 keywords: "compress pdf, reduce pdf size, pdf compression guide, shrink pdf file, how to compress pdf"
@@ -10,7 +10,7 @@ keywords: "compress pdf, reduce pdf size, pdf compression guide, shrink pdf file
 ---
 title: "How to Compress PDF Files - Reduce File Size Guide"
 excerpt: "Learn how to compress pdf files with our free online tools. Step-by-step guide with screenshots and tips."
-date: "2025-11-15T15:00:05.609Z"
+date: "2025-11-15T15:00:23.915Z"
 category: "PDF Guide"
 icon: "🗜️"
 keywords: "compress pdf, reduce pdf size, pdf compression guide, shrink pdf file, how to compress pdf"
