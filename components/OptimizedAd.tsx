@@ -47,16 +47,12 @@ export default function OptimizedAd({
         setNetwork('adsterra');
       }
       // Sidebar: Prefer AdSense (stable revenue)
-      else if (position === 'tool-sidebar' || position === 'home-sidebar') {
+      else if (position === 'tool-sidebar' || position === 'blog-sidebar' || position === 'home-sidebar') {
         setNetwork('adsense');
       }
       // Bottom: Prefer Adsterra (exit intent, higher CPM)
       else if (position === 'tool-bottom' || position === 'blog-bottom') {
         setNetwork('adsterra');
-      }
-      // Sidebar: Prefer AdSense (stable revenue)
-      else if (position === 'tool-sidebar' || position === 'blog-sidebar' || position === 'home-sidebar') {
-        setNetwork('adsense');
       }
       // Default: AdSense
       else {

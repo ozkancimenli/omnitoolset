@@ -69,6 +69,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
   const [fontFamily, setFontFamily] = useState('Arial');
   const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
+  const [freehandPath, setFreehandPath] = useState<{ x: number; y: number }[]>([]);
+  const [isDrawingFreehand, setIsDrawingFreehand] = useState(false);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -418,6 +420,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     if (pdfDocRef.current && pageNum > 0) {
       renderPage(pageNum);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNum, annotations, zoom, selectedAnnotation]);
 
   const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
