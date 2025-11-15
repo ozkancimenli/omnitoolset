@@ -35,6 +35,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [isAddingImage, setIsAddingImage] = useState(false);
   const [isAddingHighlight, setIsAddingHighlight] = useState(false);
   const [tool, setTool] = useState<'text' | 'image' | 'highlight' | null>(null);
+  const [isEditable, setIsEditable] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -42,19 +43,49 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const pdfLibDocRef = useRef<PDFDocument | null>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setFile(e.target.files[0]);
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      // Validate file type
+      if (selectedFile.type !== 'application/pdf' && !selectedFile.name.toLowerCase().endsWith('.pdf')) {
+        alert('Please select a valid PDF file.');
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+      // Validate file size (max 50MB)
+      if (selectedFile.size > 50 * 1024 * 1024) {
+        alert('File size is too large. Please select a PDF file smaller than 50MB.');
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+      setFile(selectedFile);
       setAnnotations([]);
       setPageNum(1);
+      setIsEditable(true);
     }
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    if (e.dataTransfer.files[0]?.type === 'application/pdf') {
-      setFile(e.dataTransfer.files[0]);
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile) {
+      // Validate file type
+      if (droppedFile.type !== 'application/pdf' && !droppedFile.name.toLowerCase().endsWith('.pdf')) {
+        alert('Please drop a valid PDF file.');
+        return;
+      }
+      // Validate file size (max 50MB)
+      if (droppedFile.size > 50 * 1024 * 1024) {
+        alert('File size is too large. Please select a PDF file smaller than 50MB.');
+        return;
+      }
+      setFile(droppedFile);
       setAnnotations([]);
       setPageNum(1);
+      setIsEditable(true);
     }
   };
 
@@ -73,31 +104,69 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       const pdfjsLib = await import('pdfjs-dist');
       pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.mjs';
       
+      // Check if local worker exists, otherwise use CDN
       try {
         const response = await fetch('/pdf.worker.mjs', { method: 'HEAD' });
         if (!response.ok) throw new Error('Worker not found');
       } catch {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
       }
 
+      // Get file data
       const arrayBuffer = await file.arrayBuffer();
       
-      // Load for viewing
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      // Load for viewing with pdf.js
+      const pdf = await pdfjsLib.getDocument({ 
+        data: arrayBuffer,
+        useSystemFonts: true,
+        verbosity: 0 // Suppress warnings
+      }).promise;
       pdfDocRef.current = pdf;
       setNumPages(pdf.numPages);
       
-      // Load with pdf-lib for editing
-      const pdfLibDoc = await PDFDocument.load(arrayBuffer);
-      pdfLibDocRef.current = pdfLibDoc;
+      // Load with pdf-lib for editing (create a new arrayBuffer copy)
+      const fileBytes = new Uint8Array(arrayBuffer);
+      try {
+        const pdfLibDoc = await PDFDocument.load(fileBytes, {
+          ignoreEncryption: false,
+          updateMetadata: false,
+        });
+        pdfLibDocRef.current = pdfLibDoc;
+      } catch (pdfLibError) {
+        // If pdf-lib fails but pdf.js succeeded, we can still view but not edit
+        console.warn('PDF-lib loading failed, but PDF can still be viewed:', pdfLibError);
+        // Try with ignoreEncryption for password-protected PDFs
+        try {
+          const pdfLibDoc = await PDFDocument.load(fileBytes, {
+            ignoreEncryption: true,
+            updateMetadata: false,
+          });
+          pdfLibDocRef.current = pdfLibDoc;
+        } catch {
+          // If still fails, we'll only allow viewing, not editing
+          pdfLibDocRef.current = null;
+          setIsEditable(false);
+        }
+      }
+      
+      // Check if PDF is editable
+      setIsEditable(pdfLibDocRef.current !== null);
       
       const url = URL.createObjectURL(file);
       setPdfUrl(url);
       
-      renderPage(1);
+      // Render first page
+      await renderPage(1);
     } catch (error) {
       console.error('Error loading PDF:', error);
-      alert('Error loading PDF. Please make sure the file is a valid PDF.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Error loading PDF: ${errorMessage}\n\nPlease make sure:\n- The file is a valid PDF\n- The file is not corrupted\n- The file is not password protected`);
+      setFile(null);
+      setPdfUrl(null);
+      pdfDocRef.current = null;
+      pdfLibDocRef.current = null;
+      setIsEditable(true);
+      setAnnotations([]);
     } finally {
       setIsProcessing(false);
     }
@@ -218,8 +287,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   const handleDownload = async () => {
-    if (!pdfLibDocRef.current || !file) {
+    if (!file) {
       alert('Please load a PDF file first.');
+      return;
+    }
+
+    if (!pdfLibDocRef.current) {
+      alert('This PDF cannot be edited (may be password-protected or corrupted). You can only view it.');
       return;
     }
 
@@ -346,55 +420,79 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
       {file && (
         <>
+          {/* Warning if PDF is not editable */}
+          {!isEditable && (
+            <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-xl p-4 mb-4">
+              <p className="text-yellow-300 text-sm">
+                ⚠️ This PDF cannot be edited (may be password-protected or have restrictions). You can view it, but editing features are disabled.
+              </p>
+            </div>
+          )}
+
           {/* Editor Controls */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-4">
             <div className="flex flex-wrap gap-3 items-center justify-between mb-4">
               <div className="flex gap-3 flex-wrap items-center">
                 <button
                   onClick={() => {
+                    if (!isEditable) {
+                      alert('This PDF cannot be edited. It may be password-protected or have restrictions.');
+                      return;
+                    }
                     setTool(tool === 'text' ? null : 'text');
                     setIsAddingText(tool !== 'text');
                     setIsAddingImage(false);
                     setIsAddingHighlight(false);
                   }}
+                  disabled={!isEditable}
                   className={`px-4 py-2 rounded-lg transition-colors ${
                     tool === 'text'
                       ? 'bg-indigo-600 text-white'
                       : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
-                  }`}
+                  } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {tool === 'text' ? '✓ Add Text' : 'Add Text'}
                 </button>
                 
                 <button
                   onClick={() => {
+                    if (!isEditable) {
+                      alert('This PDF cannot be edited. It may be password-protected or have restrictions.');
+                      return;
+                    }
                     setTool(tool === 'highlight' ? null : 'highlight');
                     setIsAddingHighlight(tool !== 'highlight');
                     setIsAddingText(false);
                     setIsAddingImage(false);
                   }}
+                  disabled={!isEditable}
                   className={`px-4 py-2 rounded-lg transition-colors ${
                     tool === 'highlight'
                       ? 'bg-yellow-600 text-white'
                       : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
-                  }`}
+                  } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {tool === 'highlight' ? '✓ Highlight' : 'Highlight'}
                 </button>
 
                 <button
                   onClick={() => {
+                    if (!isEditable) {
+                      alert('This PDF cannot be edited. It may be password-protected or have restrictions.');
+                      return;
+                    }
                     setTool(tool === 'image' ? null : 'image');
                     setIsAddingImage(tool !== 'image');
                     setIsAddingText(false);
                     setIsAddingHighlight(false);
                     imageInputRef.current?.click();
                   }}
+                  disabled={!isEditable}
                   className={`px-4 py-2 rounded-lg transition-colors ${
                     tool === 'image'
                       ? 'bg-green-600 text-white'
                       : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
-                  }`}
+                  } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   Add Image
                 </button>
