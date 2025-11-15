@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-
 interface AdsterraProps {
   containerId?: string;
   layout?: '1x1' | '1x2' | '2x1' | '4x1' | 'auto';
@@ -15,31 +13,15 @@ export default function Adsterra({
   className = '',
   style,
 }: AdsterraProps) {
-  useEffect(() => {
-    // Load Adsterra script
-    const script = document.createElement('script');
-    script.async = true;
-    script.setAttribute('data-cfasync', 'false');
-    script.src = '//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup: remove script on unmount
-      const existingScript = document.querySelector(
-        'script[src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"]'
-      );
-      if (existingScript) {
-        existingScript.remove();
-      }
-    };
-  }, []);
+  // Use original container ID - Adsterra script looks for this specific ID
+  // For multiple instances, we'll use the same ID (Adsterra handles multiple containers)
 
   // Layout styles
   const layoutStyles: Record<string, React.CSSProperties> = {
-    '1x1': { aspectRatio: '1/1', maxWidth: '300px' },
-    '1x2': { aspectRatio: '1/2', maxWidth: '300px' },
-    '2x1': { aspectRatio: '2/1', maxWidth: '600px' },
-    '4x1': { aspectRatio: '4/1', maxWidth: '1200px' },
+    '1x1': { aspectRatio: '1/1', maxWidth: '300px', minHeight: '250px' },
+    '1x2': { aspectRatio: '1/2', maxWidth: '300px', minHeight: '500px' },
+    '2x1': { aspectRatio: '2/1', maxWidth: '600px', minHeight: '300px' },
+    '4x1': { aspectRatio: '4/1', maxWidth: '1200px', minHeight: '250px' },
     auto: { width: '100%', minHeight: '250px' },
   };
 
@@ -55,4 +37,3 @@ export default function Adsterra({
     />
   );
 }
-

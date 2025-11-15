@@ -66,6 +66,12 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#4f46e5" />
         <meta name="google-adsense-account" content="ca-pub-8640955536193345" />
+        {/* Adsterra Script - Global */}
+        <script
+          async
+          data-cfasync="false"
+          src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"
+        />
       </head>
       <body className={inter.className}>
         {children}
