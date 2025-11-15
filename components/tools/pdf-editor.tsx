@@ -176,7 +176,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         if (context) {
           canvas.height = viewport.height;
           canvas.width = viewport.width;
-          await page.render({ canvasContext: context, viewport }).promise;
+          await page.render({ 
+            canvasContext: context, 
+            viewport,
+            canvas: canvas 
+          } as any).promise;
           thumbnails.push(canvas.toDataURL());
         }
       }
@@ -241,7 +245,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       canvas.height = viewport.height;
       canvas.width = viewport.width;
 
-      await page.render({ canvasContext: context, viewport }).promise;
+      await page.render({ 
+        canvasContext: context, 
+        viewport,
+        canvas: canvas 
+      } as any).promise;
       
       // Draw annotations
       const pageAnnotations = annotations.filter(ann => ann.page === pageNumber);
