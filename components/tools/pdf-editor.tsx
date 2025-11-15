@@ -112,20 +112,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
       }
 
-      // Get file data
-      const arrayBuffer = await file.arrayBuffer();
+      // Read file separately for each library to avoid ArrayBuffer detachment issues
+      // First, read for pdf.js (viewing)
+      const arrayBufferForViewing = await file.arrayBuffer();
       
       // Load for viewing with pdf.js
       const pdf = await pdfjsLib.getDocument({ 
-        data: arrayBuffer,
+        data: arrayBufferForViewing,
         useSystemFonts: true,
         verbosity: 0 // Suppress warnings
       }).promise;
       pdfDocRef.current = pdf;
       setNumPages(pdf.numPages);
       
-      // Load with pdf-lib for editing (create a new arrayBuffer copy)
-      const fileBytes = new Uint8Array(arrayBuffer);
+      // Now read file again for pdf-lib (editing) - separate ArrayBuffer to avoid detachment
+      const arrayBufferForEditing = await file.arrayBuffer();
+      const fileBytes = new Uint8Array(arrayBufferForEditing);
+      
       try {
         const pdfLibDoc = await PDFDocument.load(fileBytes, {
           ignoreEncryption: false,
@@ -137,7 +140,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         console.warn('PDF-lib loading failed, but PDF can still be viewed:', pdfLibError);
         // Try with ignoreEncryption for password-protected PDFs
         try {
-          const pdfLibDoc = await PDFDocument.load(fileBytes, {
+          // Read file again for retry
+          const retryBuffer = await file.arrayBuffer();
+          const retryBytes = new Uint8Array(retryBuffer);
+          const pdfLibDoc = await PDFDocument.load(retryBytes, {
             ignoreEncryption: true,
             updateMetadata: false,
           });
