@@ -366,6 +366,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [exportQuality, setExportQuality] = useState<'low' | 'medium' | 'high'>('high');
   const [exportFormat, setExportFormat] = useState<'pdf' | 'pdf-a'>('pdf');
   
+  // Advanced: Export to other formats
+  const [exportToFormat, setExportToFormat] = useState<'pdf' | 'png' | 'jpg' | 'html' | 'txt'>('pdf');
+  
   // Advanced: Page navigation and jump
   const [showPageJump, setShowPageJump] = useState(false);
   const [pageJumpInput, setPageJumpInput] = useState('');
@@ -2623,6 +2626,96 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     toast.success(`Template "${template.name}" applied`);
   };
 
+  // Advanced: Export to different formats
+  const exportToImage = async (format: 'png' | 'jpg' = 'png') => {
+    if (!canvasRef.current) {
+      toast.error('No canvas available');
+      return;
+    }
+    
+    try {
+      const canvas = canvasRef.current;
+      const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
+      const quality = exportQuality === 'high' ? 1.0 : exportQuality === 'medium' ? 0.8 : 0.6;
+      
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          toast.error('Failed to export image');
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file?.name.replace('.pdf', `_page${pageNum}.${format}`) || `page${pageNum}.${format}`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast.success(`Exported page ${pageNum} as ${format.toUpperCase()}`);
+      }, mimeType, quality);
+    } catch (error) {
+      logError(error as Error, 'exportToImage', { format, pageNum });
+      toast.error('Failed to export image');
+    }
+  };
+  
+  // Advanced: Export to HTML
+  const exportToHTML = async () => {
+    if (!pdfDocRef.current || !pdfTextRuns[pageNum]) {
+      toast.error('No PDF content available');
+      return;
+    }
+    
+    try {
+      const runs = pdfTextRuns[pageNum] || [];
+      let html = '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title>PDF Export</title>\n';
+      html += '<style>body { font-family: Arial, sans-serif; padding: 20px; } .page { margin-bottom: 40px; }</style>\n';
+      html += '</head>\n<body>\n<div class="page">\n';
+      
+      runs.forEach(run => {
+        const style = `font-size: ${run.fontSize}px; font-family: ${run.fontName}; color: ${run.color || '#000000'};`;
+        html += `<span style="${style}">${run.text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span> `;
+      });
+      
+      html += '\n</div>\n</body>\n</html>';
+      
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file?.name.replace('.pdf', '_page' + pageNum + '.html') || `page${pageNum}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported page ${pageNum} as HTML`);
+    } catch (error) {
+      logError(error as Error, 'exportToHTML', { pageNum });
+      toast.error('Failed to export HTML');
+    }
+  };
+  
+  // Advanced: Export to Text
+  const exportToText = async () => {
+    if (!pdfTextRuns[pageNum]) {
+      toast.error('No text content available');
+      return;
+    }
+    
+    try {
+      const runs = pdfTextRuns[pageNum] || [];
+      const text = runs.map(run => run.text).join(' ');
+      
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file?.name.replace('.pdf', '_page' + pageNum + '.txt') || `page${pageNum}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported page ${pageNum} as TXT`);
+    } catch (error) {
+      logError(error as Error, 'exportToText', { pageNum });
+      toast.error('Failed to export text');
+    }
+  };
+  
   // Phase 7: Export PDF with options
   const exportPdfWithOptions = async () => {
     if (!pdfLibDocRef.current) {
@@ -3496,12 +3589,29 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                 className="px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm"
                                 title="Font Family"
                               >
-                                <option value="Arial">Arial</option>
-                                <option value="Times New Roman">Times</option>
-                                <option value="Helvetica">Helvetica</option>
-                                <option value="Courier New">Courier</option>
-                                <option value="Georgia">Georgia</option>
-                                <option value="Verdana">Verdana</option>
+                                <optgroup label="Sans Serif">
+                                  <option value="Arial">Arial</option>
+                                  <option value="Helvetica">Helvetica</option>
+                                  <option value="Verdana">Verdana</option>
+                                  <option value="Tahoma">Tahoma</option>
+                                  <option value="Trebuchet MS">Trebuchet MS</option>
+                                  <option value="Comic Sans MS">Comic Sans MS</option>
+                                </optgroup>
+                                <optgroup label="Serif">
+                                  <option value="Times New Roman">Times New Roman</option>
+                                  <option value="Georgia">Georgia</option>
+                                  <option value="Garamond">Garamond</option>
+                                  <option value="Book Antiqua">Book Antiqua</option>
+                                </optgroup>
+                                <optgroup label="Monospace">
+                                  <option value="Courier New">Courier New</option>
+                                  <option value="Monaco">Monaco</option>
+                                  <option value="Consolas">Consolas</option>
+                                </optgroup>
+                                <optgroup label="Display">
+                                  <option value="Impact">Impact</option>
+                                  <option value="Arial Black">Arial Black</option>
+                                </optgroup>
                               </select>
                               <input
                                 type="number"
@@ -4413,12 +4523,39 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         <option value="pdf-a">PDF/A (Archival)</option>
                       </select>
                     </div>
+                    
+                    {/* Advanced: Export to Other Formats */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Export As</label>
+                      <select
+                        value={exportToFormat}
+                        onChange={(e) => setExportToFormat(e.target.value as 'pdf' | 'png' | 'jpg' | 'html' | 'txt')}
+                        className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100"
+                      >
+                        <option value="pdf">PDF</option>
+                        <option value="png">PNG Image</option>
+                        <option value="jpg">JPG Image</option>
+                        <option value="html">HTML</option>
+                        <option value="txt">Text (TXT)</option>
+                      </select>
+                    </div>
                     <button
-                      onClick={exportPdfWithOptions}
+                      onClick={async () => {
+                        if (exportToFormat === 'pdf') {
+                          await exportPdfWithOptions();
+                        } else if (exportToFormat === 'png' || exportToFormat === 'jpg') {
+                          await exportToImage(exportToFormat);
+                        } else if (exportToFormat === 'html') {
+                          await exportToHTML();
+                        } else if (exportToFormat === 'txt') {
+                          await exportToText();
+                        }
+                        setShowExportOptions(false);
+                      }}
                       disabled={isProcessing}
                       className="w-full px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
-                      {isProcessing ? 'Exporting...' : 'Export PDF'}
+                      {isProcessing ? 'Exporting...' : `Export ${exportToFormat.toUpperCase()}`}
                     </button>
                   </div>
                 </div>
