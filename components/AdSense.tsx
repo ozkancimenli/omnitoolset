@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Adsterra from './Adsterra';
 
 interface AdSenseProps {
   adSlot?: string;
@@ -8,6 +9,7 @@ interface AdSenseProps {
   style?: React.CSSProperties;
   className?: string;
   fullWidthResponsive?: boolean;
+  useAdsterra?: boolean; // Toggle between AdSense and Adsterra
 }
 
 export default function AdSense({
@@ -16,10 +18,21 @@ export default function AdSense({
   style,
   className = '',
   fullWidthResponsive = true,
+  useAdsterra = true, // Default to Adsterra smartlink
 }: AdSenseProps) {
   const adRef = useRef<HTMLDivElement>(null);
   const pushedRef = useRef(false);
 
+  // Use Adsterra Smartlink if enabled
+  if (useAdsterra) {
+    return (
+      <div className={className} style={style}>
+        <Adsterra format="banner" className={className} width={728} height={90} />
+      </div>
+    );
+  }
+
+  // Original AdSense code (fallback)
   useEffect(() => {
     // Only push once per container
     if (pushedRef.current) return;

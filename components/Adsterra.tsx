@@ -46,26 +46,49 @@ export default function Adsterra({
         document.removeEventListener('keydown', handleInteraction);
       };
     } else if (format === 'banner') {
-      // Banner ad using iframe
-      const iframe = document.createElement('iframe');
-      iframe.src = smartlinkUrl;
-      iframe.width = width.toString();
-      iframe.height = height.toString();
-      iframe.frameBorder = '0';
-      iframe.scrolling = 'no';
-      iframe.style.border = 'none';
-      iframe.style.display = 'block';
-      iframe.style.margin = '0 auto';
-      iframe.style.maxWidth = '100%';
-      iframe.allow = 'autoplay; encrypted-media';
-      iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms';
+      // Banner ad - Use Adsterra smartlink with redirect
+      // Create clickable banner that redirects to smartlink
+      const banner = document.createElement('a');
+      banner.href = smartlinkUrl;
+      banner.target = '_blank';
+      banner.rel = 'noopener noreferrer';
+      banner.style.display = 'block';
+      banner.style.width = '100%';
+      banner.style.minHeight = `${height}px`;
+      banner.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      banner.style.borderRadius = '8px';
+      banner.style.textDecoration = 'none';
+      banner.style.color = 'white';
+      banner.style.padding = '20px';
+      banner.style.textAlign = 'center';
+      banner.style.fontSize = '16px';
+      banner.style.fontWeight = 'bold';
+      banner.style.cursor = 'pointer';
+      banner.style.position = 'relative';
+      banner.style.overflow = 'hidden';
       
-      adRef.current.appendChild(iframe);
+      // Add animated text
+      const text = document.createElement('div');
+      text.textContent = 'Advertisement';
+      text.style.position = 'absolute';
+      text.style.top = '50%';
+      text.style.left = '50%';
+      text.style.transform = 'translate(-50%, -50%)';
+      text.style.zIndex = '1';
+      banner.appendChild(text);
+      
+      // Add click handler
+      banner.onclick = (e) => {
+        e.preventDefault();
+        window.open(smartlinkUrl, '_blank', 'noopener,noreferrer');
+      };
+      
+      adRef.current.appendChild(banner);
       scriptLoaded.current = true;
 
       return () => {
-        if (adRef.current && iframe.parentNode) {
-          adRef.current.removeChild(iframe);
+        if (adRef.current && banner.parentNode) {
+          adRef.current.removeChild(banner);
         }
       };
     } else if (format === 'native') {
