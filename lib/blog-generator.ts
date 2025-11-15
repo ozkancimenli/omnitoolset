@@ -133,6 +133,10 @@ Visit our [PDF Merge Tool](/tools/pdf-merge) - it's 100% free and requires no re
 
 ${relatedTools.map(t => `- [${t.title}](/tools/${t.slug}) - ${t.description}`).join('\n')}
 
+## 🎁 Exclusive Offers
+
+Looking for more tools and services? [Click here for exclusive offers](https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd) that can help you with your workflow. These carefully selected offers are available for a limited time.
+
 ## Frequently Asked Questions
 
 ### Is PDF merging free?
@@ -213,6 +217,10 @@ Visit our [PDF to Word Tool](/tools/pdf-to-word) - completely free, no registrat
 
 ${relatedTools.map(t => `- [${t.title}](/tools/${t.slug}) - ${t.description}`).join('\n')}
 
+## 🎁 Exclusive Offers
+
+Looking for more tools and services? [Click here for exclusive offers](https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd) that can help you with your workflow. These carefully selected offers are available for a limited time.
+
 ## FAQ
 
 ### Is PDF to Word conversion free?
@@ -287,6 +295,10 @@ Our tool automatically selects the best compression level:
 ## Related Tools
 
 ${relatedTools.map(t => `- [${t.title}](/tools/${t.slug}) - ${t.description}`).join('\n')}
+
+## 🎁 Exclusive Offers
+
+Looking for more tools and services? [Click here for exclusive offers](https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd) that can help you with your workflow. These carefully selected offers are available for a limited time.
 
 ## FAQ
 
@@ -448,6 +460,10 @@ Select from the toolbar:
 ## Related Tools
 
 ${relatedTools.map(t => `- [${t.title}](/tools/${t.slug}) - ${t.description}`).join('\n')}
+
+## 🎁 Exclusive Offers
+
+Looking for more tools and services? [Click here for exclusive offers](https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd) that can help you with your workflow. These carefully selected offers are available for a limited time.
 
 ## FAQ
 
