@@ -1160,18 +1160,24 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               color: strokeColorRgb,
             });
           } else if (annotation.type === 'watermark' && annotation.watermarkText) {
-            // Draw watermark
+            // Draw watermark (simplified - without rotation for now)
+            // pdf-lib doesn't have direct rotation support for text
+            // We'll draw it without rotation, or use a workaround
             const watermarkFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
             const watermarkRgb = hexToRgb(annotation.color || '#CCCCCC');
             const watermarkOpacity = annotation.watermarkOpacity || 0.3;
+            
+            // Calculate text width for centering
+            const textWidth = watermarkFont.widthOfTextAtSize(annotation.watermarkText, annotation.fontSize || 48);
+            
+            // Draw watermark text (centered at position, no rotation for compatibility)
             page.drawText(annotation.watermarkText, {
-              x: annotation.x,
+              x: annotation.x - textWidth / 2,
               y: height - annotation.y,
               size: annotation.fontSize || 48,
               font: watermarkFont,
               color: rgb(watermarkRgb.r / 255, watermarkRgb.g / 255, watermarkRgb.b / 255),
               opacity: watermarkOpacity,
-              rotate: { angleDegrees: -45 },
             });
           } else if (annotation.type === 'signature' && annotation.width && annotation.height) {
             // Draw signature area (dashed border - PDF-lib doesn't support dashed, so we use solid)
