@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
@@ -62,13 +63,30 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#4f46e5" />
         <meta name="google-adsense-account" content="ca-pub-8640955536193345" />
-        {/* AdSense Script - Original HTML code */}
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossOrigin="anonymous"></script>
-        {/* Adsterra Popunder Script - Original HTML code */}
-        <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
-        {/* Google Analytics (gtag.js) - Original HTML code */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WF6SNHNXN"></script>
-        <script
+      </head>
+      <body className={inter.className}>
+        {/* AdSense Script - beforeInteractive loads in head */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
+        {/* Adsterra Popunder Script - beforeInteractive loads in head */}
+        <Script
+          type="text/javascript"
+          src="//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js"
+          strategy="beforeInteractive"
+        />
+        {/* Google Analytics (gtag.js) - beforeInteractive loads in head */}
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-1WF6SNHNXN"
+          strategy="beforeInteractive"
+        />
+        <Script
+          id="google-analytics"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -78,8 +96,6 @@ export default function RootLayout({
             `,
           }}
         />
-      </head>
-      <body className={inter.className}>
         {children}
       </body>
     </html>
