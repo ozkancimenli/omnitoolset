@@ -298,7 +298,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           context.fillStyle = ann.color || '#000000';
           const fontFamily = ann.fontFamily || 'Arial';
           const fontSize = ann.fontSize || 16;
-          context.font = `${fontSize}px ${fontFamily}`;
+          const fontWeight = ann.fontWeight || 'normal';
+          const fontStyle = ann.fontStyle || 'normal';
+          context.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
           context.textAlign = (ann.textAlign || 'left') as CanvasTextAlign;
           context.textBaseline = 'bottom';
           
@@ -313,6 +315,26 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           }
           
           context.fillText(ann.text, textX, ann.y);
+          
+          // Apply text decoration
+          if (ann.textDecoration === 'underline') {
+            const metrics = context.measureText(ann.text);
+            context.strokeStyle = ann.color || '#000000';
+            context.lineWidth = 1;
+            context.beginPath();
+            const underlineY = ann.y + 2;
+            if (ann.textAlign === 'center') {
+              context.moveTo(ann.x - metrics.width / 2, underlineY);
+              context.lineTo(ann.x + metrics.width / 2, underlineY);
+            } else if (ann.textAlign === 'right') {
+              context.moveTo(ann.x - metrics.width, underlineY);
+              context.lineTo(ann.x, underlineY);
+            } else {
+              context.moveTo(ann.x, underlineY);
+              context.lineTo(ann.x + metrics.width, underlineY);
+            }
+            context.stroke();
+          }
         } else if (ann.type === 'highlight' && ann.width && ann.height) {
           const rgbColor = hexToRgb(ann.color || highlightColor);
           context.fillStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.3)`;
