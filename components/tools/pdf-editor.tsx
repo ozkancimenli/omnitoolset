@@ -1516,7 +1516,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         onClick={() => setShowThumbnails(!showThumbnails)}
                         className={`p-2 rounded-md transition-all ${
                           showThumbnails
-                            ? 'bg-indigo-600 text-white shadow-lg'
+                            ? 'bg-gray-900 text-white shadow-lg'
                             : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
                         }`}
                         title="Toggle Pages Panel"
