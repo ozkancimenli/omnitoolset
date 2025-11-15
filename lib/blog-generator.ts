@@ -80,18 +80,7 @@ function generateBlogContent(template: Omit<BlogPostTemplate, 'content'>): strin
     ? `Learn how to ${template.title.toLowerCase().replace('how to ', '').replace(' - complete guide 2024', '').replace(' - free online method', '').replace(' - reduce file size guide', '').replace(' - free pdf editor guide', '')} with our free online tools. Step-by-step guide with screenshots and tips.`
     : 'Discover the best free PDF tools and learn how to use them effectively.';
 
-  const content = `---
-title: "${template.title}"
-excerpt: "${excerpt}"
-date: "${new Date().toISOString()}"
-category: "${template.category}"
-icon: "${template.icon}"
-keywords: "${template.keywords}"
----
-
-# ${template.title}
-
-${template.title.includes('Merge PDF') ? `
+  const mainContent = template.title.includes('Merge PDF') ? `
 ## Introduction
 
 Merging PDF files is one of the most common tasks people need to do. Whether you're combining multiple documents, reports, or presentations, having a reliable PDF merger is essential. In this comprehensive guide, we'll show you exactly how to merge PDF files using our free online tool.
@@ -481,18 +470,20 @@ We support standard PDF files. Output is always PDF format.
 ## Conclusion
 
 Edit PDF files easily with our free online PDF editor. No software needed, works in your browser. Try it now: [PDF Editor](/pdf-editor)!
-` : 'Content coming soon...'}`;
+`     : 'Content coming soon...';
 
   return `---
 title: "${template.title}"
-excerpt: "${template.title.includes('How to') ? 'Learn how to ' + template.title.toLowerCase().replace('how to ', '').replace(' - complete guide 2024', '').replace(' - free online method', '').replace(' - reduce file size guide', '').replace(' - free pdf editor guide', '') + ' with our free online tools.' : 'Discover the best free PDF tools and learn how to use them effectively.'}"
+excerpt: "${excerpt}"
 date: "${new Date().toISOString()}"
 category: "${template.category}"
 icon: "${template.icon}"
 keywords: "${template.keywords}"
 ---
 
-${content}
+# ${template.title}
+
+${mainContent}
 `;
 }
 

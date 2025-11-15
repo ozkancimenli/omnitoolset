@@ -1,16 +1,7 @@
 ---
 title: "How to Edit PDF Files Online - Free PDF Editor Guide"
-excerpt: "Learn how to edit pdf files online with our free online tools."
-date: "2025-11-15T15:00:23.916Z"
-category: "PDF Guide"
-icon: "✏️"
-keywords: "edit pdf, pdf editor guide, how to edit pdf online, free pdf editor tutorial, edit pdf files"
----
-
----
-title: "How to Edit PDF Files Online - Free PDF Editor Guide"
 excerpt: "Learn how to edit pdf files online with our free online tools. Step-by-step guide with screenshots and tips."
-date: "2025-11-15T15:00:23.916Z"
+date: "2025-11-15T15:00:37.263Z"
 category: "PDF Guide"
 icon: "✏️"
 keywords: "edit pdf, pdf editor guide, how to edit pdf online, free pdf editor tutorial, edit pdf files"
