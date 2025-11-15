@@ -64,6 +64,8 @@ export default function RootLayout({
         <meta name="google-adsense-account" content="ca-pub-8640955536193345" />
         {/* AdSense Script - Original HTML code */}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossOrigin="anonymous"></script>
+        {/* Adsterra Popunder Script - Original HTML code */}
+        <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
         {/* Google Analytics (gtag.js) - Original HTML code */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WF6SNHNXN"></script>
         <script
