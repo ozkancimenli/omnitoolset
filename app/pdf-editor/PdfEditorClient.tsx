@@ -82,10 +82,10 @@ export default function PdfEditorClient() {
         )}
       </header>
 
-      {/* Full-Screen Editor Container */}
-      <main className="flex-1 overflow-hidden bg-gray-50 dark:bg-slate-950">
-        <div className="h-full">
-          {/* Editor Component - Takes Full Available Space */}
+      {/* Full-Screen Editor Container - iLovePDF Style */}
+      <main className="flex-1 overflow-hidden bg-slate-100 dark:bg-slate-900">
+        {/* Editor Component - Full Height */}
+        <div className="h-full w-full">
           <PdfEditor />
         </div>
       </main>

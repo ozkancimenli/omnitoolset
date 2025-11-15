@@ -687,7 +687,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 overflow-hidden">
       {/* File Upload - Premium Design */}
       {!file && (
         <div className="flex-1 flex items-center justify-center p-8">
@@ -725,28 +725,25 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       )}
 
       {file && (
-        <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-900">
+        <div className="flex-1 flex flex-col overflow-hidden relative bg-slate-100 dark:bg-slate-900">
           {!isEditable && (
-            <div className="mx-6 mt-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 border-l-4 border-yellow-500 rounded-r-xl p-4 shadow-lg">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">⚠️</span>
+            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 border-l-4 border-yellow-500 rounded-r-xl p-3 shadow-lg max-w-2xl">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">⚠️</span>
                 <div>
-                  <p className="text-yellow-900 dark:text-yellow-200 text-sm font-semibold mb-1">
-                    View-Only Mode
-                  </p>
-                  <p className="text-yellow-700 dark:text-yellow-300 text-xs">
-                    This PDF cannot be edited (may be password-protected). You can view it, but editing features are disabled.
+                  <p className="text-yellow-900 dark:text-yellow-200 text-xs font-semibold">
+                    View-Only Mode - This PDF cannot be edited
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Main Editor Layout - Professional Design */}
-          <div className="flex-1 flex gap-0 overflow-hidden">
-            {/* Sidebar - Modern Page Thumbnails */}
+          {/* Main Editor Layout - iLovePDF Style */}
+          <div className="flex-1 flex relative overflow-hidden">
+            {/* Sidebar - Overlay Style (iLovePDF) */}
             {showThumbnails && (
-              <div className="w-64 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border-r border-slate-200 dark:border-slate-700 shadow-lg">
+              <div className="absolute left-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 shadow-2xl z-40 transform transition-transform duration-300">
                 <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -758,7 +755,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     </span>
                   </div>
                 </div>
-                <div className="p-3 space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
+                <div className="p-3 space-y-2 overflow-y-auto h-full">
                   {Array.from({ length: numPages }, (_, i) => i + 1).map((page) => (
                     <button
                       key={page}
@@ -796,11 +793,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               </div>
             )}
 
-            {/* Main Editor Area - Professional Design */}
-            <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
-              {/* Premium Toolbar */}
-              <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
-                <div className="px-4 py-3">
+            {/* Main Editor Area - iLovePDF Style Full Screen */}
+            <div className="flex-1 flex flex-col bg-slate-100 dark:bg-slate-900 w-full">
+              {/* Compact Toolbar - iLovePDF Style */}
+              <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm flex-shrink-0">
+                <div className="px-3 py-2">
                   <div className="flex items-center justify-between gap-4">
                     {/* Left: History & Tools */}
                     <div className="flex items-center gap-2 flex-wrap">
@@ -1091,80 +1088,73 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 </div>
               </div>
 
-              {/* PDF Canvas - Premium Design */}
+              {/* PDF Canvas - iLovePDF Style Full Screen */}
               <div
                 ref={containerRef}
-                className="flex-1 bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-8 overflow-auto flex justify-center items-start"
+                className="flex-1 bg-slate-200 dark:bg-slate-950 overflow-auto flex justify-center items-center p-4"
               >
-                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-slate-900/10">
+                <div className="bg-white dark:bg-slate-900 shadow-2xl rounded-sm">
                   <canvas
                     ref={canvasRef}
                     onMouseDown={handleCanvasMouseDown}
                     onMouseMove={handleCanvasMouseMove}
                     onMouseUp={handleCanvasMouseUp}
-                    className="rounded-lg shadow-xl"
+                    className="block"
                     style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default' }}
                   />
                 </div>
               </div>
 
-              {/* Annotations Panel - Modern Design */}
+              {/* Annotations Panel - Compact Bottom Bar */}
               {annotations.filter(ann => ann.page === pageNum).length > 0 && (
-                <div className="px-6 py-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-lg">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="px-4 py-2 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-lg flex-shrink-0">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-indigo-600 dark:text-indigo-400 text-lg">📝</span>
-                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                        Annotations on Page {pageNum}
+                      <span className="text-indigo-600 dark:text-indigo-400">📝</span>
+                      <h3 className="text-xs font-semibold text-slate-900 dark:text-white">
+                        Page {pageNum}: {annotations.filter(ann => ann.page === pageNum).length} annotations
                       </h3>
-                      <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full font-medium">
-                        {annotations.filter(ann => ann.page === pageNum).length}
-                      </span>
                     </div>
                     <button
                       onClick={clearAllAnnotations}
-                      className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors font-semibold px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md"
+                      className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors font-medium px-2 py-1 hover:bg-red-50 dark:hover:bg-red-950/30 rounded"
                     >
                       Clear All
                     </button>
                   </div>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                  <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
                     {annotations
                       .filter(ann => ann.page === pageNum)
                       .map((ann) => (
                         <div
                           key={ann.id}
-                          className={`flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer border ${
+                          className={`flex items-center gap-2 px-2 py-1 rounded-md transition-all cursor-pointer border flex-shrink-0 ${
                             selectedAnnotation === ann.id
-                              ? 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-500 shadow-md'
+                              ? 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-500'
                               : 'bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-600'
                           }`}
                           onClick={() => setSelectedAnnotation(ann.id === selectedAnnotation ? null : ann.id)}
                         >
-                          <div className="flex items-center gap-3">
-                            <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold ${
-                              ann.type === 'text' ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' :
-                              ann.type === 'highlight' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
-                              ann.type === 'image' ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' :
-                              'bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300'
-                            }`}>
-                              {ann.type}
-                            </span>
-                            <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
-                              {ann.text || `${ann.type.charAt(0).toUpperCase() + ann.type.slice(1)} annotation`}
-                            </span>
-                          </div>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                            ann.type === 'text' ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' :
+                            ann.type === 'highlight' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
+                            ann.type === 'image' ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' :
+                            'bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          }`}>
+                            {ann.type}
+                          </span>
+                          <span className="text-slate-700 dark:text-slate-300 text-xs">
+                            {ann.text || ann.type}
+                          </span>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               removeAnnotation(ann.id);
                             }}
-                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm transition-colors p-1.5 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md"
-                            title="Delete annotation"
+                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-xs transition-colors p-0.5"
+                            title="Delete"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            ✕
                           </button>
                         </div>
                       ))}
@@ -1172,35 +1162,30 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 </div>
               )}
 
-              {/* Download Button - Premium Design */}
-              <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-900 border-t border-slate-200 dark:border-slate-700 shadow-lg">
-                <div className="flex justify-center">
-                  <button
-                    onClick={handleDownload}
-                    disabled={isProcessing || annotations.length === 0}
-                    className="group relative px-10 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold rounded-xl shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 overflow-hidden"
-                  >
-                    <span className="relative z-10 flex items-center gap-2">
-                      {isProcessing ? (
-                        <>
-                          <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          <span>Processing...</span>
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                          </svg>
-                          <span>Download Edited PDF</span>
-                        </>
-                      )}
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  </button>
-                </div>
+              {/* Download Button - Compact Bottom Bar */}
+              <div className="px-4 py-2 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-lg flex-shrink-0 flex justify-center">
+                <button
+                  onClick={handleDownload}
+                  disabled={isProcessing || annotations.length === 0}
+                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm flex items-center gap-2"
+                >
+                  {isProcessing ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      <span>Download PDF</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
