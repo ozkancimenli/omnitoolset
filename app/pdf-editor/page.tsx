@@ -2,9 +2,9 @@ import { Metadata } from 'next';
 import StandaloneClient from './StandaloneClient';
 
 export const metadata: Metadata = {
-  title: 'Edit PDF Online – Reorder, Rotate & Delete Pages | OmniPDF Editor',
+  title: 'Edit PDF Online – Full Featured PDF Editor | OmniPDF Editor',
   description:
-    'Free online PDF editor to reorder, rotate, and delete pages from your PDF files. Fast, secure, and easy-to-use PDF editing tool with a clean, modern interface.',
+    'Professional PDF editor with text, images, shapes, links, notes, freehand drawing, and more. Add annotations, edit content, reorder pages. Fast, secure, and easy-to-use PDF editing tool with a clean, modern interface.',
   keywords:
     'edit pdf, pdf editor, reorder pdf pages, rotate pdf pages, delete pdf pages, pdf page editor, edit pdf online, free pdf editor, pdf editor online, edit pdf pages, reorder pdf, rotate pdf, delete pdf pages online, pdf page manager, edit pdf file, pdf editing tool, online pdf editor free, edit pdf no registration, pdf page editor online, best pdf editor',
   openGraph: {

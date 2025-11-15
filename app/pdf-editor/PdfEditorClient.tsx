@@ -25,7 +25,7 @@ export default function PdfEditorClient() {
                 <span className="text-xl">✏️</span>
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">PDF Editor</h1>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">OmniPDF Editor</h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight">Professional PDF Editing</p>
               </div>
             </div>
@@ -43,7 +43,7 @@ export default function PdfEditorClient() {
                 href="/"
                 className="px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
-                ← Back
+                ← Back to OmniToolset
               </a>
             </div>
           </div>
@@ -57,8 +57,11 @@ export default function PdfEditorClient() {
                 <div className="font-semibold text-blue-900 dark:text-blue-300 mb-1.5">✏️ Tools</div>
                 <div className="space-y-0.5 text-blue-700 dark:text-blue-400">
                   <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">T</kbd> Text | <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">H</kbd> Highlight</div>
-                  <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">R</kbd> Rectangle | <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">C</kbd> Circle</div>
-                  <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">L</kbd> Line | <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">A</kbd> Arrow</div>
+                  <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">I</kbd> Image | <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">R</kbd> Rectangle</div>
+                  <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">C</kbd> Circle | <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">L</kbd> Line</div>
+                  <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">A</kbd> Arrow | <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">🔗</kbd> Link</div>
+                  <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">N</kbd> Note | <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">F</kbd> Freehand</div>
+                  <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">E</kbd> Eraser</div>
                 </div>
               </div>
               <div>
@@ -66,7 +69,8 @@ export default function PdfEditorClient() {
                 <div className="space-y-0.5 text-blue-700 dark:text-blue-400">
                   <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">Ctrl+Z</kbd> Undo | <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">Ctrl+Y</kbd> Redo</div>
                   <div><kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">+</kbd> Zoom In | <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-900 rounded text-[10px]">-</kbd> Zoom Out</div>
-                  <div className="text-[10px]">Drag to create shapes</div>
+                  <div className="text-[10px]">Double-click text to edit</div>
+                  <div className="text-[10px]">Drag annotations to move</div>
                 </div>
               </div>
               <div>
@@ -75,6 +79,7 @@ export default function PdfEditorClient() {
                   <div>Click annotations to select/delete</div>
                   <div>Use thumbnails for navigation</div>
                   <div>All edits saved to PDF</div>
+                  <div>Font selection & alignment available</div>
                 </div>
               </div>
             </div>
@@ -83,9 +88,9 @@ export default function PdfEditorClient() {
       </header>
 
       {/* Full-Screen Editor Container - iLovePDF Style */}
-      <main className="flex-1 overflow-hidden bg-slate-100 dark:bg-slate-900">
+      <main className="flex-1 overflow-hidden bg-slate-100 dark:bg-slate-900" style={{ height: '100%', minHeight: '600px' }}>
         {/* Editor Component - Full Height */}
-        <div className="h-full w-full">
+        <div className="h-full w-full" style={{ height: '100%' }}>
           <PdfEditor />
         </div>
       </main>
@@ -99,7 +104,7 @@ export default function PdfEditorClient() {
             <span>100% Free • No Registration • No Watermarks</span>
           </div>
           <div className="flex items-center gap-2">
-            <span>v1.0</span>
+            <span>v2.0</span>
             <span>•</span>
             <span>Professional PDF Editing</span>
           </div>
