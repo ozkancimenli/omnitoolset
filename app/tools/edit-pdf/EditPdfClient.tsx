@@ -100,7 +100,7 @@ export default function EditPdfClient() {
               </p>
             </div>
             {/* Full PDF Editor Component */}
-            <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-slate-700" style={{ minHeight: '800px' }}>
+            <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-slate-700" style={{ height: 'calc(100vh - 300px)', minHeight: '800px', maxHeight: '1200px' }}>
               <PdfEditor toolId="edit-pdf" />
             </div>
           </div>

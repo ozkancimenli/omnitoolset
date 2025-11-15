@@ -1019,7 +1019,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 overflow-hidden">
+    <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 overflow-hidden" style={{ height: '100%', minHeight: '800px' }}>
       {/* File Upload - Premium Design */}
       {!file && (
         <div className="flex-1 flex items-center justify-center p-8">
@@ -1057,7 +1057,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       )}
 
       {file && (
-        <div className="flex-1 flex flex-col overflow-hidden relative bg-slate-100 dark:bg-slate-900">
+        <div className="flex-1 flex flex-col overflow-hidden relative bg-slate-100 dark:bg-slate-900" style={{ height: '100%', minHeight: '800px' }}>
           {!isEditable && (
             <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 border-l-4 border-yellow-500 rounded-r-xl p-3 shadow-lg max-w-2xl">
               <div className="flex items-center gap-2">
@@ -1072,7 +1072,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           )}
 
           {/* Main Editor Layout - iLovePDF Style */}
-          <div className="flex-1 flex relative overflow-hidden">
+          <div className="flex-1 flex relative overflow-hidden" style={{ height: '100%', minHeight: '600px' }}>
             {/* Sidebar - Overlay Style (iLovePDF) */}
             {showThumbnails && (
               <div className="absolute left-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 shadow-2xl z-40 transform transition-transform duration-300">
@@ -1126,7 +1126,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             )}
 
             {/* Main Editor Area - iLovePDF Style Full Screen */}
-            <div className="flex-1 flex flex-col bg-slate-100 dark:bg-slate-900 w-full">
+            <div className="flex-1 flex flex-col bg-slate-100 dark:bg-slate-900 w-full" style={{ height: '100%', minHeight: '600px' }}>
               {/* Compact Toolbar - iLovePDF Style */}
               <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm flex-shrink-0">
                 <div className="px-3 py-2">
@@ -1534,6 +1534,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               <div
                 ref={containerRef}
                 className="flex-1 bg-slate-200 dark:bg-slate-950 overflow-auto flex justify-center items-center p-4 relative"
+                style={{ minHeight: '400px', height: '100%' }}
               >
                 <div className="bg-white dark:bg-slate-900 shadow-2xl rounded-sm relative">
                   <canvas
