@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Navbar from '@/components/pdf-editor/Navbar';
 import Hero from '@/components/pdf-editor/Hero';
 import PdfEditorStandalone from '@/components/pdf-editor/PdfEditorStandalone';
@@ -47,17 +46,13 @@ const faqs = [
  * users feel comfortable and confident using the tool.
  */
 export default function StandaloneClient() {
-  const [fileInputTriggered, setFileInputTriggered] = useState(false);
-
   const handleFileSelect = () => {
-    setFileInputTriggered(true);
-    // Trigger file input click
-    const input = document.getElementById('pdf-file-input-standalone') as HTMLInputElement;
+    // Trigger file input click in the editor component
+    // The editor component has id="pdf-file-input"
+    const input = document.getElementById('pdf-file-input') as HTMLInputElement;
     if (input) {
       input.click();
     }
-    // Reset after a brief moment
-    setTimeout(() => setFileInputTriggered(false), 100);
   };
 
   return (
@@ -67,27 +62,6 @@ export default function StandaloneClient() {
       <main className="flex-1">
         {/* Hero Section */}
         <Hero onFileSelect={handleFileSelect} />
-
-        {/* Hidden file input for hero CTA */}
-        <input
-          id="pdf-file-input-standalone"
-          type="file"
-          accept=".pdf"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              // Trigger file selection in editor
-              const editorInput = document.getElementById('pdf-file-input') as HTMLInputElement;
-              if (editorInput) {
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                editorInput.files = dataTransfer.files;
-                editorInput.dispatchEvent(new Event('change', { bubbles: true }));
-              }
-            }
-          }}
-        />
 
         {/* Editor Section */}
         <section className="py-12 bg-white">
