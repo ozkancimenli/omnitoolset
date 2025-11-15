@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import { ToastContainer } from '@/components/Toast'
+import AdsterraSocialbar from '@/components/AdsterraSocialbar'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
@@ -99,6 +100,7 @@ export default function RootLayout({
         />
         {children}
         <ToastContainer />
+        <AdsterraSocialbar />
       </body>
     </html>
   )
