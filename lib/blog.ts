@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { cache } from 'react';
 
 // Dynamic import for gray-matter
 function parseMarkdown(fileContents: string) {
@@ -46,7 +47,8 @@ if (!fs.existsSync(blogDirectory)) {
   fs.mkdirSync(blogDirectory, { recursive: true });
 }
 
-export async function getBlogPosts(): Promise<BlogPost[]> {
+// Cache blog posts to reduce file system I/O
+export const getBlogPosts = cache(async (): Promise<BlogPost[]> => {
   try {
     if (!fs.existsSync(blogDirectory)) {
       return [];
@@ -78,9 +80,10 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
   } catch {
     return [];
   }
-}
+});
 
-export async function getBlogPost(slug: string): Promise<BlogPost | null> {
+// Cache individual blog posts
+export const getBlogPost = cache(async (slug: string): Promise<BlogPost | null> => {
   try {
     const fullPath = path.join(blogDirectory, `${slug}.md`);
     if (!fs.existsSync(fullPath)) {
@@ -104,5 +107,5 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   } catch {
     return null;
   }
-}
+});
 

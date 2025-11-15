@@ -2,6 +2,9 @@ import { MetadataRoute } from 'next'
 import { tools } from '@/data/tools'
 import { getBlogPosts } from '@/lib/blog'
 
+// ISR: Revalidate every hour
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://omnitoolset.com'
   

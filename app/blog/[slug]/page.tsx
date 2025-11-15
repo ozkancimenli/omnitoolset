@@ -13,6 +13,9 @@ interface PageProps {
   }>;
 }
 
+// ISR: Revalidate every hour
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
   return posts.map((post) => ({
