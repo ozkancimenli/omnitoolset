@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
 import './globals.css'
 import Analytics from '@/components/Analytics'
 
@@ -56,9 +55,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Add your Google Analytics and AdSense IDs here when ready
+  // Add your Google Analytics ID here when ready
   const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
-  const googleAdsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID;
 
   return (
     <html lang="en">
@@ -67,15 +65,10 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#4f46e5" />
         <meta name="google-adsense-account" content="ca-pub-8640955536193345" />
+        {/* AdSense Script - Original HTML code */}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossOrigin="anonymous"></script>
       </head>
       <body className={inter.className}>
-        {/* AdSense Script - beforeInteractive to load in head */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
-          crossOrigin="anonymous"
-          strategy="beforeInteractive"
-        />
         {children}
         <Analytics 
           googleAnalyticsId={googleAnalyticsId}
