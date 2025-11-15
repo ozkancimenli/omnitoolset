@@ -17,7 +17,7 @@ export const tools: Tool[] = [
     icon: '📄',
     category: 'PDF',
     slug: 'pdf-merge',
-    keywords: 'pdf merge, combine pdf, merge pdf files',
+    keywords: 'pdf merge, merge pdf, combine pdf, merge pdf files, merge pdf online, merge pdf free, combine pdf files, merge multiple pdf, pdf merger, pdf merger online, merge pdf files online, combine multiple pdf, how to merge pdf, best pdf merger, merge pdf tool, free pdf merger, online pdf merger, merge pdf no registration, combine pdf online free',
   },
   {
     id: 'pdf-split',
@@ -26,7 +26,7 @@ export const tools: Tool[] = [
     icon: '✂️',
     category: 'PDF',
     slug: 'pdf-split',
-    keywords: 'pdf split, divide pdf, split pdf pages',
+    keywords: 'pdf split, split pdf, divide pdf, split pdf pages, split pdf online, split pdf free, split pdf file, pdf splitter, pdf splitter online, split pdf by pages, how to split pdf, best pdf splitter, split pdf tool, free pdf splitter, online pdf splitter, split pdf no registration, divide pdf online, split large pdf',
   },
   {
     id: 'pdf-compress',
@@ -35,7 +35,7 @@ export const tools: Tool[] = [
     icon: '🗜️',
     category: 'PDF',
     slug: 'pdf-compress',
-    keywords: 'pdf compress, reduce pdf size, shrink pdf',
+    keywords: 'pdf compress, compress pdf, reduce pdf size, shrink pdf, compress pdf online, compress pdf free, reduce pdf file size, pdf compressor, pdf compressor online, compress pdf file, how to compress pdf, best pdf compressor, compress pdf tool, free pdf compressor, online pdf compressor, compress pdf no registration, reduce pdf size online, shrink pdf file',
   },
   {
     id: 'pdf-to-word',
@@ -44,7 +44,7 @@ export const tools: Tool[] = [
     icon: '📝',
     category: 'PDF',
     slug: 'pdf-to-word',
-    keywords: 'pdf to word, pdf to docx, convert pdf word',
+    keywords: 'pdf to word, pdf to docx, convert pdf to word, pdf to word converter, pdf to word online, pdf to word free, convert pdf word, pdf word converter, pdf to docx converter, how to convert pdf to word, best pdf to word converter, pdf to word tool, free pdf to word, online pdf to word, pdf to word no registration, convert pdf to docx online, pdf to word editor',
   },
   {
     id: 'pdf-to-jpg',
@@ -53,7 +53,7 @@ export const tools: Tool[] = [
     icon: '🖼️',
     category: 'PDF',
     slug: 'pdf-to-jpg',
-    keywords: 'pdf to jpg, pdf to image, pdf to picture',
+    keywords: 'pdf to jpg, pdf to image, pdf to picture, pdf to jpg converter, pdf to jpg online, pdf to jpg free, convert pdf to jpg, pdf to image converter, pdf to jpg tool, how to convert pdf to jpg, best pdf to jpg converter, pdf to jpg no registration, convert pdf pages to jpg, pdf to jpg online free, pdf to image online, pdf to picture converter',
   },
   {
     id: 'pdf-to-png',
@@ -62,7 +62,7 @@ export const tools: Tool[] = [
     icon: '🖼️',
     category: 'PDF',
     slug: 'pdf-to-png',
-    keywords: 'pdf to png, pdf to image, pdf to picture',
+    keywords: 'pdf to png, pdf to image, pdf to picture, pdf to png converter, pdf to png online, pdf to png free, convert pdf to png, pdf to image converter, pdf to png tool, how to convert pdf to png, best pdf to png converter, pdf to png no registration, convert pdf pages to png, pdf to png online free, pdf to image online, pdf to picture converter',
   },
   {
     id: 'jpg-to-pdf',
@@ -71,7 +71,7 @@ export const tools: Tool[] = [
     icon: '📄',
     category: 'PDF',
     slug: 'jpg-to-pdf',
-    keywords: 'jpg to pdf, image to pdf, picture to pdf',
+    keywords: 'jpg to pdf, jpeg to pdf, image to pdf, picture to pdf, jpg to pdf converter, jpg to pdf online, jpg to pdf free, convert jpg to pdf, image to pdf converter, jpg to pdf tool, how to convert jpg to pdf, best jpg to pdf converter, jpg to pdf no registration, convert images to pdf, jpeg to pdf converter, image to pdf online, picture to pdf converter',
   },
   {
     id: 'png-to-pdf',
@@ -80,7 +80,7 @@ export const tools: Tool[] = [
     icon: '📄',
     category: 'PDF',
     slug: 'png-to-pdf',
-    keywords: 'png to pdf, image to pdf, picture to pdf',
+    keywords: 'png to pdf, png to pdf converter, image to pdf, picture to pdf, png to pdf online, png to pdf free, convert png to pdf, image to pdf converter, png to pdf tool, how to convert png to pdf, best png to pdf converter, png to pdf no registration, convert images to pdf, png to pdf online free, image to pdf online, picture to pdf converter',
   },
   {
     id: 'word-to-pdf',
@@ -89,7 +89,7 @@ export const tools: Tool[] = [
     icon: '📝',
     category: 'PDF',
     slug: 'word-to-pdf',
-    keywords: 'word to pdf, docx to pdf, convert word pdf',
+    keywords: 'word to pdf, docx to pdf, convert word to pdf, word to pdf converter, word to pdf online, word to pdf free, doc to pdf, docx to pdf converter, word to pdf tool, how to convert word to pdf, best word to pdf converter, word to pdf no registration, convert docx to pdf online, word to pdf online free, doc to pdf converter, word document to pdf',
   },
   {
     id: 'excel-to-pdf',
@@ -98,7 +98,7 @@ export const tools: Tool[] = [
     icon: '📊',
     category: 'PDF',
     slug: 'excel-to-pdf',
-    keywords: 'excel to pdf, xlsx to pdf, convert excel pdf',
+    keywords: 'excel to pdf, xlsx to pdf, convert excel to pdf, excel to pdf converter, excel to pdf online, excel to pdf free, xls to pdf, xlsx to pdf converter, excel to pdf tool, how to convert excel to pdf, best excel to pdf converter, excel to pdf no registration, convert xlsx to pdf online, excel to pdf online free, excel spreadsheet to pdf, xls to pdf converter',
   },
   {
     id: 'powerpoint-to-pdf',
@@ -107,7 +107,7 @@ export const tools: Tool[] = [
     icon: '📽️',
     category: 'PDF',
     slug: 'powerpoint-to-pdf',
-    keywords: 'powerpoint to pdf, pptx to pdf, convert powerpoint pdf',
+    keywords: 'powerpoint to pdf, pptx to pdf, convert powerpoint to pdf, powerpoint to pdf converter, powerpoint to pdf online, powerpoint to pdf free, ppt to pdf, pptx to pdf converter, powerpoint to pdf tool, how to convert powerpoint to pdf, best powerpoint to pdf converter, powerpoint to pdf no registration, convert pptx to pdf online, powerpoint to pdf online free, ppt to pdf converter, powerpoint presentation to pdf',
   },
   {
     id: 'txt-to-pdf',
@@ -116,7 +116,7 @@ export const tools: Tool[] = [
     icon: '📄',
     category: 'PDF',
     slug: 'txt-to-pdf',
-    keywords: 'txt to pdf, text to pdf, convert txt pdf',
+    keywords: 'txt to pdf, text to pdf, convert txt to pdf, txt to pdf converter, txt to pdf online, txt to pdf free, text file to pdf, txt to pdf tool, how to convert txt to pdf, best txt to pdf converter, txt to pdf no registration, convert text to pdf online, txt to pdf online free, text to pdf converter, plain text to pdf',
   },
   {
     id: 'pdf-rotate',
@@ -125,7 +125,7 @@ export const tools: Tool[] = [
     icon: '🔄',
     category: 'PDF',
     slug: 'pdf-rotate',
-    keywords: 'rotate pdf, pdf rotate pages, turn pdf',
+    keywords: 'rotate pdf, pdf rotate pages, turn pdf, rotate pdf online, rotate pdf free, rotate pdf pages, pdf rotator, pdf rotator online, rotate pdf file, how to rotate pdf, best pdf rotator, rotate pdf tool, free pdf rotator, online pdf rotator, rotate pdf no registration, rotate pdf pages online, turn pdf pages',
   },
   {
     id: 'pdf-delete-pages',
@@ -145,6 +145,15 @@ export const tools: Tool[] = [
     slug: 'pdf-extract-text',
     keywords: 'extract text pdf, pdf text extractor, pdf to text',
   },
+  {
+    id: 'pdf-editor',
+    title: 'PDF Editor',
+    description: 'Edit PDF files online - add text, images, shapes, and annotations',
+    icon: '✏️',
+    category: 'PDF',
+    slug: 'pdf-editor',
+    keywords: 'pdf editor, edit pdf, pdf editor online, free pdf editor, edit pdf online, pdf editor free, online pdf editor, pdf editor tool, edit pdf files, pdf editor no registration, best pdf editor, how to edit pdf, pdf editor 2024, edit pdf online free, pdf editor web, free online pdf editor, edit pdf text, pdf annotation tool, pdf markup tool, edit pdf pages, pdf editor instant',
+  },
   
   // Image Tools
   {
@@ -154,7 +163,7 @@ export const tools: Tool[] = [
     icon: '📏',
     category: 'Image',
     slug: 'image-resize',
-    keywords: 'resize image, image resize, change image size',
+    keywords: 'resize image, image resize, change image size, resize image online, resize image free, resize photo, image resizer, image resizer online, resize picture, how to resize image, best image resizer, resize image tool, free image resizer, online image resizer, resize image no registration, resize photo online, change image dimensions',
   },
   {
     id: 'image-compress',
@@ -163,7 +172,7 @@ export const tools: Tool[] = [
     icon: '🗜️',
     category: 'Image',
     slug: 'image-compress',
-    keywords: 'compress image, reduce image size, shrink image',
+    keywords: 'compress image, reduce image size, shrink image, compress image online, compress image free, compress photo, image compressor, image compressor online, compress picture, how to compress image, best image compressor, compress image tool, free image compressor, online image compressor, compress image no registration, reduce image size online, shrink image file',
   },
   {
     id: 'jpg-png-convert',
@@ -323,7 +332,7 @@ export const tools: Tool[] = [
     icon: '📋',
     category: 'Developer',
     slug: 'json-formatter',
-    keywords: 'json formatter, json validator, json beautifier',
+    keywords: 'json formatter, json validator, json beautifier, json formatter online, json formatter free, format json, json prettifier, json validator online, json beautifier online, how to format json, best json formatter, json formatter tool, free json formatter, online json formatter, json formatter no registration, format json online, json prettify',
   },
   {
     id: 'jwt-decoder',
@@ -397,7 +406,7 @@ export const tools: Tool[] = [
     icon: '📱',
     category: 'QR Code',
     slug: 'qr-generator',
-    keywords: 'qr code, qr generator, create qr code',
+    keywords: 'qr code, qr generator, create qr code, qr code generator, qr code generator online, qr code generator free, generate qr code, create qr code online, qr code maker, how to create qr code, best qr code generator, qr code tool, free qr code generator, online qr code generator, qr code generator no registration, generate qr code online, qr code creator',
   },
   
   // Other Tools
@@ -408,7 +417,7 @@ export const tools: Tool[] = [
     icon: '🔑',
     category: 'Other',
     slug: 'password-generator',
-    keywords: 'password generator, secure password, random password',
+    keywords: 'password generator, secure password, random password, password generator online, password generator free, generate password, strong password generator, random password generator, password creator, how to generate password, best password generator, password generator tool, free password generator, online password generator, password generator no registration, create secure password, random password creator',
   },
   {
     id: 'date-converter',

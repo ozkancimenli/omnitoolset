@@ -10,26 +10,38 @@ import { tools } from '@/data/tools';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filteredTools = useMemo(() => {
-    if (!searchQuery) return tools;
+    let filtered = tools;
     
-    const query = searchQuery.toLowerCase();
-    return tools.filter(tool => 
-      tool.title.toLowerCase().includes(query) ||
-      tool.description.toLowerCase().includes(query) ||
-      tool.category.toLowerCase().includes(query) ||
-      (tool.keywords && tool.keywords.toLowerCase().includes(query))
-    );
-  }, [searchQuery]);
+    // Filter by category if selected
+    if (selectedCategory) {
+      filtered = filtered.filter(tool => tool.category === selectedCategory);
+    }
+    
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(tool => 
+        tool.title.toLowerCase().includes(query) ||
+        tool.description.toLowerCase().includes(query) ||
+        tool.category.toLowerCase().includes(query) ||
+        (tool.keywords && tool.keywords.toLowerCase().includes(query))
+      );
+    }
+    
+    return filtered;
+  }, [searchQuery, selectedCategory]);
 
   const categories = Array.from(new Set(tools.map(t => t.category))).sort();
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'OmniToolset',
-    description: 'Free online tools for PDF, Image, Text, and Developer needs',
+    name: 'OmniToolset - PDF Converter',
+    description: '100% FREE PDF converter tools online. Merge PDF, split PDF, compress PDF, convert PDF to Word, Excel, PowerPoint, JPG, PNG instantly. All PDF tools completely free, no registration, no watermarks, 100% secure. Use unlimited times for free.',
     url: 'https://omnitoolset.com',
+    keywords: 'pdf converter, pdf converter online, free pdf converter, pdf converter free, pdf converter no registration, pdf merge free, pdf split free, pdf compress free, pdf to word free, pdf to excel free, pdf to jpg free, pdf to png free, word to pdf free, excel to pdf free, powerpoint to pdf free, online pdf tools, free pdf tools, pdf tools online, instant pdf converter, pdf converter tool, free online pdf converter, pdf converter instant, pdf converter secure, no registration pdf converter, pdf converter unlimited, best pdf converter, how to convert pdf, pdf converter 2024, image converter free, text tools free, developer tools free, online tools free, free online tools, no registration tools, best online tools, free tools online, instant tools, quick tools, secure tools, unlimited tools, no watermark tools, best free tools 2024',
     potentialAction: {
       '@type': 'SearchAction',
       target: 'https://omnitoolset.com/?q={search_term_string}',
@@ -44,20 +56,40 @@ export default function Home() {
       <main className="flex-1 container py-12" id="tools">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-            {tools.length}+ Free Online Tools
+            100% FREE PDF Converter & {tools.length}+ Online Tools - No Registration
           </h1>
           <p className="text-xl text-slate-400 mb-6">
-            All the tools you need in one place
+            Convert PDF, merge PDF, split PDF, compress PDF instantly. All file converter tools 100% free, no registration, no watermarks, unlimited use!
           </p>
           <div className="flex flex-wrap justify-center gap-3">
+            <button
+              onClick={() => {
+                setSelectedCategory(null);
+                setSearchQuery('');
+              }}
+              className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
+                selectedCategory === null
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30'
+              }`}
+            >
+              All
+            </button>
             {categories.map((category) => (
-              <Link
+              <button
                 key={category}
-                href={`/categories#${category.toLowerCase()}`}
-                className="px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-lg hover:bg-indigo-500/30 transition-colors text-sm font-medium"
+                onClick={() => {
+                  setSelectedCategory(category);
+                  setSearchQuery('');
+                }}
+                className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
+                  selectedCategory === category
+                    ? 'bg-indigo-500 text-white'
+                    : 'bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30'
+                }`}
               >
                 {category}
-              </Link>
+              </button>
             ))}
           </div>
         </div>
@@ -84,8 +116,13 @@ export default function Home() {
               </button>
             )}
           </div>
-          {searchQuery && (
-            <p className="text-sm text-slate-400 mt-2">
+          {(searchQuery || selectedCategory) && (
+            <p className="text-sm text-slate-400 mt-2 text-center">
+              {selectedCategory && (
+                <span className="mr-2">
+                  Category: <strong>{selectedCategory}</strong>
+                </span>
+              )}
               Found {filteredTools.length} {filteredTools.length === 1 ? 'tool' : 'tools'}
             </p>
           )}

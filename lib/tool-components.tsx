@@ -21,6 +21,7 @@ export const toolComponents: Record<string, React.ComponentType> = {
   'pdf-encrypt': dynamic(() => import('@/components/tools/pdf-encrypt'), { ssr: false }),
   'pdf-delete-pages': dynamic(() => import('@/components/tools/pdf-delete-pages'), { ssr: false }),
   'pdf-extract-text': dynamic(() => import('@/components/tools/pdf-extract-text'), { ssr: false }),
+  'pdf-editor': dynamic(() => import('@/components/tools/pdf-editor'), { ssr: false }),
   
   // Image Tools
   'image-resize': dynamic(() => import('@/components/tools/image-resize'), { ssr: false }),
