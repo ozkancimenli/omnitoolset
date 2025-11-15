@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Analytics from '@/components/Analytics'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
@@ -55,8 +54,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Add your Google Analytics ID here when ready
-  const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
 
   return (
     <html lang="en">
@@ -67,12 +64,21 @@ export default function RootLayout({
         <meta name="google-adsense-account" content="ca-pub-8640955536193345" />
         {/* AdSense Script - Original HTML code */}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossOrigin="anonymous"></script>
+        {/* Google Analytics (gtag.js) - Original HTML code */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WF6SNHNXN"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-1WF6SNHNXN');
+            `,
+          }}
+        />
       </head>
       <body className={inter.className}>
         {children}
-        <Analytics 
-          googleAnalyticsId={googleAnalyticsId}
-        />
       </body>
     </html>
   )
