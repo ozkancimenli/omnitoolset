@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PdfEditor from '@/components/tools/pdf-editor';
-import { toast } from '@/components/Toast';
 
 export const metadata: Metadata = {
   title: 'FREE PDF Editor Online - Edit PDF Files Instantly | No Registration',
