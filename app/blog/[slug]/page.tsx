@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AdSense from '@/components/AdSense';
 import { BlogTopAd, BlogMiddleAd, BlogBottomAd } from '@/components/OptimizedAd';
+import BlogSidebar from '@/components/blog/BlogSidebar';
 import { getBlogPost, getBlogPosts } from '@/lib/blog';
 
 interface PageProps {
@@ -131,50 +132,53 @@ export default async function BlogPostPage({ params }: PageProps) {
       <Header />
       
       <main className="flex-1 container py-12">
-        <div className="max-w-4xl mx-auto">
-          {/* Breadcrumbs */}
-          <div className="mb-6 text-sm text-slate-400">
-            <Link href="/" className="hover:text-slate-200">Home</Link>
-            {' / '}
-            <Link href="/blog" className="hover:text-slate-200">Blog</Link>
-            {' / '}
-            <span className="text-slate-200">{post.title}</span>
-          </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-3">
+              {/* Breadcrumbs */}
+              <div className="mb-6 text-sm text-gray-600 dark:text-slate-400">
+                <Link href="/" className="hover:text-gray-900 dark:hover:text-slate-200 transition-colors">Home</Link>
+                {' / '}
+                <Link href="/blog" className="hover:text-gray-900 dark:hover:text-slate-200 transition-colors">Blog</Link>
+                {' / '}
+                <span className="text-gray-900 dark:text-slate-200">{post.title}</span>
+              </div>
 
-          {/* Post Header */}
-          <article className="bg-slate-800 border border-slate-700 rounded-2xl p-8 mb-8">
-            <div className="text-5xl mb-4">{post.icon}</div>
-            <h1 className="text-4xl font-bold mb-4 text-slate-100">{post.title}</h1>
-            <div className="flex items-center gap-4 mb-6 text-sm text-slate-400">
-              <span>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              <span>•</span>
-              <span>{post.readingTime} min read</span>
-              <span>•</span>
-              <span className="px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-full">
-                {post.category}
-              </span>
-            </div>
+              {/* Post Header */}
+              <article className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-8 mb-8 shadow-sm">
+                <div className="text-5xl mb-4">{post.icon}</div>
+                <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-slate-100 leading-tight">{post.title}</h1>
+                <div className="flex items-center gap-4 mb-6 text-sm text-gray-600 dark:text-slate-400">
+                  <span>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  <span>•</span>
+                  <span>{post.readingTime} min read</span>
+                  <span>•</span>
+                  <span className="px-3 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded-full font-medium">
+                    {post.category}
+                  </span>
+                </div>
 
             {/* Blog Top Ad */}
             <div className="mb-8">
               <BlogTopAd />
             </div>
 
-            {/* Post Content with In-Article Ad */}
-            <div
-              className="prose prose-invert prose-indigo max-w-none
-                prose-headings:text-slate-100
-                prose-p:text-slate-300
-                prose-a:text-indigo-400 hover:prose-a:text-indigo-300
-                prose-strong:text-slate-100
-                prose-code:text-indigo-300
-                prose-pre:bg-slate-900
-                prose-blockquote:border-indigo-500
-                prose-ul:text-slate-300
-                prose-ol:text-slate-300
-                prose-li:text-slate-300"
-              dangerouslySetInnerHTML={{ __html: contentHtml }}
-            />
+                {/* Post Content with In-Article Ad */}
+                <div
+                  className="prose prose-lg max-w-none
+                    prose-headings:text-gray-900 dark:prose-headings:text-slate-100
+                    prose-p:text-gray-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed
+                    prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:text-blue-700 dark:hover:prose-a:text-blue-300
+                    prose-strong:text-gray-900 dark:prose-strong:text-slate-100
+                    prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-code:bg-blue-50 dark:prose-code:bg-blue-900/20 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+                    prose-pre:bg-gray-900 dark:prose-pre:bg-slate-900 prose-pre:text-gray-100
+                    prose-blockquote:border-blue-500 dark:prose-blockquote:border-blue-400 prose-blockquote:text-gray-700 dark:prose-blockquote:text-slate-300
+                    prose-ul:text-gray-700 dark:prose-ul:text-slate-300
+                    prose-ol:text-gray-700 dark:prose-ol:text-slate-300
+                    prose-li:text-gray-700 dark:prose-li:text-slate-300"
+                  dangerouslySetInnerHTML={{ __html: contentHtml }}
+                />
 
             {/* Blog Middle Ad (In-Article) */}
             <div className="my-8">
@@ -186,40 +190,49 @@ export default async function BlogPostPage({ params }: PageProps) {
               <BlogBottomAd />
             </div>
 
-            {/* Related Tools CTA with Smartlink */}
-            <div className="mt-8 p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
-              <h3 className="text-xl font-semibold mb-3 text-indigo-300">Try Our Tools</h3>
-              <p className="text-slate-300 mb-4 text-sm">
-                Use our free online tools to {post.title.toLowerCase()}. No registration required!
-              </p>
-              <div className="flex flex-wrap gap-3">
+                {/* Related Tools CTA with Smartlink */}
+                <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-blue-300">Try Our Tools</h3>
+                  <p className="text-gray-700 dark:text-slate-300 mb-4 text-sm">
+                    Use our free online tools to {post.title.toLowerCase()}. No registration required!
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href="/#tools"
+                      className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg"
+                    >
+                      Explore All Tools →
+                    </Link>
+                    {/* Smart Direct Link Button */}
+                    <a
+                      href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
+                    >
+                      🎁 Get Exclusive Offers →
+                    </a>
+                  </div>
+                </div>
+              </article>
+
+              {/* Back to Blog */}
+              <div className="text-center mb-8">
                 <Link
-                  href="/#tools"
-                  className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors"
+                  href="/blog"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors font-medium"
                 >
-                  Explore All Tools →
+                  ← Back to Blog
                 </Link>
-                {/* Smart Direct Link Button - Kishwar Strategy */}
-                <a
-                  href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
-                >
-                  🎁 Get Exclusive Offers →
-                </a>
               </div>
             </div>
-          </article>
 
-          {/* Back to Blog */}
-          <div className="text-center">
-            <Link
-              href="/blog"
-              className="text-indigo-400 hover:text-indigo-300 transition-colors"
-            >
-              ← Back to Blog
-            </Link>
+            {/* Sidebar - Desktop Only */}
+            <div className="hidden lg:block lg:col-span-1">
+              <div className="sticky top-4">
+                <BlogSidebar currentPostSlug={slug} currentCategory={post.category} />
+              </div>
+            </div>
           </div>
         </div>
       </main>

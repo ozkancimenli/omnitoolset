@@ -15,7 +15,7 @@ import Adsterra from './Adsterra';
  *   <OptimizedAd position="blog-middle" preferNetwork="adsterra" />
  */
 interface OptimizedAdProps {
-  position: 'tool-top' | 'tool-bottom' | 'tool-sidebar' | 'blog-top' | 'blog-middle' | 'blog-bottom' | 'home-hero' | 'home-bottom' | 'home-sidebar';
+  position: 'tool-top' | 'tool-bottom' | 'tool-sidebar' | 'blog-top' | 'blog-middle' | 'blog-bottom' | 'blog-sidebar' | 'home-hero' | 'home-bottom' | 'home-sidebar';
   preferNetwork?: 'adsense' | 'adsterra' | 'auto';
   format?: 'banner' | 'vertical' | 'native' | 'auto';
   className?: string;
@@ -53,6 +53,10 @@ export default function OptimizedAd({
       // Bottom: Prefer Adsterra (exit intent, higher CPM)
       else if (position === 'tool-bottom' || position === 'blog-bottom') {
         setNetwork('adsterra');
+      }
+      // Sidebar: Prefer AdSense (stable revenue)
+      else if (position === 'tool-sidebar' || position === 'blog-sidebar' || position === 'home-sidebar') {
+        setNetwork('adsense');
       }
       // Default: AdSense
       else {
@@ -150,5 +154,9 @@ export const BlogMiddleAd = () => (
 
 export const BlogBottomAd = () => (
   <OptimizedAd position="blog-bottom" preferNetwork="adsense" format="banner" />
+);
+
+export const BlogSidebarAd = () => (
+  <OptimizedAd position="blog-sidebar" preferNetwork="adsense" format="vertical" />
 );
 

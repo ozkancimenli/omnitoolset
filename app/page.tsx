@@ -82,8 +82,8 @@ export default function Home() {
       <Header />
       
       <main className="flex-1">
-        {/* Hero Section with Stats */}
-        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 py-16 mb-12">
+        {/* Hero Section with Stats - Calm, Professional Gradient */}
+        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 py-16 mb-12 shadow-lg">
           <div className="container">
             {/* Hero Ad - Above Fold (High Value) */}
             <div className="mb-6 max-w-4xl mx-auto">
@@ -149,35 +149,35 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
               <Link
                 href="/pdf-editor"
-                className="bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl p-6 text-center text-white transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-xl p-6 text-center text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg"
               >
                 <div className="text-4xl mb-2">✏️</div>
                 <div className="font-semibold">PDF Editor</div>
-                <div className="text-xs text-indigo-100 mt-1">Edit PDFs</div>
+                <div className="text-xs text-blue-100 mt-1">Edit PDFs</div>
               </Link>
               <Link
                 href="/tools/pdf-merge"
-                className="bg-gradient-to-br from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 rounded-xl p-6 text-center text-white transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 rounded-xl p-6 text-center text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg"
               >
                 <div className="text-4xl mb-2">📄</div>
                 <div className="font-semibold">Merge PDF</div>
-                <div className="text-xs text-blue-100 mt-1">Combine files</div>
+                <div className="text-xs text-indigo-100 mt-1">Combine files</div>
               </Link>
               <Link
                 href="/tools/pdf-to-word"
-                className="bg-gradient-to-br from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-xl p-6 text-center text-white transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-br from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 rounded-xl p-6 text-center text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg"
               >
                 <div className="text-4xl mb-2">📝</div>
                 <div className="font-semibold">PDF to Word</div>
-                <div className="text-xs text-green-100 mt-1">Convert</div>
+                <div className="text-xs text-teal-100 mt-1">Convert</div>
               </Link>
               <Link
                 href="/tools/image-compress"
-                className="bg-gradient-to-br from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 rounded-xl p-6 text-center text-white transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 rounded-xl p-6 text-center text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg"
               >
                 <div className="text-4xl mb-2">🖼️</div>
                 <div className="font-semibold">Compress Image</div>
-                <div className="text-xs text-pink-100 mt-1">Reduce size</div>
+                <div className="text-xs text-blue-100 mt-1">Reduce size</div>
               </Link>
             </div>
           </div>

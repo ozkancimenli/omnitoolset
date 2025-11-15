@@ -8,16 +8,18 @@ interface PdfEditorProps {
   toolId?: string;
 }
 
-type ToolType = 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | null;
+type ToolType = 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'eraser' | null;
 type ShapeType = 'rectangle' | 'circle' | 'line' | 'arrow';
 
 interface Annotation {
   id: string;
-  type: 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow';
+  type: 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand';
   x: number;
   y: number;
   text?: string;
   fontSize?: number;
+  fontFamily?: string; // Font family (Arial, Times, Helvetica, Courier)
+  textAlign?: 'left' | 'center' | 'right'; // Text alignment
   color?: string;
   strokeColor?: string;
   fillColor?: string;
@@ -27,6 +29,11 @@ interface Annotation {
   imageData?: string;
   endX?: number;
   endY?: number;
+  url?: string; // For link annotations
+  comment?: string; // For sticky notes
+  isEditing?: boolean; // For inline text editing
+  freehandPath?: { x: number; y: number }[]; // For freehand drawing
+  zIndex?: number; // Layer order
 }
 
 export default function PdfEditor({ toolId }: PdfEditorProps) {
@@ -54,10 +61,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
   const [selectedAnnotation, setSelectedAnnotation] = useState<string | null>(null);
+  const [editingAnnotation, setEditingAnnotation] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeHandle, setResizeHandle] = useState<string | null>(null);
+  const [fontFamily, setFontFamily] = useState('Arial');
+  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLInputElement>(null);
   const pdfDocRef = useRef<any>(null);
   const pdfLibDocRef = useRef<PDFDocument | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -259,8 +275,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         
         if (ann.type === 'text' && ann.text) {
           context.fillStyle = ann.color || '#000000';
-          context.font = `${ann.fontSize || 16}px Arial`;
-          context.fillText(ann.text, ann.x, ann.y);
+          const fontFamily = ann.fontFamily || 'Arial';
+          const fontSize = ann.fontSize || 16;
+          context.font = `${fontSize}px ${fontFamily}`;
+          context.textAlign = (ann.textAlign || 'left') as CanvasTextAlign;
+          context.textBaseline = 'bottom';
+          
+          // Calculate text position based on alignment
+          let textX = ann.x;
+          if (ann.textAlign === 'center') {
+            const metrics = context.measureText(ann.text);
+            textX = ann.x - metrics.width / 2;
+          } else if (ann.textAlign === 'right') {
+            const metrics = context.measureText(ann.text);
+            textX = ann.x - metrics.width;
+          }
+          
+          context.fillText(ann.text, textX, ann.y);
         } else if (ann.type === 'highlight' && ann.width && ann.height) {
           const rgbColor = hexToRgb(ann.color || highlightColor);
           context.fillStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.3)`;
@@ -319,6 +350,50 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           );
           context.stroke();
           context.fill();
+        } else if (ann.type === 'link' && ann.width && ann.height) {
+          // Draw link annotation
+          context.strokeStyle = ann.strokeColor || '#0066cc';
+          context.fillStyle = 'rgba(0, 102, 204, 0.1)';
+          context.lineWidth = 2;
+          context.setLineDash([5, 5]);
+          context.fillRect(ann.x, ann.y, ann.width, ann.height);
+          context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+          context.setLineDash([]);
+          // Draw link icon
+          if (ann.url) {
+            context.fillStyle = '#0066cc';
+            context.font = '12px Arial';
+            context.fillText('🔗', ann.x + 5, ann.y + 15);
+          }
+        } else if (ann.type === 'note' && ann.width && ann.height) {
+          // Draw sticky note
+          context.fillStyle = ann.fillColor || '#FFFF99';
+          context.strokeStyle = ann.strokeColor || '#FFD700';
+          context.lineWidth = 2;
+          context.fillRect(ann.x, ann.y, ann.width, ann.height);
+          context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+          // Draw comment text
+          if (ann.comment) {
+            context.fillStyle = '#000000';
+            context.font = '12px Arial';
+            context.textAlign = 'left';
+            const lines = ann.comment.split('\n');
+            lines.forEach((line, i) => {
+              context.fillText(line.substring(0, 20), ann.x + 5, ann.y + 15 + i * 15);
+            });
+          }
+        } else if (ann.type === 'freehand' && ann.freehandPath && ann.freehandPath.length > 0) {
+          // Draw freehand path
+          context.strokeStyle = ann.strokeColor || strokeColor;
+          context.lineWidth = strokeWidth;
+          context.lineCap = 'round';
+          context.lineJoin = 'round';
+          context.beginPath();
+          context.moveTo(ann.freehandPath[0].x, ann.freehandPath[0].y);
+          for (let i = 1; i < ann.freehandPath.length; i++) {
+            context.lineTo(ann.freehandPath[i].x, ann.freehandPath[i].y);
+          }
+          context.stroke();
         }
         
         // Selection highlight
@@ -356,32 +431,178 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!tool || !isEditable) return;
-    
     const coords = getCanvasCoordinates(e);
-    setDrawStart(coords);
-    setIsDrawing(true);
     
-    // Check if clicking on existing annotation
-    const pageAnnotations = annotations.filter(ann => ann.page === pageNum);
-    for (const ann of pageAnnotations) {
-      if (ann.x <= coords.x && coords.x <= (ann.x + (ann.width || 0)) &&
-          ann.y <= coords.y && coords.y <= (ann.y + (ann.height || 0))) {
-        setSelectedAnnotation(ann.id);
-        return;
+    // Check if double-clicking on text annotation to edit
+    if (e.detail === 2) {
+      const pageAnnotations = annotations.filter(ann => ann.page === pageNum);
+      for (const ann of pageAnnotations) {
+        if (ann.type === 'text' && ann.text) {
+          const fontSize = ann.fontSize || 16;
+          const fontFamily = ann.fontFamily || 'Arial';
+          if (canvasRef.current) {
+            const context = canvasRef.current.getContext('2d');
+            if (context) {
+              context.font = `${fontSize}px ${fontFamily}`;
+              const metrics = context.measureText(ann.text);
+              const textWidth = metrics.width;
+              const textHeight = fontSize;
+              
+              // Check if click is within text bounds
+              let textX = ann.x;
+              if (ann.textAlign === 'center') {
+                textX = ann.x - textWidth / 2;
+              } else if (ann.textAlign === 'right') {
+                textX = ann.x - textWidth;
+              }
+              
+              if (
+                coords.x >= textX &&
+                coords.x <= textX + textWidth &&
+                coords.y >= ann.y - textHeight &&
+                coords.y <= ann.y
+              ) {
+                setEditingAnnotation(ann.id);
+                setEditingText(ann.text);
+                setSelectedAnnotation(ann.id);
+                setTool(null);
+                return;
+              }
+            }
+          }
+        }
       }
     }
-    setSelectedAnnotation(null);
+    
+    // Check if clicking on existing annotation to select/drag
+    if (!tool) {
+      const pageAnnotations = annotations.filter(ann => ann.page === pageNum);
+      for (const ann of pageAnnotations) {
+        let isInside = false;
+        
+        if (ann.type === 'text' && ann.text) {
+          const fontSize = ann.fontSize || 16;
+          const fontFamily = ann.fontFamily || 'Arial';
+          if (canvasRef.current) {
+            const context = canvasRef.current.getContext('2d');
+            if (context) {
+              context.font = `${fontSize}px ${fontFamily}`;
+              const metrics = context.measureText(ann.text);
+              const textWidth = metrics.width;
+              const textHeight = fontSize;
+              
+              let textX = ann.x;
+              if (ann.textAlign === 'center') {
+                textX = ann.x - textWidth / 2;
+              } else if (ann.textAlign === 'right') {
+                textX = ann.x - textWidth;
+              }
+              
+              isInside = (
+                coords.x >= textX &&
+                coords.x <= textX + textWidth &&
+                coords.y >= ann.y - textHeight &&
+                coords.y <= ann.y
+              );
+            }
+          }
+        } else if (ann.width && ann.height) {
+          isInside = (
+            coords.x >= ann.x &&
+            coords.x <= ann.x + ann.width &&
+            coords.y >= ann.y &&
+            coords.y <= ann.y + ann.height
+          );
+        }
+        
+        if (isInside) {
+          setSelectedAnnotation(ann.id);
+          setIsDragging(true);
+          setDragOffset({
+            x: coords.x - ann.x,
+            y: coords.y - ann.y,
+          });
+          return;
+        }
+      }
+      setSelectedAnnotation(null);
+      return;
+    }
+    
+    if (!isEditable) return;
+    
+    // Start freehand drawing
+    if (tool === 'freehand') {
+      setFreehandPath([coords]);
+      setIsDrawingFreehand(true);
+      setIsDrawing(true);
+      return;
+    }
+    
+    setDrawStart(coords);
+    setIsDrawing(true);
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const coords = getCanvasCoordinates(e);
+    
+    // Handle dragging annotations
+    if (isDragging && selectedAnnotation && dragOffset) {
+      const newAnnotations = annotations.map(ann => {
+        if (ann.id === selectedAnnotation) {
+          return {
+            ...ann,
+            x: coords.x - dragOffset.x,
+            y: coords.y - dragOffset.y,
+          };
+        }
+        return ann;
+      });
+      setAnnotations(newAnnotations);
+      return;
+    }
+    
+    // Handle freehand drawing
+    if (tool === 'freehand' && isDrawingFreehand) {
+      setFreehandPath([...freehandPath, coords]);
+      // Redraw canvas with current path
+      if (canvasRef.current && pdfDocRef.current) {
+        renderPage(pageNum);
+        const context = canvasRef.current.getContext('2d');
+        if (context && freehandPath.length > 0) {
+          context.strokeStyle = strokeColor;
+          context.lineWidth = strokeWidth;
+          context.lineCap = 'round';
+          context.lineJoin = 'round';
+          context.beginPath();
+          context.moveTo(freehandPath[0].x, freehandPath[0].y);
+          for (let i = 1; i < freehandPath.length; i++) {
+            context.lineTo(freehandPath[i].x, freehandPath[i].y);
+          }
+          context.lineTo(coords.x, coords.y);
+          context.stroke();
+        }
+      }
+      return;
+    }
+    
     if (!isDrawing || !drawStart || !tool) return;
     
-    const coords = getCanvasCoordinates(e);
     // Preview drawing (optional - can be implemented for better UX)
   };
 
   const handleCanvasMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // Handle drag end
+    if (isDragging) {
+      setIsDragging(false);
+      setDragOffset(null);
+      if (selectedAnnotation) {
+        saveToHistory(annotations);
+        toast.info('Annotation moved');
+      }
+      return;
+    }
+    
     if (!isDrawing || !drawStart || !tool || !isEditable) {
       setIsDrawing(false);
       setDrawStart(null);
@@ -399,6 +620,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         y: coords.y,
         text: currentText,
         fontSize,
+        fontFamily,
+        textAlign,
         color: textColor,
         page: pageNum,
       };
@@ -472,12 +695,95 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       };
       newAnnotations.push(newAnnotation);
       toast.success(`${tool === 'arrow' ? 'Arrow' : 'Line'} added`);
+    } else if (tool === 'link') {
+      const width = Math.abs(coords.x - drawStart.x);
+      const height = Math.abs(coords.y - drawStart.y);
+      if (width > 10 && height > 10) {
+        const url = prompt('Enter URL:', 'https://');
+        if (url) {
+          const newAnnotation: Annotation = {
+            id: Date.now().toString(),
+            type: 'link',
+            x: Math.min(drawStart.x, coords.x),
+            y: Math.min(drawStart.y, coords.y),
+            width,
+            height,
+            url,
+            strokeColor: '#0066cc',
+            page: pageNum,
+          };
+          newAnnotations.push(newAnnotation);
+          toast.success('Link added');
+        }
+      }
+    } else if (tool === 'note') {
+      const comment = prompt('Enter comment:', '');
+      if (comment) {
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          type: 'note',
+          x: coords.x,
+          y: coords.y,
+          width: 150,
+          height: 100,
+          comment,
+          fillColor: '#FFFF99',
+          strokeColor: '#FFD700',
+          page: pageNum,
+        };
+        newAnnotations.push(newAnnotation);
+        toast.success('Sticky note added');
+      }
+    } else if (tool === 'freehand' && freehandPath.length > 0) {
+      const newAnnotation: Annotation = {
+        id: Date.now().toString(),
+        type: 'freehand',
+        x: Math.min(...freehandPath.map(p => p.x)),
+        y: Math.min(...freehandPath.map(p => p.y)),
+        width: Math.max(...freehandPath.map(p => p.x)) - Math.min(...freehandPath.map(p => p.x)),
+        height: Math.max(...freehandPath.map(p => p.y)) - Math.min(...freehandPath.map(p => p.y)),
+        freehandPath: [...freehandPath],
+        strokeColor,
+        page: pageNum,
+      };
+      newAnnotations.push(newAnnotation);
+      setFreehandPath([]);
+      toast.success('Freehand drawing added');
+    } else if (tool === 'eraser') {
+      // Eraser: Remove annotations that intersect with the eraser area
+      const eraserSize = 20;
+      const erased = newAnnotations.filter(ann => {
+        if (ann.page !== pageNum) return true;
+        // Check if annotation intersects with eraser circle
+        const centerX = coords.x;
+        const centerY = coords.y;
+        if (ann.width && ann.height) {
+          const annCenterX = ann.x + ann.width / 2;
+          const annCenterY = ann.y + ann.height / 2;
+          const distance = Math.sqrt(
+            Math.pow(centerX - annCenterX, 2) + Math.pow(centerY - annCenterY, 2)
+          );
+          return distance > eraserSize + Math.max(ann.width, ann.height) / 2;
+        }
+        return true;
+      });
+      if (erased.length < newAnnotations.length) {
+        setAnnotations(erased);
+        saveToHistory(erased);
+        toast.success('Annotation erased');
+        setIsDrawing(false);
+        setDrawStart(null);
+        setTool(null);
+        return;
+      }
     }
     
     setAnnotations(newAnnotations);
     saveToHistory(newAnnotations);
     setIsDrawing(false);
     setDrawStart(null);
+    setFreehandPath([]);
+    setIsDrawingFreehand(false);
     setTool(null);
   };
 
@@ -534,11 +840,34 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             const fontSize = annotation.fontSize || 16;
             const color = annotation.color || '#000000';
             const rgbColor = hexToRgb(color);
+            const fontFamily = annotation.fontFamily || 'Arial';
+            
+            // Use appropriate font based on selection
+            let font = helveticaFont;
+            if (fontFamily === 'Times New Roman') {
+              font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+            } else if (fontFamily === 'Courier New') {
+              font = await pdfDoc.embedFont(StandardFonts.Courier);
+            } else {
+              font = helveticaFont; // Default to Helvetica for Arial, Helvetica, etc.
+            }
+            
+            // Calculate text position based on alignment
+            let textX = annotation.x;
+            if (annotation.textAlign === 'center' || annotation.textAlign === 'right') {
+              const textWidth = font.widthOfTextAtSize(annotation.text, fontSize);
+              if (annotation.textAlign === 'center') {
+                textX = annotation.x - textWidth / 2;
+              } else if (annotation.textAlign === 'right') {
+                textX = annotation.x - textWidth;
+              }
+            }
+            
             page.drawText(annotation.text, {
-              x: annotation.x,
+              x: textX,
               y: height - annotation.y - fontSize,
               size: fontSize,
-              font: helveticaFont,
+              font: font,
               color: rgb(rgbColor.r / 255, rgbColor.g / 255, rgbColor.b / 255),
             });
           } else if (annotation.type === 'highlight' && annotation.width && annotation.height) {
@@ -932,6 +1261,68 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         </button>
                       </div>
 
+                      <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+
+                      {/* Advanced Tools */}
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                        <button
+                          onClick={() => setTool(tool === 'link' ? null : 'link')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'link'
+                              ? 'bg-blue-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Add Link (L)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'note' ? null : 'note')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'note'
+                              ? 'bg-yellow-500 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Sticky Note (N)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'freehand' ? null : 'freehand')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'freehand'
+                              ? 'bg-purple-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Freehand Draw (F)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'eraser' ? null : 'eraser')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'eraser'
+                              ? 'bg-gray-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Eraser (E)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+
                       <input
                         ref={imageInputRef}
                         type="file"
@@ -957,6 +1348,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                   }
                                 }}
                               />
+                              <select
+                                value={fontFamily}
+                                onChange={(e) => setFontFamily(e.target.value)}
+                                className="px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                                title="Font Family"
+                              >
+                                <option value="Arial">Arial</option>
+                                <option value="Times New Roman">Times</option>
+                                <option value="Helvetica">Helvetica</option>
+                                <option value="Courier New">Courier</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Verdana">Verdana</option>
+                              </select>
                               <input
                                 type="number"
                                 value={fontSize}
@@ -966,6 +1370,41 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                 className="w-16 px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                                 title="Font Size"
                               />
+                              <div className="flex items-center gap-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md p-1">
+                                <button
+                                  onClick={() => setTextAlign('left')}
+                                  className={`px-2 py-1 rounded text-sm transition-all ${
+                                    textAlign === 'left'
+                                      ? 'bg-indigo-600 text-white'
+                                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                                  }`}
+                                  title="Align Left"
+                                >
+                                  ⬅
+                                </button>
+                                <button
+                                  onClick={() => setTextAlign('center')}
+                                  className={`px-2 py-1 rounded text-sm transition-all ${
+                                    textAlign === 'center'
+                                      ? 'bg-indigo-600 text-white'
+                                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                                  }`}
+                                  title="Align Center"
+                                >
+                                  ⬌
+                                </button>
+                                <button
+                                  onClick={() => setTextAlign('right')}
+                                  className={`px-2 py-1 rounded text-sm transition-all ${
+                                    textAlign === 'right'
+                                      ? 'bg-indigo-600 text-white'
+                                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                                  }`}
+                                  title="Align Right"
+                                >
+                                  ➡
+                                </button>
+                              </div>
                               <input
                                 type="color"
                                 value={textColor}
@@ -1091,9 +1530,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               {/* PDF Canvas - iLovePDF Style Full Screen */}
               <div
                 ref={containerRef}
-                className="flex-1 bg-slate-200 dark:bg-slate-950 overflow-auto flex justify-center items-center p-4"
+                className="flex-1 bg-slate-200 dark:bg-slate-950 overflow-auto flex justify-center items-center p-4 relative"
               >
-                <div className="bg-white dark:bg-slate-900 shadow-2xl rounded-sm">
+                <div className="bg-white dark:bg-slate-900 shadow-2xl rounded-sm relative">
                   <canvas
                     ref={canvasRef}
                     onMouseDown={handleCanvasMouseDown}
@@ -1102,6 +1541,72 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     className="block"
                     style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default' }}
                   />
+                  
+                  {/* Inline Text Editor */}
+                  {editingAnnotation && (() => {
+                    const ann = annotations.find(a => a.id === editingAnnotation);
+                    if (!ann || ann.type !== 'text' || ann.page !== pageNum) return null;
+                    
+                    const fontSize = ann.fontSize || 16;
+                    const fontFamily = ann.fontFamily || 'Arial';
+                    const canvas = canvasRef.current;
+                    if (!canvas) return null;
+                    
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    
+                    // Calculate text position
+                    let textX = ann.x / scaleX;
+                    let textY = ann.y / scaleY;
+                    
+                    return (
+                      <input
+                        ref={textInputRef}
+                        type="text"
+                        value={editingText}
+                        onChange={(e) => setEditingText(e.target.value)}
+                        onBlur={() => {
+                          if (editingAnnotation) {
+                            const newAnnotations = annotations.map(a => {
+                              if (a.id === editingAnnotation) {
+                                return { ...a, text: editingText };
+                              }
+                              return a;
+                            });
+                            setAnnotations(newAnnotations);
+                            saveToHistory(newAnnotations);
+                            setEditingAnnotation(null);
+                            toast.success('Text updated');
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.currentTarget.blur();
+                          } else if (e.key === 'Escape') {
+                            setEditingAnnotation(null);
+                            setEditingText('');
+                          }
+                        }}
+                        style={{
+                          position: 'absolute',
+                          left: `${rect.left + textX}px`,
+                          top: `${rect.top + textY - fontSize}px`,
+                          fontSize: `${fontSize}px`,
+                          fontFamily: fontFamily,
+                          color: ann.color || '#000000',
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          border: '2px solid #3b82f6',
+                          outline: 'none',
+                          padding: '2px 4px',
+                          minWidth: '100px',
+                          borderRadius: '4px',
+                        }}
+                        className="text-editor-input"
+                        autoFocus
+                      />
+                    );
+                  })()}
                 </div>
               </div>
 
