@@ -320,14 +320,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         onClick={() => fileInputRef.current?.click()}
       >
         <input
-          ref={fileInputRef.current}
+          ref={fileInputRef}
           type="file"
           accept=".pdf"
           onChange={handleFileSelect}
           className="hidden"
         />
         <input
-          ref={imageInputRef.current}
+          ref={imageInputRef}
           type="file"
           accept="image/*"
           onChange={handleImageSelect}
