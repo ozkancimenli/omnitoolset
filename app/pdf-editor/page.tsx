@@ -8,15 +8,15 @@ export const metadata: Metadata = {
   keywords:
     'edit pdf, pdf editor, add text to pdf, add image to pdf, pdf annotation, pdf link, pdf sticky note, freehand pdf drawing, pdf eraser, reorder pdf pages, rotate pdf pages, delete pdf pages, pdf page editor, edit pdf online, free pdf editor, pdf editor online, edit pdf pages, reorder pdf, rotate pdf, delete pdf pages online, pdf page manager, edit pdf file, pdf editing tool, online pdf editor free, edit pdf no registration, pdf page editor online, best pdf editor, professional pdf editor',
   openGraph: {
-    title: 'Edit PDF Online – Reorder, Rotate & Delete Pages | OmniPDF Editor',
+    title: 'Edit PDF Online – Full Featured PDF Editor | OmniPDF Editor',
     description:
-      'Free online PDF editor to reorder, rotate, and delete pages from your PDF files. Fast, secure, and easy-to-use.',
+      'Professional PDF editor with text, images, shapes, links, notes, freehand drawing, and more. Fast, secure, and easy-to-use.',
     url: 'https://omnitoolset.com/pdf-editor',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Edit PDF Online – Reorder, Rotate & Delete Pages',
-    description: 'Free online PDF editor to reorder, rotate, and delete pages from your PDF files.',
+    title: 'Edit PDF Online – Full Featured PDF Editor',
+    description: 'Professional PDF editor with text, images, shapes, links, notes, freehand drawing, and more.',
   },
   alternates: {
     canonical: 'https://omnitoolset.com/pdf-editor',
@@ -48,7 +48,12 @@ const faqs = [
   {
     question: 'Can I undo changes?',
     answer:
-      'Yes, you can reset all changes at any time using the "Reset Changes" button in the toolbar. This will restore your PDF to its original state.',
+      'Yes, you can use the Undo (Ctrl+Z) and Redo (Ctrl+Y) buttons in the toolbar to undo or redo your changes. This works for all editing operations including text, images, shapes, and annotations.',
+  },
+  {
+    question: 'What PDF operations are supported?',
+    answer:
+      'You can add text (with custom fonts and alignment), insert images, draw shapes (rectangles, circles, lines, arrows), add clickable links, create sticky notes, draw freely with the freehand tool, highlight text, and use the eraser to remove elements. You can also reorder, rotate, and delete pages. All changes are applied when you download the edited PDF.',
   },
 ];
 
