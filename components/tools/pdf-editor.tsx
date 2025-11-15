@@ -48,7 +48,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [tool, setTool] = useState<ToolType>(null);
   const [isEditable, setIsEditable] = useState(true);
   const [zoom, setZoom] = useState(1);
-  const [showThumbnails, setShowThumbnails] = useState(false);
+  const [showThumbnails, setShowThumbnails] = useState(true);
+  const [showToolPanel, setShowToolPanel] = useState(false);
   const [pageThumbnails, setPageThumbnails] = useState<string[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
@@ -686,384 +687,471 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   return (
-    <div className="space-y-0">
-      {/* File Upload - Minimal Design */}
+    <div className="h-full w-full flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      {/* File Upload - Premium Design */}
       {!file && (
-        <div
-          className="border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-xl p-16 text-center hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-all duration-200 cursor-pointer"
-          onDrop={handleDrop}
-          onDragOver={(e) => e.preventDefault()}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf"
-            onChange={handleFileSelect}
-            className="hidden"
-          />
-          <div className="text-center">
-            <div className="text-6xl mb-4">📄</div>
-            <p className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-              Click or drag PDF file here
-            </p>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Select a PDF file to edit • Max 50MB
-            </p>
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div
+            className="w-full max-w-2xl border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-2xl p-16 text-center bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/50 dark:from-indigo-950/20 dark:via-slate-900 dark:to-purple-950/20 hover:border-indigo-500 dark:hover:border-indigo-500 hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 cursor-pointer group"
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <div className="text-center">
+              <div className="text-7xl mb-6 transform group-hover:scale-110 transition-transform duration-300">📄</div>
+              <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Upload Your PDF Document
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-base mb-2">
+                Drag and drop your PDF file here, or click to browse
+              </p>
+              <p className="text-gray-500 dark:text-gray-500 text-sm">
+                Supported: PDF files up to 50MB
+              </p>
+              <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full text-indigo-700 dark:text-indigo-300 text-sm font-medium">
+                <span>✨</span>
+                <span>100% Free • No Registration • Secure</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {file && (
-        <div className="h-[calc(100vh-200px)] flex flex-col">
+        <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-900">
           {!isEditable && (
-            <div className="bg-yellow-50 dark:bg-yellow-950/30 border-l-4 border-yellow-500 rounded-r-lg p-4 mb-4 mx-6 mt-6">
-              <p className="text-yellow-800 dark:text-yellow-300 text-sm font-medium">
-                ⚠️ This PDF cannot be edited (may be password-protected). You can view it, but editing features are disabled.
-              </p>
+            <div className="mx-6 mt-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 border-l-4 border-yellow-500 rounded-r-xl p-4 shadow-lg">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⚠️</span>
+                <div>
+                  <p className="text-yellow-900 dark:text-yellow-200 text-sm font-semibold mb-1">
+                    View-Only Mode
+                  </p>
+                  <p className="text-yellow-700 dark:text-yellow-300 text-xs">
+                    This PDF cannot be edited (may be password-protected). You can view it, but editing features are disabled.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Main Editor Layout - Full Screen Design */}
+          {/* Main Editor Layout - Professional Design */}
           <div className="flex-1 flex gap-0 overflow-hidden">
-            {/* Sidebar - Page Thumbnails */}
+            {/* Sidebar - Modern Page Thumbnails */}
             {showThumbnails && (
-              <div className="w-56 bg-gray-50 dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 p-4 overflow-y-auto">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center justify-between">
-                  <span>Pages</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 font-normal">{numPages} total</span>
-                </h3>
-                <div className="space-y-2">
+              <div className="w-64 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border-r border-slate-200 dark:border-slate-700 shadow-lg">
+                <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <span className="text-indigo-600 dark:text-indigo-400">📑</span>
+                      <span>Pages</span>
+                    </h3>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">
+                      {numPages}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-3 space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
                   {Array.from({ length: numPages }, (_, i) => i + 1).map((page) => (
                     <button
                       key={page}
                       onClick={() => setPageNum(page)}
-                      className={`w-full p-2 rounded-lg border-2 transition-all ${
+                      className={`w-full group relative overflow-hidden rounded-xl border-2 transition-all duration-200 ${
                         page === pageNum
-                          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 shadow-md'
-                          : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700 bg-white dark:bg-slate-800'
+                          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/50 shadow-lg shadow-indigo-500/20 scale-[1.02]'
+                          : 'border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 bg-white dark:bg-slate-800 hover:shadow-md'
                       }`}
                     >
-                      {pageThumbnails[page - 1] ? (
-                        <img
-                          src={pageThumbnails[page - 1]}
-                          alt={`Page ${page}`}
-                          className="w-full h-auto rounded"
-                        />
-                      ) : (
-                        <div className="w-full h-32 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-gray-400 dark:text-gray-600">
-                          Page {page}
+                      {page === pageNum && (
+                        <div className="absolute top-2 right-2 z-10 bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
+                          Active
                         </div>
                       )}
-                      <p className={`text-xs mt-1 ${page === pageNum ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-gray-500 dark:text-gray-400'}`}>
-                        Page {page}
-                      </p>
+                      <div className="p-2">
+                        {pageThumbnails[page - 1] ? (
+                          <img
+                            src={pageThumbnails[page - 1]}
+                            alt={`Page ${page}`}
+                            className="w-full h-auto rounded-lg shadow-sm"
+                          />
+                        ) : (
+                          <div className="w-full h-40 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 rounded-lg flex items-center justify-center">
+                            <span className="text-slate-400 dark:text-slate-500 font-medium">Page {page}</span>
+                          </div>
+                        )}
+                        <p className={`text-xs mt-2 text-center font-medium ${page === pageNum ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                          Page {page}
+                        </p>
+                      </div>
                     </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Main Editor Area - Clean White Design */}
-            <div className="flex-1 flex flex-col bg-white dark:bg-slate-900">
-              {/* Top Toolbar - Modern Clean Design */}
-              <div className="flex flex-wrap gap-2 items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-800/50">
-                <div className="flex gap-2 flex-wrap items-center">
-                  {/* Undo/Redo */}
-                  <button
-                    onClick={undo}
-                    disabled={historyIndex <= 0}
-                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
-                    title="Undo (Ctrl+Z)"
-                  >
-                    ↶ Undo
-                  </button>
-                  <button
-                    onClick={redo}
-                    disabled={historyIndex >= history.length - 1}
-                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
-                    title="Redo (Ctrl+Y)"
-                  >
-                    ↷ Redo
-                  </button>
-                  
-                  <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
-                  
-                  {/* Tools - Clean Button Design */}
-                  <button
-                    onClick={() => setTool(tool === 'text' ? null : 'text')}
-                    disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
-                      tool === 'text'
-                        ? 'bg-indigo-600 text-white shadow-md'
-                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
-                    } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    title="Add Text (T)"
-                  >
-                    T Text
-                  </button>
-                  
-                  <button
-                    onClick={() => setTool(tool === 'highlight' ? null : 'highlight')}
-                    disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
-                      tool === 'highlight'
-                        ? 'bg-yellow-500 text-white shadow-md'
-                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
-                    } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    title="Highlight (H)"
-                  >
-                    H Highlight
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      setTool(tool === 'image' ? null : 'image');
-                      imageInputRef.current?.click();
-                    }}
-                    disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
-                      tool === 'image'
-                        ? 'bg-green-600 text-white shadow-md'
-                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
-                    } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    title="Add Image (I)"
-                  >
-                    🖼️ Image
-                  </button>
-                  
-                  <button
-                    onClick={() => setTool(tool === 'rectangle' ? null : 'rectangle')}
-                    disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
-                      tool === 'rectangle'
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
-                    } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    title="Rectangle (R)"
-                  >
-                    ▭ Rect
-                  </button>
-                  
-                  <button
-                    onClick={() => setTool(tool === 'circle' ? null : 'circle')}
-                    disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
-                      tool === 'circle'
-                        ? 'bg-purple-600 text-white shadow-md'
-                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
-                    } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    title="Circle (C)"
-                  >
-                    ○ Circle
-                  </button>
-                  
-                  <button
-                    onClick={() => setTool(tool === 'line' ? null : 'line')}
-                    disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
-                      tool === 'line'
-                        ? 'bg-pink-600 text-white shadow-md'
-                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
-                    } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    title="Line (L)"
-                  >
-                    ─ Line
-                  </button>
-                  
-                  <button
-                    onClick={() => setTool(tool === 'arrow' ? null : 'arrow')}
-                    disabled={!isEditable}
-                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
-                      tool === 'arrow'
-                        ? 'bg-red-600 text-white shadow-md'
-                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
-                    } ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    title="Arrow (A)"
-                  >
-                    → Arrow
-                  </button>
-                  
-                  <input
-                    ref={imageInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageSelect}
-                    className="hidden"
-                  />
-                  
-                  {tool === 'text' && (
-                    <div className="flex gap-2 items-center ml-2">
+            {/* Main Editor Area - Professional Design */}
+            <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
+              {/* Premium Toolbar */}
+              <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
+                <div className="px-4 py-3">
+                  <div className="flex items-center justify-between gap-4">
+                    {/* Left: History & Tools */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {/* Undo/Redo - Icon Buttons */}
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                        <button
+                          onClick={undo}
+                          disabled={historyIndex <= 0}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
+                          title="Undo (Ctrl+Z)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={redo}
+                          disabled={historyIndex >= history.length - 1}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
+                          title="Redo (Ctrl+Y)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+
+                      {/* Tools - Icon Grid */}
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                        <button
+                          onClick={() => setTool(tool === 'text' ? null : 'text')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'text'
+                              ? 'bg-indigo-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Add Text (T)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'highlight' ? null : 'highlight')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'highlight'
+                              ? 'bg-yellow-500 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Highlight (H)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setTool(tool === 'image' ? null : 'image');
+                            imageInputRef.current?.click();
+                          }}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'image'
+                              ? 'bg-green-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Add Image (I)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'rectangle' ? null : 'rectangle')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'rectangle'
+                              ? 'bg-blue-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Rectangle (R)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'circle' ? null : 'circle')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'circle'
+                              ? 'bg-purple-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Circle (C)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'line' ? null : 'line')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'line'
+                              ? 'bg-pink-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Line (L)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'arrow' ? null : 'arrow')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'arrow'
+                              ? 'bg-red-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Arrow (A)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </button>
+                      </div>
+
                       <input
-                        type="text"
-                        value={currentText}
-                        onChange={(e) => setCurrentText(e.target.value)}
-                        placeholder="Enter text..."
-                        className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm w-32"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && currentText.trim()) {
-                            setTool(null);
-                          }
-                        }}
+                        ref={imageInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageSelect}
+                        className="hidden"
                       />
-                      <input
-                        type="number"
-                        value={fontSize}
-                        onChange={(e) => setFontSize(Number(e.target.value))}
-                        min="8"
-                        max="72"
-                        className="w-16 px-2 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 text-sm"
-                      />
-                      <input
-                        type="color"
-                        value={textColor}
-                        onChange={(e) => setTextColor(e.target.value)}
-                        className="w-10 h-10 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg cursor-pointer"
-                      />
-                    </div>
-                  )}
-                  
-                  {(tool === 'highlight' || tool === 'rectangle' || tool === 'circle' || tool === 'line' || tool === 'arrow') && (
-                    <div className="flex gap-2 items-center ml-2">
-                      <input
-                        type="color"
-                        value={tool === 'highlight' ? highlightColor : strokeColor}
-                        onChange={(e) => {
-                          if (tool === 'highlight') setHighlightColor(e.target.value);
-                          else setStrokeColor(e.target.value);
-                        }}
-                        className="w-10 h-10 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg cursor-pointer"
-                        title="Color"
-                      />
-                      {tool !== 'highlight' && (
-                        <>
-                          <input
-                            type="number"
-                            value={strokeWidth}
-                            onChange={(e) => setStrokeWidth(Number(e.target.value))}
-                            min="1"
-                            max="10"
-                            className="w-16 px-2 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 text-sm"
-                            title="Stroke Width"
-                          />
-                        </>
+
+                      {/* Tool Options Panel */}
+                      {tool && (
+                        <div className="flex items-center gap-2 ml-2 px-3 py-2 bg-indigo-50 dark:bg-indigo-950/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                          {tool === 'text' && (
+                            <>
+                              <input
+                                type="text"
+                                value={currentText}
+                                onChange={(e) => setCurrentText(e.target.value)}
+                                placeholder="Enter text..."
+                                className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm w-40"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && currentText.trim()) {
+                                    setTool(null);
+                                  }
+                                }}
+                              />
+                              <input
+                                type="number"
+                                value={fontSize}
+                                onChange={(e) => setFontSize(Number(e.target.value))}
+                                min="8"
+                                max="72"
+                                className="w-16 px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                                title="Font Size"
+                              />
+                              <input
+                                type="color"
+                                value={textColor}
+                                onChange={(e) => setTextColor(e.target.value)}
+                                className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md cursor-pointer"
+                                title="Text Color"
+                              />
+                            </>
+                          )}
+                          {(tool === 'highlight' || tool === 'rectangle' || tool === 'circle' || tool === 'line' || tool === 'arrow') && (
+                            <>
+                              <input
+                                type="color"
+                                value={tool === 'highlight' ? highlightColor : strokeColor}
+                                onChange={(e) => {
+                                  if (tool === 'highlight') setHighlightColor(e.target.value);
+                                  else setStrokeColor(e.target.value);
+                                }}
+                                className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md cursor-pointer"
+                                title="Color"
+                              />
+                              {tool !== 'highlight' && (
+                                <input
+                                  type="number"
+                                  value={strokeWidth}
+                                  onChange={(e) => setStrokeWidth(Number(e.target.value))}
+                                  min="1"
+                                  max="10"
+                                  className="w-16 px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                                  title="Stroke Width"
+                                />
+                              )}
+                            </>
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
 
-                <div className="flex gap-2 items-center">
-                  {/* Zoom Controls */}
-                  <button
-                    onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
-                    title="Zoom Out"
-                  >
-                    −
-                  </button>
-                  <span className="text-gray-700 dark:text-gray-300 text-sm min-w-[60px] text-center font-medium">
-                    {Math.round(zoom * 100)}%
-                  </span>
-                  <button
-                    onClick={() => setZoom(Math.min(3, zoom + 0.25))}
-                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
-                    title="Zoom In"
-                  >
-                    +
-                  </button>
-                  <button
-                    onClick={() => setZoom(1)}
-                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
-                    title="Reset Zoom"
-                  >
-                    Fit
-                  </button>
-                  
-                  <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
-                  
-                  {/* Page Navigation */}
-                  <button
-                    onClick={() => setPageNum(Math.max(1, pageNum - 1))}
-                    disabled={pageNum <= 1}
-                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
-                  >
-                    ← Prev
-                  </button>
-                  <span className="text-gray-700 dark:text-gray-300 text-sm min-w-[80px] text-center font-medium">
-                    {pageNum} / {numPages}
-                  </span>
-                  <button
-                    onClick={() => setPageNum(Math.min(numPages, pageNum + 1))}
-                    disabled={pageNum >= numPages}
-                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
-                  >
-                    Next →
-                  </button>
-                  
-                  <button
-                    onClick={() => setShowThumbnails(!showThumbnails)}
-                    className={`px-3 py-2 rounded-lg transition-all text-sm font-medium ${
-                      showThumbnails
-                        ? 'bg-indigo-600 text-white shadow-md'
-                        : 'bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
-                    }`}
-                    title="Toggle Thumbnails"
-                  >
-                    📑
-                  </button>
+                    {/* Right: View Controls */}
+                    <div className="flex items-center gap-2">
+                      {/* Zoom Controls */}
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                        <button
+                          onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 transition-all text-slate-700 dark:text-slate-300"
+                          title="Zoom Out"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                          </svg>
+                        </button>
+                        <span className="text-slate-700 dark:text-slate-300 text-sm min-w-[50px] text-center font-semibold px-2">
+                          {Math.round(zoom * 100)}%
+                        </span>
+                        <button
+                          onClick={() => setZoom(Math.min(3, zoom + 0.25))}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 transition-all text-slate-700 dark:text-slate-300"
+                          title="Zoom In"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setZoom(1)}
+                          className="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 rounded-md transition-all"
+                          title="Fit to Page"
+                        >
+                          Fit
+                        </button>
+                      </div>
+
+                      <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+
+                      {/* Page Navigation */}
+                      <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                        <button
+                          onClick={() => setPageNum(Math.max(1, pageNum - 1))}
+                          disabled={pageNum <= 1}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
+                          title="Previous Page"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+                        <span className="text-slate-700 dark:text-slate-300 text-sm min-w-[70px] text-center font-semibold px-2">
+                          {pageNum} / {numPages}
+                        </span>
+                        <button
+                          onClick={() => setPageNum(Math.min(numPages, pageNum + 1))}
+                          disabled={pageNum >= numPages}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
+                          title="Next Page"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+
+                      {/* Toggle Sidebar */}
+                      <button
+                        onClick={() => setShowThumbnails(!showThumbnails)}
+                        className={`p-2 rounded-md transition-all ${
+                          showThumbnails
+                            ? 'bg-indigo-600 text-white shadow-lg'
+                            : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                        }`}
+                        title="Toggle Pages Panel"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* PDF Canvas - Clean White Background */}
+              {/* PDF Canvas - Premium Design */}
               <div
                 ref={containerRef}
-                className="flex-1 bg-gray-100 dark:bg-slate-950 p-6 overflow-auto flex justify-center items-start"
+                className="flex-1 bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-8 overflow-auto flex justify-center items-start"
               >
-                <div className="bg-white dark:bg-slate-900 rounded-lg shadow-2xl p-4 border border-gray-200 dark:border-slate-800">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-slate-900/10">
                   <canvas
                     ref={canvasRef}
                     onMouseDown={handleCanvasMouseDown}
                     onMouseMove={handleCanvasMouseMove}
                     onMouseUp={handleCanvasMouseUp}
-                    className="rounded shadow-lg"
+                    className="rounded-lg shadow-xl"
                     style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default' }}
                   />
                 </div>
               </div>
 
-              {/* Annotations List - Bottom Bar */}
+              {/* Annotations Panel - Modern Design */}
               {annotations.filter(ann => ann.page === pageNum).length > 0 && (
-                <div className="px-6 py-3 bg-gray-50 dark:bg-slate-800/50 border-t border-gray-200 dark:border-slate-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                      Annotations (Page {pageNum}) - {annotations.filter(ann => ann.page === pageNum).length} items
-                    </h3>
+                <div className="px-6 py-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-indigo-600 dark:text-indigo-400 text-lg">📝</span>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                        Annotations on Page {pageNum}
+                      </h3>
+                      <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full font-medium">
+                        {annotations.filter(ann => ann.page === pageNum).length}
+                      </span>
+                    </div>
                     <button
                       onClick={clearAllAnnotations}
-                      className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors font-medium"
+                      className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors font-semibold px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md"
                     >
                       Clear All
                     </button>
                   </div>
-                  <div className="space-y-1 max-h-24 overflow-y-auto">
+                  <div className="space-y-2 max-h-32 overflow-y-auto">
                     {annotations
                       .filter(ann => ann.page === pageNum)
                       .map((ann) => (
                         <div
                           key={ann.id}
-                          className={`flex items-center justify-between p-2 rounded transition-colors cursor-pointer ${
+                          className={`flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer border ${
                             selectedAnnotation === ann.id
-                              ? 'bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-500'
-                              : 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
+                              ? 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-500 shadow-md'
+                              : 'bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-600'
                           }`}
                           onClick={() => setSelectedAnnotation(ann.id === selectedAnnotation ? null : ann.id)}
                         >
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 rounded font-medium">
+                          <div className="flex items-center gap-3">
+                            <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold ${
+                              ann.type === 'text' ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' :
+                              ann.type === 'highlight' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
+                              ann.type === 'image' ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' :
+                              'bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}>
                               {ann.type}
                             </span>
-                            <span className="text-gray-700 dark:text-gray-300 text-sm">
-                              {ann.text || `${ann.type} annotation`}
+                            <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
+                              {ann.text || `${ann.type.charAt(0).toUpperCase() + ann.type.slice(1)} annotation`}
                             </span>
                           </div>
                           <button
@@ -1071,9 +1159,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                               e.stopPropagation();
                               removeAnnotation(ann.id);
                             }}
-                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm transition-colors"
+                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm transition-colors p-1.5 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md"
+                            title="Delete annotation"
                           >
-                            ✕
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
                           </button>
                         </div>
                       ))}
@@ -1081,15 +1172,35 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 </div>
               )}
 
-              {/* Download Button - Fixed Bottom */}
-              <div className="px-6 py-4 bg-gray-50 dark:bg-slate-800/50 border-t border-gray-200 dark:border-slate-800 flex justify-center">
-                <button
-                  onClick={handleDownload}
-                  disabled={isProcessing || annotations.length === 0}
-                  className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105"
-                >
-                  {isProcessing ? 'Processing...' : 'Download Edited PDF'}
-                </button>
+              {/* Download Button - Premium Design */}
+              <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-900 border-t border-slate-200 dark:border-slate-700 shadow-lg">
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleDownload}
+                    disabled={isProcessing || annotations.length === 0}
+                    className="group relative px-10 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold rounded-xl shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 overflow-hidden"
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      {isProcessing ? (
+                        <>
+                          <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span>Processing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          <span>Download Edited PDF</span>
+                        </>
+                      )}
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1097,9 +1208,15 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       )}
 
       {isProcessing && !file && (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto"></div>
-          <p className="mt-4 text-slate-400">Loading PDF...</p>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 border-4 border-indigo-200 dark:border-indigo-900 rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-transparent border-t-indigo-600 dark:border-t-indigo-400 rounded-full animate-spin"></div>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Loading PDF...</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">Please wait while we process your document</p>
+          </div>
         </div>
       )}
     </div>
