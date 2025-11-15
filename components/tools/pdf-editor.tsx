@@ -227,6 +227,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [tool, setTool] = useState<ToolType>(null);
   const [isEditable, setIsEditable] = useState(true);
   const [zoom, setZoom] = useState(1);
+  const [zoomMode, setZoomMode] = useState<'custom' | 'fit-width' | 'fit-page' | 'fit-height'>('fit-page');
   const [showThumbnails, setShowThumbnails] = useState(true);
   const [showToolPanel, setShowToolPanel] = useState(false);
   const [pageThumbnails, setPageThumbnails] = useState<string[]>([]);
@@ -355,6 +356,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [exportQuality, setExportQuality] = useState<'low' | 'medium' | 'high'>('high');
   const [exportFormat, setExportFormat] = useState<'pdf' | 'pdf-a'>('pdf');
+  
+  // Advanced: Page navigation and jump
+  const [showPageJump, setShowPageJump] = useState(false);
+  const [pageJumpInput, setPageJumpInput] = useState('');
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  
+  // Advanced: Page jump function
+  const jumpToPage = useCallback((page: number) => {
+    if (page >= 1 && page <= numPages) {
+      setPageNum(page);
+      setShowPageJump(false);
+      setPageJumpInput('');
+      toast.info(`Jumped to page ${page}`);
+    } else {
+      toast.error(`Page must be between 1 and ${numPages}`);
+    }
+  }, [numPages]);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -886,10 +904,22 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       const pdfWidth = viewportAtScale1.width;
       const pdfHeight = viewportAtScale1.height;
       
-      // Calculate scale to fit container while maintaining aspect ratio
-      const scaleX = (containerWidth / pdfWidth) * zoom;
-      const scaleY = (containerHeight / pdfHeight) * zoom;
-      const scale = Math.min(scaleX, scaleY, 3.0); // Max zoom 3x
+      // Advanced: Calculate scale based on zoom mode
+      let scale: number;
+      if (zoomMode === 'fit-width') {
+        scale = (containerWidth / pdfWidth) * zoom;
+      } else if (zoomMode === 'fit-height') {
+        scale = (containerHeight / pdfHeight) * zoom;
+      } else if (zoomMode === 'fit-page') {
+        const scaleX = containerWidth / pdfWidth;
+        const scaleY = containerHeight / pdfHeight;
+        scale = Math.min(scaleX, scaleY) * zoom;
+      } else {
+        // Custom zoom
+        const scaleX = (containerWidth / pdfWidth) * zoom;
+        const scaleY = (containerHeight / pdfHeight) * zoom;
+        scale = Math.min(scaleX, scaleY, 5.0); // Max zoom 5x for custom
+      }
       
       // Get viewport at calculated scale
       const viewport = page.getViewport({ scale });
@@ -2803,6 +2833,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         } else if (e.key === 'p' || e.key === 'P') {
           e.preventDefault();
           setShowPageManager(!showPageManager);
+        } else if ((e.ctrlKey || e.metaKey) && (e.key === 'g' || e.key === 'G')) {
+          e.preventDefault();
+          setShowPageJump(true);
+        } else if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+          e.preventDefault();
+          setShowKeyboardShortcuts(!showKeyboardShortcuts);
         } else if (e.key === 'e' || e.key === 'E') {
           e.preventDefault();
           if (!textEditMode) {
@@ -3473,66 +3509,137 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
                     {/* Right: View Controls */}
                     <div className="flex items-center gap-2">
-                      {/* Zoom Controls */}
+                      {/* Advanced: Zoom Controls with Fit Options */}
                       <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
                         <button
-                          onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 transition-all text-slate-700 dark:text-slate-300"
-                          title="Zoom Out"
+                          onClick={() => {
+                            setZoomMode('fit-page');
+                            setZoom(1);
+                            renderPage(pageNum);
+                          }}
+                          className={`p-2 rounded-md transition-all ${
+                            zoomMode === 'fit-page'
+                              ? 'bg-gray-900 text-white'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          }`}
+                          title="Fit to Page"
+                          aria-label="Fit to page"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setZoomMode('fit-width');
+                            setZoom(1);
+                            renderPage(pageNum);
+                          }}
+                          className={`p-2 rounded-md transition-all ${
+                            zoomMode === 'fit-width'
+                              ? 'bg-gray-900 text-white'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          }`}
+                          title="Fit to Width"
+                          aria-label="Fit to width"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                          </svg>
+                        </button>
+                        <div className="w-px h-6 bg-slate-300 dark:bg-slate-600" />
+                        <button
+                          onClick={() => {
+                            setZoomMode('custom');
+                            setZoom(Math.max(0.5, zoom - 0.25));
+                          }}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 transition-all"
+                          title="Zoom Out (-)"
+                          aria-label="Zoom out"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
                           </svg>
                         </button>
-                        <span className="text-slate-700 dark:text-slate-300 text-sm min-w-[50px] text-center font-semibold px-2">
+                        <span className="px-2 text-xs text-slate-600 dark:text-slate-400 min-w-[3rem] text-center">
                           {Math.round(zoom * 100)}%
                         </span>
                         <button
-                          onClick={() => setZoom(Math.min(3, zoom + 0.25))}
-                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 transition-all text-slate-700 dark:text-slate-300"
-                          title="Zoom In"
+                          onClick={() => {
+                            setZoomMode('custom');
+                            setZoom(Math.min(5, zoom + 0.25));
+                          }}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 transition-all"
+                          title="Zoom In (+)"
+                          aria-label="Zoom in"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
                           </svg>
                         </button>
                         <button
-                          onClick={() => setZoom(1)}
-                          className="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 rounded-md transition-all"
-                          title="Fit to Page"
+                          onClick={() => {
+                            setZoomMode('fit-page');
+                            setZoom(1);
+                          }}
+                          className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 transition-all"
+                          title="Reset Zoom (100%)"
+                          aria-label="Reset zoom"
                         >
-                          Fit
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
                         </button>
                       </div>
 
+
                       <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
 
-                      {/* Page Navigation */}
+                      {/* Advanced: Page Navigation with Jump */}
                       <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
                         <button
                           onClick={() => setPageNum(Math.max(1, pageNum - 1))}
                           disabled={pageNum <= 1}
                           className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
-                          title="Previous Page"
+                          title="Previous Page (←)"
+                          aria-label="Previous page"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                           </svg>
                         </button>
-                        <span className="text-slate-700 dark:text-slate-300 text-sm min-w-[70px] text-center font-semibold px-2">
+                        <button
+                          onClick={() => setShowPageJump(true)}
+                          className="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 rounded-md transition-all min-w-[70px] text-center"
+                          title="Jump to Page (Ctrl+G)"
+                          aria-label="Jump to page"
+                        >
                           {pageNum} / {numPages}
-                        </span>
+                        </button>
                         <button
                           onClick={() => setPageNum(Math.min(numPages, pageNum + 1))}
                           disabled={pageNum >= numPages}
                           className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-slate-700 dark:text-slate-300"
-                          title="Next Page"
+                          title="Next Page (→)"
+                          aria-label="Next page"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         </button>
                       </div>
+                      
+                      {/* Advanced: Keyboard Shortcuts Button */}
+                      <button
+                        onClick={() => setShowKeyboardShortcuts(!showKeyboardShortcuts)}
+                        className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 transition-all"
+                        title="Keyboard Shortcuts (?)"
+                        aria-label="Show keyboard shortcuts"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </button>
 
                       <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
 
@@ -4214,6 +4321,174 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               </div>
             )}
             <p className="text-slate-500 dark:text-slate-400 text-sm">{processingProgress > 0 ? `${Math.round(processingProgress)}%` : 'Please wait while we process your document'}</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Advanced: Page Jump Modal */}
+      {showPageJump && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPageJump(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Jump to Page</h3>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                min="1"
+                max={numPages}
+                value={pageJumpInput}
+                onChange={(e) => setPageJumpInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const page = parseInt(pageJumpInput);
+                    if (!isNaN(page)) {
+                      jumpToPage(page);
+                    }
+                  } else if (e.key === 'Escape') {
+                    setShowPageJump(false);
+                  }
+                }}
+                placeholder={`Enter page (1-${numPages})`}
+                className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-500"
+                autoFocus
+              />
+              <button
+                onClick={() => {
+                  const page = parseInt(pageJumpInput);
+                  if (!isNaN(page)) {
+                    jumpToPage(page);
+                  }
+                }}
+                className="px-6 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-md transition-all"
+              >
+                Go
+              </button>
+              <button
+                onClick={() => setShowPageJump(false)}
+                className="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white rounded-md transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Advanced: Keyboard Shortcuts Panel */}
+      {showKeyboardShortcuts && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowKeyboardShortcuts(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Keyboard Shortcuts</h3>
+              <button
+                onClick={() => setShowKeyboardShortcuts(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                aria-label="Close"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Navigation</h4>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Previous Page</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">←</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Next Page</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">→</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Jump to Page</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+G</kbd>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Editing</h4>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Undo</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+Z</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Redo</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+Y</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Copy</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+C</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Paste</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+V</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Delete</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Delete</kbd>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Tools</h4>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Edit Text Mode</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">E</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Toggle Grid</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">G</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Page Manager</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">P</kbd>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Search</h4>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Find</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+F</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Find & Replace</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+H</kbd>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Text Formatting</h4>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Bold</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+B</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Italic</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+I</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Underline</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+U</kbd>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Help</h4>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Show Shortcuts</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">?</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
