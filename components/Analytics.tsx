@@ -4,10 +4,9 @@ import Script from 'next/script';
 
 interface AnalyticsProps {
   googleAnalyticsId?: string;
-  googleAdsenseId?: string;
 }
 
-export default function Analytics({ googleAnalyticsId, googleAdsenseId }: AnalyticsProps) {
+export default function Analytics({ googleAnalyticsId }: AnalyticsProps) {
   return (
     <>
       {/* Google Analytics */}
@@ -27,14 +26,6 @@ export default function Analytics({ googleAnalyticsId, googleAdsenseId }: Analyt
           </Script>
         </>
       )}
-
-      {/* Google AdSense */}
-      <Script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-      />
     </>
   );
 }
