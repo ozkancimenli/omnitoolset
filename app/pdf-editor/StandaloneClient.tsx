@@ -2,7 +2,7 @@
 
 import Navbar from '@/components/pdf-editor/Navbar';
 import Hero from '@/components/pdf-editor/Hero';
-import PdfEditorStandalone from '@/components/pdf-editor/PdfEditorStandalone';
+import PdfEditor from '@/components/tools/pdf-editor';
 import HowItWorksSection from '@/components/pdf-editor/HowItWorksSection';
 import FaqSection from '@/components/tools/FaqSection';
 import Footer from '@/components/pdf-editor/Footer';
@@ -32,7 +32,12 @@ const faqs = [
   {
     question: 'Can I undo changes?',
     answer:
-      'Yes, you can reset all changes at any time using the "Reset Changes" button in the toolbar. This will restore your PDF to its original state.',
+      'Yes, you can use the Undo (Ctrl+Z) and Redo (Ctrl+Y) buttons in the toolbar to undo or redo your changes. This works for all editing operations including text, images, shapes, and annotations.',
+  },
+  {
+    question: 'What PDF operations are supported?',
+    answer:
+      'You can add text (with custom fonts and alignment), insert images, draw shapes (rectangles, circles, lines, arrows), add clickable links, create sticky notes, draw freely with the freehand tool, highlight text, and use the eraser to remove elements. You can also reorder, rotate, and delete pages. All changes are applied when you download the edited PDF.',
   },
 ];
 
@@ -65,8 +70,10 @@ export default function StandaloneClient() {
 
         {/* Editor Section */}
         <section className="py-12 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <PdfEditorStandalone />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" style={{ minHeight: '800px' }}>
+              <PdfEditor />
+            </div>
           </div>
         </section>
 

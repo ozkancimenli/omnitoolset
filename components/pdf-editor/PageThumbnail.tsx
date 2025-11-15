@@ -30,12 +30,12 @@ export default function PageThumbnail({
   return (
     <div
       {...dragHandleProps}
-      className={`group relative bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-blue-300 transition-all cursor-move ${
+      className={`group relative bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-gray-400 transition-all cursor-move ${
         isDragging ? 'opacity-50 scale-95' : ''
       }`}
     >
       {/* Page Number Badge */}
-      <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
+      <div className="absolute top-2 left-2 bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
         {displayIndex + 1}
       </div>
 
@@ -59,7 +59,7 @@ export default function PageThumbnail({
               e.stopPropagation();
               onRotateLeft();
             }}
-            className="p-1.5 hover:bg-gray-100 rounded-md text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-1.5 hover:bg-gray-100 rounded-md text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
             aria-label={`Rotate page ${displayIndex + 1} left`}
             title="Rotate left"
           >
@@ -72,7 +72,7 @@ export default function PageThumbnail({
               e.stopPropagation();
               onRotateRight();
             }}
-            className="p-1.5 hover:bg-gray-100 rounded-md text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-1.5 hover:bg-gray-100 rounded-md text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
             aria-label={`Rotate page ${displayIndex + 1} right`}
             title="Rotate right"
           >

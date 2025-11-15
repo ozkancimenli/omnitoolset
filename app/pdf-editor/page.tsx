@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import PdfEditorClient from './PdfEditorClient';
+import StandaloneClient from './StandaloneClient';
 
 export const metadata: Metadata = {
   title: 'Edit PDF Online – Full Featured PDF Editor | OmniPDF Editor',
@@ -91,7 +91,7 @@ const faqSchema = {
 export default function PdfEditorPage() {
   return (
     <>
-      <PdfEditorClient />
+      <StandaloneClient />
       
       {/* JSON-LD FAQ Schema */}
       <script

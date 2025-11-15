@@ -18,7 +18,7 @@ export default function HowItWorksSection() {
       number: 2,
       title: 'Edit Your Pages',
       description:
-        'Reorder pages by dragging and dropping them into your preferred order. Rotate pages using the rotation buttons, or delete unwanted pages with the delete button.',
+        'Add text, images, shapes, links, notes, and annotations. Reorder pages by dragging and dropping them into your preferred order. Rotate pages using the rotation buttons, or delete unwanted pages with the delete button.',
     },
     {
       number: 3,
@@ -38,7 +38,7 @@ export default function HowItWorksSection() {
           {steps.map((step) => (
             <div key={step.number} className="flex gap-6">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-md">
+                <div className="w-12 h-12 bg-gray-900 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-md">
                   {step.number}
                 </div>
               </div>
