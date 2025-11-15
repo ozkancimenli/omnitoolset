@@ -18,7 +18,7 @@ export default function AdSense({
   style,
   className = '',
   fullWidthResponsive = true,
-  useAdsterra = true, // Default to Adsterra smartlink
+  useAdsterra = false, // Default to AdSense (use Adsterra explicitly when needed)
 }: AdSenseProps) {
   const adRef = useRef<HTMLDivElement>(null);
   const pushedRef = useRef(false);
