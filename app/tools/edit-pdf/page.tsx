@@ -4,11 +4,11 @@ import Footer from '@/components/Footer';
 import EditPdfClient from './EditPdfClient';
 
 export const metadata: Metadata = {
-  title: 'Edit PDF Online – Reorder, Rotate & Delete Pages | OmniToolset',
+  title: 'Edit PDF Online – Full Featured PDF Editor | OmniToolset',
   description:
-    'Free online PDF editor to reorder, rotate, and delete pages from your PDF files. Fast, secure, and easy-to-use PDF editing tool. No registration required.',
+    'Professional PDF editor with text, images, shapes, links, notes, freehand drawing, and more. Add annotations, edit content, reorder pages, and download your edited PDF. 100% free, no registration required.',
   keywords:
-    'edit pdf, pdf editor, reorder pdf pages, rotate pdf pages, delete pdf pages, pdf page editor, edit pdf online, free pdf editor, pdf editor online, edit pdf pages, reorder pdf, rotate pdf, delete pdf pages online, pdf page manager, edit pdf file, pdf editing tool, online pdf editor free, edit pdf no registration, pdf page editor online, best pdf editor',
+    'edit pdf, pdf editor, add text to pdf, add image to pdf, pdf annotation, pdf link, pdf sticky note, freehand pdf drawing, pdf eraser, reorder pdf pages, rotate pdf pages, delete pdf pages, pdf page editor, edit pdf online, free pdf editor, pdf editor online, edit pdf pages, reorder pdf, rotate pdf, delete pdf pages online, pdf page manager, edit pdf file, pdf editing tool, online pdf editor free, edit pdf no registration, pdf page editor online, best pdf editor, professional pdf editor',
   openGraph: {
     title: 'Edit PDF Online – Reorder, Rotate & Delete Pages | OmniToolset',
     description:

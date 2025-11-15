@@ -1,7 +1,7 @@
 'use client';
 
 import ToolHero from '@/components/tools/ToolHero';
-import PdfPageEditor from '@/components/tools/PdfPageEditor';
+import PdfEditor from '@/components/tools/pdf-editor';
 import RelatedTools from '@/components/tools/RelatedTools';
 import FaqSection from '@/components/tools/FaqSection';
 
@@ -35,7 +35,7 @@ const faqs = [
   {
     question: 'What PDF operations are supported?',
     answer:
-      'You can reorder pages by dragging and dropping, rotate pages left or right, and delete unwanted pages. All changes are applied when you download the edited PDF.',
+      'You can add text (with custom fonts and alignment), insert images, draw shapes (rectangles, circles, lines, arrows), add clickable links, create sticky notes, draw freely with the freehand tool, highlight text, and use the eraser to remove elements. You can also reorder, rotate, and delete pages. All changes are applied when you download the edited PDF.',
   },
 ];
 
@@ -50,8 +50,8 @@ export default function EditPdfClient() {
           { label: 'PDF', href: '/categories#pdf' },
           { label: 'Edit PDF' },
         ]}
-        title="Edit PDF Online – Reorder, Rotate & Delete Pages"
-        subtitle="Easily edit your PDF pages in your browser. Reorder, rotate, and remove pages in seconds. No signup required."
+        title="Edit PDF Online – Full Featured PDF Editor"
+        subtitle="Add text, images, shapes, links, notes, and more to your PDF. Reorder, rotate, and delete pages. Professional PDF editing in your browser. No signup required."
         primaryCTA={{
           label: 'Choose PDF file',
           onClick: () => {
@@ -87,9 +87,24 @@ export default function EditPdfClient() {
         }
       />
 
-      {/* Editor Section */}
+      {/* Full Featured PDF Editor Section */}
       <section className="py-12 bg-white dark:bg-slate-900">
-        <PdfPageEditor />
+        <div className="container">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Professional PDF Editor
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Add text, images, shapes, links, notes, and annotations. All editing features in one place.
+              </p>
+            </div>
+            {/* Full PDF Editor Component */}
+            <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-slate-700" style={{ minHeight: '800px' }}>
+              <PdfEditor toolId="edit-pdf" />
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* How to Use Section */}
@@ -119,11 +134,12 @@ export default function EditPdfClient() {
               </div>
               <div>
                 <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
-                  Edit Your Pages
+                  Edit Your PDF
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400">
-                  Reorder pages by dragging and dropping them. Rotate pages using the rotation buttons.
-                  Delete unwanted pages with the delete button. All changes are applied in real-time.
+                  Use the toolbar to add text, images, shapes, links, sticky notes, and freehand drawings.
+                  Double-click text to edit. Drag annotations to move them. Use the eraser to remove unwanted elements.
+                  All changes are applied in real-time.
                 </p>
               </div>
             </div>
@@ -145,13 +161,13 @@ export default function EditPdfClient() {
 
           <div className="mt-12 p-6 bg-indigo-50 dark:bg-indigo-950/30 rounded-xl border border-indigo-200 dark:border-indigo-800">
             <h3 className="font-semibold text-slate-900 dark:text-white mb-3">
-              Why Edit PDFs Online?
+              Why Use Our PDF Editor?
             </h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              Editing PDFs online offers numerous advantages over traditional desktop software. Our
-              browser-based editor works on any device, requires no installation, and processes your
-              files locally for maximum security. Whether you need to reorganize a document, fix page
-              orientations, or remove unnecessary pages, our tool makes it quick and effortless.
+              Our professional PDF editor offers all the features you need in one place. Add text with custom fonts and alignment,
+              insert images and shapes, create clickable links, add sticky notes for comments, draw freely with the freehand tool,
+              and use the eraser to remove unwanted elements. All processing happens in your browser for maximum security and privacy.
+              No installation, no registration, no watermarks - just professional PDF editing at your fingertips.
             </p>
           </div>
         </div>
