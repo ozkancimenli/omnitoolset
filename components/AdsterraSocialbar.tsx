@@ -27,34 +27,61 @@ import { useEffect } from 'react';
  */
 export default function AdsterraSocialbar() {
   useEffect(() => {
+    // Wait for DOM to be fully ready
+    if (typeof window === 'undefined' || !document.body) {
+      return;
+    }
+
     // Check if script is already loaded
     const existingScript = document.querySelector(
       'script[src*="pl28059282.effectivegatecpm.com"]'
     );
     
     if (existingScript) {
+      console.log('[SocialBar] Script already loaded');
       return; // Script already loaded
     }
 
-    // Load Adsterra Social Bar script
-    // This script creates the Social Bar widget automatically
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = '//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js';
-    script.async = true;
-    script.setAttribute('data-cfasync', 'false');
-    
-    // Append to body (before </body> tag as recommended by Adsterra)
-    // In Next.js, this component is already in the body, so this is correct
-    document.body.appendChild(script);
+    // Delay script loading slightly to ensure page is ready
+    const loadScript = () => {
+      try {
+        // Load Adsterra Social Bar script
+        // This script creates the Social Bar widget automatically
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = '//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js';
+        script.async = true;
+        script.defer = true;
+        script.setAttribute('data-cfasync', 'false');
+        script.setAttribute('data-cookieconsent', 'ignore');
+        
+        // Add error handling
+        script.onerror = () => {
+          console.warn('[SocialBar] Failed to load script');
+        };
+        
+        script.onload = () => {
+          console.log('[SocialBar] Script loaded successfully');
+        };
+        
+        // Append to body (before </body> tag as recommended by Adsterra)
+        document.body.appendChild(script);
+      } catch (error) {
+        console.error('[SocialBar] Error loading script:', error);
+      }
+    };
+
+    // Load script after a short delay to ensure page is ready
+    const timer = setTimeout(loadScript, 1000);
 
     return () => {
+      clearTimeout(timer);
       // Cleanup on unmount (though Social Bar typically persists)
       const scriptToRemove = document.querySelector(
         'script[src*="pl28059282.effectivegatecpm.com"]'
       );
-      if (scriptToRemove) {
-        scriptToRemove.remove();
+      if (scriptToRemove && scriptToRemove.parentNode) {
+        scriptToRemove.parentNode.removeChild(scriptToRemove);
       }
     };
   }, []);
