@@ -309,6 +309,135 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
+  // Phase 2.1: Extract text layer from PDF
+  const extractTextLayer = async (pageNumber: number) => {
+    if (!pdfDocRef.current) return;
+
+    try {
+      const page = await pdfDocRef.current.getPage(pageNumber);
+      const textContent = await page.getTextContent();
+      const viewport = page.getViewport({ scale: 1.0 });
+      
+      const textItems: PdfTextItem[] = [];
+      
+      textContent.items.forEach((item: any, index: number) => {
+        // Parse transformation matrix
+        const transform = item.transform || [1, 0, 0, 1, 0, 0];
+        const x = transform[4];
+        const y = viewport.height - transform[5]; // Flip Y coordinate
+        const fontSize = item.height || (item.transform ? Math.abs(transform[3]) : 12);
+        const width = item.width || 0;
+        
+        textItems.push({
+          str: item.str || '',
+          x,
+          y,
+          width,
+          height: fontSize,
+          fontName: item.fontName || 'Arial',
+          fontSize,
+          transform,
+          page: pageNumber,
+          dir: item.dir || 'ltr',
+          hasEOL: item.hasEOL || false,
+        });
+      });
+      
+      setPdfTextItems(prev => ({ ...prev, [pageNumber]: textItems }));
+      
+      // Phase 2.2: Map text items to text runs (grouped by line/paragraph)
+      const textRuns = mapTextItemsToRuns(textItems, pageNumber);
+      setPdfTextRuns(prev => ({ ...prev, [pageNumber]: textRuns }));
+    } catch (error) {
+      console.error('Error extracting text layer:', error);
+    }
+  };
+
+  // Phase 2.2: Map text items to text runs
+  const mapTextItemsToRuns = (textItems: PdfTextItem[], pageNumber: number): PdfTextRun[] => {
+    const runs: PdfTextRun[] = [];
+    let currentRun: PdfTextItem[] = [];
+    let currentY = -1;
+    const lineThreshold = 5; // Pixels - items within this Y distance are on same line
+    
+    textItems.forEach((item, index) => {
+      if (item.str.trim() === '') return; // Skip empty items
+      
+      // Check if this item is on a new line
+      if (currentY === -1 || Math.abs(item.y - currentY) > lineThreshold) {
+        // Save previous run if exists
+        if (currentRun.length > 0) {
+          const runText = currentRun.map(i => i.str).join('');
+          const firstItem = currentRun[0];
+          const lastItem = currentRun[currentRun.length - 1];
+          const runWidth = lastItem.x + lastItem.width - firstItem.x;
+          
+          runs.push({
+            id: `run-${pageNumber}-${runs.length}`,
+            text: runText,
+            x: firstItem.x,
+            y: firstItem.y,
+            width: runWidth,
+            height: firstItem.height,
+            fontSize: firstItem.fontSize,
+            fontName: firstItem.fontName,
+            page: pageNumber,
+            startIndex: index - currentRun.length,
+            endIndex: index - 1,
+          });
+        }
+        
+        // Start new run
+        currentRun = [item];
+        currentY = item.y;
+      } else {
+        // Same line - add to current run
+        currentRun.push(item);
+      }
+    });
+    
+    // Add last run
+    if (currentRun.length > 0) {
+      const runText = currentRun.map(i => i.str).join('');
+      const firstItem = currentRun[0];
+      const lastItem = currentRun[currentRun.length - 1];
+      const runWidth = lastItem.x + lastItem.width - firstItem.x;
+      
+      runs.push({
+        id: `run-${pageNumber}-${runs.length}`,
+        text: runText,
+        x: firstItem.x,
+        y: firstItem.y,
+        width: runWidth,
+        height: firstItem.height,
+        fontSize: firstItem.fontSize,
+        fontName: firstItem.fontName,
+        page: pageNumber,
+        startIndex: textItems.length - currentRun.length,
+        endIndex: textItems.length - 1,
+      });
+    }
+    
+    return runs;
+  };
+
+  // Phase 2.3: Find text run at click position
+  const findTextRunAtPosition = (x: number, y: number, pageNumber: number): PdfTextRun | null => {
+    const runs = pdfTextRuns[pageNumber] || [];
+    if (runs.length === 0) return null;
+    
+    return runs.find(run => {
+      // Check if click is within text run bounds
+      const tolerance = 5; // Pixels tolerance
+      return (
+        x >= run.x - tolerance &&
+        x <= run.x + run.width + tolerance &&
+        y >= run.y - run.height - tolerance &&
+        y <= run.y + tolerance
+      );
+    }) || null;
+  };
+
   const renderPage = async (pageNumber: number) => {
     if (!pdfDocRef.current || !canvasRef.current || !containerRef.current) return;
 
@@ -353,6 +482,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         canvasContext: context, 
         viewport,
       } as any).promise;
+      
+      // Phase 2.1: Extract text layer after rendering
+      await extractTextLayer(pageNumber);
       
       // Draw annotations
       const pageAnnotations = annotations.filter(ann => ann.page === pageNumber);
@@ -1789,6 +1921,26 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
                       {/* Professional Tools */}
                       <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                        <button
+                          onClick={() => {
+                            setTool(tool === 'edit-text' ? null : 'edit-text');
+                            setTextEditMode(tool !== 'edit-text');
+                            if (tool !== 'edit-text') {
+                              toast.info('Edit mode: Click on PDF text to edit');
+                            }
+                          }}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'edit-text'
+                              ? 'bg-gray-900 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Edit PDF Text (E)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
                         <button
                           onClick={() => setTool(tool === 'signature' ? null : 'signature')}
                           disabled={!isEditable}
