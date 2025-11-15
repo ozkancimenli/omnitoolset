@@ -269,24 +269,49 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
-  const renderPage = async (pageNumber: number, scale: number = 2.0 * zoom) => {
-    if (!pdfDocRef.current || !canvasRef.current) return;
+  const renderPage = async (pageNumber: number) => {
+    if (!pdfDocRef.current || !canvasRef.current || !containerRef.current) return;
 
     try {
       const page = await pdfDocRef.current.getPage(pageNumber);
-      const viewport = page.getViewport({ scale });
+      const container = containerRef.current;
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
       
       if (!context) return;
 
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
+      // Get container dimensions (account for padding)
+      const containerWidth = container.clientWidth - 32; // 16px padding on each side
+      const containerHeight = container.clientHeight - 32;
+      
+      // Get PDF page dimensions at scale 1.0
+      const viewportAtScale1 = page.getViewport({ scale: 1.0 });
+      const pdfWidth = viewportAtScale1.width;
+      const pdfHeight = viewportAtScale1.height;
+      
+      // Calculate scale to fit container while maintaining aspect ratio
+      const scaleX = (containerWidth / pdfWidth) * zoom;
+      const scaleY = (containerHeight / pdfHeight) * zoom;
+      const scale = Math.min(scaleX, scaleY, 3.0); // Max zoom 3x
+      
+      // Get viewport at calculated scale
+      const viewport = page.getViewport({ scale });
+      
+      // Set canvas display size (CSS pixels)
+      canvas.style.width = `${viewport.width}px`;
+      canvas.style.height = `${viewport.height}px`;
+      
+      // Set canvas internal size (device pixels for crisp rendering)
+      const devicePixelRatio = window.devicePixelRatio || 1;
+      canvas.width = viewport.width * devicePixelRatio;
+      canvas.height = viewport.height * devicePixelRatio;
+      
+      // Scale context to handle device pixel ratio
+      context.scale(devicePixelRatio, devicePixelRatio);
 
       await page.render({ 
         canvasContext: context, 
         viewport,
-        canvas: canvas 
       } as any).promise;
       
       // Draw annotations
@@ -488,15 +513,36 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       renderPage(pageNum);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageNum, annotations, zoom, selectedAnnotation]);
+  }, [pageNum, annotations, zoom, selectedAnnotation, selectedAnnotations]);
+
+  // Re-render on container resize
+  useEffect(() => {
+    if (!containerRef.current || !pdfDocRef.current) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (pdfDocRef.current && pageNum > 0) {
+        renderPage(pageNum);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [pageNum, zoom]);
 
   const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return { x: 0, y: 0 };
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    // Canvas internal size vs display size
+    const scaleX = (canvas.width / devicePixelRatio) / rect.width;
+    const scaleY = (canvas.height / devicePixelRatio) / rect.height;
     return {
-      x: (e.clientX - rect.left) * (canvas.width / rect.width),
-      y: (e.clientY - rect.top) * (canvas.height / rect.height)
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
     };
   };
 
@@ -1962,17 +2008,17 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               {/* PDF Canvas - iLovePDF Style Full Screen */}
               <div
                 ref={containerRef}
-                className="flex-1 bg-slate-200 dark:bg-slate-950 overflow-auto flex justify-center items-center p-4 relative"
+                className="flex-1 bg-slate-200 dark:bg-slate-950 overflow-auto flex justify-center items-start p-4 relative"
                 style={{ minHeight: '400px', height: '100%' }}
               >
-                <div className="bg-white dark:bg-slate-900 shadow-2xl rounded-sm relative">
+                <div className="bg-white dark:bg-slate-900 shadow-2xl rounded-sm relative mt-4 mb-4" style={{ maxWidth: '100%' }}>
                   <canvas
                     ref={canvasRef}
                     onMouseDown={handleCanvasMouseDown}
                     onMouseMove={handleCanvasMouseMove}
                     onMouseUp={handleCanvasMouseUp}
-                    className="block"
-                    style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default' }}
+                    className="block max-w-full h-auto"
+                    style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default', display: 'block' }}
                   />
                   
                   {/* Inline Text Editor */}
