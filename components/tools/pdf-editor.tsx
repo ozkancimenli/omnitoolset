@@ -2021,13 +2021,43 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         } else if (e.key === 'p' || e.key === 'P') {
           e.preventDefault();
           setShowPageManager(!showPageManager);
+        } else if (e.key === 'e' || e.key === 'E') {
+          e.preventDefault();
+          if (!textEditMode) {
+            setTool('edit-text');
+            setTextEditMode(true);
+            toast.info('Edit mode: Click on text to edit');
+          } else {
+            setTool(null);
+            setTextEditMode(false);
+          }
         }
+      }
+      
+      // Phase 6: Text edit undo/redo (when in text edit mode)
+      if (textEditMode && (e.ctrlKey || e.metaKey)) {
+        if (e.key === 'z' && !e.shiftKey && textEditHistoryIndex >= 0) {
+          e.preventDefault();
+          undoTextEdit();
+        } else if ((e.key === 'y' || (e.key === 'z' && e.shiftKey)) && textEditHistoryIndex < textEditHistory.length - 1) {
+          e.preventDefault();
+          redoTextEdit();
+        }
+      }
+      
+      // Ctrl/Cmd + F/H for Find & Replace
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'f' || e.key === 'F')) {
+        e.preventDefault();
+        setShowFindReplace(!showFindReplace);
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'h' || e.key === 'H')) {
+        e.preventDefault();
+        setShowFindReplace(true);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo, copyAnnotations, pasteAnnotations, tool, fontWeight, fontStyle, textDecoration, selectedAnnotations, selectedAnnotation, annotations, showGrid, showPageManager]);
+  }, [undo, redo, copyAnnotations, pasteAnnotations, tool, fontWeight, fontStyle, textDecoration, selectedAnnotations, selectedAnnotation, annotations, showGrid, showPageManager, textEditMode, showFindReplace, textEditHistory, textEditHistoryIndex, undoTextEdit, redoTextEdit]);
 
   return (
     <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 overflow-hidden" style={{ height: '100%', minHeight: '800px' }}>
