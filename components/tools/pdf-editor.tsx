@@ -2032,8 +2032,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     if (!canvas) return null;
                     
                     const rect = canvas.getBoundingClientRect();
-                    const scaleX = canvas.width / rect.width;
-                    const scaleY = canvas.height / rect.height;
+                    const devicePixelRatio = window.devicePixelRatio || 1;
+                    // Canvas internal size vs display size
+                    const scaleX = (canvas.width / devicePixelRatio) / rect.width;
+                    const scaleY = (canvas.height / devicePixelRatio) / rect.height;
                     
                     // Calculate text position
                     let textX = ann.x / scaleX;
