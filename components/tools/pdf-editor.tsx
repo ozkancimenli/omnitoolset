@@ -1049,7 +1049,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setNumPages(0);
       setErrorState(null);
       
-      // Set file last - this will trigger useEffect to call loadPDF
+      // Set file - this will trigger useEffect to call loadPDF
       setFile(selectedFile);
       toast.info('Loading PDF...');
     } catch (error) {
@@ -1365,21 +1365,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setIsProcessing(false);
       setOperationStatus(null);
     }
-  }, [file, pdfUrl]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file]);
 
-  // Production: Cleanup effect for memory management
+  // Production: Cleanup effect for memory management - load PDF when file changes
   useEffect(() => {
-    if (file) {
-      // Call loadPDF directly when file changes
-      loadPDF().catch((error) => {
-        logError(error as Error, 'loadPDF useEffect', { fileName: file?.name || 'unknown' });
-        toast.error('Failed to load PDF. Please try again.');
-        setFile(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-      });
-    } else {
+    if (!file) {
       // Cleanup when file is removed
       if (pdfUrl) {
         URL.revokeObjectURL(pdfUrl);
@@ -1389,19 +1380,28 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       pdfLibDocRef.current = null;
       setNumPages(0);
       setPageThumbnails([]);
+      return;
     }
+    
+    // Call loadPDF when file changes
+    let cancelled = false;
+    loadPDF().catch((error) => {
+      if (cancelled) return;
+      logError(error as Error, 'loadPDF useEffect', { fileName: file?.name || 'unknown' });
+      toast.error('Failed to load PDF. Please try again.');
+      setFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    });
     
     // Cleanup function
     return () => {
-      // Cleanup object URLs
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-      // Cleanup PDF references
-      pdfDocRef.current = null;
-      pdfLibDocRef.current = null;
+      cancelled = true;
+      // Cleanup will be handled by the next effect run or component unmount
     };
-  }, [file, loadPDF, pdfUrl]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file]);
 
   // Phase 2.1: Extract text layer from PDF
   const extractTextLayer = async (pageNumber: number) => {
