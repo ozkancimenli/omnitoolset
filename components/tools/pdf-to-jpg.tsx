@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { toast } from '@/components/Toast';
+import ToolBase, { formatFileSize, validateFile } from './ToolBase';
+import FileUploadArea from './FileUploadArea';
 
 interface PdfToJpgProps {
   toolId?: string;
@@ -15,36 +18,37 @@ export default function PdfToJpg({ toolId }: PdfToJpgProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [images, setImages] = useState<string[]>([]);
+  const [numPages, setNumPages] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setFile(e.target.files[0]);
-      setImages([]);
+  const handleFileSelect = (selectedFile: File) => {
+    const validation = validateFile(selectedFile, 50, ['application/pdf'], ['.pdf']);
+    if (!validation.valid) {
+      toast.error(validation.error || 'Invalid file');
+      return;
     }
-  };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (e.dataTransfer.files[0]?.type === 'application/pdf') {
-      setFile(e.dataTransfer.files[0]);
-      setImages([]);
-    }
+    setFile(selectedFile);
+    setImages([]);
+    setNumPages(0);
+    toast.success(`PDF selected: ${selectedFile.name}`);
   };
 
   const handleConvert = async () => {
-    if (!file) return;
+    if (!file) {
+      toast.error('Please select a PDF file first');
+      return;
+    }
 
     setIsProcessing(true);
     setProgress(0);
     setImages([]);
 
     try {
+      toast.info('Loading PDF...');
       const pdfjsLib = await import('pdfjs-dist');
-      // Use local worker from public folder or fallback to CDN
       pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.mjs';
       
-      // If public worker doesn't exist, use CDN
       try {
         const response = await fetch('/pdf.worker.mjs', { method: 'HEAD' });
         if (!response.ok) throw new Error('Worker not found');
@@ -52,13 +56,17 @@ export default function PdfToJpg({ toolId }: PdfToJpgProps) {
         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
       }
 
+      setProgress(10);
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const numPages = pdf.numPages;
+      const totalPages = pdf.numPages;
+      setNumPages(totalPages);
+      
+      toast.info(`Converting ${totalPages} page(s) to ${format}...`);
       const newImages: string[] = [];
 
-      for (let i = 1; i <= numPages; i++) {
-        setProgress((i / numPages) * 100);
+      for (let i = 1; i <= totalPages; i++) {
+        setProgress(10 + (i / totalPages) * 85);
         
         const page = await pdf.getPage(i);
         const viewport = page.getViewport({ scale: 2 });
@@ -82,11 +90,26 @@ export default function PdfToJpg({ toolId }: PdfToJpgProps) {
       }
 
       setImages(newImages);
+      setProgress(100);
+      toast.success(`Successfully converted ${totalPages} page(s) to ${format}!`);
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred during conversion: ' + (error as Error).message);
+      let errorMessage = 'An error occurred during conversion';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('password') || error.message.includes('encrypted')) {
+          errorMessage = 'This PDF is password-protected. Please unlock it first.';
+        } else if (error.message.includes('corrupted')) {
+          errorMessage = 'The PDF file appears to be corrupted or invalid.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
+      setTimeout(() => setProgress(0), 2000);
     }
   };
 
@@ -95,10 +118,19 @@ export default function PdfToJpg({ toolId }: PdfToJpgProps) {
     const link = document.createElement('a');
     link.href = img;
     link.download = `${file?.name.replace('.pdf', '')}_page_${index + 1}.${fileExt}`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+    toast.success(`Downloaded page ${index + 1}`);
   };
 
   const downloadAll = async () => {
+    if (images.length === 0) {
+      toast.error('No images to download');
+      return;
+    }
+
+    toast.info('Creating ZIP file...');
     const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
     
@@ -112,72 +144,121 @@ export default function PdfToJpg({ toolId }: PdfToJpgProps) {
     const a = document.createElement('a');
     a.href = url;
     a.download = file?.name.replace('.pdf', '') + '_images.zip';
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    toast.success(`Downloaded ${images.length} image(s) as ZIP!`);
   };
 
   return (
-    <div className="space-y-6">
-      <div
-        className="upload-area"
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <div className="text-5xl mb-4">📄</div>
-        <p className="text-slate-300">Drag and drop your PDF file here or click to select</p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-      </div>
+    <ToolBase
+      title={`PDF to ${format}`}
+      description={`Convert PDF pages to ${format} images`}
+      icon="🖼️"
+      maxFileSize={50}
+      acceptedFileTypes={['application/pdf']}
+      acceptedExtensions={['.pdf']}
+      showProgress={true}
+      progress={progress}
+      isProcessing={isProcessing}
+      helpText={`Convert your PDF pages to ${format} images. Each page becomes a separate image file. Download individually or as a ZIP archive.`}
+      tips={[
+        'Each PDF page becomes a separate image',
+        'High quality conversion (2x scale)',
+        'Click on any image to download it',
+        'Use "Download All" to get all images as ZIP',
+        'Perfect for extracting pages as images'
+      ]}
+    >
+      <FileUploadArea
+        onFileSelect={handleFileSelect}
+        maxFileSize={50}
+        acceptedFileTypes={['application/pdf']}
+        acceptedExtensions={['.pdf']}
+        icon="📄"
+        text="Drag and drop your PDF file here or click to select"
+        subtext="100% free • No registration • Secure • Files processed in your browser"
+        showFileInfo={true}
+      />
 
-      {file && (
-        <div className="bg-slate-900 rounded-xl p-4">
-          <p className="text-slate-300">Selected: {file.name}</p>
-        </div>
-      )}
-
-      {isProcessing && (
-        <div className="w-full bg-slate-700 rounded-full h-2">
-          <div
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
+      {file && numPages > 0 && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600 dark:text-gray-400">PDF Pages:</span>
+            <span className="font-semibold text-blue-600 dark:text-blue-400 text-lg">
+              {numPages}
+            </span>
+          </div>
         </div>
       )}
 
       <button
         onClick={handleConvert}
         disabled={!file || isProcessing}
-        className="btn w-full"
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
       >
-        {isProcessing ? 'Converting...' : `Convert to ${format}`}
+        {isProcessing ? (
+          <>
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <span>Converting... {Math.round(progress)}%</span>
+          </>
+        ) : (
+          <>
+            <span>🖼️</span>
+            <span>Convert to {format}</span>
+          </>
+        )}
       </button>
 
       {images.length > 0 && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-green-800 dark:text-green-200 font-medium">
+                ✓ {images.length} image{images.length > 1 ? 's' : ''} ready
+              </span>
+              <button
+                onClick={downloadAll}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors text-sm"
+              >
+                📦 Download All as ZIP
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {images.map((img, index) => (
-              <div key={index} className="text-center">
+              <div key={index} className="text-center bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-2 hover:shadow-lg transition-shadow">
                 <img
                   src={img}
                   alt={`Page ${index + 1}`}
-                  className="w-full rounded-lg border border-slate-700 cursor-pointer hover:border-indigo-500 transition-colors"
+                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-blue-500 transition-colors mb-2"
                   onClick={() => downloadImage(index)}
                 />
-                <p className="text-sm text-slate-400 mt-2">Page {index + 1}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Page {index + 1}</p>
+                <button
+                  onClick={() => downloadImage(index)}
+                  className="w-full px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors"
+                >
+                  Download
+                </button>
               </div>
             ))}
           </div>
-          <button onClick={downloadAll} className="btn w-full">
-            Download All as ZIP
-          </button>
         </div>
       )}
-    </div>
+
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">How it works</h3>
+        <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800 dark:text-blue-300">
+          <li>Upload your PDF file (up to 50MB)</li>
+          <li>Each page is converted to a {format} image</li>
+          <li>Click on any image to download it individually</li>
+          <li>Use "Download All" to get all images as a ZIP file</li>
+          <li>All processing happens in your browser - your files never leave your device</li>
+        </ol>
+      </div>
+    </ToolBase>
   );
 }

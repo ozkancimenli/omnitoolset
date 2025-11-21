@@ -131,12 +131,12 @@ interface PdfEditorProps {
   toolId?: string;
 }
 
-type ToolType = 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'eraser' | 'signature' | 'watermark' | 'redaction' | 'edit-text' | null;
+type ToolType = 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'eraser' | 'signature' | 'watermark' | 'redaction' | 'edit-text' | 'stamp' | 'ruler' | 'measure' | 'polygon' | 'callout' | 'form-field' | null;
 type ShapeType = 'rectangle' | 'circle' | 'line' | 'arrow';
 
 interface Annotation {
   id: string;
-  type: 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'signature' | 'watermark' | 'redaction';
+  type: 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'signature' | 'watermark' | 'redaction' | 'stamp' | 'ruler' | 'measure' | 'polygon' | 'callout' | 'form-field';
   x: number;
   y: number;
   text?: string;
@@ -168,6 +168,17 @@ interface Annotation {
   lineHeight?: number; // Line height (Phase 8)
   textShadow?: { offsetX: number; offsetY: number; blur: number; color: string }; // Text shadow (Phase 8)
   textOutline?: { width: number; color: string }; // Text outline (Phase 8)
+  distance?: number; // For measure tool - distance in pixels
+  measurementUnit?: 'px' | 'mm' | 'cm' | 'in'; // Measurement unit
+  points?: { x: number; y: number }[]; // For polygon shapes
+  calloutPoints?: { x: number; y: number }[]; // For callout shapes
+  formFieldType?: 'text' | 'checkbox' | 'radio' | 'dropdown' | 'date' | 'number'; // Form field type
+  formFieldName?: string; // Form field name
+  formFieldValue?: string; // Form field value
+  formFieldRequired?: boolean; // Required field
+  formFieldOptions?: string[]; // Options for dropdown/radio
+  commentThread?: string; // Comment thread ID
+  commentReplies?: Array<{ id: string; text: string; author?: string; timestamp: number }>; // Comment replies
 }
 
 // PDF Text Layer - Extracted from PDF content
@@ -385,6 +396,583 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       toast.error(`Page must be between 1 and ${numPages}`);
     }
   }, [numPages]);
+
+  // Advanced: Floating Text Formatting Toolbar
+  const [showFloatingToolbar, setShowFloatingToolbar] = useState(false);
+  const [floatingToolbarPosition, setFloatingToolbarPosition] = useState<{ x: number; y: number } | null>(null);
+  const [selectedTextForFormatting, setSelectedTextForFormatting] = useState<string | null>(null);
+
+  // Advanced: Show floating toolbar when text is selected
+  useEffect(() => {
+    if (selectedAnnotation || selectedAnnotations.size > 0) {
+      const selected = selectedAnnotation 
+        ? annotations.find(a => a.id === selectedAnnotation)
+        : annotations.find(a => selectedAnnotations.has(a.id));
+      
+      if (selected && selected.type === 'text' && canvasRef.current) {
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        setFloatingToolbarPosition({
+          x: rect.left + (selected.x || 0),
+          y: rect.top + (selected.y || 0) - 50
+        });
+        setShowFloatingToolbar(true);
+        setSelectedTextForFormatting(selected.id);
+      } else {
+        setShowFloatingToolbar(false);
+        setSelectedTextForFormatting(null);
+      }
+    } else {
+      setShowFloatingToolbar(false);
+      setSelectedTextForFormatting(null);
+    }
+  }, [selectedAnnotation, selectedAnnotations, annotations]);
+
+  // Advanced: Apply format to selected text annotation
+  const applyFormatToSelectedText = useCallback((format: Partial<Annotation>) => {
+    if (selectedTextForFormatting) {
+      const newAnnotations = annotations.map(ann => {
+        if (ann.id === selectedTextForFormatting) {
+          return { ...ann, ...format };
+        }
+        return ann;
+      });
+      setAnnotations(newAnnotations);
+      saveToHistory(newAnnotations);
+      toast.success('Format applied');
+    } else if (selectedAnnotations.size > 0) {
+      const newAnnotations = annotations.map(ann => {
+        if (selectedAnnotations.has(ann.id) && ann.type === 'text') {
+          return { ...ann, ...format };
+        }
+        return ann;
+      });
+      setAnnotations(newAnnotations);
+      saveToHistory(newAnnotations);
+      toast.success(`Format applied to ${selectedAnnotations.size} annotation(s)`);
+    }
+  }, [selectedTextForFormatting, selectedAnnotations, annotations]);
+
+  // Advanced: Page features (headers, footers, page numbering)
+  const [pageHeaders, setPageHeaders] = useState<Record<number, { text: string; format?: any }>>({});
+  const [pageFooters, setPageFooters] = useState<Record<number, { text: string; format?: any }>>({});
+  const [showPageNumbering, setShowPageNumbering] = useState(false);
+  const [pageNumberFormat, setPageNumberFormat] = useState<'1' | '1/10' | 'Page 1' | '1 of 10'>('1');
+  const [pageNumberPosition, setPageNumberPosition] = useState<'header' | 'footer'>('footer');
+  const [pageBackgroundColors, setPageBackgroundColors] = useState<Record<number, string>>({});
+  const [showPageFeatures, setShowPageFeatures] = useState(false);
+  
+  // Advanced: Stamps
+  const [selectedStamp, setSelectedStamp] = useState<string>('approved');
+  const [stampSize, setStampSize] = useState(100);
+  const stamps = [
+    { id: 'approved', text: 'APPROVED', color: '#10b981' },
+    { id: 'rejected', text: 'REJECTED', color: '#ef4444' },
+    { id: 'confidential', text: 'CONFIDENTIAL', color: '#f59e0b' },
+    { id: 'draft', text: 'DRAFT', color: '#6b7280' },
+    { id: 'final', text: 'FINAL', color: '#3b82f6' },
+    { id: 'void', text: 'VOID', color: '#ef4444' },
+    { id: 'copy', text: 'COPY', color: '#8b5cf6' },
+    { id: 'original', text: 'ORIGINAL', color: '#10b981' },
+  ];
+  
+  // Advanced: Page manipulation
+  const [deletedPages, setDeletedPages] = useState<Set<number>>(new Set());
+  const [insertedPages, setInsertedPages] = useState<Array<{ afterPage: number; count: number }>>([]);
+  
+  // Advanced: Measurement tools
+  const [measurementUnit, setMeasurementUnit] = useState<'px' | 'mm' | 'cm' | 'in'>('px');
+  const [measureStart, setMeasureStart] = useState<{ x: number; y: number } | null>(null);
+  const [rulerLength, setRulerLength] = useState(200); // Default ruler length in pixels
+  
+  // Advanced: Polygon and callout
+  const [polygonPoints, setPolygonPoints] = useState<{ x: number; y: number }[]>([]);
+  const [isDrawingPolygon, setIsDrawingPolygon] = useState(false);
+  
+  // Advanced: Performance - Virtual scrolling
+  const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set([1]));
+  const [pageRenderQueue, setPageRenderQueue] = useState<number[]>([]);
+  const [renderedPages, setRenderedPages] = useState<Set<number>>(new Set([1]));
+  
+  // Advanced: Form filling
+  const [formFieldType, setFormFieldType] = useState<'text' | 'checkbox' | 'radio' | 'dropdown' | 'date' | 'number'>('text');
+  const [formFieldName, setFormFieldName] = useState('');
+  const [formFieldRequired, setFormFieldRequired] = useState(false);
+  const [formFieldOptions, setFormFieldOptions] = useState<string[]>([]);
+  const [showFormFieldPanel, setShowFormFieldPanel] = useState(false);
+  
+  // Advanced: Comments system
+  const [commentThreads, setCommentThreads] = useState<Map<string, Array<{ id: string; text: string; author?: string; timestamp: number }>>>(new Map());
+  const [activeCommentThread, setActiveCommentThread] = useState<string | null>(null);
+  const [newCommentText, setNewCommentText] = useState('');
+  const [showCommentsPanel, setShowCommentsPanel] = useState(false);
+  
+  // Advanced: Annotation templates
+  const [annotationTemplates, setAnnotationTemplates] = useState<Array<{ name: string; annotation: Partial<Annotation> }>>([
+    { name: 'Signature Box', annotation: { type: 'signature', width: 200, height: 80, strokeColor: '#000000' } },
+    { name: 'Date Field', annotation: { type: 'form-field', formFieldType: 'date', width: 150, height: 30 } },
+    { name: 'Checkbox', annotation: { type: 'form-field', formFieldType: 'checkbox', width: 20, height: 20 } },
+    { name: 'Text Field', annotation: { type: 'form-field', formFieldType: 'text', width: 200, height: 30 } },
+    { name: 'Approved Stamp', annotation: { type: 'stamp', text: 'APPROVED', color: '#10b981', width: 120, height: 120 } },
+    { name: 'Confidential Watermark', annotation: { type: 'watermark', watermarkText: 'CONFIDENTIAL', watermarkOpacity: 0.3 } },
+  ]);
+  const [showTemplatesPanel, setShowTemplatesPanel] = useState(false);
+  
+  // Advanced: Batch operations
+  const [batchOperationMode, setBatchOperationMode] = useState<'select' | 'move' | 'delete' | 'format' | null>(null);
+  const [batchSelectionBox, setBatchSelectionBox] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
+  
+  // Advanced: Mobile optimizations
+  const [isMobile, setIsMobile] = useState(false);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  
+  // Advanced: Performance - Intersection Observer for lazy loading
+  const pageObserverRef = useRef<IntersectionObserver | null>(null);
+  
+  // Advanced: Settings and preferences
+  const [showSettings, setShowSettings] = useState(false);
+  const [settings, setSettings] = useState({
+    autoSave: false,
+    autoSaveInterval: 30, // seconds
+    defaultZoom: 'fit-page' as 'custom' | 'fit-width' | 'fit-page' | 'fit-height',
+    defaultFontSize: 16,
+    defaultFontFamily: 'Arial',
+    showGrid: false,
+    snapToGrid: false,
+    gridSize: 20,
+    showRulers: false,
+    showTooltips: true,
+    enableAnimations: true,
+    exportQuality: 'high' as 'low' | 'medium' | 'high',
+    exportFormat: 'pdf' as 'pdf' | 'pdf-a',
+  });
+  
+  // Advanced: Help and tutorial
+  const [showHelp, setShowHelp] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
+  const [hasSeenTutorial, setHasSeenTutorial] = useState(false);
+  
+  // Advanced: Better error states
+  const [errorState, setErrorState] = useState<{ message: string; code?: string; retry?: () => void } | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  
+  // Advanced: Operation status
+  const [operationStatus, setOperationStatus] = useState<{ type: string; message: string; progress?: number } | null>(null);
+
+  // Advanced: Add page header
+  const addPageHeader = useCallback((pageNum: number, text: string, format?: any) => {
+    setPageHeaders(prev => ({
+      ...prev,
+      [pageNum]: { text, format: format || { fontSize: 12, color: '#666666' } }
+    }));
+    toast.success(`Header added to page ${pageNum}`);
+  }, []);
+
+  // Advanced: Add page footer
+  const addPageFooter = useCallback((pageNum: number, text: string, format?: any) => {
+    setPageFooters(prev => ({
+      ...prev,
+      [pageNum]: { text, format: format || { fontSize: 12, color: '#666666' } }
+    }));
+    toast.success(`Footer added to page ${pageNum}`);
+  }, []);
+
+  // Advanced: Apply page numbering
+  const applyPageNumbering = useCallback(() => {
+    if (!showPageNumbering) {
+      setShowPageNumbering(true);
+      toast.success('Page numbering enabled');
+    } else {
+      // Add page numbers to all pages
+      for (let i = 1; i <= numPages; i++) {
+        let pageNumText = '';
+        switch (pageNumberFormat) {
+          case '1':
+            pageNumText = `${i}`;
+            break;
+          case '1/10':
+            pageNumText = `${i}/${numPages}`;
+            break;
+          case 'Page 1':
+            pageNumText = `Page ${i}`;
+            break;
+          case '1 of 10':
+            pageNumText = `${i} of ${numPages}`;
+            break;
+        }
+        
+        if (pageNumberPosition === 'header') {
+          addPageHeader(i, pageNumText, { fontSize: 10, color: '#666666', textAlign: 'center' });
+        } else {
+          addPageFooter(i, pageNumText, { fontSize: 10, color: '#666666', textAlign: 'center' });
+        }
+      }
+      toast.success(`Page numbering applied to all pages`);
+    }
+  }, [showPageNumbering, pageNumberFormat, pageNumberPosition, numPages, addPageHeader, addPageFooter]);
+
+  // Advanced: Set page background color
+  const setPageBackground = useCallback((pageNum: number, color: string) => {
+    setPageBackgroundColors(prev => ({
+      ...prev,
+      [pageNum]: color
+    }));
+    toast.success(`Background color set for page ${pageNum}`);
+  }, []);
+
+  // Advanced: Page manipulation functions
+  const rotatePage = useCallback((pageNum: number, degrees: number) => {
+    setPageRotations(prev => ({
+      ...prev,
+      [pageNum]: (prev[pageNum] || 0) + degrees
+    }));
+    toast.success(`Page ${pageNum} rotated ${degrees}°`);
+  }, []);
+
+  const deletePage = useCallback((pageNum: number) => {
+    if (numPages <= 1) {
+      toast.error('Cannot delete the last page');
+      return;
+    }
+    if (confirm(`Delete page ${pageNum}? This action cannot be undone.`)) {
+      setDeletedPages(prev => new Set([...prev, pageNum]));
+      // Move annotations from deleted page to previous page or remove them
+      const newAnnotations = annotations.map(ann => {
+        if (ann.page === pageNum) {
+          return { ...ann, page: Math.max(1, pageNum - 1) };
+        } else if (ann.page > pageNum) {
+          return { ...ann, page: ann.page - 1 };
+        }
+        return ann;
+      });
+      setAnnotations(newAnnotations);
+      if (pageNum <= pageNum) {
+        setPageNum(Math.max(1, pageNum - 1));
+      }
+      toast.success(`Page ${pageNum} marked for deletion`);
+    }
+  }, [numPages, annotations, pageNum]);
+
+  const insertBlankPage = useCallback((afterPage: number) => {
+    setInsertedPages(prev => [...prev, { afterPage, count: 1 }]);
+    // Move annotations on pages after insertion point
+    const newAnnotations = annotations.map(ann => {
+      if (ann.page > afterPage) {
+        return { ...ann, page: ann.page + 1 };
+      }
+      return ann;
+    });
+    setAnnotations(newAnnotations);
+    toast.success(`Blank page inserted after page ${afterPage}`);
+  }, [annotations]);
+
+  // Advanced: Context menu for annotations
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; annotationId: string | null } | null>(null);
+  const [lockedAnnotations, setLockedAnnotations] = useState<Set<string>>(new Set());
+  const [annotationGroups, setAnnotationGroups] = useState<Map<string, Set<string>>>(new Map());
+  const [groupCounter, setGroupCounter] = useState(0);
+
+  // Advanced: Handle right-click for context menu
+  const handleCanvasContextMenu = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const coords = getCanvasCoordinates(e);
+    
+    // Close polygon/callout on right-click
+    if ((tool === 'polygon' || tool === 'callout') && isDrawingPolygon && polygonPoints.length > 2) {
+      // Finish polygon/callout
+      const newAnnotations = [...annotations];
+      if (tool === 'polygon') {
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          type: 'polygon',
+          x: Math.min(...polygonPoints.map(p => p.x)),
+          y: Math.min(...polygonPoints.map(p => p.y)),
+          width: Math.max(...polygonPoints.map(p => p.x)) - Math.min(...polygonPoints.map(p => p.x)),
+          height: Math.max(...polygonPoints.map(p => p.y)) - Math.min(...polygonPoints.map(p => p.y)),
+          points: [...polygonPoints],
+          strokeColor: strokeColor,
+          fillColor: fillColor,
+          page: pageNum,
+        };
+        newAnnotations.push(newAnnotation);
+        toast.success('Polygon added');
+      } else if (tool === 'callout') {
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          type: 'callout',
+          x: Math.min(...polygonPoints.map(p => p.x)),
+          y: Math.min(...polygonPoints.map(p => p.y)),
+          width: Math.max(...polygonPoints.map(p => p.x)) - Math.min(...polygonPoints.map(p => p.x)),
+          height: Math.max(...polygonPoints.map(p => p.y)) - Math.min(...polygonPoints.map(p => p.y)),
+          calloutPoints: [...polygonPoints],
+          strokeColor: strokeColor,
+          fillColor: fillColor,
+          page: pageNum,
+        };
+        newAnnotations.push(newAnnotation);
+        toast.success('Callout added');
+      }
+      setAnnotations(newAnnotations);
+      saveToHistory(newAnnotations);
+      setPolygonPoints([]);
+      setIsDrawingPolygon(false);
+      setTool(null);
+      return;
+    }
+    
+    const pageAnnotations = annotations.filter(ann => ann.page === pageNum && !lockedAnnotations.has(ann.id));
+    
+    // Find annotation at click position
+    let clickedAnnotation: Annotation | null = null;
+    for (const ann of pageAnnotations) {
+      let isInside = false;
+      if (ann.type === 'text' && ann.text) {
+        const fontSize = ann.fontSize || 16;
+        const textWidth = (ann.text.length * fontSize * 0.6);
+        let textX = ann.x;
+        if (ann.textAlign === 'center') {
+          textX = ann.x - textWidth / 2;
+        } else if (ann.textAlign === 'right') {
+          textX = ann.x - textWidth;
+        }
+        isInside = (
+          coords.x >= textX &&
+          coords.x <= textX + textWidth &&
+          coords.y >= ann.y - fontSize &&
+          coords.y <= ann.y
+        );
+      } else if (ann.width && ann.height) {
+        isInside = (
+          coords.x >= ann.x &&
+          coords.x <= ann.x + ann.width &&
+          coords.y >= ann.y &&
+          coords.y <= ann.y + ann.height
+        );
+      }
+      if (isInside) {
+        clickedAnnotation = ann;
+        break;
+      }
+    }
+    
+    if (clickedAnnotation) {
+      setContextMenu({ x: e.clientX, y: e.clientY, annotationId: clickedAnnotation.id });
+      setSelectedAnnotation(clickedAnnotation.id);
+    } else {
+      setContextMenu(null);
+    }
+  }, [annotations, pageNum, lockedAnnotations, tool, isDrawingPolygon, polygonPoints, strokeColor, fillColor]);
+
+  // Advanced: Close context menu
+  useEffect(() => {
+    const handleClickOutside = () => setContextMenu(null);
+    if (contextMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [contextMenu]);
+
+  // Advanced: Duplicate annotation
+  const duplicateAnnotation = useCallback((id: string) => {
+    const annotation = annotations.find(ann => ann.id === id);
+    if (!annotation) return;
+    
+    const newAnnotation: Annotation = {
+      ...annotation,
+      id: `annotation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      x: annotation.x + 20,
+      y: annotation.y + 20,
+    };
+    
+    const newAnnotations = [...annotations, newAnnotation];
+    setAnnotations(newAnnotations);
+    saveToHistory(newAnnotations);
+    setContextMenu(null);
+    toast.success('Annotation duplicated');
+  }, [annotations]);
+
+  // Advanced: Lock/unlock annotation
+  const toggleLockAnnotation = useCallback((id: string) => {
+    setLockedAnnotations(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+        toast.success('Annotation unlocked');
+      } else {
+        newSet.add(id);
+        toast.success('Annotation locked');
+      }
+      return newSet;
+    });
+    setContextMenu(null);
+  }, []);
+
+  // Advanced: Group annotations
+  const groupAnnotations = useCallback((ids: string[]) => {
+    if (ids.length < 2) {
+      toast.warning('Select at least 2 annotations to group');
+      return;
+    }
+    
+    const groupId = `group-${groupCounter}`;
+    setGroupCounter(prev => prev + 1);
+    setAnnotationGroups(prev => {
+      const newMap = new Map(prev);
+      newMap.set(groupId, new Set(ids));
+      return newMap;
+    });
+    setContextMenu(null);
+    toast.success(`${ids.length} annotations grouped`);
+  }, [groupCounter]);
+
+  // Advanced: Ungroup annotations
+  const ungroupAnnotations = useCallback((groupId: string) => {
+    setAnnotationGroups(prev => {
+      const newMap = new Map(prev);
+      newMap.delete(groupId);
+      return newMap;
+    });
+    toast.success('Annotations ungrouped');
+  }, []);
+
+  // Advanced: Align annotations
+  const alignAnnotations = useCallback((align: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => {
+    if (selectedAnnotations.size < 2) {
+      toast.warning('Select at least 2 annotations to align');
+      return;
+    }
+    
+    const selected = Array.from(selectedAnnotations);
+    const selectedAnnos = annotations.filter(ann => selected.includes(ann.id) && ann.page === pageNum);
+    
+    if (selectedAnnos.length < 2) return;
+    
+    let newAnnotations = [...annotations];
+    
+    if (align === 'left') {
+      const minX = Math.min(...selectedAnnos.map(a => a.x));
+      selectedAnnos.forEach(ann => {
+        const index = newAnnotations.findIndex(a => a.id === ann.id);
+        if (index !== -1) {
+          newAnnotations[index] = { ...newAnnotations[index], x: minX };
+        }
+      });
+    } else if (align === 'right') {
+      const maxX = Math.max(...selectedAnnos.map(a => (a.x + (a.width || 0))));
+      selectedAnnos.forEach(ann => {
+        const index = newAnnotations.findIndex(a => a.id === ann.id);
+        if (index !== -1) {
+          const width = ann.width || 0;
+          newAnnotations[index] = { ...newAnnotations[index], x: maxX - width };
+        }
+      });
+    } else if (align === 'center') {
+      const minX = Math.min(...selectedAnnos.map(a => a.x));
+      const maxX = Math.max(...selectedAnnos.map(a => (a.x + (a.width || 0))));
+      const centerX = (minX + maxX) / 2;
+      selectedAnnos.forEach(ann => {
+        const index = newAnnotations.findIndex(a => a.id === ann.id);
+        if (index !== -1) {
+          const width = ann.width || 0;
+          newAnnotations[index] = { ...newAnnotations[index], x: centerX - width / 2 };
+        }
+      });
+    } else if (align === 'top') {
+      const minY = Math.min(...selectedAnnos.map(a => a.y));
+      selectedAnnos.forEach(ann => {
+        const index = newAnnotations.findIndex(a => a.id === ann.id);
+        if (index !== -1) {
+          newAnnotations[index] = { ...newAnnotations[index], y: minY };
+        }
+      });
+    } else if (align === 'bottom') {
+      const maxY = Math.max(...selectedAnnos.map(a => (a.y + (a.height || 0))));
+      selectedAnnos.forEach(ann => {
+        const index = newAnnotations.findIndex(a => a.id === ann.id);
+        if (index !== -1) {
+          const height = ann.height || 0;
+          newAnnotations[index] = { ...newAnnotations[index], y: maxY - height };
+        }
+      });
+    } else if (align === 'middle') {
+      const minY = Math.min(...selectedAnnos.map(a => a.y));
+      const maxY = Math.max(...selectedAnnos.map(a => (a.y + (a.height || 0))));
+      const centerY = (minY + maxY) / 2;
+      selectedAnnos.forEach(ann => {
+        const index = newAnnotations.findIndex(a => a.id === ann.id);
+        if (index !== -1) {
+          const height = ann.height || 0;
+          newAnnotations[index] = { ...newAnnotations[index], y: centerY - height / 2 };
+        }
+      });
+    }
+    
+    setAnnotations(newAnnotations);
+    saveToHistory(newAnnotations);
+    setContextMenu(null);
+    toast.success(`Annotations aligned ${align}`);
+  }, [selectedAnnotations, annotations, pageNum]);
+
+  // Advanced: Distribute annotations
+  const distributeAnnotations = useCallback((direction: 'horizontal' | 'vertical') => {
+    if (selectedAnnotations.size < 3) {
+      toast.warning('Select at least 3 annotations to distribute');
+      return;
+    }
+    
+    const selected = Array.from(selectedAnnotations);
+    const selectedAnnos = annotations.filter(ann => selected.includes(ann.id) && ann.page === pageNum).sort((a, b) => {
+      if (direction === 'horizontal') {
+        return a.x - b.x;
+      } else {
+        return a.y - b.y;
+      }
+    });
+    
+    if (selectedAnnos.length < 3) return;
+    
+    let newAnnotations = [...annotations];
+    
+    if (direction === 'horizontal') {
+      const firstX = selectedAnnos[0].x;
+      const lastX = selectedAnnos[selectedAnnos.length - 1].x + (selectedAnnos[selectedAnnos.length - 1].width || 0);
+      const totalWidth = lastX - firstX;
+      const spacing = totalWidth / (selectedAnnos.length - 1);
+      
+      let currentX = firstX;
+      selectedAnnos.forEach((ann, index) => {
+        if (index > 0 && index < selectedAnnos.length - 1) {
+          const index = newAnnotations.findIndex(a => a.id === ann.id);
+          if (index !== -1) {
+            newAnnotations[index] = { ...newAnnotations[index], x: currentX };
+          }
+        }
+        currentX += spacing;
+      });
+    } else {
+      const firstY = selectedAnnos[0].y;
+      const lastY = selectedAnnos[selectedAnnos.length - 1].y + (selectedAnnos[selectedAnnos.length - 1].height || 0);
+      const totalHeight = lastY - firstY;
+      const spacing = totalHeight / (selectedAnnos.length - 1);
+      
+      let currentY = firstY;
+      selectedAnnos.forEach((ann, index) => {
+        if (index > 0 && index < selectedAnnos.length - 1) {
+          const index = newAnnotations.findIndex(a => a.id === ann.id);
+          if (index !== -1) {
+            newAnnotations[index] = { ...newAnnotations[index], y: currentY };
+          }
+        }
+        currentY += spacing;
+      });
+    }
+    
+    setAnnotations(newAnnotations);
+    saveToHistory(newAnnotations);
+    setContextMenu(null);
+    toast.success(`Annotations distributed ${direction}`);
+  }, [selectedAnnotations, annotations, pageNum]);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -462,10 +1050,20 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   // Production: Enhanced drag & drop with validation
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     const droppedFile = e.dataTransfer.files[0];
-    if (!droppedFile) return;
+    if (!droppedFile) {
+      toast.warning('No file dropped');
+      return;
+    }
     
     try {
       const validation = validatePDFFile(droppedFile);
@@ -490,6 +1088,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       if (pdfUrl) {
         URL.revokeObjectURL(pdfUrl);
       }
+      
+      toast.success('PDF file loaded successfully!');
     } catch (error) {
       logError(error as Error, 'handleDrop', { fileName: droppedFile.name });
       toast.error('Error processing dropped file. Please try again.');
@@ -514,11 +1114,70 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     };
   }, [file]);
 
+  // Advanced: Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Advanced: Double-click handling with debounce
+  const lastClickTimeRef = useRef<number>(0);
+  const lastClickCoordsRef = useRef<{ x: number; y: number } | null>(null);
+  const CLICK_DELAY = 300; // ms between clicks to be considered double-click
+  const DOUBLE_CLICK_DISTANCE = 10; // pixels - max distance for double-click
+
+  // Advanced: Apply annotation template
+  const applyAnnotationTemplate = useCallback((template: { name: string; annotation: Partial<Annotation> }) => {
+    if (!template.annotation.type) return;
+    
+    const newAnnotation: Annotation = {
+      id: Date.now().toString(),
+      type: template.annotation.type as any,
+      x: 100,
+      y: 100,
+      page: pageNum,
+      ...template.annotation,
+    } as Annotation;
+    
+    const newAnnotations = [...annotations, newAnnotation];
+    setAnnotations(newAnnotations);
+    saveToHistory(newAnnotations);
+    toast.success(`Template "${template.name}" applied`);
+  }, [annotations, pageNum, saveToHistory]);
+
+  // Advanced: Batch select with selection box
+  const handleBatchSelection = useCallback((startX: number, startY: number, endX: number, endY: number) => {
+    const minX = Math.min(startX, endX);
+    const maxX = Math.max(startX, endX);
+    const minY = Math.min(startY, endY);
+    const maxY = Math.max(startY, endY);
+    
+    const pageAnnotations = annotations.filter(ann => ann.page === pageNum);
+    const selected = pageAnnotations.filter(ann => {
+      if (ann.width && ann.height) {
+        return ann.x >= minX && ann.x + ann.width <= maxX &&
+               ann.y >= minY && ann.y + ann.height <= maxY;
+      }
+      return ann.x >= minX && ann.x <= maxX && ann.y >= minY && ann.y <= maxY;
+    });
+    
+    if (selected.length > 0) {
+      setSelectedAnnotations(new Set(selected.map(a => a.id)));
+      toast.info(`${selected.length} annotation(s) selected`);
+    }
+  }, [annotations, pageNum]);
+
   // Production: Enhanced PDF loading with error handling and performance monitoring
   const loadPDF = async () => {
     if (!file) return;
     
     setIsProcessing(true);
+    setErrorState(null);
+    setOperationStatus({ type: 'loading', message: 'Loading PDF...', progress: 0 });
     let tempUrl: string | null = null;
     
     try {
@@ -538,10 +1197,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         // Load PDF for viewing
         setProcessingProgress(10);
         setProcessingMessage('Reading PDF file...');
+        setOperationStatus({ type: 'loading', message: 'Reading PDF file...', progress: 10 });
         const arrayBufferForViewing = await file.arrayBuffer();
         
         setProcessingProgress(30);
         setProcessingMessage('Parsing PDF structure...');
+        setOperationStatus({ type: 'loading', message: 'Parsing PDF structure...', progress: 30 });
         const pdf = await pdfjsLib.getDocument({ 
           data: arrayBufferForViewing,
           useSystemFonts: true,
@@ -560,6 +1221,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         // Production: Generate thumbnails with error handling and progress
         setProcessingProgress(40);
         setProcessingMessage(`Generating thumbnails (${Math.min(pdf.numPages, THUMBNAIL_MAX_PAGES)} pages)...`);
+        setOperationStatus({ type: 'loading', message: `Generating thumbnails...`, progress: 40 });
         const thumbnails: string[] = [];
         const maxThumbnails = Math.min(pdf.numPages, THUMBNAIL_MAX_PAGES);
         
@@ -582,7 +1244,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             }
             
             // Update progress
-            setProcessingProgress(40 + (i / maxThumbnails) * 20);
+            const progress = 40 + (i / maxThumbnails) * 20;
+            setProcessingProgress(progress);
+            setOperationStatus({ type: 'loading', message: `Generating thumbnails... (${i}/${maxThumbnails})`, progress });
           } catch (thumbError) {
             logError(thumbError as Error, 'generateThumbnail', { pageNumber: i });
             // Continue with other thumbnails even if one fails
@@ -594,6 +1258,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         // Load PDF for editing with pdf-lib
         setProcessingProgress(70);
         setProcessingMessage('Preparing PDF for editing...');
+        setOperationStatus({ type: 'loading', message: 'Preparing PDF for editing...', progress: 70 });
         const arrayBufferForEditing = await file.arrayBuffer();
         const fileBytes = new Uint8Array(arrayBufferForEditing);
         
@@ -632,10 +1297,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         // Create object URL for viewing
         setProcessingProgress(90);
         setProcessingMessage('Finalizing...');
+        setOperationStatus({ type: 'loading', message: 'Finalizing...', progress: 90 });
         tempUrl = URL.createObjectURL(file);
         setPdfUrl(tempUrl);
         
         // Load first page
+        setOperationStatus({ type: 'loading', message: 'Rendering first page...', progress: 95 });
         await renderPage(1);
         
         // Phase 8: Check for auto-saved data
@@ -643,22 +1310,49 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         
         setProcessingProgress(100);
         setProcessingMessage('Complete!');
+        setOperationStatus({ type: 'success', message: 'PDF loaded successfully!' });
+        setTimeout(() => setOperationStatus(null), 2000);
         toast.success(`PDF loaded successfully! ${pdf.numPages} page${pdf.numPages !== 1 ? 's' : ''}`);
       });
     } catch (error) {
       logError(error as Error, 'loadPDF', { fileName: file.name, fileSize: file.size });
       
       let errorMessage = 'Unknown error occurred';
+      let errorCode = 'UNKNOWN_ERROR';
+      
       if (error instanceof PDFValidationError) {
         errorMessage = error.message;
+        errorCode = error.code;
+      } else if (error instanceof PDFProcessingError) {
+        errorMessage = error.message;
+        errorCode = error.code;
       } else if (error instanceof Error) {
         errorMessage = error.message;
+        if (errorMessage.includes('password') || errorMessage.includes('encrypted')) {
+          errorCode = 'ENCRYPTED_PDF';
+          errorMessage = 'This PDF is password-protected. Please unlock it first.';
+        } else if (errorMessage.includes('corrupted') || errorMessage.includes('invalid')) {
+          errorCode = 'CORRUPTED_PDF';
+          errorMessage = 'The PDF file appears to be corrupted or invalid.';
+        } else if (errorMessage.includes('size') || errorMessage.includes('too large')) {
+          errorCode = 'FILE_TOO_LARGE';
+          errorMessage = 'The PDF file is too large. Maximum size is 50MB.';
+        }
       }
+      
+      setErrorState({
+        message: errorMessage,
+        code: errorCode,
+        retry: () => {
+          if (file) {
+            loadPDF();
+          }
+        },
+      });
       
       toast.error(`Error loading PDF: ${errorMessage}`);
       
       // Cleanup on error
-      setFile(null);
       if (tempUrl) URL.revokeObjectURL(tempUrl);
       setPdfUrl(null);
       pdfDocRef.current = null;
@@ -667,6 +1361,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setAnnotations([]);
     } finally {
       setIsProcessing(false);
+      setOperationStatus(null);
     }
   };
 
@@ -1174,6 +1869,155 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           // Draw redaction (black rectangle)
           context.fillStyle = ann.fillColor || '#000000';
           context.fillRect(ann.x, ann.y, ann.width, ann.height);
+        } else if (ann.type === 'stamp' && ann.text && ann.width && ann.height) {
+          // Draw stamp with border and text
+          context.save();
+          const stampColor = ann.color || '#10b981';
+          const rgbColor = hexToRgb(stampColor);
+          
+          // Draw stamp border
+          context.strokeStyle = stampColor;
+          context.fillStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.1)`;
+          context.lineWidth = 3;
+          context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+          context.fillRect(ann.x, ann.y, ann.width, ann.height);
+          
+          // Draw stamp text
+          context.fillStyle = stampColor;
+          context.font = `bold ${ann.fontSize || 24}px Arial`;
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+          context.fillText(ann.text, ann.x + ann.width / 2, ann.y + ann.height / 2);
+          context.restore();
+        } else if (ann.type === 'ruler' && ann.endX !== undefined) {
+          // Draw ruler (horizontal line with measurements)
+          context.strokeStyle = ann.strokeColor || '#000000';
+          context.lineWidth = 2;
+          context.beginPath();
+          context.moveTo(ann.x, ann.y);
+          context.lineTo(ann.endX, ann.y);
+          context.stroke();
+          
+          // Draw measurement text
+          if (ann.distance !== undefined) {
+            context.fillStyle = '#000000';
+            context.font = '12px Arial';
+            context.textAlign = 'center';
+            context.fillText(
+              `${ann.distance.toFixed(2)}${ann.measurementUnit || 'px'}`,
+              (ann.x + ann.endX) / 2,
+              ann.y - 10
+            );
+          }
+        } else if (ann.type === 'measure' && ann.endX !== undefined && ann.endY !== undefined) {
+          // Draw measurement line with distance
+          context.strokeStyle = ann.strokeColor || '#3b82f6';
+          context.lineWidth = 2;
+          context.setLineDash([5, 5]);
+          context.beginPath();
+          context.moveTo(ann.x, ann.y);
+          context.lineTo(ann.endX, ann.endY);
+          context.stroke();
+          context.setLineDash([]);
+          
+          // Draw distance text
+          if (ann.distance !== undefined) {
+            context.fillStyle = '#3b82f6';
+            context.font = '12px Arial';
+            context.textAlign = 'center';
+            context.fillText(
+              `${ann.distance.toFixed(2)}${ann.measurementUnit || 'px'}`,
+              (ann.x + ann.endX) / 2,
+              (ann.y + ann.endY) / 2 - 10
+            );
+          }
+          
+          // Draw endpoints
+          context.fillStyle = '#3b82f6';
+          context.beginPath();
+          context.arc(ann.x, ann.y, 4, 0, 2 * Math.PI);
+          context.fill();
+          context.beginPath();
+          context.arc(ann.endX, ann.endY, 4, 0, 2 * Math.PI);
+          context.fill();
+        } else if (ann.type === 'polygon' && ann.points && ann.points.length > 2) {
+          // Draw polygon
+          context.strokeStyle = ann.strokeColor || strokeColor;
+          context.fillStyle = ann.fillColor || fillColor;
+          context.lineWidth = strokeWidth;
+          context.beginPath();
+          context.moveTo(ann.points[0].x, ann.points[0].y);
+          for (let i = 1; i < ann.points.length; i++) {
+            context.lineTo(ann.points[i].x, ann.points[i].y);
+          }
+          context.closePath();
+          context.fill();
+          context.stroke();
+        } else if (ann.type === 'callout' && ann.calloutPoints && ann.calloutPoints.length >= 3) {
+          // Draw callout (speech bubble)
+          context.strokeStyle = ann.strokeColor || strokeColor;
+          context.fillStyle = ann.fillColor || fillColor;
+          context.lineWidth = strokeWidth;
+          context.beginPath();
+          
+          // Draw main bubble (first 3 points form rectangle)
+          if (ann.calloutPoints.length >= 3) {
+            context.moveTo(ann.calloutPoints[0].x, ann.calloutPoints[0].y);
+            context.lineTo(ann.calloutPoints[1].x, ann.calloutPoints[1].y);
+            context.lineTo(ann.calloutPoints[2].x, ann.calloutPoints[2].y);
+            context.closePath();
+            context.fill();
+            context.stroke();
+            
+            // Draw pointer (remaining points)
+            if (ann.calloutPoints.length > 3) {
+              context.beginPath();
+              context.moveTo(ann.calloutPoints[2].x, ann.calloutPoints[2].y);
+              for (let i = 3; i < ann.calloutPoints.length; i++) {
+                context.lineTo(ann.calloutPoints[i].x, ann.calloutPoints[i].y);
+              }
+              context.closePath();
+              context.fill();
+              context.stroke();
+            }
+          }
+        } else if (ann.type === 'form-field' && ann.width && ann.height) {
+          // Draw form field
+          context.strokeStyle = ann.strokeColor || '#3b82f6';
+          context.fillStyle = ann.fillColor || '#f0f9ff';
+          context.lineWidth = 2;
+          context.fillRect(ann.x, ann.y, ann.width, ann.height);
+          context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+          
+          // Draw field label/type
+          context.fillStyle = '#3b82f6';
+          context.font = '12px Arial';
+          context.textAlign = 'left';
+          const label = ann.formFieldName || ann.formFieldType || 'Field';
+          const required = ann.formFieldRequired ? '*' : '';
+          context.fillText(`${label}${required}`, ann.x + 5, ann.y + 15);
+          
+          // Draw field value or placeholder
+          if (ann.formFieldValue) {
+            context.fillStyle = '#000000';
+            context.fillText(ann.formFieldValue, ann.x + 5, ann.y + ann.height / 2 + 5);
+          } else {
+            context.fillStyle = '#999999';
+            const placeholder = ann.formFieldType === 'text' ? 'Enter text...' :
+                               ann.formFieldType === 'number' ? 'Enter number...' :
+                               ann.formFieldType === 'date' ? 'Select date...' :
+                               ann.formFieldType === 'dropdown' ? 'Select option...' : 'Field';
+            context.fillText(placeholder, ann.x + 5, ann.y + ann.height / 2 + 5);
+          }
+          
+          // Draw field type icon
+          context.fillStyle = '#3b82f6';
+          context.font = '16px Arial';
+          const icon = ann.formFieldType === 'checkbox' ? '☐' :
+                      ann.formFieldType === 'radio' ? '○' :
+                      ann.formFieldType === 'date' ? '📅' :
+                      ann.formFieldType === 'number' ? '#' : '📝';
+          context.fillText(icon, ann.x + ann.width - 25, ann.y + 18);
         }
         
         // Selection highlight
@@ -1185,6 +2029,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             context.strokeRect(ann.x - 2, ann.y - 2, ann.width + 4, ann.height + 4);
           }
           context.setLineDash([]);
+        }
+        
+        // Lock indicator
+        if (lockedAnnotations.has(ann.id)) {
+          context.save();
+          context.fillStyle = 'rgba(255, 193, 7, 0.3)';
+          if (ann.width && ann.height) {
+            context.fillRect(ann.x, ann.y, ann.width, ann.height);
+          }
+          context.fillStyle = '#ffc107';
+          context.font = '16px Arial';
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+          const lockX = ann.width ? ann.x + ann.width / 2 : ann.x;
+          const lockY = ann.height ? ann.y + ann.height / 2 : ann.y;
+          context.fillText('🔒', lockX, lockY);
+          context.restore();
         }
         
         context.restore();
@@ -1354,8 +2215,18 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       }
     }
     
-    // Check if double-clicking on text annotation to edit
-    if (e.detail === 2) {
+    // Advanced: Better double-click detection
+    const now = Date.now();
+    const isDoubleClick = lastClickCoordsRef.current &&
+      now - lastClickTimeRef.current < CLICK_DELAY &&
+      Math.abs(coords.x - lastClickCoordsRef.current.x) < DOUBLE_CLICK_DISTANCE &&
+      Math.abs(coords.y - lastClickCoordsRef.current.y) < DOUBLE_CLICK_DISTANCE;
+
+    if (isDoubleClick || e.detail === 2) {
+      // Prevent single-click action
+      e.preventDefault();
+      e.stopPropagation();
+      
       const pageAnnotations = annotations.filter(ann => ann.page === pageNum);
       for (const ann of pageAnnotations) {
         if (ann.type === 'text' && ann.text) {
@@ -1387,17 +2258,27 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 setEditingText(ann.text);
                 setSelectedAnnotation(ann.id);
                 setTool(null);
+                lastClickTimeRef.current = 0; // Reset to prevent triple-click issues
+                lastClickCoordsRef.current = null;
                 return;
               }
             }
           }
         }
       }
+      // Reset after handling double-click
+      lastClickTimeRef.current = 0;
+      lastClickCoordsRef.current = null;
+      return;
     }
+    
+    // Update click tracking for next potential double-click
+    lastClickTimeRef.current = now;
+    lastClickCoordsRef.current = coords;
     
     // Check if clicking on existing annotation to select/drag
     if (!tool) {
-      const pageAnnotations = annotations.filter(ann => ann.page === pageNum);
+      const pageAnnotations = annotations.filter(ann => ann.page === pageNum && !lockedAnnotations.has(ann.id));
       for (const ann of pageAnnotations) {
         let isInside = false;
         
@@ -1460,6 +2341,26 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       return;
     }
     
+    // Polygon tool - add point on click
+    if (tool === 'polygon' || tool === 'callout') {
+      if (!isDrawingPolygon) {
+        setPolygonPoints([coords]);
+        setIsDrawingPolygon(true);
+      } else {
+        setPolygonPoints(prev => [...prev, coords]);
+      }
+      setIsDrawing(true);
+      return;
+    }
+    
+    // Measurement tools - set start point
+    if (tool === 'ruler' || tool === 'measure') {
+      setMeasureStart(coords);
+      setDrawStart(coords);
+      setIsDrawing(true);
+      return;
+    }
+    
     setDrawStart(coords);
     setIsDrawing(true);
   };
@@ -1514,6 +2415,64 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           }
           context.lineTo(coords.x, coords.y);
           context.stroke();
+        }
+      }
+      return;
+    }
+    
+    // Polygon preview
+    if ((tool === 'polygon' || tool === 'callout') && isDrawingPolygon && polygonPoints.length > 0) {
+      if (canvasRef.current) {
+        renderPage(pageNum);
+        const context = canvasRef.current.getContext('2d');
+        if (context) {
+          context.strokeStyle = strokeColor;
+          context.fillStyle = fillColor;
+          context.lineWidth = strokeWidth;
+          context.beginPath();
+          context.moveTo(polygonPoints[0].x, polygonPoints[0].y);
+          for (let i = 1; i < polygonPoints.length; i++) {
+            context.lineTo(polygonPoints[i].x, polygonPoints[i].y);
+          }
+          context.lineTo(coords.x, coords.y);
+          if (tool === 'polygon') {
+            context.closePath();
+            context.fill();
+          }
+          context.stroke();
+        }
+      }
+      return;
+    }
+    
+    // Measurement preview
+    if ((tool === 'ruler' || tool === 'measure') && measureStart) {
+      if (canvasRef.current) {
+        renderPage(pageNum);
+        const context = canvasRef.current.getContext('2d');
+        if (context) {
+          context.strokeStyle = tool === 'ruler' ? '#000000' : '#3b82f6';
+          context.lineWidth = 2;
+          context.setLineDash([5, 5]);
+          context.beginPath();
+          context.moveTo(measureStart.x, measureStart.y);
+          if (tool === 'ruler') {
+            context.lineTo(coords.x, measureStart.y); // Horizontal ruler
+          } else {
+            context.lineTo(coords.x, coords.y); // Measure distance
+          }
+          context.stroke();
+          context.setLineDash([]);
+          
+          // Show distance
+          const distance = tool === 'ruler' 
+            ? Math.abs(coords.x - measureStart.x)
+            : Math.sqrt(Math.pow(coords.x - measureStart.x, 2) + Math.pow(coords.y - measureStart.y, 2));
+          context.fillStyle = '#000000';
+          context.font = '12px Arial';
+          context.fillText(`${distance.toFixed(2)}${measurementUnit}`, 
+            (measureStart.x + coords.x) / 2, 
+            tool === 'ruler' ? measureStart.y - 10 : (measureStart.y + coords.y) / 2);
         }
       }
       return;
@@ -1791,6 +2750,128 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         newAnnotations.push(newAnnotation);
         toast.success('Redaction added');
       }
+    } else if (tool === 'stamp') {
+      // Stamp tool - add stamp at click position
+      const stamp = stamps.find(s => s.id === selectedStamp);
+      if (stamp) {
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          type: 'stamp',
+          x: coords.x - stampSize / 2,
+          y: coords.y - stampSize / 2,
+          width: stampSize,
+          height: stampSize,
+          text: stamp.text,
+          color: stamp.color,
+          fontSize: stampSize * 0.3,
+          fontWeight: 'bold',
+          page: pageNum,
+        };
+        newAnnotations.push(newAnnotation);
+        toast.success(`${stamp.text} stamp added`);
+      }
+    } else if (tool === 'ruler') {
+      // Ruler tool - draw horizontal ruler line
+      if (drawStart) {
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          type: 'ruler',
+          x: drawStart.x,
+          y: drawStart.y,
+          endX: coords.x,
+          endY: drawStart.y, // Horizontal ruler
+          width: Math.abs(coords.x - drawStart.x),
+          height: 2,
+          strokeColor: '#000000',
+          page: pageNum,
+          distance: Math.abs(coords.x - drawStart.x),
+          measurementUnit: measurementUnit,
+        };
+        newAnnotations.push(newAnnotation);
+        toast.success(`Ruler added: ${newAnnotation.distance}${measurementUnit}`);
+      }
+    } else if (tool === 'measure') {
+      // Measure tool - measure distance between two points
+      if (drawStart) {
+        const distance = Math.sqrt(
+          Math.pow(coords.x - drawStart.x, 2) + Math.pow(coords.y - drawStart.y, 2)
+        );
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          type: 'measure',
+          x: drawStart.x,
+          y: drawStart.y,
+          endX: coords.x,
+          endY: coords.y,
+          strokeColor: '#3b82f6',
+          page: pageNum,
+          distance: distance,
+          measurementUnit: measurementUnit,
+        };
+        newAnnotations.push(newAnnotation);
+        toast.success(`Distance: ${distance.toFixed(2)}${measurementUnit}`);
+      }
+    } else if (tool === 'polygon' && polygonPoints.length > 2) {
+      // Polygon tool - close polygon on double-click or right-click
+      const newAnnotation: Annotation = {
+        id: Date.now().toString(),
+        type: 'polygon',
+        x: Math.min(...polygonPoints.map(p => p.x)),
+        y: Math.min(...polygonPoints.map(p => p.y)),
+        width: Math.max(...polygonPoints.map(p => p.x)) - Math.min(...polygonPoints.map(p => p.x)),
+        height: Math.max(...polygonPoints.map(p => p.y)) - Math.min(...polygonPoints.map(p => p.y)),
+        points: [...polygonPoints],
+        strokeColor: strokeColor,
+        fillColor: fillColor,
+        page: pageNum,
+      };
+      newAnnotations.push(newAnnotation);
+      setPolygonPoints([]);
+      setIsDrawingPolygon(false);
+      toast.success('Polygon added');
+    } else if (tool === 'callout' && polygonPoints.length >= 3) {
+      // Callout tool - speech bubble with pointer
+      const newAnnotation: Annotation = {
+        id: Date.now().toString(),
+        type: 'callout',
+        x: Math.min(...polygonPoints.map(p => p.x)),
+        y: Math.min(...polygonPoints.map(p => p.y)),
+        width: Math.max(...polygonPoints.map(p => p.x)) - Math.min(...polygonPoints.map(p => p.x)),
+        height: Math.max(...polygonPoints.map(p => p.y)) - Math.min(...polygonPoints.map(p => p.y)),
+        calloutPoints: [...polygonPoints],
+        strokeColor: strokeColor,
+        fillColor: fillColor,
+        page: pageNum,
+      };
+      newAnnotations.push(newAnnotation);
+      setPolygonPoints([]);
+      setIsDrawingPolygon(false);
+      toast.success('Callout added');
+    } else if (tool === 'form-field' && drawStart) {
+      // Form field tool - create form input field
+      const width = Math.abs(coords.x - drawStart.x);
+      const height = Math.abs(coords.y - drawStart.y);
+      if (width > 50 && height > 20) {
+        const fieldId = `field_${Date.now()}`;
+        const newAnnotation: Annotation = {
+          id: fieldId,
+          type: 'form-field',
+          x: Math.min(drawStart.x, coords.x),
+          y: Math.min(drawStart.y, coords.y),
+          width,
+          height,
+          formFieldType: formFieldType,
+          formFieldName: formFieldName || `field_${fieldId}`,
+          formFieldValue: '',
+          formFieldRequired: formFieldRequired,
+          formFieldOptions: formFieldOptions,
+          strokeColor: '#3b82f6',
+          fillColor: '#f0f9ff',
+          page: pageNum,
+        };
+        newAnnotations.push(newAnnotation);
+        toast.success(`${formFieldType} field added`);
+      }
     }
     
     setAnnotations(newAnnotations);
@@ -2049,6 +3130,125 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               height: annotation.height,
               color: rgb(0, 0, 0),
             });
+          } else if (annotation.type === 'stamp' && annotation.text && annotation.width && annotation.height) {
+            // Draw stamp with border and text
+            const stampColor = annotation.color || '#10b981';
+            const stampRgb = hexToRgb(stampColor);
+            const stampColorRgb = rgb(stampRgb.r / 255, stampRgb.g / 255, stampRgb.b / 255);
+            
+            // Draw stamp border and background
+            page.drawRectangle({
+              x: annotation.x,
+              y: height - annotation.y - annotation.height,
+              width: annotation.width,
+              height: annotation.height,
+              borderColor: stampColorRgb,
+              borderWidth: 3,
+              color: rgb(stampRgb.r / 255 * 0.1, stampRgb.g / 255 * 0.1, stampRgb.b / 255 * 0.1),
+            });
+            
+            // Draw stamp text
+            const stampFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+            const textWidth = stampFont.widthOfTextAtSize(annotation.text, annotation.fontSize || 24);
+            page.drawText(annotation.text, {
+              x: annotation.x + annotation.width / 2 - textWidth / 2,
+              y: height - annotation.y - annotation.height / 2 - (annotation.fontSize || 24) / 3,
+              size: annotation.fontSize || 24,
+              font: stampFont,
+              color: stampColorRgb,
+            });
+          } else if (annotation.type === 'ruler' && annotation.endX !== undefined) {
+            // Draw ruler line
+            const strokeRgb = hexToRgb(annotation.strokeColor || '#000000');
+            page.drawLine({
+              start: { x: annotation.x, y: height - annotation.y },
+              end: { x: annotation.endX, y: height - annotation.y },
+              thickness: 2,
+              color: rgb(strokeRgb.r / 255, strokeRgb.g / 255, strokeRgb.b / 255),
+            });
+            
+            // Draw measurement text
+            if (annotation.distance !== undefined) {
+              const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+              const text = `${annotation.distance.toFixed(2)}${annotation.measurementUnit || 'px'}`;
+              const textWidth = font.widthOfTextAtSize(text, 12);
+              page.drawText(text, {
+                x: (annotation.x + annotation.endX) / 2 - textWidth / 2,
+                y: height - annotation.y + 15,
+                size: 12,
+                font: font,
+                color: rgb(0, 0, 0),
+              });
+            }
+          } else if (annotation.type === 'measure' && annotation.endX !== undefined && annotation.endY !== undefined) {
+            // Draw measurement line
+            const strokeRgb = hexToRgb(annotation.strokeColor || '#3b82f6');
+            page.drawLine({
+              start: { x: annotation.x, y: height - annotation.y },
+              end: { x: annotation.endX, y: height - annotation.endY },
+              thickness: 2,
+              color: rgb(strokeRgb.r / 255, strokeRgb.g / 255, strokeRgb.b / 255),
+            });
+            
+            // Draw distance text
+            if (annotation.distance !== undefined) {
+              const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+              const text = `${annotation.distance.toFixed(2)}${annotation.measurementUnit || 'px'}`;
+              const textWidth = font.widthOfTextAtSize(text, 12);
+              page.drawText(text, {
+                x: (annotation.x + annotation.endX) / 2 - textWidth / 2,
+                y: (height - annotation.y + height - annotation.endY) / 2 + 15,
+                size: 12,
+                font: font,
+                color: rgb(strokeRgb.r / 255, strokeRgb.g / 255, strokeRgb.b / 255),
+              });
+            }
+          } else if (annotation.type === 'polygon' && annotation.points && annotation.points.length > 2) {
+            // Draw polygon
+            const strokeRgb = hexToRgb(annotation.strokeColor || strokeColor);
+            const fillRgb = hexToRgb(annotation.fillColor || fillColor);
+            
+            // Draw polygon using lines (pdf-lib doesn't have direct polygon support)
+            for (let i = 0; i < annotation.points.length; i++) {
+              const start = annotation.points[i];
+              const end = annotation.points[(i + 1) % annotation.points.length];
+              page.drawLine({
+                start: { x: start.x, y: height - start.y },
+                end: { x: end.x, y: height - end.y },
+                thickness: strokeWidth,
+                color: rgb(strokeRgb.r / 255, strokeRgb.g / 255, strokeRgb.b / 255),
+              });
+            }
+          } else if (annotation.type === 'callout' && annotation.calloutPoints && annotation.calloutPoints.length >= 3) {
+            // Draw callout (simplified - draw as polygon)
+            const strokeRgb = hexToRgb(annotation.strokeColor || strokeColor);
+            const fillRgb = hexToRgb(annotation.fillColor || fillColor);
+            
+            // Draw main bubble
+            for (let i = 0; i < Math.min(3, annotation.calloutPoints.length); i++) {
+              const start = annotation.calloutPoints[i];
+              const end = annotation.calloutPoints[(i + 1) % 3];
+              page.drawLine({
+                start: { x: start.x, y: height - start.y },
+                end: { x: end.x, y: height - end.y },
+                thickness: strokeWidth,
+                color: rgb(strokeRgb.r / 255, strokeRgb.g / 255, strokeRgb.b / 255),
+              });
+            }
+            
+            // Draw pointer if exists
+            if (annotation.calloutPoints.length > 3) {
+              for (let i = 2; i < annotation.calloutPoints.length; i++) {
+                const start = annotation.calloutPoints[i];
+                const end = annotation.calloutPoints[(i + 1) % annotation.calloutPoints.length];
+                page.drawLine({
+                  start: { x: start.x, y: height - start.y },
+                  end: { x: end.x, y: height - end.y },
+                  thickness: strokeWidth,
+                  color: rgb(strokeRgb.r / 255, strokeRgb.g / 255, strokeRgb.b / 255),
+                });
+              }
+            }
           }
         }
       }
@@ -2932,6 +4132,29 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         } else if (e.key === 'u') {
           e.preventDefault();
           if (tool === 'text') setTextDecoration(textDecoration === 'underline' ? 'none' : 'underline');
+        } else if (e.key === 'd' || e.key === 'D') {
+          e.preventDefault();
+          if (selectedAnnotation) {
+            duplicateAnnotation(selectedAnnotation);
+          } else if (selectedAnnotations.size > 0) {
+            // Duplicate all selected
+            Array.from(selectedAnnotations).forEach(id => duplicateAnnotation(id));
+          }
+        } else if (e.key === 'l' || e.key === 'L') {
+          e.preventDefault();
+          if (selectedAnnotation) {
+            toggleLockAnnotation(selectedAnnotation);
+          } else if (selectedAnnotations.size > 0) {
+            // Toggle lock for all selected
+            Array.from(selectedAnnotations).forEach(id => toggleLockAnnotation(id));
+          }
+        } else if (e.shiftKey && (e.key === 'g' || e.key === 'G')) {
+          e.preventDefault();
+          if (selectedAnnotations.size >= 2) {
+            groupAnnotations(Array.from(selectedAnnotations));
+          } else {
+            toast.warning('Select at least 2 annotations to group');
+          }
         }
       }
       
@@ -2959,6 +4182,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         } else if (e.key === '?' || (e.shiftKey && e.key === '/')) {
           e.preventDefault();
           setShowKeyboardShortcuts(!showKeyboardShortcuts);
+        } else if (e.key === 'h' || e.key === 'H') {
+          e.preventDefault();
+          setShowHelp(!showHelp);
+        } else if ((e.ctrlKey || e.metaKey) && (e.key === ',' || e.key === ',')) {
+          e.preventDefault();
+          setShowSettings(!showSettings);
         } else if (e.key === 'e' || e.key === 'E') {
           e.preventDefault();
           if (!textEditMode) {
@@ -2995,7 +4224,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo, copyAnnotations, pasteAnnotations, tool, fontWeight, fontStyle, textDecoration, selectedAnnotations, selectedAnnotation, annotations, showGrid, showPageManager, textEditMode, showFindReplace, textEditHistory, textEditHistoryIndex, undoTextEdit, redoTextEdit]);
+  }, [undo, redo, copyAnnotations, pasteAnnotations, tool, fontWeight, fontStyle, textDecoration, selectedAnnotations, selectedAnnotation, annotations, showGrid, showPageManager, textEditMode, showFindReplace, textEditHistory, textEditHistoryIndex, undoTextEdit, redoTextEdit, duplicateAnnotation, toggleLockAnnotation, groupAnnotations]);
 
   return (
     <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 overflow-hidden" style={{ height: '100%', minHeight: '800px' }}>
@@ -3005,15 +4234,34 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           <div
             className="w-full max-w-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-16 text-center bg-gradient-to-br from-gray-50/50 via-white to-gray-50/50 dark:from-gray-950/20 dark:via-slate-900 dark:to-gray-950/20 hover:border-gray-500 dark:hover:border-gray-500 hover:shadow-2xl hover:shadow-gray-500/20 transition-all duration-300 cursor-pointer group"
             onDrop={handleDrop}
-            onDragOver={(e) => e.preventDefault()}
-            onClick={() => fileInputRef.current?.click()}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragOver}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (fileInputRef.current) {
+                fileInputRef.current.click();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (fileInputRef.current) {
+                  fileInputRef.current.click();
+                }
+              }
+            }}
+            aria-label="Upload PDF file"
           >
             <input
               ref={fileInputRef}
               type="file"
-              accept=".pdf"
+              accept=".pdf,application/pdf"
               onChange={handleFileSelect}
               className="hidden"
+              aria-label="PDF file input"
             />
             <div className="text-center">
               <div className="text-7xl mb-6 transform group-hover:scale-110 transition-transform duration-300">📄</div>
@@ -3037,6 +4285,66 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
       {file && (
         <div className="flex-1 flex flex-col overflow-hidden relative bg-slate-100 dark:bg-slate-900" style={{ height: '100%', minHeight: '800px' }}>
+          {/* Error State */}
+          {errorState && (
+            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border-l-4 border-red-500 rounded-r-xl p-4 shadow-lg max-w-2xl">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">⚠️</span>
+                <div className="flex-1">
+                  <p className="text-red-900 dark:text-red-200 text-sm font-semibold mb-1">
+                    {errorState.message}
+                  </p>
+                  {errorState.code && (
+                    <p className="text-red-700 dark:text-red-300 text-xs mb-2">
+                      Error Code: {errorState.code}
+                    </p>
+                  )}
+                  {errorState.retry && (
+                    <button
+                      onClick={() => {
+                        setIsRetrying(true);
+                        errorState.retry?.();
+                        setTimeout(() => setIsRetrying(false), 1000);
+                      }}
+                      disabled={isRetrying}
+                      className="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-xs disabled:opacity-50"
+                    >
+                      {isRetrying ? 'Retrying...' : 'Retry'}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setErrorState(null)}
+                    className="ml-2 px-3 py-1.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors text-xs"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Operation Status */}
+          {operationStatus && (
+            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg p-4 shadow-lg max-w-md">
+              <div className="flex items-center gap-3">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                <div className="flex-1">
+                  <p className="text-slate-900 dark:text-white text-sm font-medium">
+                    {operationStatus.message}
+                  </p>
+                  {operationStatus.progress !== undefined && (
+                    <div className="mt-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${operationStatus.progress}%` }}
+                      ></div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {!isEditable && (
             <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 border-l-4 border-yellow-500 rounded-r-xl p-3 shadow-lg max-w-2xl">
               <div className="flex items-center gap-2">
@@ -3383,6 +4691,93 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                           </svg>
                         </button>
+                        <button
+                          onClick={() => setTool(tool === 'stamp' ? null : 'stamp')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'stamp'
+                              ? 'bg-purple-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Stamp (S)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'ruler' ? null : 'ruler')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'ruler'
+                              ? 'bg-indigo-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Ruler"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'measure' ? null : 'measure')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'measure'
+                              ? 'bg-cyan-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Measure Distance"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'polygon' ? null : 'polygon')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'polygon'
+                              ? 'bg-teal-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Polygon"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setTool(tool === 'callout' ? null : 'callout')}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'callout'
+                              ? 'bg-orange-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Callout"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setTool(tool === 'form-field' ? null : 'form-field');
+                            setShowFormFieldPanel(tool !== 'form-field');
+                          }}
+                          disabled={!isEditable}
+                          className={`p-2.5 rounded-md transition-all ${
+                            tool === 'form-field'
+                              ? 'bg-emerald-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                          title="Form Field"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </button>
                       </div>
 
                       <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
@@ -3521,9 +4916,53 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                               : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
                           }`}
                           title="Page Manager (P)"
+                          aria-label="Page Manager"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setShowTemplatesPanel(!showTemplatesPanel)}
+                          className={`p-2.5 rounded-md transition-all ${
+                            showTemplatesPanel
+                              ? 'bg-indigo-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          }`}
+                          title="Templates"
+                          aria-label="Annotation Templates"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setShowSettings(!showSettings)}
+                          className={`p-2.5 rounded-md transition-all ${
+                            showSettings
+                              ? 'bg-slate-700 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          }`}
+                          title="Settings (Ctrl+,)"
+                          aria-label="Settings"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setShowHelp(!showHelp)}
+                          className={`p-2.5 rounded-md transition-all ${
+                            showHelp
+                              ? 'bg-blue-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          }`}
+                          title="Help (H)"
+                          aria-label="Help"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </button>
                         <button
@@ -3537,6 +4976,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setShowPageFeatures(!showPageFeatures)}
+                          className={`p-2.5 rounded-md transition-all ${
+                            showPageFeatures
+                              ? 'bg-blue-600 text-white shadow-lg'
+                              : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                          }`}
+                          title="Page Features (Headers, Footers, Numbering)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </button>
                       </div>
@@ -3721,6 +5173,128 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                 title="Opacity"
                               />
                               <span className="text-xs text-gray-600 dark:text-gray-400">{Math.round(watermarkOpacity * 100)}%</span>
+                            </>
+                          )}
+                          {tool === 'stamp' && (
+                            <>
+                              <select
+                                value={selectedStamp}
+                                onChange={(e) => setSelectedStamp(e.target.value)}
+                                className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm"
+                                title="Select Stamp"
+                              >
+                                {stamps.map(stamp => (
+                                  <option key={stamp.id} value={stamp.id}>{stamp.text}</option>
+                                ))}
+                              </select>
+                              <input
+                                type="number"
+                                value={stampSize}
+                                onChange={(e) => setStampSize(Number(e.target.value))}
+                                min="50"
+                                max="300"
+                                className="w-20 px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm"
+                                title="Stamp Size"
+                              />
+                              <span className="text-xs text-gray-600 dark:text-gray-400">px</span>
+                            </>
+                          )}
+                          {(tool === 'ruler' || tool === 'measure') && (
+                            <>
+                              <select
+                                value={measurementUnit}
+                                onChange={(e) => setMeasurementUnit(e.target.value as 'px' | 'mm' | 'cm' | 'in')}
+                                className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm"
+                                title="Measurement Unit"
+                              >
+                                <option value="px">Pixels (px)</option>
+                                <option value="mm">Millimeters (mm)</option>
+                                <option value="cm">Centimeters (cm)</option>
+                                <option value="in">Inches (in)</option>
+                              </select>
+                              <span className="text-xs text-gray-600 dark:text-gray-400">
+                                Click and drag to {tool === 'ruler' ? 'draw ruler' : 'measure distance'}
+                              </span>
+                            </>
+                          )}
+                          {(tool === 'polygon' || tool === 'callout') && (
+                            <>
+                              <span className="text-xs text-gray-600 dark:text-gray-400">
+                                Click to add points. Right-click to finish.
+                              </span>
+                              {polygonPoints.length > 0 && (
+                                <button
+                                  onClick={() => {
+                                    setPolygonPoints([]);
+                                    setIsDrawingPolygon(false);
+                                    setTool(null);
+                                  }}
+                                  className="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                                >
+                                  Cancel ({polygonPoints.length} points)
+                                </button>
+                              )}
+                            </>
+                          )}
+                          {tool === 'form-field' && (
+                            <>
+                              <select
+                                value={formFieldType}
+                                onChange={(e) => setFormFieldType(e.target.value as any)}
+                                className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm"
+                                title="Field Type"
+                              >
+                                <option value="text">Text</option>
+                                <option value="number">Number</option>
+                                <option value="date">Date</option>
+                                <option value="checkbox">Checkbox</option>
+                                <option value="radio">Radio</option>
+                                <option value="dropdown">Dropdown</option>
+                              </select>
+                              <input
+                                type="text"
+                                value={formFieldName}
+                                onChange={(e) => setFormFieldName(e.target.value)}
+                                placeholder="Field name"
+                                className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm w-32"
+                              />
+                              <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                                <input
+                                  type="checkbox"
+                                  checked={formFieldRequired}
+                                  onChange={(e) => setFormFieldRequired(e.target.checked)}
+                                  className="rounded"
+                                />
+                                Required
+                              </label>
+                              {(formFieldType === 'dropdown' || formFieldType === 'radio') && (
+                                <button
+                                  onClick={() => {
+                                    const option = prompt('Add option:');
+                                    if (option) {
+                                      setFormFieldOptions([...formFieldOptions, option]);
+                                    }
+                                  }}
+                                  className="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                                >
+                                  + Option
+                                </button>
+                              )}
+                              {formFieldOptions.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {formFieldOptions.map((opt, idx) => (
+                                    <span key={idx} className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
+                                      {opt}
+                                      <button
+                                        onClick={() => setFormFieldOptions(formFieldOptions.filter((_, i) => i !== idx))}
+                                        className="ml-1 text-red-600"
+                                      >
+                                        ×
+                                      </button>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </>
                           )}
                           {(tool === 'highlight' || tool === 'rectangle' || tool === 'circle' || tool === 'line' || tool === 'arrow') && (
@@ -4025,10 +5599,92 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     onMouseDown={handleCanvasMouseDown}
                     onMouseMove={handleCanvasMouseMove}
                     onMouseUp={handleCanvasMouseUp}
+                    onContextMenu={handleCanvasContextMenu}
                     className="block max-w-full h-auto"
                     style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default', display: 'block' }}
                   />
                   
+                  {/* Advanced: Floating Text Formatting Toolbar */}
+                  {showFloatingToolbar && floatingToolbarPosition && selectedTextForFormatting && (() => {
+                    const selected = annotations.find(a => a.id === selectedTextForFormatting);
+                    if (!selected || selected.type !== 'text') return null;
+                    
+                    return (
+                      <div
+                        className="fixed bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg shadow-xl z-50 p-2 flex items-center gap-1"
+                        style={{
+                          left: `${floatingToolbarPosition.x}px`,
+                          top: `${floatingToolbarPosition.y}px`,
+                          transform: 'translateX(-50%)'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          onClick={() => applyFormatToSelectedText({ fontWeight: selected.fontWeight === 'bold' ? 'normal' : 'bold' })}
+                          className={`p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700 ${selected.fontWeight === 'bold' ? 'bg-slate-200 dark:bg-slate-700' : ''}`}
+                          title="Bold (Ctrl+B)"
+                        >
+                          <strong className="text-sm">B</strong>
+                        </button>
+                        <button
+                          onClick={() => applyFormatToSelectedText({ fontStyle: selected.fontStyle === 'italic' ? 'normal' : 'italic' })}
+                          className={`p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700 ${selected.fontStyle === 'italic' ? 'bg-slate-200 dark:bg-slate-700' : ''}`}
+                          title="Italic (Ctrl+I)"
+                        >
+                          <em className="text-sm">I</em>
+                        </button>
+                        <button
+                          onClick={() => applyFormatToSelectedText({ textDecoration: selected.textDecoration === 'underline' ? 'none' : 'underline' })}
+                          className={`p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700 ${selected.textDecoration === 'underline' ? 'bg-slate-200 dark:bg-slate-700' : ''}`}
+                          title="Underline (Ctrl+U)"
+                        >
+                          <u className="text-sm">U</u>
+                        </button>
+                        <div className="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+                        <input
+                          type="color"
+                          value={selected.color || '#000000'}
+                          onChange={(e) => applyFormatToSelectedText({ color: e.target.value })}
+                          className="w-8 h-8 rounded cursor-pointer border border-slate-300 dark:border-slate-600"
+                          title="Text Color"
+                        />
+                        <input
+                          type="number"
+                          value={selected.fontSize || 16}
+                          onChange={(e) => applyFormatToSelectedText({ fontSize: Number(e.target.value) })}
+                          min="8"
+                          max="72"
+                          className="w-16 px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm"
+                          title="Font Size"
+                        />
+                        <select
+                          value={selected.fontFamily || 'Arial'}
+                          onChange={(e) => applyFormatToSelectedText({ fontFamily: e.target.value })}
+                          className="px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm"
+                          title="Font Family"
+                        >
+                          <option value="Arial">Arial</option>
+                          <option value="Times New Roman">Times</option>
+                          <option value="Helvetica">Helvetica</option>
+                          <option value="Courier New">Courier</option>
+                        </select>
+                        <div className="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+                        <div className="flex gap-1">
+                          {(['left', 'center', 'right'] as const).map(align => (
+                            <button
+                              key={align}
+                              onClick={() => applyFormatToSelectedText({ textAlign: align })}
+                              className={`p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700 ${selected.textAlign === align ? 'bg-slate-200 dark:bg-slate-700' : ''}`}
+                              title={`Align ${align}`}
+                            >
+                              {align === 'left' ? '⬅' : align === 'center' ? '⬌' : '➡'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {/* Phase 2.5 & 5: PDF Text Editor - Inline editing for PDF text */}
                   {editingTextRun && pdfTextRuns[pageNum] && (() => {
                     const run = pdfTextRuns[pageNum].find(r => r.id === editingTextRun);
@@ -4676,6 +6332,648 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         </div>
       )}
       
+      {/* Advanced: Page Features Panel */}
+      {showPageFeatures && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPageFeatures(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Page Features</h3>
+              <button
+                onClick={() => setShowPageFeatures(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                aria-label="Close"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Page Numbering */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Page Numbering</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-slate-700 dark:text-slate-300">Format:</label>
+                    <select
+                      value={pageNumberFormat}
+                      onChange={(e) => setPageNumberFormat(e.target.value as '1' | '1/10' | 'Page 1' | '1 of 10')}
+                      className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                    >
+                      <option value="1">1</option>
+                      <option value="1/10">1/10</option>
+                      <option value="Page 1">Page 1</option>
+                      <option value="1 of 10">1 of 10</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-slate-700 dark:text-slate-300">Position:</label>
+                    <select
+                      value={pageNumberPosition}
+                      onChange={(e) => setPageNumberPosition(e.target.value as 'header' | 'footer')}
+                      className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                    >
+                      <option value="header">Header</option>
+                      <option value="footer">Footer</option>
+                    </select>
+                  </div>
+                  <button
+                    onClick={applyPageNumbering}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    {showPageNumbering ? 'Update Page Numbers' : 'Apply Page Numbering'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              {/* Headers & Footers */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Headers & Footers</h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm text-slate-700 dark:text-slate-300 mb-1">Header for Page {pageNum}:</label>
+                    <input
+                      type="text"
+                      placeholder="Enter header text..."
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                          addPageHeader(pageNum, e.currentTarget.value);
+                          e.currentTarget.value = '';
+                        }
+                      }}
+                    />
+                    {pageHeaders[pageNum] && (
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        Current: {pageHeaders[pageNum].text}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm text-slate-700 dark:text-slate-300 mb-1">Footer for Page {pageNum}:</label>
+                    <input
+                      type="text"
+                      placeholder="Enter footer text..."
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                          addPageFooter(pageNum, e.currentTarget.value);
+                          e.currentTarget.value = '';
+                        }
+                      }}
+                    />
+                    {pageFooters[pageNum] && (
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        Current: {pageFooters[pageNum].text}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              {/* Background Color */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Page Background</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-slate-700 dark:text-slate-300">Background Color for Page {pageNum}:</label>
+                    <input
+                      type="color"
+                      value={pageBackgroundColors[pageNum] || '#ffffff'}
+                      onChange={(e) => setPageBackground(pageNum, e.target.value)}
+                      className="w-12 h-8 rounded cursor-pointer border border-slate-300 dark:border-slate-600"
+                    />
+                    {pageBackgroundColors[pageNum] && (
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{pageBackgroundColors[pageNum]}</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setPageBackground(pageNum, '#ffffff')}
+                    className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors text-sm"
+                  >
+                    Reset to White
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Advanced: Page Manager Panel */}
+      {showPageManager && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPageManager(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Page Manager</h3>
+              <button
+                onClick={() => setShowPageManager(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                aria-label="Close"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Page Rotation */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Page Rotation</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-slate-700 dark:text-slate-300">Current Page ({pageNum}):</label>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => rotatePage(pageNum, 90)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                        title="Rotate 90° clockwise"
+                      >
+                        ↻ 90°
+                      </button>
+                      <button
+                        onClick={() => rotatePage(pageNum, 180)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                        title="Rotate 180°"
+                      >
+                        ↻ 180°
+                      </button>
+                      <button
+                        onClick={() => rotatePage(pageNum, -90)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                        title="Rotate 90° counter-clockwise"
+                      >
+                        ↺ 90°
+                      </button>
+                    </div>
+                    {pageRotations[pageNum] && (
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
+                        Current: {pageRotations[pageNum]}°
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              {/* Page Deletion */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Page Deletion</h4>
+                <div className="space-y-3">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Delete the current page. This action cannot be undone.
+                  </p>
+                  <button
+                    onClick={() => deletePage(pageNum)}
+                    disabled={numPages <= 1}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Delete Page {pageNum}
+                  </button>
+                  {deletedPages.has(pageNum) && (
+                    <p className="text-xs text-red-600 dark:text-red-400">Page {pageNum} marked for deletion</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              {/* Page Insertion */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Insert Blank Page</h4>
+                <div className="space-y-3">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Insert a blank page after the current page.
+                  </p>
+                  <button
+                    onClick={() => insertBlankPage(pageNum)}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
+                  >
+                    Insert Blank Page After Page {pageNum}
+                  </button>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              {/* Page List */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">All Pages ({numPages})</h4>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {Array.from({ length: numPages }, (_, i) => i + 1).map((page) => (
+                    <div
+                      key={page}
+                      className={`flex items-center justify-between p-3 rounded-md border ${
+                        page === pageNum
+                          ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
+                          : 'bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-slate-900 dark:text-white">
+                          Page {page}
+                        </span>
+                        {pageRotations[page] && (
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                            {pageRotations[page]}°
+                          </span>
+                        )}
+                        {deletedPages.has(page) && (
+                          <span className="text-xs text-red-600 dark:text-red-400">(Deleted)</span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        {page !== pageNum && (
+                          <button
+                            onClick={() => setPageNum(page)}
+                            className="px-3 py-1 text-xs bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-500"
+                          >
+                            Go
+                          </button>
+                        )}
+                        <button
+                          onClick={() => rotatePage(page, 90)}
+                          className="px-3 py-1 text-xs bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-300 dark:hover:bg-blue-700"
+                          title="Rotate 90°"
+                        >
+                          ↻
+                        </button>
+                        {numPages > 1 && (
+                          <button
+                            onClick={() => deletePage(page)}
+                            className="px-3 py-1 text-xs bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-300 rounded hover:bg-red-300 dark:hover:bg-red-700"
+                            title="Delete"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Advanced: Templates Panel */}
+      {showTemplatesPanel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowTemplatesPanel(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Annotation Templates</h3>
+              <button
+                onClick={() => setShowTemplatesPanel(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                aria-label="Close"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {annotationTemplates.map((template, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    applyAnnotationTemplate(template);
+                    setShowTemplatesPanel(false);
+                  }}
+                  className="p-4 border-2 border-slate-200 dark:border-slate-700 rounded-lg hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all text-left"
+                >
+                  <div className="font-semibold text-slate-900 dark:text-white mb-2">{template.name}</div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400">
+                    Type: {template.annotation.type}
+                    {template.annotation.width && template.annotation.height && (
+                      <span> • {template.annotation.width}×{template.annotation.height}px</span>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+            
+            <div className="mt-6 pt-6 border-t border-slate-300 dark:border-slate-600">
+              <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Text Templates</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {textTemplates.map((template, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      applyTextTemplate(template);
+                      setShowTemplatesPanel(false);
+                    }}
+                    className="px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-md hover:bg-slate-200 dark:hover:bg-slate-600 text-sm text-slate-700 dark:text-slate-300"
+                  >
+                    {template.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Advanced: Settings Panel */}
+      {showSettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Settings</h3>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                aria-label="Close"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Auto-save Settings */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Auto-save</h4>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={settings.autoSave}
+                      onChange={(e) => setSettings({ ...settings, autoSave: e.target.checked })}
+                      className="rounded"
+                    />
+                    <span className="text-sm text-slate-700 dark:text-slate-300">Enable auto-save</span>
+                  </label>
+                  {settings.autoSave && (
+                    <div className="flex items-center gap-3">
+                      <label className="text-sm text-slate-700 dark:text-slate-300">Interval (seconds):</label>
+                      <input
+                        type="number"
+                        value={settings.autoSaveInterval}
+                        onChange={(e) => setSettings({ ...settings, autoSaveInterval: Number(e.target.value) })}
+                        min="10"
+                        max="300"
+                        className="w-20 px-2 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              {/* Display Settings */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Display</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-slate-700 dark:text-slate-300 w-32">Default Zoom:</label>
+                    <select
+                      value={settings.defaultZoom}
+                      onChange={(e) => setSettings({ ...settings, defaultZoom: e.target.value as any })}
+                      className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                    >
+                      <option value="fit-page">Fit Page</option>
+                      <option value="fit-width">Fit Width</option>
+                      <option value="fit-height">Fit Height</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </div>
+                  <label className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={settings.showGrid}
+                      onChange={(e) => setSettings({ ...settings, showGrid: e.target.checked })}
+                      className="rounded"
+                    />
+                    <span className="text-sm text-slate-700 dark:text-slate-300">Show grid</span>
+                  </label>
+                  <label className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={settings.showRulers}
+                      onChange={(e) => setSettings({ ...settings, showRulers: e.target.checked })}
+                      className="rounded"
+                    />
+                    <span className="text-sm text-slate-700 dark:text-slate-300">Show rulers</span>
+                  </label>
+                  <label className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={settings.showTooltips}
+                      onChange={(e) => setSettings({ ...settings, showTooltips: e.target.checked })}
+                      className="rounded"
+                    />
+                    <span className="text-sm text-slate-700 dark:text-slate-300">Show tooltips</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              {/* Default Values */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Default Values</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-slate-700 dark:text-slate-300 w-32">Font Size:</label>
+                    <input
+                      type="number"
+                      value={settings.defaultFontSize}
+                      onChange={(e) => setSettings({ ...settings, defaultFontSize: Number(e.target.value) })}
+                      min="8"
+                      max="72"
+                      className="w-20 px-2 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-slate-700 dark:text-slate-300 w-32">Font Family:</label>
+                    <select
+                      value={settings.defaultFontFamily}
+                      onChange={(e) => setSettings({ ...settings, defaultFontFamily: e.target.value })}
+                      className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                    >
+                      <option value="Arial">Arial</option>
+                      <option value="Times New Roman">Times New Roman</option>
+                      <option value="Helvetica">Helvetica</option>
+                      <option value="Courier New">Courier New</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              {/* Export Settings */}
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Export</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-slate-700 dark:text-slate-300 w-32">Quality:</label>
+                    <select
+                      value={settings.exportQuality}
+                      onChange={(e) => setSettings({ ...settings, exportQuality: e.target.value as any })}
+                      className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                    >
+                      <option value="low">Low (Smaller file)</option>
+                      <option value="medium">Medium (Balanced)</option>
+                      <option value="high">High (Best quality)</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-slate-700 dark:text-slate-300 w-32">Format:</label>
+                    <select
+                      value={settings.exportFormat}
+                      onChange={(e) => setSettings({ ...settings, exportFormat: e.target.value as any })}
+                      className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
+                    >
+                      <option value="pdf">PDF</option>
+                      <option value="pdf-a">PDF/A (Archival)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-300 dark:border-slate-600">
+                <button
+                  onClick={() => {
+                    // Reset to defaults
+                    setSettings({
+                      autoSave: false,
+                      autoSaveInterval: 30,
+                      defaultZoom: 'fit-page',
+                      defaultFontSize: 16,
+                      defaultFontFamily: 'Arial',
+                      showGrid: false,
+                      snapToGrid: false,
+                      gridSize: 20,
+                      showRulers: false,
+                      showTooltips: true,
+                      enableAnimations: true,
+                      exportQuality: 'high',
+                      exportFormat: 'pdf',
+                    });
+                    toast.success('Settings reset to defaults');
+                  }}
+                  className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors text-sm"
+                >
+                  Reset to Defaults
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSettings(false);
+                    toast.success('Settings saved');
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                >
+                  Save Settings
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Advanced: Help Panel */}
+      {showHelp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowHelp(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Help & Support</h3>
+              <button
+                onClick={() => setShowHelp(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                aria-label="Close"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Getting Started</h4>
+                <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                  <p>1. Upload your PDF file by clicking the upload area or dragging and dropping</p>
+                  <p>2. Use the toolbar to select tools (Text, Shapes, Stamps, etc.)</p>
+                  <p>3. Click on the PDF to add annotations</p>
+                  <p>4. Use the download button to save your edited PDF</p>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Tips & Tricks</h4>
+                <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400 list-disc list-inside">
+                  <li>Double-click text annotations to edit them</li>
+                  <li>Right-click annotations for context menu options</li>
+                  <li>Use Ctrl+Z / Ctrl+Y for undo/redo</li>
+                  <li>Press '?' to see all keyboard shortcuts</li>
+                  <li>Use templates for quick annotation creation</li>
+                  <li>Select multiple annotations with Ctrl+Click</li>
+                </ul>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Common Questions</h4>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="font-medium text-slate-900 dark:text-white mb-1">How do I edit existing text in the PDF?</p>
+                    <p className="text-slate-600 dark:text-slate-400">Click the "Edit PDF Text" button (E key) and then click on any text in the PDF to edit it.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900 dark:text-white mb-1">Can I undo changes?</p>
+                    <p className="text-slate-600 dark:text-slate-400">Yes! Use Ctrl+Z to undo and Ctrl+Y to redo. You can undo multiple steps.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900 dark:text-white mb-1">How do I delete a page?</p>
+                    <p className="text-slate-600 dark:text-slate-400">Open the Page Manager (P key) and use the delete button for the page you want to remove.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowHelp(false);
+                    setShowKeyboardShortcuts(true);
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                >
+                  View Keyboard Shortcuts
+                </button>
+                <button
+                  onClick={() => {
+                    setShowHelp(false);
+                    setShowTutorial(true);
+                    setTutorialStep(0);
+                  }}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm"
+                >
+                  Start Tutorial
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Advanced: Keyboard Shortcuts Panel */}
       {showKeyboardShortcuts && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowKeyboardShortcuts(false)}>
@@ -4732,6 +7030,18 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   <div className="flex justify-between">
                     <span className="text-slate-600 dark:text-slate-400">Delete</span>
                     <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Delete</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Duplicate</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+D</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Lock/Unlock</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+L</kbd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-400">Group</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+Shift+G</kbd>
                   </div>
                 </div>
               </div>
@@ -4793,6 +7103,125 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Advanced: Context Menu for Annotations */}
+      {contextMenu && contextMenu.annotationId && (
+        <div
+          className="fixed bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg shadow-xl z-50 py-1 min-w-[200px]"
+          style={{ left: `${contextMenu.x}px`, top: `${contextMenu.y}px` }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => {
+              if (contextMenu.annotationId) {
+                duplicateAnnotation(contextMenu.annotationId);
+              }
+            }}
+            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
+          >
+            <span>📋</span> Duplicate
+          </button>
+          <button
+            onClick={() => {
+              if (contextMenu.annotationId) {
+                toggleLockAnnotation(contextMenu.annotationId);
+              }
+            }}
+            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
+          >
+            <span>{lockedAnnotations.has(contextMenu.annotationId || '') ? '🔓' : '🔒'}</span>
+            {lockedAnnotations.has(contextMenu.annotationId || '') ? 'Unlock' : 'Lock'}
+          </button>
+          <button
+            onClick={() => {
+              if (contextMenu.annotationId) {
+                removeAnnotation(contextMenu.annotationId);
+                setContextMenu(null);
+              }
+            }}
+            className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
+          >
+            <span>🗑️</span> Delete
+          </button>
+          <div className="border-t border-slate-300 dark:border-slate-600 my-1"></div>
+          <div className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">Align (2+ selected)</div>
+          <div className="grid grid-cols-3 gap-1 px-2">
+            <button
+              onClick={() => alignAnnotations('left')}
+              className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded"
+              disabled={selectedAnnotations.size < 2}
+            >
+              ⬅ Left
+            </button>
+            <button
+              onClick={() => alignAnnotations('center')}
+              className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded"
+              disabled={selectedAnnotations.size < 2}
+            >
+              ⬌ Center
+            </button>
+            <button
+              onClick={() => alignAnnotations('right')}
+              className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded"
+              disabled={selectedAnnotations.size < 2}
+            >
+              ➡ Right
+            </button>
+            <button
+              onClick={() => alignAnnotations('top')}
+              className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded"
+              disabled={selectedAnnotations.size < 2}
+            >
+              ⬆ Top
+            </button>
+            <button
+              onClick={() => alignAnnotations('middle')}
+              className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded"
+              disabled={selectedAnnotations.size < 2}
+            >
+              ⬌ Middle
+            </button>
+            <button
+              onClick={() => alignAnnotations('bottom')}
+              className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded"
+              disabled={selectedAnnotations.size < 2}
+            >
+              ⬇ Bottom
+            </button>
+          </div>
+          <div className="border-t border-slate-300 dark:border-slate-600 my-1"></div>
+          <div className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">Distribute (3+ selected)</div>
+          <div className="grid grid-cols-2 gap-1 px-2">
+            <button
+              onClick={() => distributeAnnotations('horizontal')}
+              className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded"
+              disabled={selectedAnnotations.size < 3}
+            >
+              ↔ Horizontal
+            </button>
+            <button
+              onClick={() => distributeAnnotations('vertical')}
+              className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded"
+              disabled={selectedAnnotations.size < 3}
+            >
+              ↕ Vertical
+            </button>
+          </div>
+          {selectedAnnotations.size >= 2 && (
+            <>
+              <div className="border-t border-slate-300 dark:border-slate-600 my-1"></div>
+              <button
+                onClick={() => {
+                  groupAnnotations(Array.from(selectedAnnotations));
+                }}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
+              >
+                <span>🔗</span> Group
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>

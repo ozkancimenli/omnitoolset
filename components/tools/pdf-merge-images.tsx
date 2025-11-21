@@ -1,27 +1,26 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
+import { toast } from '@/components/Toast';
+import ToolBase from './ToolBase';
+import FileUploadArea from './FileUploadArea';
 
 export default function PdfMergeImages() {
   const [files, setFiles] = useState<File[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const imageFiles = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
-      setFiles(prev => [...prev, ...imageFiles]);
+  const handleFileSelect = (selectedFile: File) => {
+    if (!selectedFile.type.startsWith('image/')) {
+      toast.error('Please select image files only');
+      return;
     }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const imageFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-    setFiles(prev => [...prev, ...imageFiles]);
+    setFiles(prev => [...prev, selectedFile]);
+    toast.success(`Added: ${selectedFile.name}`);
   };
 
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
+    toast.info('File removed');
   };
 
   const loadImage = (file: File): Promise<HTMLImageElement> => {
@@ -39,7 +38,10 @@ export default function PdfMergeImages() {
   };
 
   const handleConvert = async () => {
-    if (files.length === 0) return;
+    if (files.length === 0) {
+      toast.warning('Please select at least one image');
+      return;
+    }
 
     setIsProcessing(true);
 
@@ -67,61 +69,86 @@ export default function PdfMergeImages() {
       }
 
       pdf.save('images.pdf');
+      toast.success(`PDF created with ${files.length} image(s)!`);
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred during conversion: ' + (error as Error).message);
+      toast.error('Error creating PDF: ' + (error as Error).message);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div
-        className="upload-area"
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <div className="text-5xl mb-4">🖼️</div>
-        <p className="text-slate-300">Drag and drop your images here or click to select</p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-      </div>
+  const clear = () => {
+    setFiles([]);
+    toast.info('Cleared');
+  };
 
-      {files.length > 0 && (
-        <div className="bg-slate-900 rounded-xl p-4 space-y-2">
-          <h3 className="text-lg font-semibold mb-3">Selected Images ({files.length})</h3>
-          {files.map((file, index) => (
-            <div key={index} className="flex items-center justify-between bg-slate-800 p-3 rounded-lg">
-              <span className="text-slate-300 text-sm">
-                {index + 1}. {file.name} ({(file.size / 1024).toFixed(2)} KB)
-              </span>
+  return (
+    <ToolBase
+      title="Merge Images to PDF"
+      description="Combine multiple images into a single PDF"
+      icon="🖼️"
+      helpText="Combine multiple images into a single PDF document. Each image becomes a page. Supports all common image formats."
+      tips={[
+        'Upload multiple images',
+        'Each image becomes a page',
+        'Images are automatically resized',
+        'Download as single PDF',
+        'Supports all image formats'
+      ]}
+      isProcessing={isProcessing}
+    >
+      <div className="space-y-4">
+        {!isProcessing && (
+          <FileUploadArea
+            onFileSelect={handleFileSelect}
+            acceptedFileTypes={['image/*']}
+            multiple={true}
+            icon="🖼️"
+            text="Drag and drop your images here or click to select"
+            subtext="You can add multiple images"
+          />
+        )}
+
+        {files.length > 0 && (
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-2">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Selected Images ({files.length})
+              </h3>
               <button
-                onClick={() => removeFile(index)}
-                className="text-red-400 hover:text-red-300 px-3 py-1 rounded"
+                onClick={clear}
+                className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors"
               >
-                ✕
+                Clear All
               </button>
             </div>
-          ))}
-        </div>
-      )}
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {files.map((file, index) => (
+                <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                  <span className="text-gray-700 dark:text-gray-300 text-sm">
+                    {index + 1}. {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                  </span>
+                  <button
+                    onClick={() => removeFile(index)}
+                    className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 px-3 py-1 rounded transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-      <button
-        onClick={handleConvert}
-        disabled={files.length === 0 || isProcessing}
-        className="btn w-full"
-      >
-        {isProcessing ? 'Creating PDF...' : 'Create PDF from Images'}
-      </button>
-    </div>
+        <button
+          onClick={handleConvert}
+          disabled={files.length === 0 || isProcessing}
+          className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+        >
+          {isProcessing ? 'Creating PDF...' : `Create PDF from ${files.length} Image${files.length !== 1 ? 's' : ''}`}
+        </button>
+      </div>
+    </ToolBase>
   );
 }
 

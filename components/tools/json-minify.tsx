@@ -1,57 +1,149 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from '@/components/Toast';
+import ToolBase from './ToolBase';
 
 export default function JsonMinify() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
 
   const minify = () => {
+    if (!input.trim()) {
+      toast.warning('Please enter JSON code first');
+      return;
+    }
+
     try {
       const json = JSON.parse(input);
       const minified = JSON.stringify(json);
       setOutput(minified);
+      toast.success('JSON minified!');
     } catch (error) {
-      alert('Invalid JSON: ' + (error as Error).message);
+      toast.error('Invalid JSON: ' + (error as Error).message);
+      setOutput('');
     }
   };
 
   const copyToClipboard = () => {
+    if (!output.trim()) {
+      toast.warning('Nothing to copy!');
+      return;
+    }
     navigator.clipboard.writeText(output);
-    alert('Copied!');
+    toast.success('Copied to clipboard!');
+  };
+
+  const clear = () => {
+    setInput('');
+    setOutput('');
+    toast.info('Cleared');
+  };
+
+  const stats = {
+    inputLength: input.length,
+    outputLength: output.length,
+    reduction: input.length > 0 && output.length > 0 
+      ? (1 - output.length / input.length) * 100 
+      : 0,
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <label className="block text-slate-300 mb-2">Enter JSON:</label>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={12}
-          className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono text-sm"
-          placeholder='{"name":"John","age":30}'
-        />
-      </div>
-      <button onClick={minify} className="btn w-full" disabled={!input}>Minify JSON</button>
-      {output && (
+    <ToolBase
+      title="JSON Minifier"
+      description="Minify and compress JSON code"
+      icon="🗜️"
+      helpText="Minify your JSON code by removing whitespace and formatting. Reduces file size while maintaining valid JSON structure."
+      tips={[
+        'Removes all whitespace',
+        'Validates JSON before minifying',
+        'Compresses code for production',
+        'Reduces file size significantly',
+        'Copy minified code to clipboard'
+      ]}
+    >
+      <div className="space-y-4">
+        {stats.inputLength > 0 && stats.outputLength > 0 && (
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+            <div className="grid grid-cols-3 gap-4 text-center text-sm">
+              <div>
+                <p className="text-green-600 dark:text-green-400 mb-1">Input</p>
+                <p className="font-semibold text-green-900 dark:text-green-200">{stats.inputLength.toLocaleString()} bytes</p>
+              </div>
+              <div>
+                <p className="text-green-600 dark:text-green-400 mb-1">Output</p>
+                <p className="font-semibold text-green-900 dark:text-green-200">{stats.outputLength.toLocaleString()} bytes</p>
+              </div>
+              <div>
+                <p className="text-green-600 dark:text-green-400 mb-1">Reduction</p>
+                <p className="font-semibold text-green-900 dark:text-green-200">{stats.reduction.toFixed(1)}%</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-slate-300">Minified JSON:</label>
-            <button onClick={copyToClipboard} className="btn">Copy</button>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Enter JSON:
+            </label>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {input.length} characters
+            </span>
           </div>
           <textarea
-            value={output}
-            readOnly
-            rows={6}
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 font-mono text-sm"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            rows={12}
+            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg 
+                     text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder='{"name":"John","age":30}'
           />
-          <p className="text-sm text-slate-400 mt-2">
-            Size: {input.length} → {output.length} bytes ({Math.round((1 - output.length / input.length) * 100)}% reduction)
-          </p>
         </div>
-      )}
-    </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button 
+            onClick={minify} 
+            disabled={!input}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+          >
+            Minify JSON
+          </button>
+          <button 
+            onClick={clear}
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Clear
+          </button>
+        </div>
+
+        {output && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Minified JSON:
+              </label>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {output.length} characters
+              </span>
+            </div>
+            <textarea
+              value={output}
+              readOnly
+              rows={6}
+              className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg 
+                       text-gray-900 dark:text-gray-100 font-mono text-sm"
+            />
+            <button 
+              onClick={copyToClipboard} 
+              className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+              Copy Result
+            </button>
+          </div>
+        )}
+      </div>
+    </ToolBase>
   );
 }
 

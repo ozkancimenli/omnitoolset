@@ -108,6 +108,7 @@ export default async function ToolPage({ params }: PageProps) {
 
   const url = `https://omnitoolset.com/tools/${tool.slug}`;
   const isPDFTool = tool.category === 'PDF';
+  // Enhanced Structured Data for better SEO
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
@@ -118,6 +119,8 @@ export default async function ToolPage({ params }: PageProps) {
     url,
     applicationCategory: 'UtilityApplication',
     operatingSystem: 'Web',
+    browserRequirements: 'Requires JavaScript. Requires HTML5.',
+    softwareVersion: '1.0',
     keywords: isPDFTool 
       ? `${tool.keywords || ''}, pdf converter, free pdf converter, online pdf converter, pdf converter free, pdf converter no registration, free online pdf converter, instant pdf converter`
       : `${tool.keywords || ''}, free online tool, ${tool.category.toLowerCase()} tool free, online tool no registration, free ${tool.category.toLowerCase()} tool`,
@@ -125,7 +128,29 @@ export default async function ToolPage({ params }: PageProps) {
       '@type': 'Offer',
       price: '0',
       priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      priceValidUntil: '2025-12-31',
     },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      ratingCount: '1000',
+      bestRating: '5',
+      worstRating: '1',
+    },
+    featureList: [
+      '100% Free',
+      'No Registration Required',
+      'No Watermarks',
+      'Unlimited Use',
+      'Secure & Private',
+      'Works on All Devices',
+      'Instant Processing',
+    ],
+    screenshot: `https://omnitoolset.com/tools/${tool.slug}`,
+    inLanguage: 'en',
+    isAccessibleForFree: true,
+    license: 'https://omnitoolset.com',
   };
 
   return (

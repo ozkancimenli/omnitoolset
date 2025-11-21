@@ -1,43 +1,37 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
+import { toast } from '@/components/Toast';
 import { PDFDocument } from 'pdf-lib';
+import ToolBase from './ToolBase';
+import FileUploadArea from './FileUploadArea';
 
 export default function PdfDeletePages() {
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [pagesToDelete, setPagesToDelete] = useState<string>('');
   const [totalPages, setTotalPages] = useState(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      
-      try {
-        const arrayBuffer = await selectedFile.arrayBuffer();
-        const pdfDoc = await PDFDocument.load(arrayBuffer);
-        setTotalPages(pdfDoc.getPageCount());
-      } catch (error) {
-        console.error('Error loading PDF:', error);
-      }
+  const handleFileSelect = async (selectedFile: File) => {
+    if (selectedFile.type !== 'application/pdf') {
+      toast.error('Please select a PDF file');
+      return;
     }
-  };
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    if (e.dataTransfer.files[0]?.type === 'application/pdf') {
-      const droppedFile = e.dataTransfer.files[0];
-      setFile(droppedFile);
-      
-      try {
-        const arrayBuffer = await droppedFile.arrayBuffer();
-        const pdfDoc = await PDFDocument.load(arrayBuffer);
-        setTotalPages(pdfDoc.getPageCount());
-      } catch (error) {
-        console.error('Error loading PDF:', error);
-      }
+    
+    setFile(selectedFile);
+    setIsProcessing(true);
+    
+    try {
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      setTotalPages(pdfDoc.getPageCount());
+      toast.success(`PDF loaded: ${pdfDoc.getPageCount()} page${pdfDoc.getPageCount() !== 1 ? 's' : ''}`);
+    } catch (error) {
+      toast.error('Error loading PDF: ' + (error as Error).message);
+      setFile(null);
+      setTotalPages(0);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -65,9 +59,12 @@ export default function PdfDeletePages() {
   };
 
   const handleConvert = async () => {
-    if (!file) return;
+    if (!file) {
+      toast.warning('Please select a PDF file first');
+      return;
+    }
     if (!pagesToDelete.trim()) {
-      alert('Please specify which pages to delete');
+      toast.warning('Please specify which pages to delete');
       return;
     }
 
@@ -79,7 +76,7 @@ export default function PdfDeletePages() {
       
       const pagesToRemove = parsePageNumbers(pagesToDelete);
       if (pagesToRemove.length === 0) {
-        alert('No valid pages to delete');
+        toast.warning('No valid pages to delete');
         setIsProcessing(false);
         return;
       }
@@ -97,64 +94,88 @@ export default function PdfDeletePages() {
       a.download = file.name.replace('.pdf', '_edited.pdf');
       a.click();
       URL.revokeObjectURL(url);
+      toast.success(`Deleted ${pagesToRemove.length} page${pagesToRemove.length !== 1 ? 's' : ''}!`);
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred: ' + (error as Error).message);
+      toast.error('Error deleting pages: ' + (error as Error).message);
     } finally {
       setIsProcessing(false);
     }
   };
 
+  const clear = () => {
+    setFile(null);
+    setPagesToDelete('');
+    setTotalPages(0);
+    toast.info('Cleared');
+  };
+
   return (
-    <div className="space-y-6">
-      <div
-        className="upload-area"
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <div className="text-5xl mb-4">📄</div>
-        <p className="text-slate-300">Drag and drop your PDF file here or click to select</p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-      </div>
+    <ToolBase
+      title="PDF Delete Pages"
+      description="Remove specific pages from a PDF"
+      icon="📄"
+      helpText="Delete specific pages from a PDF document. Enter page numbers separated by commas or ranges like 2-5."
+      tips={[
+        'Upload PDF file',
+        'Enter page numbers to delete',
+        'Supports ranges (e.g., 2-5)',
+        'Supports comma-separated (e.g., 1,3,5)',
+        'Download edited PDF'
+      ]}
+      isProcessing={isProcessing}
+    >
+      <div className="space-y-4">
+        {!isProcessing && (
+          <FileUploadArea
+            onFileSelect={handleFileSelect}
+            acceptedFileTypes={['application/pdf']}
+            acceptedExtensions={['.pdf']}
+            icon="📄"
+            text="Drag and drop your PDF file here or click to select"
+          />
+        )}
 
-      {file && (
-        <div className="bg-slate-900 rounded-xl p-4 space-y-4">
-          <p className="text-slate-300">Selected: {file.name}</p>
-          <p className="text-slate-400 text-sm">Total pages: {totalPages}</p>
-          
-          <div>
-            <label className="block text-slate-300 mb-2">
-              Pages to delete (e.g., 1,3,5 or 2-5):
-            </label>
-            <input
-              type="text"
-              value={pagesToDelete}
-              onChange={(e) => setPagesToDelete(e.target.value)}
-              placeholder="1,3,5 or 2-5"
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
-            />
-            <p className="text-xs text-slate-400 mt-2">
-              Enter page numbers separated by commas, or ranges like 2-5
-            </p>
+        {file && (
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-700 dark:text-gray-300">Selected: <span className="font-semibold">{file.name}</span></p>
+              <button
+                onClick={clear}
+                className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Total pages: <span className="font-semibold">{totalPages}</span></p>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Pages to delete (e.g., 1,3,5 or 2-5):
+              </label>
+              <input
+                type="text"
+                value={pagesToDelete}
+                onChange={(e) => setPagesToDelete(e.target.value)}
+                placeholder="1,3,5 or 2-5"
+                className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg 
+                         text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Enter page numbers separated by commas, or ranges like 2-5
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <button
-        onClick={handleConvert}
-        disabled={!file || !pagesToDelete.trim() || isProcessing}
-        className="btn w-full"
-      >
-        {isProcessing ? 'Processing...' : 'Delete Pages'}
-      </button>
-    </div>
+        <button
+          onClick={handleConvert}
+          disabled={!file || !pagesToDelete.trim() || isProcessing}
+          className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+        >
+          {isProcessing ? 'Processing...' : 'Delete Pages'}
+        </button>
+      </div>
+    </ToolBase>
   );
 }
 

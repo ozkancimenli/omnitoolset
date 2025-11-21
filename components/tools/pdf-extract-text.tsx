@@ -1,30 +1,29 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
+import { toast } from '@/components/Toast';
+import ToolBase from './ToolBase';
+import FileUploadArea from './FileUploadArea';
 
 export default function PdfExtractText() {
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [extractedText, setExtractedText] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setFile(e.target.files[0]);
-      setExtractedText('');
+  const handleFileSelect = (selectedFile: File) => {
+    if (selectedFile.type !== 'application/pdf') {
+      toast.error('Please select a PDF file');
+      return;
     }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (e.dataTransfer.files[0]?.type === 'application/pdf') {
-      setFile(e.dataTransfer.files[0]);
-      setExtractedText('');
-    }
+    setFile(selectedFile);
+    setExtractedText('');
   };
 
   const handleExtract = async () => {
-    if (!file) return;
+    if (!file) {
+      toast.warning('Please select a PDF file first');
+      return;
+    }
 
     setIsProcessing(true);
     setExtractedText('');
@@ -55,15 +54,20 @@ export default function PdfExtractText() {
       }
 
       setExtractedText(fullText.trim());
+      toast.success(`Text extracted from ${numPages} page${numPages !== 1 ? 's' : ''}!`);
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred during extraction: ' + (error as Error).message);
+      toast.error('Error extracting text: ' + (error as Error).message);
+      setExtractedText('');
     } finally {
       setIsProcessing(false);
     }
   };
 
   const downloadText = () => {
+    if (!extractedText.trim()) {
+      toast.warning('No text to download');
+      return;
+    }
     const blob = new Blob([extractedText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -71,57 +75,103 @@ export default function PdfExtractText() {
     a.download = file?.name.replace('.pdf', '.txt') || 'extracted_text.txt';
     a.click();
     URL.revokeObjectURL(url);
+    toast.success('Text downloaded!');
+  };
+
+  const copyText = () => {
+    if (!extractedText.trim()) {
+      toast.warning('No text to copy');
+      return;
+    }
+    navigator.clipboard.writeText(extractedText);
+    toast.success('Text copied to clipboard!');
+  };
+
+  const clear = () => {
+    setFile(null);
+    setExtractedText('');
+    toast.info('Cleared');
   };
 
   return (
-    <div className="space-y-6">
-      <div
-        className="upload-area"
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <div className="text-5xl mb-4">📄</div>
-        <p className="text-slate-300">Drag and drop your PDF file here or click to select</p>
-          <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-      </div>
-
-      {file && (
-        <div className="bg-slate-900 rounded-xl p-4">
-          <p className="text-slate-300">Selected: {file.name}</p>
-        </div>
-      )}
-
-      <button
-        onClick={handleExtract}
-        disabled={!file || isProcessing}
-        className="btn w-full"
-      >
-        {isProcessing ? 'Extracting...' : 'Extract Text'}
-      </button>
-
-      {extractedText && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-100">Extracted Text:</h3>
-            <button onClick={downloadText} className="btn">
-              Download as TXT
-            </button>
-          </div>
-          <textarea
-            value={extractedText}
-            readOnly
-            className="w-full h-96 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 resize-none font-mono text-sm"
+    <ToolBase
+      title="PDF Text Extractor"
+      description="Extract text content from PDF files"
+      icon="📄"
+      helpText="Extract all text content from a PDF file. Preserves page structure and allows you to copy or download the extracted text."
+      tips={[
+        'Upload any PDF file',
+        'Extracts text from all pages',
+        'Preserves page structure',
+        'Download as TXT file',
+        'Copy to clipboard'
+      ]}
+      isProcessing={isProcessing}
+    >
+      <div className="space-y-4">
+        {!isProcessing && (
+          <FileUploadArea
+            onFileSelect={handleFileSelect}
+            acceptedFileTypes={['application/pdf']}
+            acceptedExtensions={['.pdf']}
+            icon="📄"
+            text="Drag and drop your PDF file here or click to select"
           />
-        </div>
-      )}
-    </div>
+        )}
+
+        {file && (
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-700 dark:text-gray-300">Selected: <span className="font-semibold">{file.name}</span></p>
+              <button
+                onClick={clear}
+                className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
+
+        <button
+          onClick={handleExtract}
+          disabled={!file || isProcessing}
+          className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+        >
+          {isProcessing ? 'Extracting...' : 'Extract Text'}
+        </button>
+
+        {extractedText && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Extracted Text:</h3>
+              <div className="flex gap-2">
+                <button 
+                  onClick={copyText}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  Copy
+                </button>
+                <button 
+                  onClick={downloadText}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  Download TXT
+                </button>
+              </div>
+            </div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+              <textarea
+                value={extractedText}
+                readOnly
+                rows={20}
+                className="w-full bg-transparent border-none text-blue-600 dark:text-blue-400 resize-none font-mono text-sm focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </ToolBase>
   );
 }
 

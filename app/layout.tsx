@@ -101,6 +101,7 @@ export default function RootLayout({
         />
         {children}
         <ToastContainer />
+        {/* Adsterra Social Bar - Must be right above closing </body> tag */}
         <AdsterraSocialbar />
         <SpeedInsights />
       </body>

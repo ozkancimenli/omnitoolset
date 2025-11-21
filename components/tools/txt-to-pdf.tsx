@@ -1,46 +1,36 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
+import { toast } from '@/components/Toast';
+import ToolBase from './ToolBase';
+import FileUploadArea from './FileUploadArea';
 
 export default function TxtToPdf() {
   const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setText(event.target?.result as string);
-      };
-      reader.readAsText(selectedFile);
+  const handleFileSelect = (selectedFile: File) => {
+    if (selectedFile.type !== 'text/plain' && !selectedFile.name.endsWith('.txt')) {
+      toast.error('Please select a TXT file');
+      return;
     }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (e.dataTransfer.files[0]) {
-      const droppedFile = e.dataTransfer.files[0];
-      if (droppedFile.type === 'text/plain' || droppedFile.name.endsWith('.txt')) {
-        setFile(droppedFile);
-        
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          setText(event.target?.result as string);
-        };
-        reader.readAsText(droppedFile);
-      }
-    }
+    
+    setFile(selectedFile);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setText(event.target?.result as string);
+      toast.success(`File loaded: ${selectedFile.name}`);
+    };
+    reader.onerror = () => {
+      toast.error('Error reading file');
+    };
+    reader.readAsText(selectedFile);
   };
 
   const handleConvert = async () => {
     if (!text.trim()) {
-      alert('Please enter or upload text content');
+      toast.warning('Please enter or upload text content');
       return;
     }
 
@@ -65,58 +55,95 @@ export default function TxtToPdf() {
       });
 
       pdf.save(file ? file.name.replace('.txt', '.pdf') : 'document.pdf');
+      toast.success('PDF created successfully!');
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred during conversion: ' + (error as Error).message);
+      toast.error('Error creating PDF: ' + (error as Error).message);
     } finally {
       setIsProcessing(false);
     }
   };
 
+  const clear = () => {
+    setFile(null);
+    setText('');
+    toast.info('Cleared');
+  };
+
   return (
-    <div className="space-y-6">
-      <div
-        className="upload-area"
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <div className="text-5xl mb-4">📄</div>
-        <p className="text-slate-300">Drag and drop your TXT file here or click to select</p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".txt,text/plain"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-      </div>
+    <ToolBase
+      title="TXT to PDF Converter"
+      description="Convert text files to PDF documents"
+      icon="📄"
+      helpText="Convert TXT files or paste text directly to PDF format. Automatically handles page breaks and formatting."
+      tips={[
+        'Upload TXT file or paste text',
+        'Automatic page breaks',
+        'Preserves text formatting',
+        'Download as PDF',
+        'Supports large text files'
+      ]}
+      isProcessing={isProcessing}
+    >
+      <div className="space-y-4">
+        {!isProcessing && (
+          <FileUploadArea
+            onFileSelect={handleFileSelect}
+            acceptedFileTypes={['text/plain']}
+            acceptedExtensions={['.txt']}
+            icon="📄"
+            text="Drag and drop your TXT file here or click to select"
+          />
+        )}
 
-      <div>
-        <label className="block text-slate-300 mb-2">Or paste text directly:</label>
-        <textarea
-          ref={textareaRef}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Enter your text here..."
-          className="w-full h-64 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 resize-none"
-        />
-      </div>
-
-      {file && (
-        <div className="bg-slate-900 rounded-xl p-4">
-          <p className="text-slate-300">Selected: {file.name}</p>
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Or paste text directly:
+            </label>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {text.length} characters
+            </span>
+          </div>
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Enter your text here..."
+            className="w-full h-64 px-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg 
+                     text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
         </div>
-      )}
 
-      <button
-        onClick={handleConvert}
-        disabled={!text.trim() || isProcessing}
-        className="btn w-full"
-      >
-        {isProcessing ? 'Converting...' : 'Convert to PDF'}
-      </button>
-    </div>
+        {file && (
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-700 dark:text-gray-300">Selected: <span className="font-semibold">{file.name}</span></p>
+              <button
+                onClick={clear}
+                className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={handleConvert}
+            disabled={!text.trim() || isProcessing}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+          >
+            {isProcessing ? 'Converting...' : 'Convert to PDF'}
+          </button>
+          <button
+            onClick={clear}
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+    </ToolBase>
   );
 }
 

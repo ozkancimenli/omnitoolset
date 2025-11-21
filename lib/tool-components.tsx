@@ -134,6 +134,39 @@ export const toolComponents: Record<string, React.ComponentType> = {
   'length-converter': dynamic(() => import('@/components/tools/length-converter'), { ssr: false }),
   'temperature-converter': dynamic(() => import('@/components/tools/temperature-converter'), { ssr: false }),
   'salary-calculator': dynamic(() => import('@/components/tools/salary-calculator'), { ssr: false }),
+  'unit-converter': dynamic(() => import('@/components/tools/unit-converter'), { ssr: false }),
+  'currency-converter': dynamic(() => import('@/components/tools/currency-converter'), { ssr: false }),
+  'gis-converter': dynamic(() => import('@/components/tools/gis-converter'), { ssr: false }),
+  'video-converter': dynamic(() => import('@/components/tools/video-converter'), { ssr: false }),
+  
+  // Additional Video/Audio Tools
+  'mp4-converter': dynamic(() => import('@/components/tools/mp4-converter'), { ssr: false }),
+  'mov-to-mp4': dynamic(() => import('@/components/tools/mov-to-mp4'), { ssr: false }),
+  'video-to-mp3': dynamic(() => import('@/components/tools/mp4-to-mp3'), { ssr: false }), // Reuse mp4-to-mp3
+  'video-to-gif': dynamic(() => import('@/components/tools/video-to-gif'), { ssr: false }),
+  'audio-converter': dynamic(() => import('@/components/tools/audio-converter'), { ssr: false }),
+  'mp3-converter': dynamic(() => import('@/components/tools/mp3-converter'), { ssr: false }),
+  
+  // Additional Image Tools (reuse existing components)
+  'image-to-pdf': dynamic(() => import('@/components/tools/jpg-to-pdf'), { ssr: false }), // Reuse jpg-to-pdf
+  'heic-to-jpg': dynamic(() => import('@/components/tools/heic-to-jpg'), { ssr: false }),
+  
+  // Additional PDF/Document Tools
+  'edit-pdf': dynamic(() => import('@/components/tools/pdf-editor'), { ssr: false }), // Reuse pdf-editor
+  'epub-to-pdf': dynamic(() => import('@/components/tools/epub-to-pdf'), { ssr: false }),
+  'epub-to-mobi': dynamic(() => import('@/components/tools/epub-to-mobi'), { ssr: false }),
+  'document-converter': dynamic(() => import('@/components/tools/document-converter'), { ssr: false }),
+  
+  // Archive & Time Tools
+  'rar-to-zip': dynamic(() => import('@/components/tools/rar-to-zip'), { ssr: false }),
+  'archive-converter': dynamic(() => import('@/components/tools/archive-converter'), { ssr: false }),
+  'pst-to-est': dynamic(() => import('@/components/tools/pst-to-est'), { ssr: false }),
+  'cst-to-est': dynamic(() => import('@/components/tools/cst-to-est'), { ssr: false }),
+  
+  // Additional Unit Converters
+  'lbs-to-kg': dynamic(() => import('@/components/tools/lbs-to-kg'), { ssr: false }),
+  'kg-to-lbs': dynamic(() => import('@/components/tools/kg-to-lbs'), { ssr: false }),
+  'feet-to-meters': dynamic(() => import('@/components/tools/feet-to-meters'), { ssr: false }),
 };
 
 export function getToolComponent(toolId: string): React.ComponentType<any> {

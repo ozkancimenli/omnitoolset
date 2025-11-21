@@ -63,17 +63,48 @@ export default function Home() {
         break;
     }
   });
+  // Enhanced Structured Data for better SEO
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'OmniToolset - PDF Converter',
-    description: '100% FREE PDF converter tools online. Merge PDF, split PDF, compress PDF, convert PDF to Word, Excel, PowerPoint, JPG, PNG instantly. All PDF tools completely free, no registration, no watermarks, 100% secure. Use unlimited times for free.',
+    name: 'OmniToolset - Free Online Tools',
+    alternateName: 'OmniToolset',
+    description: '100% FREE online tools. PDF converter, image converter, text tools, developer tools, and more. All tools completely free, no registration, no watermarks, 100% secure. Use unlimited times for free.',
     url: 'https://omnitoolset.com',
     keywords: 'pdf converter, pdf converter online, free pdf converter, pdf converter free, pdf converter no registration, pdf merge free, pdf split free, pdf compress free, pdf to word free, pdf to excel free, pdf to jpg free, pdf to png free, word to pdf free, excel to pdf free, powerpoint to pdf free, online pdf tools, free pdf tools, pdf tools online, instant pdf converter, pdf converter tool, free online pdf converter, pdf converter instant, pdf converter secure, no registration pdf converter, pdf converter unlimited, best pdf converter, how to convert pdf, pdf converter 2024, image converter free, text tools free, developer tools free, online tools free, free online tools, no registration tools, best online tools, free tools online, instant tools, quick tools, secure tools, unlimited tools, no watermark tools, best free tools 2024',
+    inLanguage: 'en',
+    isAccessibleForFree: true,
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://omnitoolset.com/?q={search_term_string}',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://omnitoolset.com/?q={search_term_string}',
+      },
       'query-input': 'required name=search_term_string',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'OmniToolset',
+      url: 'https://omnitoolset.com',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://omnitoolset.com/logo.png',
+      },
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: tools.length,
+      itemListElement: tools.slice(0, 10).map((tool, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'WebApplication',
+          name: tool.title,
+          description: tool.description,
+          url: `https://omnitoolset.com/tools/${tool.slug}`,
+          applicationCategory: 'UtilityApplication',
+        },
+      })),
     },
   };
 

@@ -1,29 +1,29 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
+import { toast } from '@/components/Toast';
+import ToolBase from './ToolBase';
+import FileUploadArea from './FileUploadArea';
 
 export default function ExcelToPdf() {
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setFile(e.target.files[0]);
+  const handleFileSelect = (selectedFile: File) => {
+    if (!selectedFile.name.endsWith('.xlsx') && !selectedFile.name.endsWith('.xls') && !selectedFile.type.includes('spreadsheetml')) {
+      toast.error('Please select an Excel file (.xlsx or .xls)');
+      return;
     }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
-      setFile(file);
-    }
+    setFile(selectedFile);
+    toast.success(`File selected: ${selectedFile.name}`);
   };
 
   const handleConvert = async () => {
-    if (!file) return;
+    if (!file) {
+      toast.warning('Please select an Excel file first');
+      return;
+    }
 
     setIsProcessing(true);
     setProgress(0);
@@ -75,55 +75,68 @@ export default function ExcelToPdf() {
       
       setProgress(100);
       pdf.save(file.name.replace(/\.(xlsx|xls)$/, '') + '.pdf');
+      toast.success('Excel converted to PDF!');
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred during conversion: ' + (error as Error).message);
+      toast.error('Error converting Excel: ' + (error as Error).message);
     } finally {
       setIsProcessing(false);
     }
   };
 
+  const clear = () => {
+    setFile(null);
+    setProgress(0);
+    toast.info('Cleared');
+  };
+
   return (
-    <div className="space-y-6">
-      <div
-        className="upload-area"
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <div className="text-5xl mb-4">📄</div>
-        <p className="text-slate-300">Drag and drop your Excel file here or click to select</p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-      </div>
-
-      {file && (
-        <div className="bg-slate-900 rounded-xl p-4">
-          <p className="text-slate-300">Selected: {file.name}</p>
-        </div>
-      )}
-
-      {isProcessing && (
-        <div className="w-full bg-slate-700 rounded-full h-2">
-          <div
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
+    <ToolBase
+      title="Excel to PDF Converter"
+      description="Convert Excel spreadsheets to PDF"
+      icon="📄"
+      helpText="Convert Excel (.xlsx, .xls) files to PDF format. Converts the first sheet to a landscape PDF with table layout."
+      tips={[
+        'Upload Excel file (.xlsx or .xls)',
+        'Converts first sheet',
+        'Landscape orientation',
+        'Table layout preserved',
+        'Download as PDF'
+      ]}
+      isProcessing={isProcessing}
+    >
+      <div className="space-y-4">
+        {!isProcessing && (
+          <FileUploadArea
+            onFileSelect={handleFileSelect}
+            acceptedFileTypes={['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']}
+            acceptedExtensions={['.xlsx', '.xls']}
+            icon="📄"
+            text="Drag and drop your Excel file here or click to select"
           />
-        </div>
-      )}
+        )}
 
-      <button
-        onClick={handleConvert}
-        disabled={!file || isProcessing}
-        className="btn w-full"
-      >
-        {isProcessing ? 'Converting...' : 'Convert to PDF'}
-      </button>
-    </div>
+        {file && (
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-700 dark:text-gray-300">Selected: <span className="font-semibold">{file.name}</span></p>
+              <button
+                onClick={clear}
+                className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
+
+        <button
+          onClick={handleConvert}
+          disabled={!file || isProcessing}
+          className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+        >
+          {isProcessing ? 'Converting...' : 'Convert to PDF'}
+        </button>
+      </div>
+    </ToolBase>
   );
 }

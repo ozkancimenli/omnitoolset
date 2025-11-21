@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from '@/components/Toast';
+import ToolBase from './ToolBase';
 
 export default function DateConverter() {
   const [inputDate, setInputDate] = useState('');
@@ -76,6 +78,7 @@ export default function DateConverter() {
     if (!inputDate.trim()) {
       setError('Please enter a date');
       setResult('');
+      toast.warning('Please enter a date');
       return;
     }
 
@@ -83,18 +86,25 @@ export default function DateConverter() {
     const parsedDate = parseDate(inputDate, inputFormat);
     
     if (!parsedDate || isNaN(parsedDate.getTime())) {
-      setError('Invalid date format. Please check your input.');
+      const errorMsg = 'Invalid date format. Please check your input.';
+      setError(errorMsg);
       setResult('');
+      toast.error(errorMsg);
       return;
     }
 
     const formatted = formatDate(parsedDate, outputFormat);
     setResult(formatted);
+    toast.success('Date converted successfully!');
   };
 
   const copyToClipboard = () => {
+    if (!result.trim()) {
+      toast.warning('Nothing to copy!');
+      return;
+    }
     navigator.clipboard.writeText(result);
-    alert('Copied!');
+    toast.success('Copied to clipboard!');
   };
 
   const useCurrentDate = () => {
@@ -102,19 +112,40 @@ export default function DateConverter() {
     setInputDate(formatDate(now, inputFormat));
     setResult(formatDate(now, outputFormat));
     setError('');
+    toast.info('Current date set');
+  };
+
+  const clear = () => {
+    setInputDate('');
+    setResult('');
+    setError('');
+    toast.info('Cleared');
   };
 
   return (
-    <div className="space-y-6">
+    <ToolBase
+      title="Date Converter"
+      description="Convert dates between different formats"
+      icon="📅"
+      helpText="Convert dates between various formats including ISO, Unix timestamp, and custom formats. Supports multiple input and output formats."
+      tips={[
+        'Select input and output formats',
+        'Enter date in input format',
+        'Converts to selected output format',
+        'Shows Unix timestamp and ISO',
+        'Use current date button'
+      ]}
+    >
+      <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Input Format:
           </label>
           <select
             value={inputFormat}
             onChange={(e) => setInputFormat(e.target.value)}
-            className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100"
+            className="w-full px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="YYYY-MM-DD">YYYY-MM-DD (ISO)</option>
             <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -125,13 +156,13 @@ export default function DateConverter() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Output Format:
           </label>
           <select
             value={outputFormat}
             onChange={(e) => setOutputFormat(e.target.value)}
-            className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100"
+            className="w-full px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="DD/MM/YYYY">DD/MM/YYYY</option>
             <option value="MM/DD/YYYY">MM/DD/YYYY</option>
@@ -146,7 +177,7 @@ export default function DateConverter() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Input Date:
         </label>
         <input
@@ -154,22 +185,34 @@ export default function DateConverter() {
           value={inputDate}
           onChange={(e) => setInputDate(e.target.value)}
           placeholder="Enter date (e.g., 2024-01-15 or 15/01/2024)"
-          className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg 
-                   text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+          className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg 
+                   text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      <div className="flex gap-3">
-        <button onClick={convert} className="btn flex-1">
+      <div className="grid grid-cols-3 gap-2">
+        <button 
+          onClick={convert} 
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+        >
           Convert
         </button>
-        <button onClick={useCurrentDate} className="btn">
-          Use Current Date
+        <button 
+          onClick={useCurrentDate} 
+          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+        >
+          Current Date
+        </button>
+        <button 
+          onClick={clear}
+          className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"
+        >
+          Clear
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-lg">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 p-4 rounded-lg">
           {error}
         </div>
       )}
@@ -177,7 +220,7 @@ export default function DateConverter() {
       {result && (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Converted Date:
             </label>
             <div className="flex gap-2">
@@ -187,34 +230,37 @@ export default function DateConverter() {
                   ? Math.floor(parseDate(inputDate, inputFormat)!.getTime() / 1000).toString()
                   : result}
                 readOnly
-                className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg 
-                         text-slate-100 font-mono"
+                className="flex-1 px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg 
+                         text-blue-600 dark:text-blue-400 font-mono focus:outline-none"
               />
-              <button onClick={copyToClipboard} className="btn">
+              <button 
+                onClick={copyToClipboard} 
+                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              >
                 Copy
               </button>
             </div>
           </div>
 
           {outputFormat !== 'Unix Timestamp' && (
-            <div className="bg-slate-900 rounded-xl p-4 border border-slate-700">
-              <h3 className="text-sm font-medium text-slate-300 mb-2">Additional Formats:</h3>
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Additional Formats:</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Unix Timestamp:</span>
-                  <span className="text-slate-200 font-mono">
+                  <span className="text-gray-600 dark:text-gray-400">Unix Timestamp:</span>
+                  <span className="text-gray-900 dark:text-gray-100 font-mono">
                     {Math.floor(parseDate(inputDate, inputFormat)!.getTime() / 1000)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">ISO String:</span>
-                  <span className="text-slate-200 font-mono text-xs">
+                  <span className="text-gray-600 dark:text-gray-400">ISO String:</span>
+                  <span className="text-gray-900 dark:text-gray-100 font-mono text-xs break-all">
                     {parseDate(inputDate, inputFormat)!.toISOString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">UTC:</span>
-                  <span className="text-slate-200 font-mono">
+                  <span className="text-gray-600 dark:text-gray-400">UTC:</span>
+                  <span className="text-gray-900 dark:text-gray-100 font-mono text-xs">
                     {parseDate(inputDate, inputFormat)!.toUTCString()}
                   </span>
                 </div>
@@ -223,6 +269,7 @@ export default function DateConverter() {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </ToolBase>
   );
 }

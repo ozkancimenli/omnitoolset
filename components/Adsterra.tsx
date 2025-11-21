@@ -125,8 +125,12 @@ export default function Adsterra({
         }
       };
     } else if (format === 'banner') {
-      // Banner area - Clickable banner that redirects to Smart Direct Link
-      // Smart Direct Link automatically selects best ad offer when clicked
+      // Adsterra Banner Ad - Using proper script loading method
+      // Structure is correct (like the example you showed), but we need Adsterra's actual domain
+      // For now, using Smart Direct Link as fallback since Adsterra banner script format may vary
+      // If you have the actual Adsterra banner script URL from your Adsterra panel, we can use it here
+      
+      // Option 1: Use Smart Direct Link (current working method)
       const banner = document.createElement('a');
       banner.href = smartlinkUrl;
       banner.target = '_blank';
@@ -143,22 +147,10 @@ export default function Adsterra({
       banner.style.fontSize = '16px';
       banner.style.fontWeight = 'bold';
       banner.style.cursor = 'pointer';
-      banner.style.position = 'relative';
-      banner.style.overflow = 'hidden';
       banner.className = className;
       
-      // More engaging text instead of just "Advertisement"
       const bannerText = text === 'Advertisement' ? '🎁 Exclusive Offers - Click to View' : text;
-      
-      const textEl = document.createElement('div');
-      textEl.textContent = bannerText;
-      textEl.style.position = 'absolute';
-      textEl.style.top = '50%';
-      textEl.style.left = '50%';
-      textEl.style.transform = 'translate(-50%, -50%)';
-      textEl.style.zIndex = '1';
-      textEl.style.whiteSpace = 'nowrap';
-      banner.appendChild(textEl);
+      banner.textContent = bannerText;
       
       adRef.current.appendChild(banner);
       scriptLoaded.current = true;
@@ -168,6 +160,21 @@ export default function Adsterra({
           adRef.current.removeChild(banner);
         }
       };
+      
+      // Option 2: If you have Adsterra banner script from panel, use this structure:
+      // const atOptions = {
+      //   key: 'YOUR_ADSTERRA_BANNER_KEY',
+      //   format: 'iframe',
+      //   height: height,
+      //   width: width,
+      //   params: {},
+      // };
+      // const conf = document.createElement('script');
+      // conf.innerHTML = `atOptions = ${JSON.stringify(atOptions)}`;
+      // const script = document.createElement('script');
+      // script.src = '//YOUR_ADSTERRA_DOMAIN/invoke.js'; // Get this from Adsterra panel
+      // adRef.current.appendChild(conf);
+      // adRef.current.appendChild(script);
     } else if (format === 'native') {
       // Native ad - inline clickable area
       const link = document.createElement('a');
