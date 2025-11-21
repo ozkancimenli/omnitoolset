@@ -1115,41 +1115,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
-  // Production: Cleanup effect for memory management
-  useEffect(() => {
-    if (file) {
-      // Call loadPDF directly when file changes
-      loadPDF().catch((error) => {
-        logError(error as Error, 'loadPDF useEffect', { fileName: file?.name || 'unknown' });
-        toast.error('Failed to load PDF. Please try again.');
-        setFile(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-      });
-    } else {
-      // Cleanup when file is removed
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-        setPdfUrl(null);
-      }
-      pdfDocRef.current = null;
-      pdfLibDocRef.current = null;
-      setNumPages(0);
-      setPageThumbnails([]);
-    }
-    
-    // Cleanup function
-    return () => {
-      // Cleanup object URLs
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-      // Cleanup PDF references
-      pdfDocRef.current = null;
-      pdfLibDocRef.current = null;
-    };
-  }, [file, loadPDF, pdfUrl]);
 
   // Advanced: Mobile detection
   useEffect(() => {
@@ -1401,6 +1366,42 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setOperationStatus(null);
     }
   }, [file, pdfUrl]);
+
+  // Production: Cleanup effect for memory management
+  useEffect(() => {
+    if (file) {
+      // Call loadPDF directly when file changes
+      loadPDF().catch((error) => {
+        logError(error as Error, 'loadPDF useEffect', { fileName: file?.name || 'unknown' });
+        toast.error('Failed to load PDF. Please try again.');
+        setFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      });
+    } else {
+      // Cleanup when file is removed
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+        setPdfUrl(null);
+      }
+      pdfDocRef.current = null;
+      pdfLibDocRef.current = null;
+      setNumPages(0);
+      setPageThumbnails([]);
+    }
+    
+    // Cleanup function
+    return () => {
+      // Cleanup object URLs
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+      // Cleanup PDF references
+      pdfDocRef.current = null;
+      pdfLibDocRef.current = null;
+    };
+  }, [file, loadPDF, pdfUrl]);
 
   // Phase 2.1: Extract text layer from PDF
   const extractTextLayer = async (pageNumber: number) => {
