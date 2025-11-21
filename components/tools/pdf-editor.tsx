@@ -1049,9 +1049,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setNumPages(0);
       setErrorState(null);
       
-      // Set file - this will trigger useEffect to call loadPDF
+      // Set file state and immediately load PDF
       setFile(selectedFile);
       toast.info('Loading PDF...');
+      
+      // Call loadPDF directly with the selected file to avoid closure issues
+      loadPDF(selectedFile).catch((error) => {
+        logError(error as Error, 'handleFileSelect loadPDF', { fileName: selectedFile.name });
+        toast.error('Failed to load PDF. Please try again.');
+        setFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      });
     } catch (error) {
       logError(error as Error, 'handleFileSelect', { fileName: selectedFile.name });
       toast.error('Error processing file. Please try again.');
@@ -1105,9 +1115,16 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setNumPages(0);
       setErrorState(null);
       
-      // Set file last - this will trigger useEffect to call loadPDF
+      // Set file state and immediately load PDF
       setFile(droppedFile);
       toast.info('Loading PDF...');
+      
+      // Call loadPDF directly with the dropped file to avoid closure issues
+      loadPDF(droppedFile).catch((error) => {
+        logError(error as Error, 'handleDrop loadPDF', { fileName: droppedFile.name });
+        toast.error('Failed to load PDF. Please try again.');
+        setFile(null);
+      });
     } catch (error) {
       logError(error as Error, 'handleDrop', { fileName: droppedFile.name });
       toast.error('Error processing dropped file. Please try again.');
@@ -1174,8 +1191,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   }, [annotations, pageNum]);
 
   // Production: Enhanced PDF loading with error handling and performance monitoring
-  const loadPDF = useCallback(async () => {
-    if (!file) return;
+  const loadPDF = useCallback(async (fileToLoad?: File) => {
+    const targetFile = fileToLoad || file;
+    if (!targetFile) return;
     
     setIsProcessing(true);
     setErrorState(null);
@@ -1200,7 +1218,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         setProcessingProgress(10);
         setProcessingMessage('Reading PDF file...');
         setOperationStatus({ type: 'loading', message: 'Reading PDF file...', progress: 10 });
-        const arrayBufferForViewing = await file.arrayBuffer();
+        const arrayBufferForViewing = await targetFile.arrayBuffer();
         
         setProcessingProgress(30);
         setProcessingMessage('Parsing PDF structure...');
@@ -1261,7 +1279,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         setProcessingProgress(70);
         setProcessingMessage('Preparing PDF for editing...');
         setOperationStatus({ type: 'loading', message: 'Preparing PDF for editing...', progress: 70 });
-        const arrayBufferForEditing = await file.arrayBuffer();
+        const arrayBufferForEditing = await targetFile.arrayBuffer();
         const fileBytes = new Uint8Array(arrayBufferForEditing);
         
         try {
@@ -1277,7 +1295,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           // Retry with encryption ignored
           try {
             setProcessingMessage('Retrying with encryption ignored...');
-            const retryBuffer = await file.arrayBuffer();
+            const retryBuffer = await targetFile.arrayBuffer();
             const retryBytes = new Uint8Array(retryBuffer);
             const pdfLibDoc = await PDFDocument.load(retryBytes, {
               ignoreEncryption: true,
@@ -1300,7 +1318,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         setProcessingProgress(90);
         setProcessingMessage('Finalizing...');
         setOperationStatus({ type: 'loading', message: 'Finalizing...', progress: 90 });
-        tempUrl = URL.createObjectURL(file);
+        tempUrl = URL.createObjectURL(targetFile);
         setPdfUrl(tempUrl);
         
         // Load first page
@@ -1317,7 +1335,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         toast.success(`PDF loaded successfully! ${pdf.numPages} page${pdf.numPages !== 1 ? 's' : ''}`);
       });
     } catch (error) {
-      logError(error as Error, 'loadPDF', { fileName: file.name, fileSize: file.size });
+      logError(error as Error, 'loadPDF', { fileName: targetFile.name, fileSize: targetFile.size });
       
       let errorMessage = 'Unknown error occurred';
       let errorCode = 'UNKNOWN_ERROR';
@@ -1346,8 +1364,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         message: errorMessage,
         code: errorCode,
         retry: () => {
-          if (file) {
-            loadPDF();
+          if (targetFile) {
+            loadPDF(targetFile);
           }
         },
       });
@@ -1368,7 +1386,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
-  // Production: Cleanup effect for memory management - load PDF when file changes
+  // Production: Cleanup effect for memory management
   useEffect(() => {
     if (!file) {
       // Cleanup when file is removed
@@ -1380,28 +1398,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       pdfLibDocRef.current = null;
       setNumPages(0);
       setPageThumbnails([]);
-      return;
     }
-    
-    // Call loadPDF when file changes
-    let cancelled = false;
-    loadPDF().catch((error) => {
-      if (cancelled) return;
-      logError(error as Error, 'loadPDF useEffect', { fileName: file?.name || 'unknown' });
-      toast.error('Failed to load PDF. Please try again.');
-      setFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    });
     
     // Cleanup function
     return () => {
-      cancelled = true;
-      // Cleanup will be handled by the next effect run or component unmount
+      // Cleanup object URLs
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+      // Cleanup PDF references
+      pdfDocRef.current = null;
+      pdfLibDocRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [file]);
+  }, [file, pdfUrl]);
 
   // Phase 2.1: Extract text layer from PDF
   const extractTextLayer = async (pageNumber: number) => {
