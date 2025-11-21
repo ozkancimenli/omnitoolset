@@ -1019,15 +1019,20 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       return;
     }
     
+    console.log('[PDF Editor] handleFileSelect called with file:', selectedFile.name, selectedFile.size);
+    
     try {
       const validation = validatePDFFile(selectedFile);
       if (!validation.valid) {
+        console.error('[PDF Editor] Validation failed:', validation.error);
         toast.error(validation.error || 'Invalid file');
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
         return;
       }
+      
+      console.log('[PDF Editor] File validation passed, starting cleanup and load');
       
       // Cleanup previous resources
       if (pdfUrl) {
@@ -1053,8 +1058,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setFile(selectedFile);
       toast.info('Loading PDF...');
       
+      console.log('[PDF Editor] Calling loadPDF with file:', selectedFile.name);
+      
       // Call loadPDF directly with the selected file to avoid closure issues
       loadPDF(selectedFile).catch((error) => {
+        console.error('[PDF Editor] loadPDF error:', error);
         logError(error as Error, 'handleFileSelect loadPDF', { fileName: selectedFile.name });
         toast.error('Failed to load PDF. Please try again.');
         setFile(null);
@@ -1063,6 +1071,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         }
       });
     } catch (error) {
+      console.error('[PDF Editor] handleFileSelect error:', error);
       logError(error as Error, 'handleFileSelect', { fileName: selectedFile.name });
       toast.error('Error processing file. Please try again.');
       if (fileInputRef.current) {
@@ -1193,7 +1202,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   // Production: Enhanced PDF loading with error handling and performance monitoring
   const loadPDF = useCallback(async (fileToLoad?: File) => {
     const targetFile = fileToLoad || file;
-    if (!targetFile) return;
+    if (!targetFile) {
+      console.warn('[PDF Editor] loadPDF called but no file provided');
+      return;
+    }
+    
+    console.log('[PDF Editor] loadPDF started with file:', targetFile.name, targetFile.size);
     
     setIsProcessing(true);
     setErrorState(null);
