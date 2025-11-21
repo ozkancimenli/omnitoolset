@@ -1012,7 +1012,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   // Production: Enhanced file validation
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
     
     try {
       const validation = validatePDFFile(selectedFile);
@@ -1030,8 +1035,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         setPdfUrl(null);
       }
       
-      // Reset state
-      setFile(selectedFile);
+      // Reset state first
       setAnnotations([]);
       setHistory([]);
       setHistoryIndex(-1);
@@ -1045,6 +1049,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setNumPages(0);
       setErrorState(null);
       
+      // Set file last - this will trigger useEffect to call loadPDF
+      setFile(selectedFile);
       toast.info('Loading PDF...');
     } catch (error) {
       logError(error as Error, 'handleFileSelect', { fileName: selectedFile.name });
@@ -1052,6 +1058,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+      setFile(null);
     }
   };
 
@@ -1084,8 +1091,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         setPdfUrl(null);
       }
       
-      // Reset state
-      setFile(droppedFile);
+      // Reset state first
       setAnnotations([]);
       setHistory([]);
       setHistoryIndex(-1);
@@ -1099,24 +1105,38 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setNumPages(0);
       setErrorState(null);
       
+      // Set file last - this will trigger useEffect to call loadPDF
+      setFile(droppedFile);
       toast.info('Loading PDF...');
     } catch (error) {
       logError(error as Error, 'handleDrop', { fileName: droppedFile.name });
       toast.error('Error processing dropped file. Please try again.');
+      setFile(null);
     }
   };
 
   // Production: Cleanup effect for memory management
   useEffect(() => {
     if (file) {
+      // Call loadPDF directly when file changes
       loadPDF().catch((error) => {
-        logError(error as Error, 'loadPDF useEffect', { fileName: file.name });
+        logError(error as Error, 'loadPDF useEffect', { fileName: file?.name || 'unknown' });
         toast.error('Failed to load PDF. Please try again.');
         setFile(null);
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
       });
+    } else {
+      // Cleanup when file is removed
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+        setPdfUrl(null);
+      }
+      pdfDocRef.current = null;
+      pdfLibDocRef.current = null;
+      setNumPages(0);
+      setPageThumbnails([]);
     }
     
     // Cleanup function
@@ -1129,7 +1149,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       pdfDocRef.current = null;
       pdfLibDocRef.current = null;
     };
-  }, [file]);
+  }, [file, loadPDF, pdfUrl]);
 
   // Advanced: Mobile detection
   useEffect(() => {
@@ -1189,7 +1209,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   }, [annotations, pageNum]);
 
   // Production: Enhanced PDF loading with error handling and performance monitoring
-  const loadPDF = async () => {
+  const loadPDF = useCallback(async () => {
     if (!file) return;
     
     setIsProcessing(true);
@@ -1380,7 +1400,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setIsProcessing(false);
       setOperationStatus(null);
     }
-  };
+  }, [file, pdfUrl]);
 
   // Phase 2.1: Extract text layer from PDF
   const extractTextLayer = async (pageNumber: number) => {
