@@ -1091,18 +1091,26 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     e.preventDefault();
     e.stopPropagation();
     
+    console.log('[PDF Editor] handleDrop called, files:', e.dataTransfer.files.length);
+    
     const droppedFile = e.dataTransfer.files[0];
     if (!droppedFile) {
+      console.warn('[PDF Editor] No file in drop event');
       toast.warning('No file dropped');
       return;
     }
     
+    console.log('[PDF Editor] Dropped file:', droppedFile.name, droppedFile.size, droppedFile.type);
+    
     try {
       const validation = validatePDFFile(droppedFile);
       if (!validation.valid) {
+        console.error('[PDF Editor] Drop validation failed:', validation.error);
         toast.error(validation.error || 'Invalid file');
         return;
       }
+      
+      console.log('[PDF Editor] Drop validation passed, starting cleanup and load');
       
       // Cleanup previous resources
       if (pdfUrl) {
@@ -4300,18 +4308,24 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              console.log('[PDF Editor] Upload area clicked, fileInputRef.current:', fileInputRef.current);
+              
               // Explicitly trigger file input click with multiple fallbacks
               if (fileInputRef.current) {
+                console.log('[PDF Editor] Clicking file input ref');
                 fileInputRef.current.click();
               } else {
+                console.log('[PDF Editor] File input ref not available, creating temporary input');
                 // Fallback: create a temporary input if ref is not ready
                 const tempInput = document.createElement('input');
                 tempInput.type = 'file';
                 tempInput.accept = '.pdf,application/pdf';
                 tempInput.style.display = 'none';
                 tempInput.onchange = (event) => {
+                  console.log('[PDF Editor] Temporary input onchange triggered');
                   const target = event.target as HTMLInputElement;
                   if (target.files?.[0]) {
+                    console.log('[PDF Editor] File selected via temporary input:', target.files[0].name);
                     const syntheticEvent = {
                       target: { files: target.files },
                     } as React.ChangeEvent<HTMLInputElement>;
@@ -4339,7 +4353,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               ref={fileInputRef}
               type="file"
               accept=".pdf,application/pdf"
-              onChange={handleFileSelect}
+              onChange={(e) => {
+                console.log('[PDF Editor] File input onChange triggered, files:', e.target.files?.length || 0);
+                handleFileSelect(e);
+              }}
+              onClick={(e) => {
+                console.log('[PDF Editor] File input clicked');
+              }}
               className="hidden"
               aria-label="PDF file input"
             />

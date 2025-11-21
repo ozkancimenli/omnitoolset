@@ -67,21 +67,43 @@ export default function AdsterraSocialbar() {
         
         // Add error handling
         script.onerror = () => {
-          console.warn('[SocialBar] Failed to load script');
+          // Silently handle error - Adsterra script may fail due to ad blockers or network issues
+          // This is expected behavior and doesn't affect site functionality
           setScriptStatus('error');
         };
         
         script.onload = () => {
-          console.log('[SocialBar] Script loaded successfully');
+          // Suppress console logs in production to reduce noise
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[SocialBar] Script loaded successfully');
+          }
           setScriptStatus('loaded');
+          
+          // Suppress errors from external scripts loaded by Adsterra
+          // These are expected and don't affect functionality
+          const originalError = window.console.error;
+          window.console.error = (...args) => {
+            // Filter out known harmless errors from Adsterra's sub-scripts
+            const errorString = args.join(' ');
+            if (errorString.includes('preferencenail.com') || 
+                errorString.includes('sfp.js') ||
+                errorString.includes('ERR_CONNECTION_REFUSED')) {
+              // Silently ignore these expected errors
+              return;
+            }
+            // Log other errors normally
+            originalError.apply(window.console, args);
+          };
           
           // Check if widget was created after a delay
           setTimeout(() => {
             const widgetElements = document.querySelectorAll('[id*="social"], [class*="social"], [id*="adsterra"], [class*="adsterra"]');
-            if (widgetElements.length > 0) {
-              console.log('[SocialBar] Widget elements found:', widgetElements.length);
-            } else {
-              console.log('[SocialBar] Widget elements not yet visible (may appear later)');
+            if (process.env.NODE_ENV === 'development') {
+              if (widgetElements.length > 0) {
+                console.log('[SocialBar] Widget elements found:', widgetElements.length);
+              } else {
+                console.log('[SocialBar] Widget elements not yet visible (may appear later)');
+              }
             }
           }, 3000);
         };
