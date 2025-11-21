@@ -1384,7 +1384,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setOperationStatus(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [file]);
+  }, []);
 
   // Production: Cleanup effect for memory management
   useEffect(() => {
