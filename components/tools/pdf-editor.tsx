@@ -1010,7 +1010,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   // Production: Enhanced file validation
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
     
@@ -1024,6 +1024,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         return;
       }
       
+      // Cleanup previous resources
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+        setPdfUrl(null);
+      }
+      
       // Reset state
       setFile(selectedFile);
       setAnnotations([]);
@@ -1035,11 +1041,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setPdfTextRuns({});
       setPdfTextItems({});
       setTextRunsCache({});
+      setPdfUrl(null);
+      setNumPages(0);
+      setErrorState(null);
       
-      // Cleanup previous resources
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
+      toast.info('Loading PDF...');
     } catch (error) {
       logError(error as Error, 'handleFileSelect', { fileName: selectedFile.name });
       toast.error('Error processing file. Please try again.');
@@ -1055,7 +1061,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     e.stopPropagation();
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -1072,6 +1078,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         return;
       }
       
+      // Cleanup previous resources
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+        setPdfUrl(null);
+      }
+      
       // Reset state
       setFile(droppedFile);
       setAnnotations([]);
@@ -1083,13 +1095,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setPdfTextRuns({});
       setPdfTextItems({});
       setTextRunsCache({});
+      setPdfUrl(null);
+      setNumPages(0);
+      setErrorState(null);
       
-      // Cleanup previous resources
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-      
-      toast.success('PDF file loaded successfully!');
+      toast.info('Loading PDF...');
     } catch (error) {
       logError(error as Error, 'handleDrop', { fileName: droppedFile.name });
       toast.error('Error processing dropped file. Please try again.');
@@ -1099,7 +1109,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   // Production: Cleanup effect for memory management
   useEffect(() => {
     if (file) {
-      loadPDF();
+      loadPDF().catch((error) => {
+        logError(error as Error, 'loadPDF useEffect', { fileName: file.name });
+        toast.error('Failed to load PDF. Please try again.');
+        setFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      });
     }
     
     // Cleanup function
@@ -4239,8 +4256,27 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              // Explicitly trigger file input click with multiple fallbacks
               if (fileInputRef.current) {
                 fileInputRef.current.click();
+              } else {
+                // Fallback: create a temporary input if ref is not ready
+                const tempInput = document.createElement('input');
+                tempInput.type = 'file';
+                tempInput.accept = '.pdf,application/pdf';
+                tempInput.style.display = 'none';
+                tempInput.onchange = (event) => {
+                  const target = event.target as HTMLInputElement;
+                  if (target.files?.[0]) {
+                    const syntheticEvent = {
+                      target: { files: target.files },
+                    } as React.ChangeEvent<HTMLInputElement>;
+                    handleFileSelect(syntheticEvent);
+                  }
+                  document.body.removeChild(tempInput);
+                };
+                document.body.appendChild(tempInput);
+                tempInput.click();
               }
             }}
             role="button"
