@@ -251,6 +251,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
+  
+  // Mouse Pan Feature
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState<{ x: number; y: number } | null>(null);
+  const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [spacePressed, setSpacePressed] = useState(false);
   const [fontFamily, setFontFamily] = useState('Arial');
   const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
   const [fontWeight, setFontWeight] = useState<'normal' | 'bold'>('normal');
@@ -2281,9 +2287,50 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const coords = getCanvasCoordinates(e);
     
-    // Phase 2.3 & 4.1: Check if clicking on PDF text (edit mode)
+    // Mouse Pan: Space + drag or Middle mouse button or Right-click drag
+    const isPanTrigger = spacePressed || e.button === 1 || (e.button === 2 && e.ctrlKey);
+    if (isPanTrigger && !tool) {
+      setIsPanning(true);
+      setPanStart({ x: e.clientX, y: e.clientY });
+      e.preventDefault();
+      return;
+    }
+    
+    // Enhanced PDF Text Editing: Always check for PDF text first (even without edit-text tool)
+    const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+    if (clickedRun) {
+      // Single click: Select text run
+      if (e.detail === 1 && !e.shiftKey) {
+        setSelectedTextRun(clickedRun.id);
+        const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
+        setTextSelectionStart({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+        setEditingCharIndex(charIndex);
+        toast.info('Text selected. Double-click to edit or press Enter.');
+      }
+      // Double-click: Start editing immediately
+      else if (e.detail === 2 || (tool === 'edit-text' || textEditMode)) {
+        const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
+        setTextSelectionStart({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+        setIsSelectingText(true);
+        setSelectedTextRun(clickedRun.id);
+        setEditingCharIndex(charIndex);
+        setEditingTextRun(clickedRun.id);
+        setTextEditMode(true);
+        toast.info('Editing mode activated. Click outside to finish.');
+        return;
+      }
+      // Shift+click: Extend selection
+      else if (e.shiftKey) {
+        const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
+        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+        return;
+      }
+    }
+    
+    // Phase 2.3 & 4.1: Check if clicking on PDF text (edit mode) - legacy support
     if (tool === 'edit-text' || textEditMode) {
-      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
       if (clickedRun) {
         // Phase 4.1: Start text selection on drag
         if (e.shiftKey) {
@@ -2460,8 +2507,21 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // Mouse Pan: Handle panning
+    if (isPanning && panStart && containerRef.current) {
+      const deltaX = e.clientX - panStart.x;
+      const deltaY = e.clientY - panStart.y;
+      
+      containerRef.current.scrollLeft -= deltaX;
+      containerRef.current.scrollTop -= deltaY;
+      
+      setPanStart({ x: e.clientX, y: e.clientY });
+      e.preventDefault();
+      return;
+    }
+    
     // Phase 4.1: Handle text selection drag
-    if (isSelectingText && textSelectionStart && (tool === 'edit-text' || textEditMode)) {
+    if (isSelectingText && textSelectionStart && (tool === 'edit-text' || textEditMode || selectedTextRun)) {
       const coords = getCanvasCoordinates(e);
       const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
       if (clickedRun) {
@@ -5753,7 +5813,20 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               <div
                 ref={containerRef}
                 className="flex-1 bg-slate-200 dark:bg-slate-950 overflow-auto flex justify-center items-start p-4 relative"
-                style={{ minHeight: '400px', height: '100%' }}
+                style={{ 
+                  minHeight: '400px', 
+                  height: '100%',
+                  cursor: isPanning || spacePressed ? 'grabbing' : 'default'
+                }}
+                onWheel={(e) => {
+                  // Shift + Wheel for horizontal scroll
+                  if (e.shiftKey) {
+                    e.preventDefault();
+                    if (containerRef.current) {
+                      containerRef.current.scrollLeft += e.deltaY;
+                    }
+                  }
+                }}
               >
                 <div className="bg-white dark:bg-slate-900 shadow-2xl rounded-sm relative mt-4 mb-4" style={{ maxWidth: '100%' }}>
                   <canvas
@@ -5763,7 +5836,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     onMouseUp={handleCanvasMouseUp}
                     onContextMenu={handleCanvasContextMenu}
                     className="block max-w-full h-auto"
-                    style={{ cursor: tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default', display: 'block' }}
+                    style={{ 
+                      cursor: isPanning || spacePressed ? 'grabbing' : tool ? 'crosshair' : selectedAnnotation ? 'move' : selectedTextRun ? 'text' : 'default', 
+                      display: 'block' 
+                    }}
                   />
                   
                   {/* Advanced: Floating Text Formatting Toolbar */}
