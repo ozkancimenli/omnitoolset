@@ -2691,23 +2691,30 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       return;
     }
     
-    // Phase 4.1: End text selection
-    if (isSelectingText) {
-      setIsSelectingText(false);
-      // Copy selected text to clipboard if Ctrl+C
-      if (e.ctrlKey || e.metaKey) {
-        if (textSelectionStart && textSelectionEnd) {
-          const runs = pdfTextRuns[pageNum] || [];
-          const startRun = runs.find(r => r.id === textSelectionStart.runId);
-          if (startRun && textSelectionStart.runId === textSelectionEnd.runId) {
-            const startIdx = Math.min(textSelectionStart.charIndex, textSelectionEnd.charIndex);
-            const endIdx = Math.max(textSelectionStart.charIndex, textSelectionEnd.charIndex);
-            const selectedText = startRun.text.substring(startIdx, endIdx);
-            navigator.clipboard.writeText(selectedText);
-            toast.success('Text copied to clipboard');
-          }
+    // Enhanced: End text selection - auto-copy selected text
+    if (isSelectingText && textSelectionStart && textSelectionEnd) {
+      const runs = pdfTextRuns[pageNum] || [];
+      const selectedText = getSelectedText(textSelectionStart, textSelectionEnd, runs);
+      
+      if (selectedText && selectedText.trim().length > 0) {
+        // Auto-copy to clipboard (or manual copy with Ctrl+C)
+        if (e.ctrlKey || e.metaKey || true) { // Always copy for now
+          navigator.clipboard.writeText(selectedText).then(() => {
+            toast.success(`Copied ${selectedText.length} characters to clipboard`);
+          }).catch(err => {
+            console.error('Failed to copy text:', err);
+            toast.error('Failed to copy text');
+          });
         }
       }
+      
+      setIsSelectingText(false);
+      return;
+    }
+    
+    if (isSelectingText) {
+      setIsSelectingText(false);
+      return;
     }
     
     // Handle drag end
