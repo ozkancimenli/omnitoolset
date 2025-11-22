@@ -9446,8 +9446,16 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-600 dark:text-slate-400">Find & Replace</span>
-                  </button>
-                  
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+H</kbd>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Text Statistics & Styles Section - Moved outside Search section */}
+              <div className="border-t border-slate-300 dark:border-slate-600"></div>
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Text Tools</h4>
+                <div className="space-y-2">
                   {/* Text Statistics Button */}
                   <button
                     onClick={calculateTextStatistics}
