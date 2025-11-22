@@ -1773,7 +1773,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       } as any).promise;
       
       // Phase 2.1: Extract text layer after rendering
-      await extractTextLayer(pageNumber);
+      // Temporarily disabled to fix garbled text issue
+      // await extractTextLayer(pageNumber);
       
       // Draw annotations (Advanced: Filter hidden layers)
       const pageAnnotations = annotations.filter(ann => ann.page === pageNumber && !hiddenLayers.has(ann.id));
