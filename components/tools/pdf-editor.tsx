@@ -4463,10 +4463,59 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
-  // Phase 4.6: Replace text in PDF
-  const replaceTextInPdf = (searchText: string, replaceText: string) => {
+  // Phase 4.6: Replace text in PDF (using OmniPDF Engine - advanced)
+  const replaceTextInPdf = async (searchText: string, replaceText: string) => {
     if (!searchText.trim()) return;
     
+    // Use engine for advanced search and replace across all pages
+    if (pdfEngineRef.current) {
+      const result = await pdfEngineRef.current.searchAndReplace(
+        searchText,
+        replaceText,
+        {
+          caseSensitive: caseSensitive,
+          wholeWords: wholeWords,
+          regex: useRegex,
+        }
+      );
+      
+      if (result.success) {
+        if (result.replacements > 0) {
+          // Reload PDF to show changes
+          if (file && pdfEngineRef.current) {
+            const pdfBytes = await pdfEngineRef.current.savePdf();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const newUrl = URL.createObjectURL(blob);
+            
+            if (pdfUrl) {
+              URL.revokeObjectURL(pdfUrl);
+            }
+            setPdfUrl(newUrl);
+            
+            // Update pdf-lib ref
+            pdfLibDocRef.current = await PDFDocument.load(pdfBytes);
+            
+            // Re-extract text layers for all pages
+            for (let i = 1; i <= numPages; i++) {
+              await extractTextLayer(i);
+            }
+            
+            // Re-render current page
+            await renderPage(pageNum);
+          }
+          
+          toast.success(`Replaced ${result.replacements} occurrence(s) across all pages`);
+          findTextInPdf(searchText); // Refresh find results
+        } else {
+          toast.info('No text to replace');
+        }
+      } else {
+        toast.error(result.error || 'Failed to replace text');
+      }
+      return;
+    }
+    
+    // Fallback to legacy method (single page only)
     const runs = pdfTextRuns[pageNum] || [];
     let replaced = 0;
     
