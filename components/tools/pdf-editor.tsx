@@ -3648,10 +3648,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           textX = run.x - textWidth;
         }
         
-        // Draw new text
+        // TRUE CONTENT STREAM EDITING: Draw new text directly on PDF page
+        // pdf-lib uses bottom-left origin, so convert canvas Y to PDF Y
+        const pdfY = height - run.y; // Convert canvas Y (top-left) to PDF Y (bottom-left)
+        
         page.drawText(newText, {
           x: textX,
-          y: run.y,
+          y: pdfY - textHeight, // Position text correctly
           size: fontSize,
           font: font,
           color: textColor,
@@ -3661,8 +3664,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         if (format.textDecoration === 'underline') {
           const textWidth = font.widthOfTextAtSize(newText, fontSize);
           page.drawLine({
-            start: { x: textX, y: run.y - 2 },
-            end: { x: textX + textWidth, y: run.y - 2 },
+            start: { x: textX, y: pdfY - textHeight - 2 },
+            end: { x: textX + textWidth, y: pdfY - textHeight - 2 },
             thickness: 1,
             color: textColor,
           });
