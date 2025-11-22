@@ -4553,7 +4553,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           // Reload PDF to show changes
           if (file && pdfEngineRef.current) {
             const pdfBytes = await pdfEngineRef.current.savePdf();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
             const newUrl = URL.createObjectURL(blob);
             
             if (pdfUrl) {
@@ -7717,7 +7717,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   if (!pdfEngineRef.current || !file) return;
                   try {
                     const pdfBytes = await pdfEngineRef.current.savePdf();
-                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
@@ -7821,7 +7821,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     // Apply compression
                     await pdfEngineRef.current.savePdf(); // This will use PdfOptimizer internally
                     const pdfBytes = await pdfEngineRef.current.savePdf();
-                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
