@@ -54,7 +54,8 @@ export class AdvancedCache<T = any> {
 
     // Compress if needed
     if (this.options.compress && size > this.options.compressionThreshold) {
-      entry.compressed = this.compress(data);
+      const compressed = this.compress(data);
+      entry.compressed = compressed || undefined;
       if (entry.compressed) {
         entry.size = entry.compressed.length;
       }
