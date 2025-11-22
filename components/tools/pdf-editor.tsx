@@ -1472,66 +1472,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     };
   }, [file, pdfUrl]);
 
-  // Phase 2.1: Extract text layer from PDF
-  const extractTextLayer = async (pageNumber: number, viewport?: any) => {
-    if (!pdfDocRef.current) {
-      console.log('[Edit] extractTextLayer: No PDF document');
-      return;
-    }
-    console.log('[Edit] extractTextLayer: Starting for page', pageNumber);
-
-    try {
-      const page = await pdfDocRef.current.getPage(pageNumber);
-      const textContent = await page.getTextContent();
-      // Use provided viewport or get default scale 1.0 viewport
-      const textViewport = viewport || page.getViewport({ scale: 1.0 });
-      
-      const textItems: PdfTextItem[] = [];
-      
-      textContent.items.forEach((item: any, index: number) => {
-        if (!item.str || item.str.trim() === '') return; // Skip empty items
-        
-        // Parse transformation matrix
-        const transform = item.transform || [1, 0, 0, 1, 0, 0];
-        // PDF coordinates: transform[4] = x, transform[5] = y (in PDF coordinate system, y=0 at bottom)
-        // CRITICAL: Store in PDF coordinates (y=0 at bottom) for consistency with getCanvasCoordinates
-        const pdfX = transform[4];
-        const pdfY = transform[5]; // Keep in PDF coordinates (y=0 at bottom)
-        
-        const fontSize = item.height || (item.transform ? Math.abs(transform[3]) : 12);
-        const width = item.width || 0;
-        
-        textItems.push({
-          str: item.str || '',
-          x: pdfX,
-          y: pdfY, // Store in PDF coordinates (y=0 at bottom) - CRITICAL for click detection
-          width,
-          height: fontSize,
-          fontName: item.fontName || 'Arial',
-          fontSize,
-          transform,
-          page: pageNumber,
-          dir: item.dir || 'ltr',
-          hasEOL: item.hasEOL || false,
-        });
-      });
-      
-      setPdfTextItems(prev => ({ ...prev, [pageNumber]: textItems }));
-      
-      // Phase 2.2: Map text items to text runs (grouped by line/paragraph) - using utility
-      const textRuns = mapTextItemsToRuns(textItems, pageNumber);
-      console.log('[Edit] extractTextLayer: Extracted', textRuns.length, 'text runs for page', pageNumber);
-      setPdfTextRuns(prev => ({ ...prev, [pageNumber]: textRuns }));
-      
-      // Phase 6: Cache text runs for performance
-      setTextRunsCache(prev => ({
-        ...prev,
-        [pageNumber]: { runs: textRuns, timestamp: Date.now() }
-      }));
-    } catch (error) {
-      console.error('Error extracting text layer:', error);
-    }
-  };
+  // Phase 2.1: Extract text layer - now using hook (extractTextLayer from useTextEditing)
 
   // Phase 2.2: Map text items to text runs - using utility function (removed, using imported)
 
