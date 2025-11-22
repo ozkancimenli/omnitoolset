@@ -2026,6 +2026,29 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
+  // Use zoom hook (after renderPage is defined)
+  const {
+    zoom: zoomFromHook,
+    zoomMode: zoomModeFromHook,
+    setZoom: setZoomFromHook,
+    setZoomMode: setZoomModeFromHook,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+  } = useZoom({
+    containerRef,
+    pdfWidth: viewportRef.current?.width ? viewportRef.current.width / (viewportRef.current.scale || 1) : undefined,
+    pdfHeight: viewportRef.current?.height ? viewportRef.current.height / (viewportRef.current.scale || 1) : undefined,
+    renderPage,
+    pageNum,
+  });
+
+  // Sync zoom state with hook
+  useEffect(() => {
+    if (zoomFromHook !== zoom) setZoom(zoomFromHook);
+    if (zoomModeFromHook !== zoomMode) setZoomMode(zoomModeFromHook);
+  }, [zoomFromHook, zoomModeFromHook, zoom, zoomMode]);
+
   // Production: Debounced render for performance
   const debouncedPageNum = useDebounce(pageNum, DEBOUNCE_DELAY);
   const debouncedAnnotations = useDebounce(annotations, DEBOUNCE_DELAY);
@@ -2120,7 +2143,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       });
     }
     
-    const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
     if (clickedRun) {
       // DIRECT EDIT MODE - no tool selection needed
       setTool('edit-text');
@@ -6812,7 +6835,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           if (finalValue && finalValue.trim() && finalValue !== run.text) {
                             console.log('[Edit] Saving text edit:', run.id, 'from', run.text, 'to', finalValue);
                             try {
-                              // Phase 2.5: Update PDF text with formatting
+                          // Phase 2.5: Update PDF text with formatting
                               await updatePdfText(run.id, finalValue, editingTextFormat);
                               console.log('[Edit] Text edit saved successfully');
                               toast.success('Text updated successfully!');
