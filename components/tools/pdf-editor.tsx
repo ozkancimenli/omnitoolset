@@ -1764,37 +1764,15 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       );
       
       if (isWithinBounds) {
-          const centerX = run.x + run.width / 2;
-          const centerY = runCanvasY - run.height / 2;
-          const distance = Math.sqrt(
-            Math.pow(x - centerX, 2) + Math.pow(clickCanvasY - centerY, 2)
-          );
-          
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestRun = run as PdfTextRun;
-          }
-        }
-      } else {
-        // Fallback: direct comparison (assumes same coordinate system)
-        const isWithinBounds = (
-        x >= run.x - tolerance &&
-        x <= run.x + run.width + tolerance &&
-        y >= run.y - run.height - tolerance &&
-        y <= run.y + tolerance
-      );
+        const centerX = run.x + run.width / 2;
+        const centerY = run.y - run.height / 2; // PDF Y is at bottom
+        const distance = Math.sqrt(
+          Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+        );
         
-        if (isWithinBounds) {
-          const centerX = run.x + run.width / 2;
-          const centerY = run.y - run.height / 2;
-          const distance = Math.sqrt(
-            Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
-          );
-          
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestRun = run as PdfTextRun;
-          }
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestRun = run as PdfTextRun;
         }
       }
     });
@@ -2577,15 +2555,15 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     };
   }, [pageNum, zoom]);
 
-  // Fix: Re-render page when zoom changes
+  // CRITICAL: Re-render page when zoom or zoomMode changes (use requestAnimationFrame for smooth zoom)
   useEffect(() => {
     if (pdfDocRef.current && pageNum > 0 && file) {
-      const timeoutId = setTimeout(() => {
-        renderPage(pageNum);
-      }, 100);
-      return () => clearTimeout(timeoutId);
+      const rafId = requestAnimationFrame(() => {
+        renderPage(pageNum, false); // Don't use cache when zooming for immediate feedback
+      });
+      return () => cancelAnimationFrame(rafId);
     }
-  }, [zoom, zoomMode]);
+  }, [zoom, zoomMode, pageNum, file]);
 
   const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return { x: 0, y: 0 };
