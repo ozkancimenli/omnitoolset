@@ -1599,10 +1599,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         // Parse transformation matrix
         const transform = item.transform || [1, 0, 0, 1, 0, 0];
         // PDF coordinates: transform[4] = x, transform[5] = y (in PDF coordinate system, y=0 at bottom)
-        // Canvas coordinates: y=0 at top, so we need to flip: canvasY = viewportHeight - pdfY
+        // CRITICAL: Store in PDF coordinates (y=0 at bottom) for consistency with getCanvasCoordinates
         const pdfX = transform[4];
-        const pdfY = transform[5];
-        const canvasY = textViewport.height - pdfY; // Flip Y coordinate for canvas
+        const pdfY = transform[5]; // Keep in PDF coordinates (y=0 at bottom)
         
         const fontSize = item.height || (item.transform ? Math.abs(transform[3]) : 12);
         const width = item.width || 0;
@@ -1610,7 +1609,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         textItems.push({
           str: item.str || '',
           x: pdfX,
-          y: canvasY, // Use canvas coordinate system
+          y: pdfY, // Store in PDF coordinates (y=0 at bottom) - CRITICAL for click detection
           width,
           height: fontSize,
           fontName: item.fontName || 'Arial',
@@ -1745,28 +1744,45 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
     
     console.log('[Edit] Searching', runs.length, 'runs at position', x, y);
+    if (runs.length > 0) {
+      const firstRun = runs[0];
+      console.log('[Edit] First run bounds:', {
+        x: firstRun.x,
+        y: firstRun.y,
+        width: firstRun.width,
+        height: firstRun.height,
+        text: firstRun.text.substring(0, 30),
+        top: firstRun.y - firstRun.height,
+        bottom: firstRun.y
+      });
+    }
     
     let closestRun: PdfTextRun | null = null;
     let closestDistance = Infinity;
-    const tolerance = 50; // Increased tolerance significantly for better click detection
+    const tolerance = 100; // Increased tolerance significantly for better click detection
     
     runs.forEach((run: PdfTextRun) => {
-      // CRITICAL: Coordinate system conversion
-      // - Click coordinates (x, y) are in PDF coordinates (y=0 at bottom) from getCanvasCoordinates
-      // - Text runs are stored in PDF coordinates (y=0 at bottom) from extractTextLayer
-      // - Both should be in the same coordinate system now
+      // CRITICAL: Coordinate system - both click and text runs are in PDF coordinates (y=0 at bottom)
+      // - Click coordinates (x, y) from getCanvasCoordinates: PDF coordinates (y=0 at bottom)
+      // - Text runs from extractTextLayer: PDF coordinates (y=0 at bottom)
+      // - PDF Y coordinate: y=0 at bottom, so text at bottom has y=0, text at top has y=viewport.height
+      
+      // In PDF coordinates: run.y is the BOTTOM of the text (baseline)
+      // Text extends from (run.y - run.height) to run.y
+      const textTop = run.y - run.height; // Top of text in PDF coordinates
+      const textBottom = run.y; // Bottom of text in PDF coordinates
       
       // Check if click is within text run bounds (in PDF coordinates)
       const isWithinBounds = (
         x >= run.x - tolerance &&
         x <= run.x + run.width + tolerance &&
-        y >= (run.y - run.height) - tolerance && // PDF Y is at bottom, so subtract height
-        y <= run.y + tolerance
+        y >= textTop - tolerance &&
+        y <= textBottom + tolerance
       );
       
       if (isWithinBounds) {
         const centerX = run.x + run.width / 2;
-        const centerY = run.y - run.height / 2; // PDF Y is at bottom
+        const centerY = run.y - run.height / 2; // Center Y in PDF coordinates
         const distance = Math.sqrt(
           Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
         );
