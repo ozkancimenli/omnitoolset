@@ -29,6 +29,7 @@ import { DigitalSignature } from './DigitalSignature';
 import { ContentStreamOptimizer } from './ContentStreamOptimizer';
 import { MemoryMappedFile } from './MemoryMappedFile';
 import { AdvancedCache } from './AdvancedCache';
+import { AdvancedTextEditor, TextStyle, TextStatistics, TextTransform } from './AdvancedTextEditor';
 
 export interface PdfTextRun {
   id: string;
@@ -93,6 +94,7 @@ export class PdfEngine {
     maxEntries: 100,
     compress: true,
   });
+  private advancedTextEditor: AdvancedTextEditor = new AdvancedTextEditor();
 
   constructor(config: PdfEngineConfig = {}) {
     this.config = {

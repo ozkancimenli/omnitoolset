@@ -61,3 +61,6 @@ export type { MemoryMap } from './MemoryMappedFile';
 export { AdvancedCache } from './AdvancedCache';
 export type { CacheEntry, CacheOptions } from './AdvancedCache';
 
+export { AdvancedTextEditor } from './AdvancedTextEditor';
+export type { TextSelection, TextStatistics, TextStyle, TextTransform } from './AdvancedTextEditor';
+

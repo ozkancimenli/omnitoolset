@@ -333,6 +333,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [findResults, setFindResults] = useState<Array<{ runId: string; startIndex: number; endIndex: number }>>([]);
   const [currentFindIndex, setCurrentFindIndex] = useState(-1);
   
+  // Advanced Text Editor features
+  const [showTextStatistics, setShowTextStatistics] = useState(false);
+  const [textStatistics, setTextStatistics] = useState<any>(null);
+  const [showTextStyles, setShowTextStyles] = useState(false);
+  const [realTimePreview, setRealTimePreview] = useState(true);
+  const [editingTextValue, setEditingTextValue] = useState<string>('');
+  
   // Advanced: Search options
   const [useRegex, setUseRegex] = useState(false);
   const [caseSensitive, setCaseSensitive] = useState(false);
