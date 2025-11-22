@@ -316,6 +316,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [showVersionControl, setShowVersionControl] = useState(false);
   const [webglEnabled, setWebglEnabled] = useState(false);
   
+  // Traffic Magnet Features
+  const [showPdfComparison, setShowPdfComparison] = useState(false);
+  const [comparisonFile, setComparisonFile] = useState<File | null>(null);
+  const [showSocialShare, setShowSocialShare] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string>('');
+  
   // Advanced: Search options
   const [useRegex, setUseRegex] = useState(false);
   const [caseSensitive, setCaseSensitive] = useState(false);
