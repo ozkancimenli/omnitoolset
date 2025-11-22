@@ -7402,24 +7402,48 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                               </div>
                               
                               {/* Phase 8: Text Templates */}
-                              {textTemplates.length > 0 && (
-                                <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
+                              <div className="pt-2 border-t border-slate-300 dark:border-slate-600">
+                                <div className="flex items-center gap-2 mb-2">
                                   <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Templates:</label>
                                   <select
                                     onChange={(e) => {
-                                      const template = textTemplates.find(t => t.name === e.target.value);
-                                      if (template) applyTextTemplate(template);
+                                      const template = textTemplates.find(t => t.id === e.target.value);
+                                      if (template && editingTextRun) {
+                                        setEditingTextValue(template.text);
+                                        if (template.format) {
+                                          setEditingTextFormat(template.format);
+                                        }
+                                      }
                                     }}
                                     className="flex-1 px-2 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm"
                                     defaultValue=""
                                   >
-                                    <option value="">Templates...</option>
+                                    <option value="">Select template...</option>
                                     {textTemplates.map(template => (
-                                      <option key={template.name} value={template.name}>{template.name}</option>
+                                      <option key={template.id} value={template.id}>{template.name}</option>
                                     ))}
                                   </select>
+                                  <button
+                                    onClick={() => {
+                                      const name = prompt('Template name:');
+                                      if (name && editingTextRun && run) {
+                                        const newTemplate = {
+                                          id: `template-${Date.now()}`,
+                                          name,
+                                          text: editingTextValue || run.text,
+                                          format: editingTextFormat,
+                                        };
+                                        setTextTemplates(prev => [...prev, newTemplate]);
+                                        toast.success('Template saved');
+                                      }
+                                    }}
+                                    className="px-2 py-1 rounded text-sm bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                    title="Save as Template"
+                                  >
+                                    💾
+                                  </button>
                                 </div>
-                              )}
+                              </div>
                               
                               {/* Phase 6: Text Statistics & Style Management */}
                               <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
