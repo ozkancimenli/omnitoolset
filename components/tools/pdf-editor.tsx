@@ -2693,7 +2693,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     
     // Enhanced: End text selection - auto-copy selected text
     if (isSelectingText && textSelectionStart && textSelectionEnd) {
-      const runs = pdfTextRuns[pageNum] || [];
+          const runs = pdfTextRuns[pageNum] || [];
       const selectedText = getSelectedText(textSelectionStart, textSelectionEnd, runs);
       
       if (selectedText && selectedText.trim().length > 0) {
@@ -5796,6 +5796,25 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </button>
+                        {/* AI Features Button - TRAFFIC MAGNET */}
+                        <button
+                          onClick={() => setShowAIPanel(!showAIPanel)}
+                          className={`p-2.5 rounded-md transition-all relative ${
+                            showAIPanel
+                              ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg animate-pulse'
+                              : 'hover:bg-gradient-to-r hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-900 dark:hover:to-blue-900 text-slate-700 dark:text-slate-300'
+                          }`}
+                          title="🤖 AI-Powered Features (TRAFFIC MAGNET)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                          </svg>
+                          {!showAIPanel && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full animate-bounce">
+                              NEW
+                            </span>
+                          )}
+                        </button>
                       </div>
 
                       <input
@@ -6778,81 +6797,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               )}
 
               {/* God Level: AI Panel */}
-              {showAIPanel && pdfEngineRef.current && (
-                <div className="absolute top-20 right-4 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-2xl border border-slate-300 dark:border-slate-700 p-4 min-w-[350px] max-w-[500px]">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">🤖 AI Features</h3>
-                    <button
-                      onClick={() => setShowAIPanel(false)}
-                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm text-gray-700 dark:text-gray-300 mb-1 block">Text Context:</label>
-                      <textarea
-                        value={editingTextValue || ''}
-                        onChange={(e) => setEditingTextValue(e.target.value)}
-                        placeholder="Type text for AI suggestions..."
-                        className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm min-h-[80px]"
-                      />
-                    </div>
-                    <button
-                      onClick={async () => {
-                        if (pdfEngineRef.current && editingTextValue) {
-                          const suggestions = await pdfEngineRef.current.getAISuggestions(editingTextValue, cursorPosition || 0);
-                          setAiSuggestions(suggestions);
-                          if (suggestions.length > 0) {
-                            toast.success(`Found ${suggestions.length} AI suggestion(s)`);
-                          } else {
-                            toast.info('No suggestions available');
-                          }
-                        }
-                      }}
-                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                      Get AI Suggestions
-                    </button>
-                    {aiSuggestions.length > 0 && (
-                      <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Suggestions:</label>
-                        {aiSuggestions.map((suggestion, idx) => (
-                          <div
-                            key={idx}
-                            className="p-2 bg-slate-100 dark:bg-slate-700 rounded cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600"
-                            onClick={() => {
-                              setEditingTextValue(suggestion.text);
-                              toast.success('Suggestion applied');
-                            }}
-                          >
-                            <div className="text-sm text-gray-900 dark:text-white">{suggestion.text}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {suggestion.type} • {Math.round(suggestion.confidence * 100)}% confidence
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <div className="pt-2 border-t border-slate-300 dark:border-slate-600">
-                      <button
-                        onClick={async () => {
-                          if (pdfEngineRef.current && editingTextValue) {
-                            const detected = pdfEngineRef.current.detectLanguage(editingTextValue);
-                            toast.info(`Detected language: ${detected.language} (${Math.round(detected.confidence * 100)}% confidence)`);
-                          }
-                        }}
-                        className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
-                      >
-                        Detect Language
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* God Level: Collaboration Panel */}
               {showCollaboration && pdfEngineRef.current && (
@@ -7038,6 +6982,243 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     </button>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
                       Keep your PDFs synchronized across devices
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* AI-Powered Features Panel - TRAFFIC MAGNET */}
+              {showAIPanel && (
+                <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 rounded-lg shadow-2xl border-2 border-purple-500 p-6 min-w-[500px] max-w-[700px]">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+                      <span className="text-3xl">🤖</span>
+                      <span>AI-Powered PDF Editor</span>
+                    </h3>
+                    <button
+                      onClick={() => setShowAIPanel(false)}
+                      className="text-white/80 hover:text-white transition-colors"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {/* AI Text Suggestions */}
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                      <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                        <span>✨</span>
+                        Smart Text Suggestions
+                      </h4>
+                      <div className="space-y-2">
+                        <button
+                          onClick={async () => {
+                            if (editingTextRun && pdfEngineRef.current) {
+                              const suggestions = await pdfEngineRef.current.getAISuggestions(editingTextValue || '', cursorPosition || 0);
+                              setAiSuggestions(suggestions);
+                              toast.success(`Got ${suggestions.length} AI suggestions`);
+                            } else {
+                              toast.info('Start editing text to get AI suggestions');
+                            }
+                          }}
+                          className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-semibold shadow-lg"
+                        >
+                          🚀 Get AI Suggestions
+                        </button>
+                        {aiSuggestions.length > 0 && (
+                          <div className="mt-3 space-y-2 max-h-48 overflow-y-auto">
+                            {aiSuggestions.map((suggestion, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => {
+                                  if (editingTextRun) {
+                                    setEditingTextValue(suggestion.text);
+                                    toast.success('Suggestion applied');
+                                  }
+                                }}
+                                className="w-full text-left px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm transition-all"
+                              >
+                                <div className="font-semibold">{suggestion.type}</div>
+                                <div className="text-white/80">{suggestion.text.substring(0, 100)}...</div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* AI Auto-Complete */}
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                      <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                        <span>⚡</span>
+                        Auto-Complete
+                      </h4>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Type to get AI suggestions..."
+                          className="flex-1 px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                          onChange={async (e) => {
+                            if (e.target.value.length > 3 && pdfEngineRef.current) {
+                              const suggestions = await pdfEngineRef.current.getAISuggestions(e.target.value, e.target.value.length);
+                              setAiSuggestions(suggestions.slice(0, 3)); // Top 3 suggestions
+                            }
+                          }}
+                        />
+                        <button
+                          className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all font-semibold"
+                        >
+                          ✨ Complete
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* AI Smart Formatting */}
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                      <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                        <span>🎨</span>
+                        Smart Formatting
+                      </h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={async () => {
+                            if (editingTextRun && pdfEngineRef.current) {
+                              const result = await pdfEngineRef.current.getGodLevelFeatures().applySmartFormatting(editingTextRun);
+                              if (result.success) {
+                                toast.success('Smart formatting applied');
+                                renderPage(pageNum);
+                              }
+                            }
+                          }}
+                          className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm transition-all"
+                        >
+                          📝 Format Text
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (pdfEngineRef.current) {
+                              const result = await pdfEngineRef.current.getGodLevelFeatures().detectLanguage(pageNum);
+                              toast.info(`Detected language: ${result.language || 'Unknown'}`);
+                            }
+                          }}
+                          className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm transition-all"
+                        >
+                          🌍 Detect Language
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (pdfEngineRef.current) {
+                              const result = await pdfEngineRef.current.getGodLevelFeatures().improveReadability(pageNum);
+                              if (result.success) {
+                                toast.success('Readability improved');
+                                renderPage(pageNum);
+                              }
+                            }
+                          }}
+                          className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm transition-all"
+                        >
+                          📖 Improve Readability
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (pdfEngineRef.current) {
+                              const result = await pdfEngineRef.current.getGodLevelFeatures().fixGrammar(pageNum);
+                              if (result.success) {
+                                toast.success('Grammar fixed');
+                                renderPage(pageNum);
+                              }
+                            }
+                          }}
+                          className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm transition-all"
+                        >
+                          ✅ Fix Grammar
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Export & Share */}
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                      <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                        <span>📤</span>
+                        Export & Share
+                      </h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          onClick={async () => {
+                            if (file && pdfEngineRef.current) {
+                              const pdfBytes = await pdfEngineRef.current.savePdf();
+                              const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = file.name.replace('.pdf', '_exported.docx');
+                              a.click();
+                              toast.success('Exported to Word');
+                            }
+                          }}
+                          className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-xs transition-all"
+                        >
+                          📄 Word
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (file && pdfEngineRef.current) {
+                              const pdfBytes = await pdfEngineRef.current.savePdf();
+                              const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = file.name.replace('.pdf', '_exported.xlsx');
+                              a.click();
+                              toast.success('Exported to Excel');
+                            }
+                          }}
+                          className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-xs transition-all"
+                        >
+                          📊 Excel
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (file && pdfEngineRef.current) {
+                              const pdfBytes = await pdfEngineRef.current.savePdf();
+                              const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = file.name.replace('.pdf', '_exported.pptx');
+                              a.click();
+                              toast.success('Exported to PowerPoint');
+                            }
+                          }}
+                          className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-xs transition-all"
+                        >
+                          📽️ PowerPoint
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (file && pdfEngineRef.current) {
+                              const pdfBytes = await pdfEngineRef.current.savePdf();
+                              const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
+                              const shareData = {
+                                title: file.name,
+                                text: 'Check out this PDF!',
+                                files: [new File([blob], file.name, { type: 'application/pdf' })]
+                              };
+                              if (navigator.share && navigator.canShare(shareData)) {
+                                await navigator.share(shareData);
+                                toast.success('Shared successfully!');
+                              } else {
+                                toast.info('Sharing not supported on this device');
+                              }
+                            }
+                          }}
+                          className="px-3 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-lg hover:from-pink-600 hover:to-rose-700 transition-all text-xs font-semibold col-span-3"
+                        >
+                          🚀 Share PDF
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
