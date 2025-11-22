@@ -1706,102 +1706,48 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     return runs;
   };
 
-  // Phase 2.3: Find text run at click position (using OmniPDF Engine)
+  // Phase 2.3: Find text run at click position - SIMPLIFIED & AGGRESSIVE
   const findTextRunAtPosition = (x: number, y: number, pageNumber: number): PdfTextRun | null => {
-    // Use our custom engine if available
-    if (pdfEngineRef.current) {
-      const engineRun = pdfEngineRef.current.findTextRunAtPosition(x, y, pageNumber);
-      if (engineRun) {
-        // Convert engine run to our format
-        return {
-          id: engineRun.id,
-          text: engineRun.text,
-          x: engineRun.x,
-          y: engineRun.y,
-          width: engineRun.width,
-          height: engineRun.height,
-          fontSize: engineRun.fontSize,
-          fontName: engineRun.fontName,
-          fontWeight: engineRun.fontWeight,
-          fontStyle: engineRun.fontStyle,
-          color: engineRun.color,
-          page: engineRun.page,
-          transform: engineRun.transform,
-          startIndex: engineRun.startIndex,
-          endIndex: engineRun.endIndex,
-          textAlign: 'left' as const,
-        };
-      }
-      return null;
-    }
-    
-    // Fallback to legacy method
     const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
     if (runs.length === 0) {
-      console.log('[Edit] No text runs found for page', pageNumber, 'total pages:', Object.keys(pdfTextRuns).length);
-      console.log('[Edit] Available pages with runs:', Object.keys(pdfTextRuns));
       return null;
     }
     
-    console.log('[Edit] Searching', runs.length, 'runs at position', x, y);
-    if (runs.length > 0) {
-      const firstRun = runs[0];
-      console.log('[Edit] First run bounds:', {
-        x: firstRun.x,
-        y: firstRun.y,
-        width: firstRun.width,
-        height: firstRun.height,
-        text: firstRun.text.substring(0, 30),
-        top: firstRun.y - firstRun.height,
-        bottom: firstRun.y
-      });
-    }
+    // AGGRESSIVE: Very large tolerance - find ANY run near the click
+    const tolerance = 200; // Massive tolerance for easy clicking
     
     let closestRun: PdfTextRun | null = null;
     let closestDistance = Infinity;
-    const tolerance = 100; // Increased tolerance significantly for better click detection
     
     runs.forEach((run: PdfTextRun) => {
-      // CRITICAL: Coordinate system - both click and text runs are in PDF coordinates (y=0 at bottom)
-      // - Click coordinates (x, y) from getCanvasCoordinates: PDF coordinates (y=0 at bottom)
-      // - Text runs from extractTextLayer: PDF coordinates (y=0 at bottom)
-      // - PDF Y coordinate: y=0 at bottom, so text at bottom has y=0, text at top has y=viewport.height
+      // Simplified bounds check - just check if click is anywhere near the text
+      const textTop = run.y - run.height;
+      const textBottom = run.y;
+      const textLeft = run.x;
+      const textRight = run.x + run.width;
       
-      // In PDF coordinates: run.y is the BOTTOM of the text (baseline)
-      // Text extends from (run.y - run.height) to run.y
-      const textTop = run.y - run.height; // Top of text in PDF coordinates
-      const textBottom = run.y; // Bottom of text in PDF coordinates
-      
-      // Check if click is within text run bounds (in PDF coordinates)
-      const isWithinBounds = (
-        x >= run.x - tolerance &&
-        x <= run.x + run.width + tolerance &&
+      // Check if click is within expanded bounds
+      const isNear = (
+        x >= textLeft - tolerance &&
+        x <= textRight + tolerance &&
         y >= textTop - tolerance &&
         y <= textBottom + tolerance
       );
       
-      if (isWithinBounds) {
+      if (isNear) {
+        // Calculate distance to text center
         const centerX = run.x + run.width / 2;
-        const centerY = run.y - run.height / 2; // Center Y in PDF coordinates
+        const centerY = run.y - run.height / 2;
         const distance = Math.sqrt(
           Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
         );
         
         if (distance < closestDistance) {
           closestDistance = distance;
-          closestRun = run as PdfTextRun;
+          closestRun = run;
         }
       }
     });
-    
-    if (closestRun !== null) {
-      const runText: string = (closestRun as PdfTextRun).text || '';
-      console.log('[Edit] Found text run:', runText.substring(0, 30), 'at', x, y);
-    } else {
-      const firstRun: PdfTextRun | undefined = runs[0];
-      const firstRunText = firstRun?.text || '';
-      console.log('[Edit] No text run found at position', x, y, 'runs:', runs.length, 'first run:', firstRunText.substring(0, 20));
-    }
     
     return closestRun;
   };
@@ -2623,77 +2569,51 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       return;
     }
     
-    // Enhanced PDF Text Editing: Enable edit mode by default when clicking on text
-    // Auto-enable edit-text tool when clicking on PDF text
-    if (!tool) {
-      const runs: PdfTextRun[] = pdfTextRuns[pageNum] || [];
-      console.log('[Edit] Checking for text runs. Page:', pageNum, 'Runs:', runs.length);
-      if (runs.length > 0) {
-      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
-        console.log('[Edit] Clicked at:', coords.x, coords.y, 'Found run:', clickedRun?.text?.substring(0, 20));
-        if (clickedRun) {
-          // Auto-enable edit mode
-          setTool('edit-text');
-          setTextEditMode(true);
-          setEditingTextRun(clickedRun.id);
-          setEditingTextValue(clickedRun.text); // Initialize editing value
-          setSelectedTextRun(clickedRun.id);
-          // Add to batch selection if Ctrl/Cmd is held
-          if ((e as any).ctrlKey || (e as any).metaKey) {
-            setSelectedTextRuns(prev => new Set([...prev, clickedRun.id]));
-          } else {
-            setSelectedTextRuns(new Set([clickedRun.id]));
-          }
-          console.log('[Edit] Text clicked, edit mode enabled:', clickedRun.id, clickedRun.text.substring(0, 30));
-          // Auto-start editing immediately (no need for double-click)
-          toast.info('Text edit mode enabled. Start typing to edit.');
-          return;
-        }
-      } else {
-        console.log('[Edit] No text runs found for page', pageNum, 'Extracting...');
-        // Try to extract text layer if not already extracted
-        if (pdfDocRef.current) {
-          extractTextLayer(pageNum).then(() => {
-            console.log('[Edit] Text layer extracted, try clicking again');
-            toast.info('Text layer extracted. Please click on text again.');
-          });
-        }
-      }
+    // AGGRESSIVE: Always try to find text on click, regardless of tool
+    const runs: PdfTextRun[] = pdfTextRuns[pageNum] || [];
+    if (runs.length === 0 && pdfDocRef.current) {
+      // Auto-extract if not already extracted
+      extractTextLayer(pageNum).then(() => {
+        toast.info('Text layer extracted. Click on text to edit.');
+      });
     }
     
-    // Enhanced PDF Text Editing: Always check for PDF text first (even without edit-text tool)
     const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
     if (clickedRun) {
-      // Single click: Select text run
-      if (e.detail === 1 && !e.shiftKey) {
-        setSelectedTextRun(clickedRun.id);
-        const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
-        setTextSelectionStart({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
-        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
-        setEditingCharIndex(charIndex);
-        toast.info('Text selected. Double-click to edit or press Enter.');
+      // DIRECT EDIT MODE - no tool selection needed
+      setTool('edit-text');
+      setTextEditMode(true);
+      setEditingTextRun(clickedRun.id);
+      setEditingTextValue(clickedRun.text);
+      setSelectedTextRun(clickedRun.id);
+      if ((e as any).ctrlKey || (e as any).metaKey) {
+        setSelectedTextRuns(prev => new Set([...prev, clickedRun.id]));
+      } else {
+        setSelectedTextRuns(new Set([clickedRun.id]));
       }
-      // Double-click: Start editing immediately
-      else if (e.detail === 2 || (tool === 'edit-text' || textEditMode)) {
-        const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
-        setTextSelectionStart({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
-        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
-        setIsSelectingText(true);
-        setSelectedTextRun(clickedRun.id);
-        setEditingCharIndex(charIndex);
-        setEditingTextRun(clickedRun.id);
-        setEditingTextValue(clickedRun.text); // Initialize editing value
-        setTextEditMode(true);
-        console.log('[Edit] Editing mode activated:', clickedRun.id);
-        toast.info('Editing mode activated. Start typing to edit.');
-        return;
-      }
-      // Shift+click: Extend selection
-      else if (e.shiftKey) {
-        const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
-        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
-        return;
-      }
+      toast.success(`Editing: "${clickedRun.text.substring(0, 30)}${clickedRun.text.length > 30 ? '...' : ''}"`);
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    
+    // AGGRESSIVE: Always check for text on ANY click - no tool needed
+    const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+    if (clickedRun) {
+      // DIRECT EDIT - no double-click needed
+      setTool('edit-text');
+      setTextEditMode(true);
+      setEditingTextRun(clickedRun.id);
+      setEditingTextValue(clickedRun.text);
+      setSelectedTextRun(clickedRun.id);
+      const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
+      setTextSelectionStart({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+      setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+      setEditingCharIndex(charIndex);
+      setIsSelectingText(true);
+      e.preventDefault();
+      e.stopPropagation();
+      return;
     }
     
     // Phase 2.3 & 4.1: Check if clicking on PDF text (edit mode) - legacy support
