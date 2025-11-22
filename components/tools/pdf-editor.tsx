@@ -1774,7 +1774,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     if (closestRun) {
       console.log('[Edit] Found text run:', closestRun.text.substring(0, 30), 'at', x, y);
     } else {
-      console.log('[Edit] No text run found at position', x, y, 'runs:', runs.length, 'first run:', runs[0]?.text?.substring(0, 20));
+      const firstRun = runs[0];
+      console.log('[Edit] No text run found at position', x, y, 'runs:', runs.length, 'first run:', firstRun?.text?.substring(0, 20));
     }
     
     return closestRun;
