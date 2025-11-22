@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { toast } from '@/components/Toast';
+import { PdfEngine } from './pdf-engine';
 
 // Production: Constants for configuration
 const PDF_MAX_SIZE = 50 * 1024 * 1024; // 50MB
@@ -3543,11 +3544,47 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
-  // Phase 3.3: Rebuild PDF page with modified text (True Content Stream Editing)
+  // Phase 3.3: Rebuild PDF page with modified text (using our custom engine)
   const rebuildPdfPageWithText = async (
     pageNumber: number,
     textModifications: Array<{ runId: string; newText: string; format?: any }>
   ) => {
+    // Use our custom engine if available
+    if (pdfEngineRef.current) {
+      try {
+        const result = await pdfEngineRef.current.modifyText(pageNumber, textModifications);
+        
+        if (result.success) {
+          // Reload PDF to show changes
+          if (file) {
+            const pdfBytes = await pdfEngineRef.current.savePdf();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const newUrl = URL.createObjectURL(blob);
+            
+            if (pdfUrl) {
+              URL.revokeObjectURL(pdfUrl);
+            }
+            setPdfUrl(newUrl);
+            
+            // Update pdf-lib ref for backward compatibility
+            pdfLibDocRef.current = await PDFDocument.load(pdfBytes);
+            
+            // Re-render the page
+            await renderPage(pageNumber);
+          }
+          return true;
+        } else {
+          console.error('Engine modification failed:', result.error);
+          return false;
+        }
+      } catch (error) {
+        console.error('Error in engine modification:', error);
+        logError(error as Error, 'rebuildPdfPageWithText (engine)', { pageNumber });
+        // Fall through to legacy method
+      }
+    }
+    
+    // Fallback to legacy method if engine not available
     if (!pdfLibDocRef.current || !pdfDocRef.current) return false;
     
     try {
