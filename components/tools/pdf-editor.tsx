@@ -395,6 +395,16 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [showOcrPanel, setShowOcrPanel] = useState(false);
   const [ocrProgress, setOcrProgress] = useState(0);
   
+  // Ultra-Deep Features: WASM, Workers, Encryption, Fonts
+  const [showWasmPanel, setShowWasmPanel] = useState(false);
+  const [showWorkerPanel, setShowWorkerPanel] = useState(false);
+  const [showEncryptionPanel, setShowEncryptionPanel] = useState(false);
+  const [showFontPanel, setShowFontPanel] = useState(false);
+  const [wasmMetrics, setWasmMetrics] = useState<any>(null);
+  const [workerStats, setWorkerStats] = useState<any>(null);
+  const [encryptionPassword, setEncryptionPassword] = useState('');
+  const [fontStats, setFontStats] = useState<any>(null);
+  
   // Phase 6: Performance & Advanced Features
   const [textRunsCache, setTextRunsCache] = useState<Record<number, { runs: PdfTextRun[]; timestamp: number }>>({});
   
@@ -6261,6 +6271,87 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </button>
+
+                          {/* Ultra-Deep Features */}
+                          <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+
+                          {/* WebAssembly */}
+                          <button
+                            onClick={() => {
+                              setShowWasmPanel(!showWasmPanel);
+                              if (!showWasmPanel && pdfEngineRef.current) {
+                                const wasm = pdfEngineRef.current.getWasmProcessor();
+                                setWasmMetrics(wasm.getMetrics());
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showWasmPanel
+                                ? 'bg-teal-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="WebAssembly Processor"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                          </button>
+
+                          {/* Worker Pool */}
+                          <button
+                            onClick={() => {
+                              setShowWorkerPanel(!showWorkerPanel);
+                              if (!showWorkerPanel && pdfEngineRef.current) {
+                                const pool = pdfEngineRef.current.getWorkerPool();
+                                setWorkerStats(pool.getStats());
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showWorkerPanel
+                                ? 'bg-cyan-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="Worker Pool (Parallel Processing)"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                          </button>
+
+                          {/* Encryption */}
+                          <button
+                            onClick={() => setShowEncryptionPanel(!showEncryptionPanel)}
+                            className={`p-2 rounded-md transition-all ${
+                              showEncryptionPanel
+                                ? 'bg-pink-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="PDF Encryption/Decryption"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                          </button>
+
+                          {/* Advanced Fonts */}
+                          <button
+                            onClick={() => {
+                              setShowFontPanel(!showFontPanel);
+                              if (!showFontPanel && pdfEngineRef.current) {
+                                const fontMgr = pdfEngineRef.current.getAdvancedFontManager();
+                                setFontStats(fontMgr.getCacheStats());
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showFontPanel
+                                ? 'bg-amber-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="Advanced Font Management"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                             </svg>
                           </button>
                         </>

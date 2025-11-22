@@ -37,3 +37,15 @@ export type { HistoryNode, HistoryBranch } from './AdvancedUndoRedo';
 export { StreamProcessor } from './StreamProcessor';
 export type { StreamChunk, StreamProcessorOptions } from './StreamProcessor';
 
+export { WebAssemblyProcessor } from './WebAssemblyProcessor';
+export type { WasmModule } from './WebAssemblyProcessor';
+
+export { WorkerPool } from './WorkerPool';
+export type { WorkerTask, WorkerResult } from './WorkerPool';
+
+export { AdvancedFontManager } from './AdvancedFontManager';
+export type { FontSubset, FontMetrics } from './AdvancedFontManager';
+
+export { PdfEncryption } from './PdfEncryption';
+export type { EncryptionOptions, EncryptionInfo } from './PdfEncryption';
+

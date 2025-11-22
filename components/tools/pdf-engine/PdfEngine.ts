@@ -21,6 +21,10 @@ import { BinaryPdfParser } from './BinaryPdfParser';
 import { AdvancedRenderingPipeline } from './AdvancedRenderingPipeline';
 import { AdvancedUndoRedo } from './AdvancedUndoRedo';
 import { StreamProcessor } from './StreamProcessor';
+import { WebAssemblyProcessor } from './WebAssemblyProcessor';
+import { WorkerPool, WorkerResult } from './WorkerPool';
+import { AdvancedFontManager } from './AdvancedFontManager';
+import { PdfEncryption } from './PdfEncryption';
 
 export interface PdfTextRun {
   id: string;
@@ -75,6 +79,9 @@ export class PdfEngine {
   private performanceOptimizer: PerformanceOptimizer = new PerformanceOptimizer();
   private advancedUndoRedo: AdvancedUndoRedo = new AdvancedUndoRedo();
   private renderingPipeline: AdvancedRenderingPipeline = new AdvancedRenderingPipeline();
+  private wasmProcessor: WebAssemblyProcessor = new WebAssemblyProcessor();
+  private workerPool: WorkerPool = new WorkerPool();
+  private advancedFontManager: AdvancedFontManager = new AdvancedFontManager();
 
   constructor(config: PdfEngineConfig = {}) {
     this.config = {
@@ -681,6 +688,121 @@ export class PdfEngine {
   }
 
   /**
+   * Ultra-Deep: Get WebAssembly processor
+   */
+  getWasmProcessor(): WebAssemblyProcessor {
+    return this.wasmProcessor;
+  }
+
+  /**
+   * Ultra-Deep: Get worker pool
+   */
+  getWorkerPool(): WorkerPool {
+    return this.workerPool;
+  }
+
+  /**
+   * Ultra-Deep: Get advanced font manager
+   */
+  getAdvancedFontManager(): AdvancedFontManager {
+    return this.advancedFontManager;
+  }
+
+  /**
+   * Ultra-Deep: Encrypt PDF
+   */
+  async encryptPdf(
+    password: string,
+    options?: { ownerPassword?: string; permissions?: any; algorithm?: string }
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!this.pdfDoc) {
+        return { success: false, error: 'PDF not loaded' };
+      }
+
+      const pdfBytes = await this.pdfDoc.save();
+      const encrypted = await PdfEncryption.encrypt(pdfBytes, {
+        userPassword: password,
+        ownerPassword: options?.ownerPassword,
+        algorithm: options?.algorithm as any,
+        permissions: options?.permissions,
+      });
+
+      // Reload encrypted PDF
+      this.pdfDoc = await PDFDocument.load(encrypted);
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Ultra-Deep: Decrypt PDF
+   */
+  async decryptPdf(password: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!this.pdfDoc) {
+        return { success: false, error: 'PDF not loaded' };
+      }
+
+      const pdfBytes = await this.pdfDoc.save();
+      const decrypted = await PdfEncryption.decrypt(pdfBytes, password);
+
+      // Reload decrypted PDF
+      this.pdfDoc = await PDFDocument.load(decrypted);
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Ultra-Deep: Check if PDF is encrypted
+   */
+  isEncrypted(): boolean {
+    if (!this.pdfDoc) return false;
+    // In production, would check actual encryption status
+    return false;
+  }
+
+  /**
+   * Ultra-Deep: Process with WebAssembly
+   */
+  async processWithWasm(options: any = {}): Promise<Uint8Array | null> {
+    if (!this.pdfDoc) return null;
+    try {
+      const pdfBytes = await this.pdfDoc.save();
+      return await this.wasmProcessor.processPdf(pdfBytes, options);
+    } catch (error) {
+      console.error('WASM processing error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Ultra-Deep: Process with worker pool
+   */
+  async processWithWorkers(
+    type: 'process' | 'compress' | 'extract' | 'analyze' | 'optimize',
+    options: any = {}
+  ): Promise<WorkerResult | null> {
+    if (!this.pdfDoc) return null;
+    try {
+      const pdfBytes = await this.pdfDoc.save();
+      const task = {
+        id: `task-${Date.now()}-${Math.random()}`,
+        type,
+        data: pdfBytes,
+        options,
+      };
+      return await this.workerPool.submitTask(task);
+    } catch (error: any) {
+      console.error('Worker processing error:', error);
+      return null;
+    }
+  }
+
+  /**
    * Advanced: Search and replace text across all pages
    */
   async searchAndReplace(
@@ -940,6 +1062,8 @@ export class PdfEngine {
     this.performanceOptimizer.clearMetrics();
     this.advancedUndoRedo.clear();
     this.renderingPipeline.clearCache();
+    this.workerPool.terminate();
+    this.advancedFontManager.clearCache();
   }
 }
 
