@@ -1395,8 +1395,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         message: errorMessage,
         code: errorCode,
         retry: () => {
-          if (fileToLoad) {
-            loadPDF(fileToLoad);
+          if (targetFile) {
+            loadPDF(targetFile);
+          } else if (file) {
+            loadPDF(file);
           }
         },
       });
