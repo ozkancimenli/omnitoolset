@@ -343,6 +343,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [selectedTextRuns, setSelectedTextRuns] = useState<Set<string>>(new Set());
   const [showBatchOperations, setShowBatchOperations] = useState(false);
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+  const [textRotation, setTextRotation] = useState<number>(0);
+  const [textScaleX, setTextScaleX] = useState<number>(1);
+  const [textScaleY, setTextScaleY] = useState<number>(1);
+  const [textTemplates, setTextTemplates] = useState<Array<{ id: string; name: string; text: string; format?: any }>>([]);
+  const [showTextTemplates, setShowTextTemplates] = useState(false);
   
   // Advanced: Search options
   const [useRegex, setUseRegex] = useState(false);
@@ -2633,6 +2638,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         setEditingTextRun(clickedRun.id);
         setEditingTextValue(clickedRun.text); // Initialize editing value
         setSelectedTextRun(clickedRun.id);
+        // Add to batch selection if Ctrl/Cmd is held
+        if (e.ctrlKey || e.metaKey) {
+          setSelectedTextRuns(prev => new Set([...prev, clickedRun.id]));
+        } else {
+          setSelectedTextRuns(new Set([clickedRun.id]));
+        }
         toast.info('Text edit mode enabled. Double-click to edit.');
         return;
         }
@@ -7286,25 +7297,107 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                 </div>
                               </div>
                               
-                              {/* Phase 7: Text Transformation */}
-                              <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
-                                <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Transform:</label>
-                                <div className="flex gap-1 flex-1">
-                                  {(['uppercase', 'lowercase', 'capitalize'] as const).map(transform => (
-                                    <button
-                                      key={transform}
-                                      onClick={() => {
-                                        if (editingTextRun && run) {
-                                          const transformed = transformText(run.text, transform);
-                                          updatePdfText(run.id, transformed, editingTextFormat);
-                                        }
-                                      }}
-                                      className="px-3 py-1 rounded text-sm bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 capitalize"
-                                      title={transform}
-                                    >
-                                      {transform === 'uppercase' ? 'ABC' : transform === 'lowercase' ? 'abc' : 'Abc'}
-                                    </button>
-                                  ))}
+                              {/* Phase 7: Text Transformation & Rotation */}
+                              <div className="space-y-2 pt-2 border-t border-slate-300 dark:border-slate-600">
+                                <div className="flex items-center gap-2">
+                                  <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Transform:</label>
+                                  <div className="flex gap-1 flex-1">
+                                    {(['uppercase', 'lowercase', 'capitalize'] as const).map(transform => (
+                                      <button
+                                        key={transform}
+                                        onClick={() => {
+                                          if (editingTextRun && run) {
+                                            const transformed = transformText(run.text, transform);
+                                            updatePdfText(run.id, transformed, editingTextFormat);
+                                          }
+                                        }}
+                                        className="px-3 py-1 rounded text-sm bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 capitalize"
+                                        title={transform}
+                                      >
+                                        {transform === 'uppercase' ? 'ABC' : transform === 'lowercase' ? 'abc' : 'Abc'}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Rotation:</label>
+                                  <input
+                                    type="range"
+                                    min="-180"
+                                    max="180"
+                                    step="1"
+                                    value={textRotation}
+                                    onChange={(e) => {
+                                      const rotation = Number(e.target.value);
+                                      setTextRotation(rotation);
+                                      if (editingTextRun && pdfEngineRef.current) {
+                                        pdfEngineRef.current.transformText(pageNum, editingTextRun, { rotation });
+                                        renderPage(pageNum);
+                                      }
+                                    }}
+                                    className="flex-1"
+                                  />
+                                  <span className="text-xs text-gray-600 dark:text-gray-400 w-12">{textRotation}°</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Scale:</label>
+                                  <div className="flex gap-2 flex-1">
+                                    <div className="flex-1">
+                                      <label className="text-xs text-gray-600 dark:text-gray-400">X</label>
+                                      <input
+                                        type="range"
+                                        min="0.5"
+                                        max="2"
+                                        step="0.1"
+                                        value={textScaleX}
+                                        onChange={(e) => {
+                                          const scaleX = Number(e.target.value);
+                                          setTextScaleX(scaleX);
+                                          if (editingTextRun && pdfEngineRef.current) {
+                                            pdfEngineRef.current.transformText(pageNum, editingTextRun, { scaleX });
+                                            renderPage(pageNum);
+                                          }
+                                        }}
+                                        className="w-full"
+                                      />
+                                    </div>
+                                    <div className="flex-1">
+                                      <label className="text-xs text-gray-600 dark:text-gray-400">Y</label>
+                                      <input
+                                        type="range"
+                                        min="0.5"
+                                        max="2"
+                                        step="0.1"
+                                        value={textScaleY}
+                                        onChange={(e) => {
+                                          const scaleY = Number(e.target.value);
+                                          setTextScaleY(scaleY);
+                                          if (editingTextRun && pdfEngineRef.current) {
+                                            pdfEngineRef.current.transformText(pageNum, editingTextRun, { scaleY });
+                                            renderPage(pageNum);
+                                          }
+                                        }}
+                                        className="w-full"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => {
+                                      setTextRotation(0);
+                                      setTextScaleX(1);
+                                      setTextScaleY(1);
+                                      if (editingTextRun && pdfEngineRef.current) {
+                                        pdfEngineRef.current.transformText(pageNum, editingTextRun, { rotation: 0, scaleX: 1, scaleY: 1 });
+                                        renderPage(pageNum);
+                                      }
+                                    }}
+                                    className="px-3 py-1 rounded text-sm bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                    title="Reset Transform"
+                                  >
+                                    Reset
+                                  </button>
                                 </div>
                               </div>
                               
