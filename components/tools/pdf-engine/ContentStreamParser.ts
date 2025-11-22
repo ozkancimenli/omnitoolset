@@ -306,7 +306,14 @@ export class ContentStreamParser {
       // Handle TJ operator
       if (op.operator === 'TJ' && op.operands.length > 0) {
         const operand = op.operands[0];
-        if (!Array.isArray(operand)) return stream;
+        if (!Array.isArray(operand)) {
+          // Write original operator if operand is not an array
+          for (const op of op.operands) {
+            output += this.formatOperand(op) + ' ';
+          }
+          output += op.operator + '\n';
+          continue;
+        }
         const array = operand as Array<string | number>;
         const newArray: Array<string | number> = [];
         let modified = false;
