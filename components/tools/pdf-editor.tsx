@@ -1713,7 +1713,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     let closestDistance = Infinity;
     const tolerance = 30; // Increased tolerance for better click detection
     
-    runs.forEach(run => {
+    runs.forEach((run: PdfTextRun) => {
       // Text runs: x, y are in PDF coordinates (y=0 at bottom)
       // But we stored them with canvasY = viewport.height - pdfY
       // So run.y is actually canvas Y (top=0), not PDF Y (bottom=0)
@@ -1772,10 +1772,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     });
     
     if (closestRun) {
-      console.log('[Edit] Found text run:', closestRun.text.substring(0, 30), 'at', x, y);
+      const runText = closestRun.text || '';
+      console.log('[Edit] Found text run:', runText.substring(0, 30), 'at', x, y);
     } else {
-      const firstRun = runs[0];
-      console.log('[Edit] No text run found at position', x, y, 'runs:', runs.length, 'first run:', firstRun?.text?.substring(0, 20));
+      const firstRun: PdfTextRun | undefined = runs[0];
+      const firstRunText = firstRun?.text || '';
+      console.log('[Edit] No text run found at position', x, y, 'runs:', runs.length, 'first run:', firstRunText.substring(0, 20));
     }
     
     return closestRun;
