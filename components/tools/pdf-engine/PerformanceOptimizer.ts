@@ -53,7 +53,7 @@ export class PerformanceOptimizer {
     const cache = new Map<string, { value: T; timestamp: number }>();
     
     return new Proxy(cache, {
-      set(target, prop, value) {
+      get(target, prop) {
         if (prop === 'set') {
           return (key: string, val: { value: T; timestamp: number }) => {
             // Remove oldest if at capacity
@@ -73,10 +73,10 @@ export class PerformanceOptimizer {
             }
             
             target.set(key, { ...val, timestamp: Date.now() });
-            return true;
+            return target;
           };
         }
-        return Reflect.set(target, prop, value);
+        return Reflect.get(target, prop);
       },
     }) as any;
   }
