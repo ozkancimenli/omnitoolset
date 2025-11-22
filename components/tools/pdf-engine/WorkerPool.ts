@@ -182,10 +182,24 @@ export class WorkerPool {
    */
   private executeTask(worker: Worker, task: WorkerTask): Promise<WorkerResult> {
     return new Promise((resolve, reject) => {
+      // Store timeout for cleanup
+      const timeoutId = setTimeout(() => {
+        if (this.activeTasks.has(task.id)) {
+          this.activeTasks.delete(task.id);
+          reject(new Error('Task timeout'));
+        }
+      }, 30000); // 30 second timeout
+
       this.activeTasks.set(task.id, {
         worker,
-        resolve,
-        reject,
+        resolve: (result) => {
+          clearTimeout(timeoutId);
+          resolve(result);
+        },
+        reject: (error) => {
+          clearTimeout(timeoutId);
+          reject(error);
+        },
         startTime: performance.now(),
       });
 
@@ -207,31 +221,46 @@ export class WorkerPool {
       return this.processInMainThread(task);
     }
 
-    // Add to queue
+    // Check if worker is available immediately
+    const availableWorker = this.workers.find(w => 
+      !Array.from(this.activeTasks.values()).some(t => t.worker === w)
+    );
+
+    if (availableWorker) {
+      // Execute immediately
+      return this.executeTask(availableWorker, task);
+    }
+
+    // Add to queue and wait
     this.taskQueue.push(task);
-    
-    // Process queue
     this.processQueue();
 
-    // Wait for task to complete
+    // Wait for task to complete via queue processing
     return new Promise((resolve, reject) => {
-      const checkInterval = setInterval(() => {
-        const activeTask = this.activeTasks.get(task.id);
-        if (!activeTask) {
-          clearInterval(checkInterval);
-          // Task completed, find result
-          // In real implementation, we'd track results differently
+      const timeoutId = setTimeout(() => {
+        // Remove from queue if still pending
+        const index = this.taskQueue.findIndex(t => t.id === task.id);
+        if (index !== -1) {
+          this.taskQueue.splice(index, 1);
         }
-      }, 100);
-
-      // Fallback: process in main thread after timeout
-      setTimeout(() => {
-        clearInterval(checkInterval);
-        if (this.activeTasks.has(task.id)) {
-          this.activeTasks.delete(task.id);
-          this.processInMainThread(task).then(resolve).catch(reject);
-        }
+        // Fallback to main thread
+        this.processInMainThread(task).then(resolve).catch(reject);
       }, 30000); // 30 second timeout
+
+      // Check if task is already active (was picked up by processQueue)
+      const checkActive = () => {
+        const activeTask = this.activeTasks.get(task.id);
+        if (activeTask) {
+          // Task is being processed, wait for it to complete
+          // The promise will be resolved in handleWorkerMessage
+          // We need to store the resolve/reject in activeTasks
+          clearTimeout(timeoutId);
+        } else {
+          // Task not yet active, check again
+          setTimeout(checkActive, 50);
+        }
+      };
+      checkActive();
     });
   }
 
