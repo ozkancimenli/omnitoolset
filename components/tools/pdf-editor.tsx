@@ -1060,18 +1060,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       
       console.log('[PDF Editor] Calling loadPDF with file:', selectedFile.name);
       
-      // Call loadPDF directly with the selected file - use setTimeout to ensure state is set
-      setTimeout(() => {
-        loadPDF(selectedFile).catch((error) => {
-          console.error('[PDF Editor] loadPDF error:', error);
-          logError(error as Error, 'handleFileSelect loadPDF', { fileName: selectedFile.name });
-          toast.error('Failed to load PDF. Please try again.');
-          setFile(null);
-          if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-          }
-        });
-      }, 0);
+      // Call loadPDF directly - no delays, no setTimeout
+      try {
+        await loadPDF(selectedFile);
+        console.log('[PDF Editor] loadPDF completed successfully');
+      } catch (error) {
+        console.error('[PDF Editor] loadPDF error:', error);
+        logError(error as Error, 'handleFileSelect loadPDF', { fileName: selectedFile.name });
+        toast.error('Failed to load PDF. Please try again.');
+        setFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
     } catch (error) {
       console.error('[PDF Editor] handleFileSelect error:', error);
       logError(error as Error, 'handleFileSelect', { fileName: selectedFile.name });
