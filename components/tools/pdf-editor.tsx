@@ -1747,31 +1747,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     
     let closestRun: PdfTextRun | null = null;
     let closestDistance = Infinity;
-    const tolerance = 30; // Increased tolerance for better click detection
+    const tolerance = 50; // Increased tolerance significantly for better click detection
     
     runs.forEach((run: PdfTextRun) => {
-      // Text runs: x, y are in PDF coordinates (y=0 at bottom)
-      // But we stored them with canvasY = viewport.height - pdfY
-      // So run.y is actually canvas Y (top=0), not PDF Y (bottom=0)
-      // Click coordinates are in PDF coordinates after getCanvasCoordinates conversion
-      // We need to convert run coordinates back to PDF or convert click to canvas
+      // CRITICAL: Coordinate system conversion
+      // - Click coordinates (x, y) are in PDF coordinates (y=0 at bottom) from getCanvasCoordinates
+      // - Text runs are stored in PDF coordinates (y=0 at bottom) from extractTextLayer
+      // - Both should be in the same coordinate system now
       
-      // Since extractTextLayer stores canvasY, we need to convert click to canvas coords
-      // Or convert run coords to PDF coords
-      if (viewportRef.current) {
-        const viewport = viewportRef.current;
-        // Convert click PDF coords to canvas coords for comparison
-        const clickCanvasY = viewport.height - y;
-        const runCanvasY = run.y; // Already in canvas coords
-        
-        const isWithinBounds = (
-          x >= run.x - tolerance &&
-          x <= run.x + run.width + tolerance &&
-          clickCanvasY >= runCanvasY - run.height - tolerance &&
-          clickCanvasY <= runCanvasY + tolerance
-        );
-        
-        if (isWithinBounds) {
+      // Check if click is within text run bounds (in PDF coordinates)
+      const isWithinBounds = (
+        x >= run.x - tolerance &&
+        x <= run.x + run.width + tolerance &&
+        y >= (run.y - run.height) - tolerance && // PDF Y is at bottom, so subtract height
+        y <= run.y + tolerance
+      );
+      
+      if (isWithinBounds) {
           const centerX = run.x + run.width / 2;
           const centerY = runCanvasY - run.height / 2;
           const distance = Math.sqrt(
@@ -2600,20 +2592,21 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     
-    // Get click position relative to canvas
+    // Get click position relative to canvas (in CSS pixels)
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
     
-    // Convert to PDF coordinates (scale 1.0)
-    // Canvas display size matches viewport size
+    // Convert to PDF coordinates using viewport
     if (viewportRef.current) {
       const viewport = viewportRef.current;
+      // Canvas display size (rect.width/height) matches viewport size
       const pdfX = (clickX / rect.width) * viewport.width;
-      const pdfY = viewport.height - ((clickY / rect.height) * viewport.height); // Flip Y (PDF y=0 at bottom)
+      // PDF Y=0 is at bottom, Canvas Y=0 is at top - flip Y coordinate
+      const pdfY = viewport.height - ((clickY / rect.height) * viewport.height);
       return { x: pdfX, y: pdfY };
     }
     
-    // Fallback: use device pixel ratio
+    // Fallback: use device pixel ratio (should not happen if viewportRef is set)
     const devicePixelRatio = window.devicePixelRatio || 1;
     const scaleX = (canvas.width / devicePixelRatio) / rect.width;
     const scaleY = (canvas.height / devicePixelRatio) / rect.height;
