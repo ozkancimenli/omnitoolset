@@ -25,6 +25,10 @@ import { WebAssemblyProcessor } from './WebAssemblyProcessor';
 import { WorkerPool, WorkerResult } from './WorkerPool';
 import { AdvancedFontManager } from './AdvancedFontManager';
 import { PdfEncryption } from './PdfEncryption';
+import { DigitalSignature } from './DigitalSignature';
+import { ContentStreamOptimizer } from './ContentStreamOptimizer';
+import { MemoryMappedFile } from './MemoryMappedFile';
+import { AdvancedCache } from './AdvancedCache';
 
 export interface PdfTextRun {
   id: string;
@@ -82,6 +86,12 @@ export class PdfEngine {
   private wasmProcessor: WebAssemblyProcessor = new WebAssemblyProcessor();
   private workerPool: WorkerPool = new WorkerPool();
   private advancedFontManager: AdvancedFontManager = new AdvancedFontManager();
+  private digitalSignature: DigitalSignature = new DigitalSignature();
+  private advancedCache: AdvancedCache = new AdvancedCache({
+    maxSize: 50 * 1024 * 1024, // 50MB
+    maxEntries: 100,
+    compress: true,
+  });
 
   constructor(config: PdfEngineConfig = {}) {
     this.config = {
@@ -803,6 +813,61 @@ export class PdfEngine {
   }
 
   /**
+   * Ultra-Deep: Get digital signature manager
+   */
+  getDigitalSignature(): DigitalSignature {
+    return this.digitalSignature;
+  }
+
+  /**
+   * Ultra-Deep: Optimize content streams
+   */
+  async optimizeContentStreams(options: any = {}): Promise<{
+    success: boolean;
+    result?: any;
+    error?: string;
+  }> {
+    if (!this.pdfDoc) {
+      return { success: false, error: 'PDF not loaded' };
+    }
+
+    try {
+      const pdfBytes = await this.pdfDoc.save();
+      const optimized = ContentStreamOptimizer.optimize(pdfBytes, options);
+      
+      // Reload optimized PDF
+      this.pdfDoc = await PDFDocument.load(optimized.optimized);
+      
+      return {
+        success: true,
+        result: optimized.result,
+      };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Ultra-Deep: Get memory-mapped file
+   */
+  async getMemoryMappedFile(): Promise<MemoryMappedFile | null> {
+    if (!this.pdfDoc) return null;
+    try {
+      const pdfBytes = await this.pdfDoc.save();
+      return new MemoryMappedFile(pdfBytes);
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Ultra-Deep: Get advanced cache
+   */
+  getAdvancedCache(): AdvancedCache {
+    return this.advancedCache;
+  }
+
+  /**
    * Advanced: Search and replace text across all pages
    */
   async searchAndReplace(
@@ -1064,6 +1129,8 @@ export class PdfEngine {
     this.renderingPipeline.clearCache();
     this.workerPool.terminate();
     this.advancedFontManager.clearCache();
+    this.digitalSignature.clear();
+    this.advancedCache.clear();
   }
 }
 

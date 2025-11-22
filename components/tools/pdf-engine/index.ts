@@ -49,3 +49,15 @@ export type { FontSubset, FontMetrics } from './AdvancedFontManager';
 export { PdfEncryption } from './PdfEncryption';
 export type { EncryptionOptions, EncryptionInfo } from './PdfEncryption';
 
+export { DigitalSignature } from './DigitalSignature';
+export type { SignatureInfo, SignatureField } from './DigitalSignature';
+
+export { ContentStreamOptimizer } from './ContentStreamOptimizer';
+export type { OptimizationResult } from './ContentStreamOptimizer';
+
+export { MemoryMappedFile } from './MemoryMappedFile';
+export type { MemoryMap } from './MemoryMappedFile';
+
+export { AdvancedCache } from './AdvancedCache';
+export type { CacheEntry, CacheOptions } from './AdvancedCache';
+
