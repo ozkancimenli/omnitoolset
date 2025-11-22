@@ -151,6 +151,7 @@ export class PerformanceOptimizer {
 
   /**
    * Create worker pool for heavy operations
+   * Note: Worker pools require worker scripts to be available
    */
   static createWorkerPool(
     workerScript: string,
@@ -159,21 +160,43 @@ export class PerformanceOptimizer {
     execute: (data: any) => Promise<any>;
     terminate: () => void;
   } {
+    // Check if Workers are supported
+    if (typeof Worker === 'undefined') {
+      // Fallback: execute synchronously
+      return {
+        execute: async (data: any) => {
+          // Would need to implement synchronous fallback
+          throw new Error('Workers not supported in this environment');
+        },
+        terminate: () => {},
+      };
+    }
+
     const workers: Worker[] = [];
     const queue: Array<{ data: any; resolve: (value: any) => void; reject: (error: any) => void }> = [];
     let currentWorkerIndex = 0;
 
     // Initialize workers
-    for (let i = 0; i < poolSize; i++) {
-      const worker = new Worker(workerScript, { type: 'module' });
-      workers.push(worker);
+    try {
+      for (let i = 0; i < poolSize; i++) {
+        const worker = new Worker(workerScript, { type: 'module' });
+        workers.push(worker);
+      }
+    } catch (error) {
+      // Worker creation failed, return fallback
+      return {
+        execute: async (data: any) => {
+          throw new Error('Failed to create workers');
+        },
+        terminate: () => {},
+      };
     }
 
     const processQueue = () => {
-      if (queue.length === 0) return;
+      if (queue.length === 0 || workers.length === 0) return;
 
       const worker = workers[currentWorkerIndex];
-      currentWorkerIndex = (currentWorkerIndex + 1) % poolSize;
+      currentWorkerIndex = (currentWorkerIndex + 1) % workers.length;
 
       if (worker) {
         const task = queue.shift()!;
@@ -188,7 +211,7 @@ export class PerformanceOptimizer {
         const handleError = (e: ErrorEvent) => {
           worker.removeEventListener('message', handleMessage);
           worker.removeEventListener('error', handleError);
-          task.reject(e.error);
+          task.reject(e.error || new Error('Worker error'));
           processQueue();
         };
 
