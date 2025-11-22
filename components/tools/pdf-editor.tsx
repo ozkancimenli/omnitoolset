@@ -11,6 +11,7 @@ import { PDF_MAX_SIZE, AUTO_SAVE_INTERVAL, DEBOUNCE_DELAY, RENDER_CACHE_SIZE } f
 import { validatePDFFile, logError, measurePerformance, sanitizeTextForPDF, sanitizeFileName, PDFValidationError, PDFProcessingError } from './pdf-editor/utils';
 import { mapTextItemsToRuns, findTextRunAtPosition as findTextRunAtPositionUtil } from './pdf-editor/utils/textExtraction';
 import { usePdfLoader, useTextEditing, useZoom, useCanvas, useAnnotations } from './pdf-editor/hooks';
+import { Toolbar, AIPanel } from './pdf-editor/components';
 
 // Legacy constants (will be moved to constants.ts)
 const PDF_SUPPORTED_TYPES = ['application/pdf'];
@@ -5319,8 +5320,87 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
             {/* Main Editor Area - iLovePDF Style Full Screen */}
             <div className="flex-1 flex flex-col bg-slate-100 dark:bg-slate-900 w-full" style={{ height: '100%', minHeight: '600px' }}>
-              {/* Compact Toolbar - iLovePDF Style */}
-              <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm flex-shrink-0">
+              {/* Compact Toolbar - Now Modular */}
+              <Toolbar
+                tool={tool}
+                setTool={setTool}
+                isEditable={isEditable}
+                showPageManager={showPageManager}
+                setShowPageManager={setShowPageManager}
+                showTemplatesPanel={showTemplatesPanel}
+                setShowTemplatesPanel={setShowTemplatesPanel}
+                showSettings={showSettings}
+                setShowSettings={setShowSettings}
+                showHelp={showHelp}
+                setShowHelp={setShowHelp}
+                showGrid={showGrid}
+                setShowGrid={setShowGrid}
+                showPageFeatures={showPageFeatures}
+                setShowPageFeatures={setShowPageFeatures}
+                showAIPanel={showAIPanel}
+                setShowAIPanel={setShowAIPanel}
+                showPerformancePanel={showPerformancePanel}
+                setShowPerformancePanel={setShowPerformancePanel}
+                textEditMode={textEditMode}
+                setTextEditMode={setTextEditMode}
+                imageInputRef={imageInputRef}
+                currentText={currentText}
+                setCurrentText={setCurrentText}
+                fontFamily={fontFamily}
+                setFontFamily={setFontFamily}
+                fontSize={fontSize}
+                setFontSize={setFontSize}
+                textAlign={textAlign}
+                setTextAlign={setTextAlign}
+                textColor={textColor}
+                setTextColor={setTextColor}
+                fontWeight={fontWeight}
+                setFontWeight={setFontWeight}
+                fontStyle={fontStyle}
+                setFontStyle={setFontStyle}
+                textDecoration={textDecoration}
+                setTextDecoration={setTextDecoration}
+                highlightColor={highlightColor}
+                setHighlightColor={setHighlightColor}
+                strokeColor={strokeColor}
+                setStrokeColor={setStrokeColor}
+                strokeWidth={strokeWidth}
+                setStrokeWidth={setStrokeWidth}
+                watermarkText={watermarkText}
+                setWatermarkText={setWatermarkText}
+                watermarkOpacity={watermarkOpacity}
+                setWatermarkOpacity={setWatermarkOpacity}
+                selectedStamp={selectedStamp}
+                setSelectedStamp={setSelectedStamp}
+                stampSize={stampSize}
+                setStampSize={setStampSize}
+                measurementUnit={measurementUnit}
+                setMeasurementUnit={setMeasurementUnit}
+                formFieldType={formFieldType}
+                setFormFieldType={setFormFieldType}
+                formFieldName={formFieldName}
+                setFormFieldName={setFormFieldName}
+                formFieldRequired={formFieldRequired}
+                setFormFieldRequired={setFormFieldRequired}
+                formFieldOptions={formFieldOptions}
+                setFormFieldOptions={setFormFieldOptions}
+                polygonPoints={polygonPoints}
+                setPolygonPoints={setPolygonPoints}
+                setIsDrawingPolygon={setIsDrawingPolygon}
+                textTemplates={textTemplates}
+                applyTextTemplate={applyTextTemplate}
+                handleImageSelect={handleImageSelect}
+                renderPage={renderPage}
+                pageNum={pageNum}
+                zoom={zoom}
+                setZoom={setZoom}
+                zoomMode={zoomMode}
+                setZoomMode={setZoomMode}
+                toast={toast}
+              />
+              
+              {/* Legacy Toolbar Content - Will be removed after full migration */}
+              <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm flex-shrink-0 hidden">
                 <div className="px-3 py-2">
                   <div className="flex items-center justify-between gap-4">
                     {/* Left: History & Tools */}
