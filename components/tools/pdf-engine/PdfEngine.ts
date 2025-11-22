@@ -1220,5 +1220,110 @@ export class PdfEngine {
     this.digitalSignature.clear();
     this.advancedCache.clear();
   }
+
+  /**
+   * Get God Level Features instance
+   */
+  getGodLevelFeatures(): GodLevelFeatures {
+    return this.godLevelFeatures;
+  }
+
+  /**
+   * AI-Powered Text Suggestions
+   */
+  async getAISuggestions(
+    context: string,
+    cursorPosition: number,
+    options?: { language?: string; style?: string; domain?: string }
+  ): Promise<AISuggestion[]> {
+    return await this.godLevelFeatures.getAISuggestions(context, cursorPosition, options);
+  }
+
+  /**
+   * Real-time Collaboration
+   */
+  createCollaborationSession(name: string): CollaborationSession {
+    return this.godLevelFeatures.createCollaborationSession(name);
+  }
+
+  /**
+   * Advanced OCR
+   */
+  async performOCR(
+    imageData: ImageData | Uint8Array,
+    options?: { language?: string; detectHandwriting?: boolean }
+  ): Promise<OCRResult[]> {
+    return await this.godLevelFeatures.performOCR(imageData, options);
+  }
+
+  /**
+   * 3D PDF Support
+   */
+  embed3DObject(pdfBytes: Uint8Array, object: PDF3DObject): { success: boolean; modifiedPdf?: Uint8Array; error?: string } {
+    return this.godLevelFeatures.embed3DObject(pdfBytes, object);
+  }
+
+  /**
+   * Media Embedding
+   */
+  embedMedia(pdfBytes: Uint8Array, media: MediaEmbed): { success: boolean; modifiedPdf?: Uint8Array; error?: string } {
+    return this.godLevelFeatures.embedMedia(pdfBytes, media);
+  }
+
+  /**
+   * PDF Comparison
+   */
+  comparePDFs(pdf1: Uint8Array, pdf2: Uint8Array): { success: boolean; diff?: PDFDiff; error?: string } {
+    return this.godLevelFeatures.comparePDFs(pdf1, pdf2);
+  }
+
+  /**
+   * Cloud Sync
+   */
+  setupCloudSync(config: CloudSync): { success: boolean; error?: string } {
+    return this.godLevelFeatures.setupCloudSync(config);
+  }
+
+  /**
+   * Advanced Security
+   */
+  applySecurityFeature(pdfBytes: Uint8Array, feature: SecurityFeature): { success: boolean; modifiedPdf?: Uint8Array; error?: string } {
+    return this.godLevelFeatures.applySecurityFeature(pdfBytes, feature);
+  }
+
+  /**
+   * Multi-language Support
+   */
+  detectLanguage(text: string): { language: string; confidence: number } {
+    return this.godLevelFeatures.detectLanguage(text);
+  }
+
+  /**
+   * Translation
+   */
+  async translateText(text: string, targetLanguage: string, sourceLanguage?: string): Promise<{ translated: string; confidence: number }> {
+    return await this.godLevelFeatures.translateText(text, targetLanguage, sourceLanguage);
+  }
+
+  /**
+   * Accessibility
+   */
+  generateAccessibilityTags(pdfBytes: Uint8Array): { success: boolean; tags?: any; error?: string } {
+    return this.godLevelFeatures.generateAccessibilityTags(pdfBytes);
+  }
+
+  /**
+   * WebGL Rendering
+   */
+  enableWebGLRendering(): { success: boolean; error?: string } {
+    return this.godLevelFeatures.enableWebGLRendering();
+  }
+
+  /**
+   * Version Control
+   */
+  createVersion(pdfBytes: Uint8Array, metadata?: { author?: string; message?: string }): string {
+    return this.godLevelFeatures.createVersion(pdfBytes, metadata);
+  }
 }
 
