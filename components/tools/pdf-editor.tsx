@@ -5,6 +5,12 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { toast } from '@/components/Toast';
 import { PdfEngine } from './pdf-engine';
 
+// Import modular components
+import type { PdfEditorProps, ToolType, Annotation, PdfTextItem, PdfTextRun } from './pdf-editor/types';
+import { PDF_MAX_SIZE, AUTO_SAVE_INTERVAL, DEBOUNCE_DELAY, RENDER_CACHE_SIZE } from './pdf-editor/constants';
+import { validatePDFFile, logError, measurePerformance, sanitizeTextForPDF, sanitizeFileName, PDFValidationError, PDFProcessingError } from './pdf-editor/utils';
+import { mapTextItemsToRuns, findTextRunAtPosition as findTextRunAtPositionUtil } from './pdf-editor/utils/textExtraction';
+
 // Production: Constants for configuration
 const PDF_MAX_SIZE = 50 * 1024 * 1024; // 50MB
 const PDF_SUPPORTED_TYPES = ['application/pdf'];
@@ -1623,7 +1629,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       
       setPdfTextItems(prev => ({ ...prev, [pageNumber]: textItems }));
       
-      // Phase 2.2: Map text items to text runs (grouped by line/paragraph)
+      // Phase 2.2: Map text items to text runs (grouped by line/paragraph) - using utility
       const textRuns = mapTextItemsToRuns(textItems, pageNumber);
       console.log('[Edit] extractTextLayer: Extracted', textRuns.length, 'text runs for page', pageNumber);
       setPdfTextRuns(prev => ({ ...prev, [pageNumber]: textRuns }));
@@ -1638,118 +1644,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
-  // Phase 2.2: Map text items to text runs
-  const mapTextItemsToRuns = (textItems: PdfTextItem[], pageNumber: number): PdfTextRun[] => {
-    const runs: PdfTextRun[] = [];
-    let currentRun: PdfTextItem[] = [];
-    let currentY = -1;
-    const lineThreshold = 5; // Pixels - items within this Y distance are on same line
-    
-    textItems.forEach((item, index) => {
-      if (item.str.trim() === '') return; // Skip empty items
-      
-      // Check if this item is on a new line
-      if (currentY === -1 || Math.abs(item.y - currentY) > lineThreshold) {
-        // Save previous run if exists
-        if (currentRun.length > 0) {
-          const runText = currentRun.map(i => i.str).join('');
-          const firstItem = currentRun[0];
-          const lastItem = currentRun[currentRun.length - 1];
-          const runWidth = lastItem.x + lastItem.width - firstItem.x;
-          
-          runs.push({
-            id: `run-${pageNumber}-${runs.length}`,
-            text: runText,
-            x: firstItem.x,
-            y: firstItem.y,
-            width: runWidth,
-            height: firstItem.height,
-            fontSize: firstItem.fontSize,
-            fontName: firstItem.fontName,
-            page: pageNumber,
-            startIndex: index - currentRun.length,
-            endIndex: index - 1,
-          });
-        }
-        
-        // Start new run
-        currentRun = [item];
-        currentY = item.y;
-      } else {
-        // Same line - add to current run
-        currentRun.push(item);
-      }
-    });
-    
-    // Add last run
-    if (currentRun.length > 0) {
-      const runText = currentRun.map(i => i.str).join('');
-      const firstItem = currentRun[0];
-      const lastItem = currentRun[currentRun.length - 1];
-      const runWidth = lastItem.x + lastItem.width - firstItem.x;
-      
-      runs.push({
-        id: `run-${pageNumber}-${runs.length}`,
-        text: runText,
-        x: firstItem.x,
-        y: firstItem.y,
-        width: runWidth,
-        height: firstItem.height,
-        fontSize: firstItem.fontSize,
-        fontName: firstItem.fontName,
-        page: pageNumber,
-        startIndex: textItems.length - currentRun.length,
-        endIndex: textItems.length - 1,
-      });
-    }
-    
-    return runs;
-  };
+  // Phase 2.2: Map text items to text runs - using utility function (removed, using imported)
 
-  // Phase 2.3: Find text run at click position - SIMPLIFIED & AGGRESSIVE
+  // Phase 2.3: Find text run at click position - using utility
   const findTextRunAtPosition = (x: number, y: number, pageNumber: number): PdfTextRun | null => {
     const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
-    if (runs.length === 0) {
-      return null;
-    }
-    
-    // AGGRESSIVE: Very large tolerance - find ANY run near the click
-    const tolerance = 200; // Massive tolerance for easy clicking
-    
-    let closestRun: PdfTextRun | null = null;
-    let closestDistance = Infinity;
-    
-    runs.forEach((run: PdfTextRun) => {
-      // Simplified bounds check - just check if click is anywhere near the text
-      const textTop = run.y - run.height;
-      const textBottom = run.y;
-      const textLeft = run.x;
-      const textRight = run.x + run.width;
-      
-      // Check if click is within expanded bounds
-      const isNear = (
-        x >= textLeft - tolerance &&
-        x <= textRight + tolerance &&
-        y >= textTop - tolerance &&
-        y <= textBottom + tolerance
-      );
-      
-      if (isNear) {
-        // Calculate distance to text center
-        const centerX = run.x + run.width / 2;
-        const centerY = run.y - run.height / 2;
-        const distance = Math.sqrt(
-          Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
-        );
-        
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestRun = run;
-        }
-      }
-    });
-    
-    return closestRun;
+    return findTextRunAtPositionUtil(x, y, runs, 200); // 200px tolerance
   };
 
   // Phase 4.1: Find character index at position within a text run
