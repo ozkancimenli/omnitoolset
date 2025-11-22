@@ -54,8 +54,7 @@ export class AdvancedCache<T = any> {
 
     // Compress if needed
     if (this.options.compress && size > this.options.compressionThreshold) {
-      const compressed = this.compress(data);
-      entry.compressed = compressed || undefined;
+      entry.compressed = this.compress(data);
       if (entry.compressed) {
         entry.size = entry.compressed.length;
       }
@@ -150,7 +149,7 @@ export class AdvancedCache<T = any> {
   /**
    * Compress data
    */
-  private compress(data: T): Uint8Array | null {
+  private compress(data: T): Uint8Array | undefined {
     try {
       if (data instanceof Uint8Array) {
         // Simple compression simulation (in production, use proper compression)
@@ -159,7 +158,7 @@ export class AdvancedCache<T = any> {
       const json = JSON.stringify(data);
       return new TextEncoder().encode(json);
     } catch {
-      return null;
+      return undefined;
     }
   }
 
