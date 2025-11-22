@@ -405,6 +405,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [encryptionPassword, setEncryptionPassword] = useState('');
   const [fontStats, setFontStats] = useState<any>(null);
   
+  // Final Ultra-Deep Features
+  const [showSignaturePanel, setShowSignaturePanel] = useState(false);
+  const [showOptimizationPanel, setShowOptimizationPanel] = useState(false);
+  const [showCachePanel, setShowCachePanel] = useState(false);
+  const [signatureFields, setSignatureFields] = useState<any[]>([]);
+  const [optimizationResults, setOptimizationResults] = useState<any>(null);
+  const [cacheStats, setCacheStats] = useState<any>(null);
+  
   // Phase 6: Performance & Advanced Features
   const [textRunsCache, setTextRunsCache] = useState<Record<number, { runs: PdfTextRun[]; timestamp: number }>>({});
   
@@ -6352,6 +6360,89 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+
+                          {/* Final Ultra-Deep Features */}
+                          <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+
+                          {/* Digital Signatures */}
+                          <button
+                            onClick={() => {
+                              setShowSignaturePanel(!showSignaturePanel);
+                              if (!showSignaturePanel && pdfEngineRef.current) {
+                                const sigMgr = pdfEngineRef.current.getDigitalSignature();
+                                setSignatureFields(sigMgr.getSignatureFields());
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showSignaturePanel
+                                ? 'bg-emerald-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="Digital Signatures"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+
+                          {/* Content Stream Optimization */}
+                          <button
+                            onClick={async () => {
+                              setShowOptimizationPanel(!showOptimizationPanel);
+                              if (!showOptimizationPanel && pdfEngineRef.current) {
+                                setIsProcessing(true);
+                                try {
+                                  const result = await pdfEngineRef.current.optimizeContentStreams({
+                                    removeRedundant: true,
+                                    compressWhitespace: true,
+                                    optimizeOperators: true,
+                                  });
+                                  if (result.success) {
+                                    setOptimizationResults(result.result);
+                                    toast.success('Content streams optimized');
+                                  } else {
+                                    toast.error(result.error || 'Optimization failed');
+                                  }
+                                } catch (error) {
+                                  console.error('Optimization error:', error);
+                                  toast.error('Optimization failed');
+                                } finally {
+                                  setIsProcessing(false);
+                                }
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showOptimizationPanel
+                                ? 'bg-violet-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="Content Stream Optimization"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                          </button>
+
+                          {/* Advanced Cache */}
+                          <button
+                            onClick={() => {
+                              setShowCachePanel(!showCachePanel);
+                              if (!showCachePanel && pdfEngineRef.current) {
+                                const cache = pdfEngineRef.current.getAdvancedCache();
+                                setCacheStats(cache.getStats());
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showCachePanel
+                                ? 'bg-rose-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="Advanced Cache"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
                             </svg>
                           </button>
                         </>
