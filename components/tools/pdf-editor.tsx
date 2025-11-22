@@ -1583,21 +1583,45 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     return runs;
   };
 
-  // Phase 2.3: Find text run at click position
+  // Phase 2.3: Find text run at click position (Enhanced with better detection)
   const findTextRunAtPosition = (x: number, y: number, pageNumber: number): PdfTextRun | null => {
     const runs = pdfTextRuns[pageNumber] || [];
     if (runs.length === 0) return null;
     
-    return runs.find(run => {
+    // Find the closest text run (improved tolerance for better click detection)
+    let closestRun: PdfTextRun | null = null;
+    let closestDistance = Infinity;
+    const tolerance = 10; // Increased tolerance for easier clicking
+    
+    runs.forEach(run => {
       // Check if click is within text run bounds
-      const tolerance = 5; // Pixels tolerance
-      return (
-        x >= run.x - tolerance &&
-        x <= run.x + run.width + tolerance &&
-        y >= run.y - run.height - tolerance &&
-        y <= run.y + tolerance
+      const runX = run.x;
+      const runY = run.y;
+      const runWidth = run.width;
+      const runHeight = run.height;
+      
+      // Calculate distance from click to text run center
+      const centerX = runX + runWidth / 2;
+      const centerY = runY - runHeight / 2;
+      const distance = Math.sqrt(
+        Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
       );
-    }) || null;
+      
+      // Check if within bounds
+      const isWithinBounds = (
+        x >= runX - tolerance &&
+        x <= runX + runWidth + tolerance &&
+        y >= runY - runHeight - tolerance &&
+        y <= runY + tolerance
+      );
+      
+      if (isWithinBounds && distance < closestDistance) {
+        closestDistance = distance;
+        closestRun = run;
+      }
+    });
+    
+    return closestRun;
   };
 
   // Phase 4.1: Find character index at position within a text run
@@ -2638,6 +2662,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   const handleCanvasMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // Mouse Pan: End panning
+    if (isPanning) {
+      setIsPanning(false);
+      setPanStart(null);
+      e.preventDefault();
+      return;
+    }
+    
     // Phase 4.1: End text selection
     if (isSelectingText) {
       setIsSelectingText(false);
