@@ -6823,7 +6823,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         key={style.id}
                         onClick={() => {
                           if (editingTextRun) {
-                            applyTextStyle(style.id);
+                            applyTextStyle({ name: style.name, format: style });
                           } else {
                             toast.warning('Select text to apply style');
                           }
