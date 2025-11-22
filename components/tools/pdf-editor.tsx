@@ -3947,8 +3947,69 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     updatePdfTextInStream(runId, newText, format);
   };
 
-  // Phase 6: Undo/Redo for text edits
-  const undoTextEdit = useCallback(() => {
+  // Phase 6: Undo/Redo for text edits (using OmniPDF Engine)
+  const undoTextEdit = useCallback(async () => {
+    // Use engine undo if available
+    if (pdfEngineRef.current) {
+      const status = pdfEngineRef.current.getUndoRedoStatus();
+      if (!status.canUndo) {
+        toast.warning('Nothing to undo');
+        return;
+      }
+      
+      const result = await pdfEngineRef.current.undo();
+      if (result.success) {
+        // Reload PDF to show changes
+        if (file && pdfEngineRef.current) {
+          const pdfBytes = await pdfEngineRef.current.savePdf();
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const newUrl = URL.createObjectURL(blob);
+          
+          if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+          }
+          setPdfUrl(newUrl);
+          
+          // Update pdf-lib ref
+          pdfLibDocRef.current = await PDFDocument.load(pdfBytes);
+          
+          // Update text runs from engine
+          const engineRuns = pdfEngineRef.current.getTextRuns(pageNum);
+          setPdfTextRuns(prev => ({
+            ...prev,
+            [pageNum]: engineRuns.map(run => ({
+              id: run.id,
+              text: run.text,
+              x: run.x,
+              y: run.y,
+              width: run.width,
+              height: run.height,
+              fontSize: run.fontSize,
+              fontName: run.fontName,
+              fontWeight: run.fontWeight,
+              fontStyle: run.fontStyle,
+              color: run.color,
+              page: run.page,
+              transform: run.transform,
+              startIndex: run.startIndex,
+              endIndex: run.endIndex,
+              textAlign: 'left' as const,
+            })),
+          }));
+          
+          // Re-render
+          await renderPage(pageNum);
+        }
+        
+        toast.success('Text edit undone');
+        return;
+      } else {
+        toast.error(result.error || 'Failed to undo');
+        return;
+      }
+    }
+    
+    // Fallback to legacy method
     if (textEditHistoryIndex < 0) {
       toast.info('No text edits to undo');
       return;
@@ -3963,9 +4024,70 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setTextEditHistoryIndex(prev => prev - 1);
       toast.success('Text edit undone');
     }
-  }, [textEditHistory, textEditHistoryIndex, pageNum, pdfTextRuns]);
+  }, [textEditHistory, textEditHistoryIndex, pageNum, pdfTextRuns, file, pdfUrl]);
 
-  const redoTextEdit = useCallback(() => {
+  const redoTextEdit = useCallback(async () => {
+    // Use engine redo if available
+    if (pdfEngineRef.current) {
+      const status = pdfEngineRef.current.getUndoRedoStatus();
+      if (!status.canRedo) {
+        toast.warning('Nothing to redo');
+        return;
+      }
+      
+      const result = await pdfEngineRef.current.redo();
+      if (result.success) {
+        // Reload PDF to show changes
+        if (file && pdfEngineRef.current) {
+          const pdfBytes = await pdfEngineRef.current.savePdf();
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const newUrl = URL.createObjectURL(blob);
+          
+          if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+          }
+          setPdfUrl(newUrl);
+          
+          // Update pdf-lib ref
+          pdfLibDocRef.current = await PDFDocument.load(pdfBytes);
+          
+          // Update text runs from engine
+          const engineRuns = pdfEngineRef.current.getTextRuns(pageNum);
+          setPdfTextRuns(prev => ({
+            ...prev,
+            [pageNum]: engineRuns.map(run => ({
+              id: run.id,
+              text: run.text,
+              x: run.x,
+              y: run.y,
+              width: run.width,
+              height: run.height,
+              fontSize: run.fontSize,
+              fontName: run.fontName,
+              fontWeight: run.fontWeight,
+              fontStyle: run.fontStyle,
+              color: run.color,
+              page: run.page,
+              transform: run.transform,
+              startIndex: run.startIndex,
+              endIndex: run.endIndex,
+              textAlign: 'left' as const,
+            })),
+          }));
+          
+          // Re-render
+          await renderPage(pageNum);
+        }
+        
+        toast.success('Text edit redone');
+        return;
+      } else {
+        toast.error(result.error || 'Failed to redo');
+        return;
+      }
+    }
+    
+    // Fallback to legacy method
     if (textEditHistoryIndex >= textEditHistory.length - 1) {
       toast.info('No text edits to redo');
       return;
@@ -3981,7 +4103,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setTextEditHistoryIndex(nextIndex);
       toast.success('Text edit redone');
     }
-  }, [textEditHistory, textEditHistoryIndex, pageNum, pdfTextRuns]);
+  }, [textEditHistory, textEditHistoryIndex, pageNum, pdfTextRuns, file, pdfUrl]);
 
   // Phase 6: Calculate text statistics
   const calculateTextStats = () => {
