@@ -6831,7 +6831,34 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     const InputComponent = multiLineEditing ? 'textarea' : 'input';
                     const inputProps: any = {
                       ref: textInputRef,
-                      value: editingTextValue || run.text, // Controlled input
+                      value: editingTextValue || run.text, // Controlled input - CRITICAL
+                      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                        const newValue = e.target.value;
+                        setEditingTextValue(newValue);
+                        console.log('[TEXT INPUT] onChange:', newValue.substring(0, 30));
+                        
+                        // Real-time preview
+                        if (realTimePreview && editingTextRun) {
+                          setPdfTextRuns(prev => {
+                            const pageRuns = prev[pageNum] || [];
+                            return {
+                              ...prev,
+                              [pageNum]: pageRuns.map(r =>
+                                r.id === editingTextRun ? { ...r, text: newValue } : r
+                              ),
+                            };
+                          });
+                          
+                          // Debounced re-render
+                          if (previewTimeoutRef.current) {
+                            clearTimeout(previewTimeoutRef.current);
+                          }
+                          previewTimeoutRef.current = setTimeout(() => {
+                            renderPage(pageNum, false);
+                            previewTimeoutRef.current = null;
+                          }, 300);
+                        }
+                      },
                       onBlur: async (e: any) => {
                         if (editingTextRun) {
                           const finalValue = editingTextValue || e.target.value;
