@@ -4104,8 +4104,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             };
           });
           
-          // Re-render the page to show changes
-          await renderPage(pageNum);
+          // Re-render the page to show changes (use requestAnimationFrame for smooth update)
+          requestAnimationFrame(() => {
+            renderPage(pageNum, false); // Don't use cache for immediate visual feedback
+          });
           
           // Save to text edit history
           saveTextEditToHistory(runId, run.text, sanitizedText, format);
