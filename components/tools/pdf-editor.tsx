@@ -10151,6 +10151,38 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         </div>
       )}
 
+      {/* PDF Comparison Panel - Now Modular */}
+      <ComparisonPanel
+        showPdfComparison={showPdfComparison}
+        setShowPdfComparison={setShowPdfComparison}
+        file={file}
+        comparisonFile={comparisonFile}
+        setComparisonFile={setComparisonFile}
+        pdfEngineRef={pdfEngineRef}
+        toast={toast}
+      />
+
+      {/* Social Share Panel - Now Modular */}
+      <SocialSharePanel
+        showSocialShare={showSocialShare}
+        setShowSocialShare={setShowSocialShare}
+        shareUrl={shareUrl}
+        setShareUrl={setShareUrl}
+        file={file}
+        pdfEngineRef={pdfEngineRef}
+        toast={toast}
+      />
+
+      {/* Performance Panel - Now Modular */}
+      <PerformancePanel
+        showPerformancePanel={showPerformancePanel}
+        setShowPerformancePanel={setShowPerformancePanel}
+        webglEnabled={webglEnabled}
+        setWebglEnabled={setWebglEnabled}
+        pdfEngineRef={pdfEngineRef}
+        toast={toast}
+      />
+
       {/* Advanced: Context Menu for Annotations */}
       {contextMenu && contextMenu.annotationId && (
         <div
