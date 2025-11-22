@@ -7025,6 +7025,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                               if (ctx) {
                                 ctx.drawImage(img, 0, 0);
                                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                                if (!pdfEngineRef.current) {
+                                  toast.error('PDF engine not initialized');
+                                  return;
+                                }
                                 const results = await pdfEngineRef.current.performOCR(imageData, { detectHandwriting: true });
                                 if (results.length > 0) {
                                   toast.success(`OCR: Found ${results.length} text block(s)`);
