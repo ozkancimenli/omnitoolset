@@ -6900,11 +6900,33 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         setShowTextFormatPanel(false);
                         setEditingTextFormat({});
                       },
-                      onKeyDown: (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                      onKeyDown: async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                        // Paste from clipboard (Ctrl+V / Cmd+V)
+                        if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+                          e.preventDefault();
+                          try {
+                            const clipboardText = await navigator.clipboard.readText();
+                            const currentValue = editingTextValue || run.text;
+                            const cursorPos = (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).selectionStart || 0;
+                            const newValue = currentValue.slice(0, cursorPos) + clipboardText + currentValue.slice(cursorPos);
+                            setEditingTextValue(newValue);
+                            // Update cursor position
+                            setTimeout(() => {
+                              const input = e.currentTarget as HTMLInputElement | HTMLTextAreaElement;
+                              input.setSelectionRange(cursorPos + clipboardText.length, cursorPos + clipboardText.length);
+                            }, 0);
+                          } catch (err) {
+                            console.error('Failed to paste from clipboard:', err);
+                            toast.error('Failed to paste from clipboard');
+                          }
+                          return;
+                        }
+                        
                         if (e.key === 'Enter' && !multiLineEditing) {
                           (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).blur();
                         } else if (e.key === 'Escape') {
                           setEditingTextRun(null);
+                          setEditingTextValue('');
                           setTextEditMode(false);
                           setShowTextFormatPanel(false);
                           setEditingTextFormat({});
@@ -9134,6 +9156,30 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-600 dark:text-slate-400">Find & Replace</span>
+                  </button>
+                  
+                  {/* Text Statistics Button */}
+                  <button
+                    onClick={calculateTextStatistics}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    title="Text Statistics (Alt+S)"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-400">Statistics</span>
+                  </button>
+                  
+                  {/* Text Styles Button */}
+                  <button
+                    onClick={() => setShowTextStyles(!showTextStyles)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    title="Text Styles"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-400">Styles</span>
                     <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">Ctrl+H</kbd>
                   </div>
                 </div>
