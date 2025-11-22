@@ -237,7 +237,7 @@ export class ContentStreamParser {
       // Handle TJ operator (array of text and spacing)
       if (op.operator === 'TJ' && op.operands.length > 0) {
         const operand = op.operands[0];
-        if (!Array.isArray(operand)) return;
+        if (!Array.isArray(operand)) continue;
         const array = operand as Array<string | number>;
         let currentX = textMatrix[4];
         
