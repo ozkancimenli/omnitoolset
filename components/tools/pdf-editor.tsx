@@ -6200,9 +6200,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                 try {
                                   const analysis = await pdfEngineRef.current.analyzeStructure();
                                   const repair = await pdfEngineRef.current.repairPdf({
-                                    fixXref: true,
-                                    fixObjects: true,
-                                    removeCorrupted: false,
+                                    rebuildXref: true,
+                                    fixCorruptedObjects: true,
+                                    removeOrphanedObjects: false,
                                   });
                                   setRepairResults({ analysis, repair });
                                 } catch (error) {
