@@ -1814,7 +1814,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
   // Phase 4.1: Get text selection rectangle
   const getTextSelectionRect = (start: { runId: string; charIndex: number }, end: { runId: string; charIndex: number }, pageNumber: number) => {
-    const runs = pdfTextRuns[pageNumber] || [];
+    const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
     const startRun = runs.find(r => r.id === start.runId);
     const endRun = runs.find(r => r.id === end.runId);
     
@@ -3815,7 +3815,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       const { width, height } = page.getSize();
       
       // Phase 3.3.1: Get all text runs for this page
-      const runs = pdfTextRuns[pageNumber] || [];
+      const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
       
       // Phase 3.3.2: Create a map of modifications
       const modificationMap = new Map<string, { newText: string; format?: any }>();
