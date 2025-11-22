@@ -2635,17 +2635,17 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           // Auto-enable edit mode
           setTool('edit-text');
           setTextEditMode(true);
-        setEditingTextRun(clickedRun.id);
-        setEditingTextValue(clickedRun.text); // Initialize editing value
-        setSelectedTextRun(clickedRun.id);
-        // Add to batch selection if Ctrl/Cmd is held
-        if (e.ctrlKey || e.metaKey) {
-          setSelectedTextRuns(prev => new Set([...prev, clickedRun.id]));
-        } else {
-          setSelectedTextRuns(new Set([clickedRun.id]));
-        }
-        toast.info('Text edit mode enabled. Double-click to edit.');
-        return;
+          setEditingTextRun(clickedRun.id);
+          setEditingTextValue(clickedRun.text); // Initialize editing value
+          setSelectedTextRun(clickedRun.id);
+          // Add to batch selection if Ctrl/Cmd is held
+          if ((e as any).ctrlKey || (e as any).metaKey) {
+            setSelectedTextRuns(prev => new Set([...prev, clickedRun.id]));
+          } else {
+            setSelectedTextRuns(new Set([clickedRun.id]));
+          }
+          toast.info('Text edit mode enabled. Double-click to edit.');
+          return;
         }
       } else {
         console.log('[Edit] No text runs found for page', pageNum, 'Extracting...');
