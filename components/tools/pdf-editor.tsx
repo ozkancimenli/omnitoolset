@@ -389,12 +389,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   // Phase 8: Advanced Features
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(false);
   const [autoSaveInterval, setAutoSaveInterval] = useState<NodeJS.Timeout | null>(null);
-  const [textTemplates, setTextTemplates] = useState<Array<{ name: string; text: string; format?: any }>>([
-    { name: 'Header', text: 'Document Header', format: { fontSize: 24, fontWeight: 'bold' } },
-    { name: 'Subheader', text: 'Section Title', format: { fontSize: 18, fontWeight: 'bold' } },
-    { name: 'Body', text: 'Body text', format: { fontSize: 12, fontWeight: 'normal' } },
-    { name: 'Footer', text: 'Page Footer', format: { fontSize: 10, fontWeight: 'normal', color: '#666666' } },
-  ]);
+  // textTemplates already defined above with id field
   
   // Engine Integration: Advanced Features
   const [progressiveRendering, setProgressiveRendering] = useState(true);
