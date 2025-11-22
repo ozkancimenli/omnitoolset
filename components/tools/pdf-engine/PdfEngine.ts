@@ -877,6 +877,99 @@ export class PdfEngine {
   }
 
   /**
+   * Get Advanced Text Editor instance
+   */
+  getAdvancedTextEditor(): AdvancedTextEditor {
+    return this.advancedTextEditor;
+  }
+
+  /**
+   * Calculate text statistics for a page
+   */
+  getTextStatistics(pageNumber: number): TextStatistics | null {
+    const runs = this.textRuns.get(pageNumber);
+    if (!runs || runs.length === 0) return null;
+
+    const allText = runs.map(r => r.text).join(' ');
+    return this.advancedTextEditor.calculateStatistics(allText);
+  }
+
+  /**
+   * Validate text before modification
+   */
+  validateText(text: string): { valid: boolean; errors: string[] } {
+    return this.advancedTextEditor.validateText(text);
+  }
+
+  /**
+   * Apply text style
+   */
+  async applyTextStyle(
+    pageNumber: number,
+    runId: string,
+    styleId: string
+  ): Promise<{ success: boolean; error?: string }> {
+    const style = this.advancedTextEditor.getStyle(styleId);
+    if (!style) {
+      return { success: false, error: 'Style not found' };
+    }
+
+    const runs = this.textRuns.get(pageNumber);
+    const run = runs?.find(r => r.id === runId);
+    if (!run) {
+      return { success: false, error: 'Text run not found' };
+    }
+
+    // Apply style modification
+    const modification: TextModification = {
+      runId,
+      newText: run.text,
+      format: {
+        fontSize: style.fontSize,
+        fontFamily: style.fontFamily,
+        fontWeight: style.fontWeight,
+        fontStyle: style.fontStyle,
+        color: style.color,
+        textAlign: style.textAlign,
+        textDecoration: style.textDecoration,
+      },
+    };
+
+    return await this.modifyText(pageNumber, [modification]);
+  }
+
+  /**
+   * Transform text (rotation, scaling, etc.)
+   */
+  transformText(
+    pageNumber: number,
+    runId: string,
+    transform: TextTransform
+  ): { success: boolean; matrix?: number[]; error?: string } {
+    const runs = this.textRuns.get(pageNumber);
+    const run = runs?.find(r => r.id === runId);
+    if (!run) {
+      return { success: false, error: 'Text run not found' };
+    }
+
+    const result = this.advancedTextEditor.transformText(run.text, transform);
+    
+    // Update transform in run
+    const updatedRuns = runs.map(r => {
+      if (r.id === runId) {
+        return {
+          ...r,
+          transform: result.matrix,
+        };
+      }
+      return r;
+    });
+    this.textRuns.set(pageNumber, updatedRuns);
+
+    return { success: true, matrix: result.matrix };
+  }
+
+  /**
    * Advanced: Search and replace text across all pages
    */
   async searchAndReplace(

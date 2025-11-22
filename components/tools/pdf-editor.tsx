@@ -2557,10 +2557,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           // Auto-enable edit mode
           setTool('edit-text');
           setTextEditMode(true);
-          setEditingTextRun(clickedRun.id);
-          setSelectedTextRun(clickedRun.id);
-          toast.info('Text edit mode enabled. Double-click to edit.');
-          return;
+        setEditingTextRun(clickedRun.id);
+        setEditingTextValue(clickedRun.text); // Initialize editing value
+        setSelectedTextRun(clickedRun.id);
+        toast.info('Text edit mode enabled. Double-click to edit.');
+        return;
         }
       } else {
         console.log('[Edit] No text runs found for page', pageNum, 'Extracting...');
@@ -6886,11 +6887,15 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                       ref: textInputRef,
                       defaultValue: run.text,
                       onBlur: (e: any) => {
-                        if (editingTextRun && e.target.value !== run.text) {
-                          // Phase 2.5: Update PDF text with formatting
-                          updatePdfText(run.id, e.target.value, editingTextFormat);
+                        if (editingTextRun) {
+                          const finalValue = editingTextValue || e.target.value;
+                          if (finalValue !== run.text) {
+                            // Phase 2.5: Update PDF text with formatting
+                            updatePdfText(run.id, finalValue, editingTextFormat);
+                          }
                         }
                         setEditingTextRun(null);
+                        setEditingTextValue(''); // Clear editing value
                         setTextEditMode(false);
                         setShowTextFormatPanel(false);
                         setEditingTextFormat({});
