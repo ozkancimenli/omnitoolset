@@ -1705,42 +1705,76 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     // Fallback to legacy method
     const runs = pdfTextRuns[pageNumber] || [];
     if (runs.length === 0) {
-      console.log('[Edit] No text runs found for page', pageNumber);
+      console.log('[Edit] No text runs found for page', pageNumber, 'total pages:', Object.keys(pdfTextRuns).length);
       return null;
     }
     
     let closestRun: PdfTextRun | null = null;
     let closestDistance = Infinity;
-    const tolerance = 20; // Increased tolerance for better click detection
+    const tolerance = 30; // Increased tolerance for better click detection
     
     runs.forEach(run => {
-      // Text runs are stored in PDF coordinates (y=0 at bottom)
-      // Click coordinates are also in PDF coordinates after conversion
-      const isWithinBounds = (
-        x >= run.x - tolerance &&
-        x <= run.x + run.width + tolerance &&
-        y >= (run.y - run.height) - tolerance && // PDF Y is at bottom, so subtract height
-        y <= run.y + tolerance
-      );
+      // Text runs: x, y are in PDF coordinates (y=0 at bottom)
+      // But we stored them with canvasY = viewport.height - pdfY
+      // So run.y is actually canvas Y (top=0), not PDF Y (bottom=0)
+      // Click coordinates are in PDF coordinates after getCanvasCoordinates conversion
+      // We need to convert run coordinates back to PDF or convert click to canvas
       
-      if (isWithinBounds) {
-        const centerX = run.x + run.width / 2;
-        const centerY = run.y - run.height / 2;
-        const distance = Math.sqrt(
-          Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+      // Since extractTextLayer stores canvasY, we need to convert click to canvas coords
+      // Or convert run coords to PDF coords
+      if (viewportRef.current) {
+        const viewport = viewportRef.current;
+        // Convert click PDF coords to canvas coords for comparison
+        const clickCanvasY = viewport.height - y;
+        const runCanvasY = run.y; // Already in canvas coords
+        
+        const isWithinBounds = (
+          x >= run.x - tolerance &&
+          x <= run.x + run.width + tolerance &&
+          clickCanvasY >= runCanvasY - run.height - tolerance &&
+          clickCanvasY <= runCanvasY + tolerance
         );
         
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestRun = run;
+        if (isWithinBounds) {
+          const centerX = run.x + run.width / 2;
+          const centerY = runCanvasY - run.height / 2;
+          const distance = Math.sqrt(
+            Math.pow(x - centerX, 2) + Math.pow(clickCanvasY - centerY, 2)
+          );
+          
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestRun = run;
+          }
+        }
+      } else {
+        // Fallback: direct comparison (assumes same coordinate system)
+        const isWithinBounds = (
+          x >= run.x - tolerance &&
+          x <= run.x + run.width + tolerance &&
+          y >= run.y - run.height - tolerance &&
+          y <= run.y + tolerance
+        );
+        
+        if (isWithinBounds) {
+          const centerX = run.x + run.width / 2;
+          const centerY = run.y - run.height / 2;
+          const distance = Math.sqrt(
+            Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+          );
+          
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestRun = run;
+          }
         }
       }
     });
     
     if (closestRun) {
-      console.log('[Edit] Found text run:', closestRun.text.substring(0, 20));
+      console.log('[Edit] Found text run:', closestRun.text.substring(0, 30), 'at', x, y);
     } else {
-      console.log('[Edit] No text run found at position', x, y, 'runs:', runs.length);
+      console.log('[Edit] No text run found at position', x, y, 'runs:', runs.length, 'first run:', runs[0]?.text?.substring(0, 20));
     }
     
     return closestRun;
