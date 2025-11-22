@@ -1324,6 +1324,50 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     return Math.max(0, Math.min(run.text.length, charIndex));
   };
 
+  // Enhanced: Get selected text from selection start and end
+  const getSelectedText = (
+    start: { runId: string; charIndex: number },
+    end: { runId: string; charIndex: number },
+    runs: PdfTextRun[]
+  ): string => {
+    if (start.runId === end.runId) {
+      // Single run selection
+      const run = runs.find(r => r.id === start.runId);
+      if (!run) return '';
+      
+      const startIdx = Math.min(start.charIndex, end.charIndex);
+      const endIdx = Math.max(start.charIndex, end.charIndex);
+      return run.text.substring(startIdx, endIdx);
+    } else {
+      // Multi-run selection
+      const startRunIndex = runs.findIndex(r => r.id === start.runId);
+      const endRunIndex = runs.findIndex(r => r.id === end.runId);
+      
+      if (startRunIndex === -1 || endRunIndex === -1) return '';
+      
+      const minIndex = Math.min(startRunIndex, endRunIndex);
+      const maxIndex = Math.max(startRunIndex, endRunIndex);
+      
+      const selectedRuns = runs.slice(minIndex, maxIndex + 1);
+      const texts: string[] = [];
+      
+      selectedRuns.forEach((run, idx) => {
+        if (idx === 0 && startRunIndex === minIndex) {
+          // First run: start from selection start
+          texts.push(run.text.substring(start.charIndex));
+        } else if (idx === selectedRuns.length - 1 && endRunIndex === maxIndex) {
+          // Last run: end at selection end
+          texts.push(run.text.substring(0, end.charIndex));
+        } else {
+          // Middle runs: full text
+          texts.push(run.text);
+        }
+      });
+      
+      return texts.join(' ');
+    }
+  };
+
   // Phase 4.1: Get text selection rectangle
   const getTextSelectionRect = (start: { runId: string; charIndex: number }, end: { runId: string; charIndex: number }, pageNumber: number) => {
     const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
