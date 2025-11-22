@@ -216,6 +216,7 @@ interface PdfTextRun {
   textDecoration?: 'none' | 'underline';
   color?: string;
   textAlign?: 'left' | 'center' | 'right';
+  transform?: number[]; // PDF transformation matrix
 }
 
 export default function PdfEditor({ toolId }: PdfEditorProps) {
