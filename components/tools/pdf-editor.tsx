@@ -1744,7 +1744,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           
           if (distance < closestDistance) {
             closestDistance = distance;
-            closestRun = run;
+            closestRun = run as PdfTextRun;
           }
         }
       } else {
@@ -1765,14 +1765,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           
           if (distance < closestDistance) {
             closestDistance = distance;
-            closestRun = run;
+            closestRun = run as PdfTextRun;
           }
         }
       }
     });
     
-    if (closestRun) {
-      const runText = closestRun.text || '';
+    if (closestRun !== null) {
+      const runText: string = (closestRun as PdfTextRun).text || '';
       console.log('[Edit] Found text run:', runText.substring(0, 30), 'at', x, y);
     } else {
       const firstRun: PdfTextRun | undefined = runs[0];
