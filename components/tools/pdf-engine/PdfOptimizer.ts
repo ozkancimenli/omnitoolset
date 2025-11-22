@@ -179,7 +179,7 @@ export class PdfOptimizer {
     pageIndices: number[]
   ): Promise<PDFDocument> {
     const newPdf = await PDFDocument.create();
-    const [copiedPages] = await newPdf.copyPages(pdfDoc, pageIndices);
+    const copiedPages = await newPdf.copyPages(pdfDoc, pageIndices);
     copiedPages.forEach(page => newPdf.addPage(page));
     return newPdf;
   }
