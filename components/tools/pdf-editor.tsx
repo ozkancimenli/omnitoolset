@@ -1980,6 +1980,75 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       // Phase 2.1: Extract text layer after rendering (with correct viewport)
       await extractTextLayer(pageNumber, viewport);
       
+      // Draw search result highlights
+      if (highlightedSearchResults.length > 0 && pageNumber === pageNum) {
+        const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
+        highlightedSearchResults.forEach((highlight) => {
+          if (highlight.page === pageNumber) {
+            const run = runs.find(r => r.id === highlight.runId);
+            if (run && canvasRef.current) {
+              const context = canvasRef.current.getContext('2d');
+              if (context) {
+                context.font = `${run.fontSize}px ${run.fontName}`;
+                const startText = run.text.substring(0, highlight.startIndex);
+                const endText = run.text.substring(0, highlight.endIndex);
+                const startX = run.x + context.measureText(startText).width;
+                const endX = run.x + context.measureText(endText).width;
+                
+                // Draw highlight
+                context.fillStyle = 'rgba(255, 255, 0, 0.3)';
+                context.fillRect(
+                  startX,
+                  run.y - run.height,
+                  endX - startX,
+                  run.height
+                );
+                
+                // Draw border for current result
+                if (currentFindIndex >= 0 && findResults[currentFindIndex]?.runId === highlight.runId && 
+                    findResults[currentFindIndex]?.startIndex === highlight.startIndex) {
+                  context.strokeStyle = '#FF6B00';
+                  context.lineWidth = 2;
+                  context.strokeRect(
+                    startX - 1,
+                    run.y - run.height - 1,
+                    endX - startX + 2,
+                    run.height + 2
+                  );
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      // Draw text selection highlight
+      if (textSelectionStart && textSelectionEnd && textSelectionStart.runId === textSelectionEnd.runId && pageNumber === pageNum) {
+        const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
+        const run = runs.find(r => r.id === textSelectionStart.runId);
+        if (run && canvasRef.current) {
+          const context = canvasRef.current.getContext('2d');
+          if (context) {
+            context.font = `${run.fontSize}px ${run.fontName}`;
+            const startIdx = Math.min(textSelectionStart.charIndex, textSelectionEnd.charIndex);
+            const endIdx = Math.max(textSelectionStart.charIndex, textSelectionEnd.charIndex);
+            const startText = run.text.substring(0, startIdx);
+            const endText = run.text.substring(0, endIdx);
+            const startX = run.x + context.measureText(startText).width;
+            const endX = run.x + context.measureText(endText).width;
+            
+            // Draw selection highlight
+            context.fillStyle = 'rgba(0, 123, 255, 0.3)';
+            context.fillRect(
+              startX,
+              run.y - run.height,
+              endX - startX,
+              run.height
+            );
+          }
+        }
+      }
+      
       // Draw annotations (Advanced: Filter hidden layers)
       const pageAnnotations = annotations.filter(ann => ann.page === pageNumber && !hiddenLayers.has(ann.id));
       pageAnnotations.forEach(ann => {
@@ -4686,20 +4755,31 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         regex = new RegExp(pattern, flags);
       }
       
+      const highlighted: Array<{ runId: string; startIndex: number; endIndex: number; page: number }> = [];
+      
       runs.forEach(run => {
         const matches = Array.from(run.text.matchAll(regex));
         matches.forEach(match => {
           if (match.index !== undefined) {
+            const startIndex = match.index;
+            const endIndex = startIndex + match[0].length;
             results.push({
               runId: run.id,
-              startIndex: match.index,
-              endIndex: match.index + match[0].length,
+              startIndex,
+              endIndex,
+            });
+            highlighted.push({
+              runId: run.id,
+              startIndex,
+              endIndex,
+              page: pageNum,
             });
           }
         });
       });
       
       setFindResults(results);
+      setHighlightedSearchResults(highlighted);
       if (results.length > 0) {
         setCurrentFindIndex(0);
         // Highlight first result
