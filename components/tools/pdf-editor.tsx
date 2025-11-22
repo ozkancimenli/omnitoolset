@@ -4318,30 +4318,30 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('[PDF Editor] Upload area clicked, fileInputRef.current:', fileInputRef.current);
+              console.log('[PDF Editor] Upload area clicked');
               
-              // Explicitly trigger file input click with multiple fallbacks
+              // Force click on file input
               if (fileInputRef.current) {
-                console.log('[PDF Editor] Clicking file input ref');
+                console.log('[PDF Editor] Triggering file input click');
+                // Clear previous value to allow selecting same file again
+                fileInputRef.current.value = '';
                 fileInputRef.current.click();
               } else {
-                console.log('[PDF Editor] File input ref not available, creating temporary input');
-                // Fallback: create a temporary input if ref is not ready
+                console.error('[PDF Editor] fileInputRef is null!');
+                // Emergency fallback
                 const tempInput = document.createElement('input');
                 tempInput.type = 'file';
                 tempInput.accept = '.pdf,application/pdf';
                 tempInput.style.display = 'none';
                 tempInput.onchange = (event) => {
-                  console.log('[PDF Editor] Temporary input onchange triggered');
                   const target = event.target as HTMLInputElement;
                   if (target.files?.[0]) {
-                    console.log('[PDF Editor] File selected via temporary input:', target.files[0].name);
                     const syntheticEvent = {
                       target: { files: target.files },
                     } as React.ChangeEvent<HTMLInputElement>;
                     handleFileSelect(syntheticEvent);
                   }
-                  document.body.removeChild(tempInput);
+                  setTimeout(() => document.body.removeChild(tempInput), 100);
                 };
                 document.body.appendChild(tempInput);
                 tempInput.click();
@@ -4363,14 +4363,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               ref={fileInputRef}
               type="file"
               accept=".pdf,application/pdf"
-              onChange={(e) => {
-                console.log('[PDF Editor] File input onChange triggered, files:', e.target.files?.length || 0);
-                handleFileSelect(e);
-              }}
+              onChange={handleFileSelect}
               onClick={(e) => {
                 console.log('[PDF Editor] File input clicked');
+                // Don't prevent default - let the file dialog open
               }}
-              className="hidden"
+              style={{ display: 'none' }}
               aria-label="PDF file input"
             />
             <div className="text-center">
