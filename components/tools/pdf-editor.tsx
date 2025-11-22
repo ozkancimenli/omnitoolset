@@ -1550,7 +1550,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
   // Phase 2.1: Extract text layer from PDF
   const extractTextLayer = async (pageNumber: number, viewport?: any) => {
-    if (!pdfDocRef.current) return;
+    if (!pdfDocRef.current) {
+      console.log('[Edit] extractTextLayer: No PDF document');
+      return;
+    }
+    console.log('[Edit] extractTextLayer: Starting for page', pageNumber);
 
     try {
       const page = await pdfDocRef.current.getPage(pageNumber);
@@ -1593,6 +1597,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       
       // Phase 2.2: Map text items to text runs (grouped by line/paragraph)
       const textRuns = mapTextItemsToRuns(textItems, pageNumber);
+      console.log('[Edit] extractTextLayer: Extracted', textRuns.length, 'text runs for page', pageNumber);
       setPdfTextRuns(prev => ({ ...prev, [pageNumber]: textRuns }));
       
       // Phase 6: Cache text runs for performance
