@@ -735,7 +735,7 @@ export class PdfEngine {
       const encrypted = await PdfEncryption.encrypt(pdfBytes, {
         userPassword: password,
         ownerPassword: options?.ownerPassword,
-        algorithm: options?.algorithm as any,
+        algorithm: options?.algorithm || 'AES-256',
         permissions: options?.permissions,
       });
 
