@@ -1328,10 +1328,34 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         }
         setPageThumbnails(thumbnails);
         
-        // Load PDF for editing with pdf-lib
+        // Initialize our custom OmniPDF Engine
         setProcessingProgress(70);
-        setProcessingMessage('Preparing PDF for editing...');
-        setOperationStatus({ type: 'loading', message: 'Preparing PDF for editing...', progress: 70 });
+        setProcessingMessage('Initializing OmniPDF Engine...');
+        setOperationStatus({ type: 'loading', message: 'Initializing OmniPDF Engine...', progress: 70 });
+        
+        const engine = new PdfEngine({
+          maxFileSize: PDF_MAX_SIZE,
+          enableCaching: true,
+          cacheSize: RENDER_CACHE_SIZE,
+          enableAutoSave: autoSaveEnabled,
+          autoSaveInterval: AUTO_SAVE_INTERVAL,
+        });
+        
+        const loadResult = await engine.loadPdf(targetFile);
+        if (!loadResult.success) {
+          throw new PDFProcessingError(
+            loadResult.error || 'Failed to load PDF with engine',
+            'ENGINE_LOAD_ERROR'
+          );
+        }
+        
+        pdfEngineRef.current = engine;
+        toast.info('OmniPDF Engine initialized successfully');
+        
+        // Also load with pdf-lib for backward compatibility
+        setProcessingProgress(75);
+        setProcessingMessage('Loading PDF for editing...');
+        setOperationStatus({ type: 'loading', message: 'Loading PDF for editing...', progress: 75 });
         const arrayBufferForEditing = await targetFile.arrayBuffer();
         const fileBytes = new Uint8Array(arrayBufferForEditing);
         
@@ -1339,15 +1363,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           const pdfLibDoc = await PDFDocument.load(fileBytes, {
             ignoreEncryption: false,
             updateMetadata: false,
-            // Production: Add parse speed option for large files
-            parseSpeed: 1, // 1 = fast, 2 = medium, 3 = slow but thorough
+            parseSpeed: 1,
           });
           pdfLibDocRef.current = pdfLibDoc;
         } catch (pdfLibError) {
-          logError(pdfLibError as Error, 'pdf-lib load (first attempt)');
-          // Retry with encryption ignored
+          logError(pdfLibError as Error, 'pdf-lib load (legacy)');
+          // Try with encryption ignored
           try {
-            setProcessingMessage('Retrying with encryption ignored...');
             const retryBuffer = await targetFile.arrayBuffer();
             const retryBytes = new Uint8Array(retryBuffer);
             const pdfLibDoc = await PDFDocument.load(retryBytes, {
@@ -1356,16 +1378,15 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               parseSpeed: 1,
             });
             pdfLibDocRef.current = pdfLibDoc;
-            toast.info('PDF loaded (encryption ignored)');
           } catch (retryError) {
             logError(retryError as Error, 'pdf-lib load (retry)');
             pdfLibDocRef.current = null;
-            setIsEditable(false);
-            toast.warning('PDF loaded in view-only mode. Some features may be limited.');
           }
         }
         
-        setIsEditable(pdfLibDocRef.current !== null);
+        // Use engine's PDF document to determine editability
+        const enginePdfDoc = engine.getPdfDoc();
+        setIsEditable(enginePdfDoc !== null);
         
         // Create object URL for viewing
         setProcessingProgress(90);
@@ -1591,36 +1612,55 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     return runs;
   };
 
-  // Phase 2.3: Find text run at click position (Enhanced with better detection)
+  // Phase 2.3: Find text run at click position (using OmniPDF Engine)
   const findTextRunAtPosition = (x: number, y: number, pageNumber: number): PdfTextRun | null => {
+    // Use our custom engine if available
+    if (pdfEngineRef.current) {
+      const engineRun = pdfEngineRef.current.findTextRunAtPosition(x, y, pageNumber);
+      if (engineRun) {
+        // Convert engine run to our format
+        return {
+          id: engineRun.id,
+          text: engineRun.text,
+          x: engineRun.x,
+          y: engineRun.y,
+          width: engineRun.width,
+          height: engineRun.height,
+          fontSize: engineRun.fontSize,
+          fontName: engineRun.fontName,
+          fontWeight: engineRun.fontWeight,
+          fontStyle: engineRun.fontStyle,
+          color: engineRun.color,
+          page: engineRun.page,
+          transform: engineRun.transform,
+          startIndex: engineRun.startIndex,
+          endIndex: engineRun.endIndex,
+          textAlign: 'left' as const,
+        };
+      }
+      return null;
+    }
+    
+    // Fallback to legacy method
     const runs = pdfTextRuns[pageNumber] || [];
     if (runs.length === 0) return null;
     
-    // Find the closest text run (improved tolerance for better click detection)
     let closestRun: PdfTextRun | null = null;
     let closestDistance = Infinity;
-    const tolerance = 10; // Increased tolerance for easier clicking
+    const tolerance = 10;
     
     runs.forEach(run => {
-      // Check if click is within text run bounds
-      const runX = run.x;
-      const runY = run.y;
-      const runWidth = run.width;
-      const runHeight = run.height;
-      
-      // Calculate distance from click to text run center
-      const centerX = runX + runWidth / 2;
-      const centerY = runY - runHeight / 2;
+      const centerX = run.x + run.width / 2;
+      const centerY = run.y - run.height / 2;
       const distance = Math.sqrt(
         Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
       );
       
-      // Check if within bounds
       const isWithinBounds = (
-        x >= runX - tolerance &&
-        x <= runX + runWidth + tolerance &&
-        y >= runY - runHeight - tolerance &&
-        y <= runY + tolerance
+        x >= run.x - tolerance &&
+        x <= run.x + run.width + tolerance &&
+        y >= run.y - run.height - tolerance &&
+        y <= run.y + tolerance
       );
       
       if (isWithinBounds && distance < closestDistance) {
