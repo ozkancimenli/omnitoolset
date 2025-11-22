@@ -4335,48 +4335,65 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               e.stopPropagation();
               console.log('[PDF Editor] Upload area clicked');
               
-              // Force click on file input
-              if (fileInputRef.current) {
-                console.log('[PDF Editor] Triggering file input click');
-                // Clear previous value to allow selecting same file again
-                fileInputRef.current.value = '';
-                
-                // Add a listener to catch the change event if onChange doesn't fire
-                const checkForFile = () => {
-                  setTimeout(() => {
-                    if (fileInputRef.current?.files?.[0]) {
-                      console.log('[PDF Editor] File detected via polling:', fileInputRef.current.files[0].name);
-                      const syntheticEvent = {
-                        target: { files: fileInputRef.current.files },
-                      } as React.ChangeEvent<HTMLInputElement>;
-                      handleFileSelect(syntheticEvent);
-                    }
-                  }, 100);
-                };
-                
-                fileInputRef.current.click();
-                checkForFile();
-              } else {
-                console.error('[PDF Editor] fileInputRef is null!');
-                // Emergency fallback
+              // Create a fresh file input every time to ensure event handlers work
+              const createFileInput = () => {
                 const tempInput = document.createElement('input');
                 tempInput.type = 'file';
                 tempInput.accept = '.pdf,application/pdf';
                 tempInput.style.display = 'none';
-                tempInput.onchange = (event) => {
-                  console.log('[PDF Editor] Temporary input onchange');
+                
+                // Use native addEventListener for maximum compatibility
+                tempInput.addEventListener('change', (event) => {
+                  console.log('[PDF Editor] Native change event fired');
                   const target = event.target as HTMLInputElement;
                   if (target.files?.[0]) {
+                    console.log('[PDF Editor] File selected via native event:', target.files[0].name);
                     const syntheticEvent = {
                       target: { files: target.files },
                     } as React.ChangeEvent<HTMLInputElement>;
                     handleFileSelect(syntheticEvent);
                   }
-                  setTimeout(() => document.body.removeChild(tempInput), 100);
+                  // Clean up
+                  setTimeout(() => {
+                    if (tempInput.parentNode) {
+                      tempInput.parentNode.removeChild(tempInput);
+                    }
+                  }, 1000);
+                });
+                
+                // Also poll for file in case change event doesn't fire
+                const pollForFile = () => {
+                  let attempts = 0;
+                  const maxAttempts = 50; // 5 seconds max
+                  const interval = setInterval(() => {
+                    attempts++;
+                    if (tempInput.files?.[0]) {
+                      console.log('[PDF Editor] File detected via polling:', tempInput.files[0].name);
+                      clearInterval(interval);
+                      const syntheticEvent = {
+                        target: { files: tempInput.files },
+                      } as React.ChangeEvent<HTMLInputElement>;
+                      handleFileSelect(syntheticEvent);
+                      if (tempInput.parentNode) {
+                        tempInput.parentNode.removeChild(tempInput);
+                      }
+                    } else if (attempts >= maxAttempts) {
+                      console.log('[PDF Editor] Polling timeout, no file selected');
+                      clearInterval(interval);
+                      if (tempInput.parentNode) {
+                        tempInput.parentNode.removeChild(tempInput);
+                      }
+                    }
+                  }, 100);
                 };
+                
                 document.body.appendChild(tempInput);
                 tempInput.click();
-              }
+                pollForFile();
+              };
+              
+              // Always use the fresh input approach for maximum reliability
+              createFileInput();
             }}
             role="button"
             tabIndex={0}
