@@ -346,6 +346,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [textRotation, setTextRotation] = useState<number>(0);
   const [textScaleX, setTextScaleX] = useState<number>(1);
   const [textScaleY, setTextScaleY] = useState<number>(1);
+  const [textTemplates, setTextTemplates] = useState<Array<{ id: string; name: string; text: string; format?: any }>>([
+    { id: 'template-header', name: 'Header', text: 'Document Header', format: { fontSize: 24, fontWeight: 'bold' } },
+    { id: 'template-subheader', name: 'Subheader', text: 'Section Title', format: { fontSize: 18, fontWeight: 'bold' } },
+    { id: 'template-body', name: 'Body', text: 'Body text', format: { fontSize: 12, fontWeight: 'normal' } },
+    { id: 'template-footer', name: 'Footer', text: 'Page Footer', format: { fontSize: 10, fontWeight: 'normal', color: '#666666' } },
+  ]);
   const [showTextTemplates, setShowTextTemplates] = useState(false);
   
   // God Level Features
