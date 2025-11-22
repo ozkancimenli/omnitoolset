@@ -1471,6 +1471,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       }
       pdfDocRef.current = null;
       pdfLibDocRef.current = null;
+      // Cleanup engine
+      if (pdfEngineRef.current) {
+        pdfEngineRef.current.clear();
+        pdfEngineRef.current = null;
+      }
       setNumPages(0);
       setPageThumbnails([]);
     }
@@ -1484,6 +1489,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       // Cleanup PDF references
       pdfDocRef.current = null;
       pdfLibDocRef.current = null;
+      // Cleanup engine
+      if (pdfEngineRef.current) {
+        pdfEngineRef.current.clear();
+        pdfEngineRef.current = null;
+      }
     };
   }, [file, pdfUrl]);
 
