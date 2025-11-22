@@ -315,6 +315,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   // PDF Text Layer - Phase 2
   const [pdfTextItems, setPdfTextItems] = useState<Record<number, PdfTextItem[]>>({});
   const [pdfTextRuns, setPdfTextRuns] = useState<Record<number, PdfTextRun[]>>({});
+  // Store current viewport for coordinate conversion
+  const viewportRef = useRef<{ width: number; height: number; scale: number } | null>(null);
   const [selectedTextRun, setSelectedTextRun] = useState<string | null>(null);
   const [editingTextRun, setEditingTextRun] = useState<string | null>(null);
   const [textSelection, setTextSelection] = useState<{ start: number; end: number; runId: string } | null>(null);
@@ -1875,6 +1877,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       // Get viewport at calculated scale
       const viewport = page.getViewport({ scale });
       
+      // Store viewport for coordinate conversion
+      viewportRef.current = {
+        width: viewport.width,
+        height: viewport.height,
+        scale: scale
+      };
+      
       // Set canvas display size (CSS pixels)
       canvas.style.width = `${viewport.width}px`;
       canvas.style.height = `${viewport.height}px`;
@@ -2448,8 +2457,22 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     if (!canvasRef.current) return { x: 0, y: 0 };
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
+    
+    // Get click position relative to canvas
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+    
+    // Convert to PDF coordinates (scale 1.0)
+    // Canvas display size matches viewport size
+    if (viewportRef.current) {
+      const viewport = viewportRef.current;
+      const pdfX = (clickX / rect.width) * viewport.width;
+      const pdfY = viewport.height - ((clickY / rect.height) * viewport.height); // Flip Y (PDF y=0 at bottom)
+      return { x: pdfX, y: pdfY };
+    }
+    
+    // Fallback: use device pixel ratio
     const devicePixelRatio = window.devicePixelRatio || 1;
-    // Canvas internal size vs display size
     const scaleX = (canvas.width / devicePixelRatio) / rect.width;
     const scaleY = (canvas.height / devicePixelRatio) / rect.height;
     return {
