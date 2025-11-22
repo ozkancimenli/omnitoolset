@@ -57,6 +57,9 @@ export class PdfEngine {
   private textItems: Map<number, any[]> = new Map();
   private config: PdfEngineConfig;
   private modificationHistory: Array<{ page: number; modifications: TextModification[]; timestamp: number }> = [];
+  private undoStack: Array<{ page: number; modifications: TextModification[]; timestamp: number }> = [];
+  private redoStack: Array<{ page: number; modifications: TextModification[]; timestamp: number }> = [];
+  private fontCache: Map<string, PDFFont> = new Map();
 
   constructor(config: PdfEngineConfig = {}) {
     this.config = {
@@ -256,11 +259,13 @@ export class PdfEngine {
 
   /**
    * Modify text in PDF (True Content Stream Editing)
+   * Supports batch operations for multiple text modifications
    */
   async modifyText(
     pageNumber: number,
-    modifications: TextModification[]
-  ): Promise<{ success: boolean; error?: string }> {
+    modifications: TextModification[],
+    options?: { skipHistory?: boolean; batchId?: string }
+  ): Promise<{ success: boolean; error?: string; batchId?: string }> {
     if (!this.pdfDoc) {
       return { success: false, error: 'PDF not loaded' };
     }
@@ -364,14 +369,20 @@ export class PdfEngine {
         this.textRuns.set(pageNumber, updatedRuns);
       }
 
-      // Save to history
-      this.modificationHistory.push({
-        page: pageNumber,
-        modifications,
-        timestamp: Date.now(),
-      });
+      // Save to history (unless skipped)
+      if (!options?.skipHistory) {
+        const historyEntry = {
+          page: pageNumber,
+          modifications,
+          timestamp: Date.now(),
+        };
+        this.modificationHistory.push(historyEntry);
+        this.undoStack.push(historyEntry);
+        // Clear redo stack when new modification is made
+        this.redoStack = [];
+      }
 
-      return { success: true };
+      return { success: true, batchId: options?.batchId };
     } catch (error: any) {
       console.error('PdfEngine: Error modifying text', error);
       return { 
@@ -382,7 +393,7 @@ export class PdfEngine {
   }
 
   /**
-   * Get appropriate PDF font
+   * Get appropriate PDF font (with caching for performance)
    */
   private async getFont(
     fontFamily: string,
@@ -391,6 +402,14 @@ export class PdfEngine {
   ): Promise<PDFFont> {
     if (!this.pdfDoc) {
       throw new Error('PDF not loaded');
+    }
+
+    // Create cache key
+    const cacheKey = `${fontFamily}-${fontWeight}-${fontStyle}`;
+    
+    // Check cache first
+    if (this.fontCache.has(cacheKey)) {
+      return this.fontCache.get(cacheKey)!;
     }
 
     let pdfFont: StandardFonts;
@@ -419,7 +438,121 @@ export class PdfEngine {
         : StandardFonts.Helvetica;
     }
 
-    return await this.pdfDoc.embedFont(pdfFont);
+    const font = await this.pdfDoc.embedFont(pdfFont);
+    
+    // Cache the font
+    if (this.config.enableCaching) {
+      this.fontCache.set(cacheKey, font);
+    }
+    
+    return font;
+  }
+
+  /**
+   * Undo last text modification
+   */
+  async undo(): Promise<{ success: boolean; error?: string }> {
+    if (this.undoStack.length === 0) {
+      return { success: false, error: 'Nothing to undo' };
+    }
+
+    try {
+      const lastModification = this.undoStack.pop()!;
+      
+      // Get original text runs before modification
+      const runs = this.textRuns.get(lastModification.page) || [];
+      
+      // Reverse the modifications
+      const reverseModifications: TextModification[] = lastModification.modifications.map(mod => {
+        const run = runs.find(r => r.id === mod.runId);
+        if (run) {
+          return {
+            runId: mod.runId,
+            newText: run.text, // Restore original text
+            format: {
+              fontSize: run.fontSize,
+              fontFamily: run.fontName,
+              fontWeight: run.fontWeight,
+              fontStyle: run.fontStyle,
+              color: run.color,
+            },
+          };
+        }
+        return mod;
+      });
+
+      // Apply reverse modifications
+      const result = await this.modifyText(
+        lastModification.page,
+        reverseModifications,
+        { skipHistory: true }
+      );
+
+      if (result.success) {
+        // Move to redo stack
+        this.redoStack.push(lastModification);
+        return { success: true };
+      }
+
+      return result;
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Failed to undo' };
+    }
+  }
+
+  /**
+   * Redo last undone modification
+   */
+  async redo(): Promise<{ success: boolean; error?: string }> {
+    if (this.redoStack.length === 0) {
+      return { success: false, error: 'Nothing to redo' };
+    }
+
+    try {
+      const modification = this.redoStack.pop()!;
+      
+      // Re-apply the modification
+      const result = await this.modifyText(
+        modification.page,
+        modification.modifications,
+        { skipHistory: true }
+      );
+
+      if (result.success) {
+        // Move back to undo stack
+        this.undoStack.push(modification);
+        return { success: true };
+      }
+
+      return result;
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Failed to redo' };
+    }
+  }
+
+  /**
+   * Batch modify text across multiple pages
+   */
+  async batchModifyText(
+    modifications: Array<{ page: number; modifications: TextModification[] }>
+  ): Promise<{ success: boolean; error?: string; results: Array<{ page: number; success: boolean }> }> {
+    const results: Array<{ page: number; success: boolean }> = [];
+    const batchId = `batch-${Date.now()}`;
+
+    for (const mod of modifications) {
+      const result = await this.modifyText(mod.page, mod.modifications, {
+        skipHistory: false,
+        batchId,
+      });
+      results.push({ page: mod.page, success: result.success });
+    }
+
+    const allSuccess = results.every(r => r.success);
+    return {
+      success: allSuccess,
+      error: allSuccess ? undefined : 'Some modifications failed',
+      results,
+    };
   }
 
   /**
@@ -461,6 +594,16 @@ export class PdfEngine {
   }
 
   /**
+   * Get undo/redo status
+   */
+  getUndoRedoStatus(): { canUndo: boolean; canRedo: boolean } {
+    return {
+      canUndo: this.undoStack.length > 0,
+      canRedo: this.redoStack.length > 0,
+    };
+  }
+
+  /**
    * Clear all data
    */
   clear(): void {
@@ -469,6 +612,9 @@ export class PdfEngine {
     this.textRuns.clear();
     this.textItems.clear();
     this.modificationHistory = [];
+    this.undoStack = [];
+    this.redoStack = [];
+    this.fontCache.clear();
   }
 }
 
