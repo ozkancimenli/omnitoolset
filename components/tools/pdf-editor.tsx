@@ -1702,31 +1702,44 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     
     // Fallback to legacy method
     const runs = pdfTextRuns[pageNumber] || [];
-    if (runs.length === 0) return null;
+    if (runs.length === 0) {
+      console.log('[Edit] No text runs found for page', pageNumber);
+      return null;
+    }
     
     let closestRun: PdfTextRun | null = null;
     let closestDistance = Infinity;
-    const tolerance = 10;
+    const tolerance = 20; // Increased tolerance for better click detection
     
     runs.forEach(run => {
-      const centerX = run.x + run.width / 2;
-      const centerY = run.y - run.height / 2;
-      const distance = Math.sqrt(
-        Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
-      );
-      
+      // Text runs are stored in PDF coordinates (y=0 at bottom)
+      // Click coordinates are also in PDF coordinates after conversion
       const isWithinBounds = (
         x >= run.x - tolerance &&
         x <= run.x + run.width + tolerance &&
-        y >= run.y - run.height - tolerance &&
+        y >= (run.y - run.height) - tolerance && // PDF Y is at bottom, so subtract height
         y <= run.y + tolerance
       );
       
-      if (isWithinBounds && distance < closestDistance) {
-        closestDistance = distance;
-        closestRun = run;
+      if (isWithinBounds) {
+        const centerX = run.x + run.width / 2;
+        const centerY = run.y - run.height / 2;
+        const distance = Math.sqrt(
+          Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+        );
+        
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestRun = run;
+        }
       }
     });
+    
+    if (closestRun) {
+      console.log('[Edit] Found text run:', closestRun.text.substring(0, 20));
+    } else {
+      console.log('[Edit] No text run found at position', x, y, 'runs:', runs.length);
+    }
     
     return closestRun;
   };
@@ -2420,6 +2433,16 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       resizeObserver.disconnect();
     };
   }, [pageNum, zoom]);
+
+  // Fix: Re-render page when zoom changes
+  useEffect(() => {
+    if (pdfDocRef.current && pageNum > 0 && file) {
+      const timeoutId = setTimeout(() => {
+        renderPage(pageNum);
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [zoom, zoomMode]);
 
   const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return { x: 0, y: 0 };
