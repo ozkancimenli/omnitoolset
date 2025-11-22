@@ -7061,9 +7061,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         }
                       },
                       style: {
-                        position: 'absolute',
-                        left: `${rect.left + textX}px`,
-                        top: `${rect.top + textY}px`,
+                        position: 'fixed', // Use fixed for better positioning
+                        left: `${textX}px`, // textX already includes rect.left
+                        top: `${textY}px`, // textY already includes rect.top
                         fontSize: `${editingTextFormat.fontSize || run.fontSize}px`,
                         fontFamily: editingTextFormat.fontFamily || run.fontName,
                         fontWeight: editingTextFormat.fontWeight || run.fontWeight || 'normal',
@@ -7084,6 +7084,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         padding: '2px 4px',
                         minWidth: `${run.width / scaleX}px`,
                         borderRadius: '4px',
+                        zIndex: 9999, // Ensure input is on top
                         ...(multiLineEditing && {
                           minHeight: `${run.height * 2 / scaleY}px`,
                           resize: 'both',
@@ -7094,7 +7095,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     };
                     
                     return (
-                      <div style={{ position: 'absolute', left: `${rect.left + textX}px`, top: `${rect.top + textY}px` }}>
+                      <div style={{ position: 'fixed', left: `${textX}px`, top: `${textY}px`, zIndex: 9999 }}>
                         <InputComponent {...inputProps} />
                         {/* Phase 5: Text Format Panel */}
                         {showTextFormatPanel && (
