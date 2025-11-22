@@ -6252,14 +6252,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                                     issues: [] as string[],
                                   };
                                   
-                                  if (analysis) {
-                                    if (!analysis.hasMetadata) {
+                                  if (analysis.success && analysis.structure) {
+                                    if (!analysis.structure.hasMetadata) {
                                       compliance.issues.push('Missing metadata');
                                     }
-                                    if (!analysis.hasEmbeddedFonts) {
+                                    if (!analysis.structure.hasFonts) {
                                       compliance.issues.push('Fonts not embedded');
                                     }
-                                    if (analysis.hasEncryption) {
+                                    if (analysis.structure.hasEncryption) {
                                       compliance.issues.push('PDF is encrypted');
                                     }
                                     compliance.isCompliant = compliance.issues.length === 0;
