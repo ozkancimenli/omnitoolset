@@ -949,7 +949,10 @@ export class PdfEngine {
     transform: TextTransform
   ): { success: boolean; matrix?: number[]; error?: string } {
     const runs = this.textRuns.get(pageNumber);
-    const run = runs?.find(r => r.id === runId);
+    if (!runs) {
+      return { success: false, error: 'No text runs found for page' };
+    }
+    const run = runs.find(r => r.id === runId);
     if (!run) {
       return { success: false, error: 'Text run not found' };
     }
