@@ -346,7 +346,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [textRotation, setTextRotation] = useState<number>(0);
   const [textScaleX, setTextScaleX] = useState<number>(1);
   const [textScaleY, setTextScaleY] = useState<number>(1);
-  const [textTemplates, setTextTemplates] = useState<Array<{ id: string; name: string; text: string; format?: any }>>([]);
   const [showTextTemplates, setShowTextTemplates] = useState(false);
   
   // God Level Features
