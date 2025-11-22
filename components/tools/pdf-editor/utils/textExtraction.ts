@@ -72,34 +72,46 @@ export const findTextRunAtPosition = (
   x: number,
   y: number,
   runs: PdfTextRun[],
-  tolerance: number = 200
+  tolerance: number = 50 // Reduced from 200 to 50 for more precise detection
 ): PdfTextRun | null => {
   if (runs.length === 0) {
+    console.log('[TEXT DETECT] No runs available');
     return null;
   }
+  
+  console.log('[TEXT DETECT] Searching for text at:', { x, y }, 'in', runs.length, 'runs');
   
   let closestRun: PdfTextRun | null = null;
   let closestDistance = Infinity;
   
-  runs.forEach((run) => {
-    const textTop = run.y - run.height;
-    const textBottom = run.y;
+  runs.forEach((run, index) => {
+    // PDF coordinates: y=0 at bottom, text runs have y at bottom of text
+    const textTop = run.y - run.height; // Top of text (smaller y value)
+    const textBottom = run.y; // Bottom of text (larger y value)
     const textLeft = run.x;
     const textRight = run.x + run.width;
     
-    const isNear = (
+    // Check if click is within text bounds (with tolerance)
+    const isWithinBounds = (
       x >= textLeft - tolerance &&
       x <= textRight + tolerance &&
       y >= textTop - tolerance &&
       y <= textBottom + tolerance
     );
     
-    if (isNear) {
+    if (isWithinBounds) {
       const centerX = run.x + run.width / 2;
       const centerY = run.y - run.height / 2;
       const distance = Math.sqrt(
         Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
       );
+      
+      console.log('[TEXT DETECT] Found candidate run', index, ':', {
+        id: run.id,
+        text: run.text.substring(0, 30),
+        bounds: { left: textLeft, right: textRight, top: textTop, bottom: textBottom },
+        distance
+      });
       
       if (distance < closestDistance) {
         closestDistance = distance;
@@ -107,6 +119,12 @@ export const findTextRunAtPosition = (
       }
     }
   });
+  
+  if (closestRun) {
+    console.log('[TEXT DETECT] Selected run:', closestRun.id, closestRun.text.substring(0, 50));
+  } else {
+    console.log('[TEXT DETECT] No run found - click outside all text bounds');
+  }
   
   return closestRun;
 };
