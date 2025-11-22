@@ -6813,16 +6813,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     if (!run || run.page !== pageNum) return null;
                     
                     const canvas = canvasRef.current;
-                    if (!canvas) return null;
+                    if (!canvas || !viewportRef.current) return null;
                     
                     const rect = canvas.getBoundingClientRect();
-                    const devicePixelRatio = window.devicePixelRatio || 1;
-                    const scaleX = (canvas.width / devicePixelRatio) / rect.width;
-                    const scaleY = (canvas.height / devicePixelRatio) / rect.height;
+                    const viewport = viewportRef.current;
                     
-                    // Calculate position
-                    const textX = run.x / scaleX;
-                    const textY = (run.y - run.height) / scaleY;
+                    // Convert PDF coordinates to canvas coordinates
+                    // PDF: y=0 at bottom, Canvas: y=0 at top
+                    const canvasX = (run.x / viewport.width) * rect.width;
+                    const canvasY = ((viewport.height - run.y) / viewport.height) * rect.height; // Invert Y
+                    
+                    // Calculate position relative to canvas
+                    const textX = rect.left + canvasX;
+                    const textY = rect.top + canvasY - run.height * (rect.height / viewport.height);
                     
                     // Phase 5: Multi-line editing support
                     const InputComponent = multiLineEditing ? 'textarea' : 'input';
