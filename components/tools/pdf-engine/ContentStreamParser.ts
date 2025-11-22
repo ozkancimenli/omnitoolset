@@ -218,6 +218,7 @@ export class ContentStreamParser {
         
         textOperators.push({
           ...op,
+          operator: op.operator as 'Tj' | 'TJ' | "'" | '"',
           text,
           x,
           y,
