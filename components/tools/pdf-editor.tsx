@@ -1011,15 +1011,28 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
   // Production: Enhanced file validation
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('[PDF Editor] handleFileSelect EVENT TRIGGERED', e.target.files?.length || 0);
+    
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) {
+      console.warn('[PDF Editor] No file in event, checking input directly');
+      // Try to get file from input directly as fallback
+      if (fileInputRef.current?.files?.[0]) {
+        const directFile = fileInputRef.current.files[0];
+        console.log('[PDF Editor] Found file via direct access:', directFile.name);
+        // Create synthetic event
+        const syntheticEvent = {
+          target: { files: fileInputRef.current.files },
+        } as React.ChangeEvent<HTMLInputElement>;
+        return handleFileSelect(syntheticEvent);
+      }
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
       return;
     }
     
-    console.log('[PDF Editor] handleFileSelect called with file:', selectedFile.name, selectedFile.size);
+    console.log('[PDF Editor] File selected:', selectedFile.name, selectedFile.size, selectedFile.type);
     
     try {
       const validation = validatePDFFile(selectedFile);
@@ -4327,7 +4340,22 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 console.log('[PDF Editor] Triggering file input click');
                 // Clear previous value to allow selecting same file again
                 fileInputRef.current.value = '';
+                
+                // Add a listener to catch the change event if onChange doesn't fire
+                const checkForFile = () => {
+                  setTimeout(() => {
+                    if (fileInputRef.current?.files?.[0]) {
+                      console.log('[PDF Editor] File detected via polling:', fileInputRef.current.files[0].name);
+                      const syntheticEvent = {
+                        target: { files: fileInputRef.current.files },
+                      } as React.ChangeEvent<HTMLInputElement>;
+                      handleFileSelect(syntheticEvent);
+                    }
+                  }, 100);
+                };
+                
                 fileInputRef.current.click();
+                checkForFile();
               } else {
                 console.error('[PDF Editor] fileInputRef is null!');
                 // Emergency fallback
@@ -4336,6 +4364,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 tempInput.accept = '.pdf,application/pdf';
                 tempInput.style.display = 'none';
                 tempInput.onchange = (event) => {
+                  console.log('[PDF Editor] Temporary input onchange');
                   const target = event.target as HTMLInputElement;
                   if (target.files?.[0]) {
                     const syntheticEvent = {
@@ -4365,10 +4394,16 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               ref={fileInputRef}
               type="file"
               accept=".pdf,application/pdf"
-              onChange={handleFileSelect}
+              onChange={(e) => {
+                console.log('[PDF Editor] File input onChange triggered, files:', e.target.files?.length || 0);
+                handleFileSelect(e);
+              }}
               onClick={(e) => {
                 console.log('[PDF Editor] File input clicked');
                 // Don't prevent default - let the file dialog open
+              }}
+              onInput={(e) => {
+                console.log('[PDF Editor] File input onInput triggered');
               }}
               style={{ display: 'none' }}
               aria-label="PDF file input"
