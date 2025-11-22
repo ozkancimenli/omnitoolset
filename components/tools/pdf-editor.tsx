@@ -366,6 +366,17 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     { name: 'Footer', text: 'Page Footer', format: { fontSize: 10, fontWeight: 'normal', color: '#666666' } },
   ]);
   
+  // Engine Integration: Advanced Features
+  const [progressiveRendering, setProgressiveRendering] = useState(true);
+  const [renderingQuality, setRenderingQuality] = useState<'low' | 'medium' | 'high' | 'ultra'>('high');
+  const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
+  const [showBinaryAnalysis, setShowBinaryAnalysis] = useState(false);
+  const [showHistoryBranches, setShowHistoryBranches] = useState(false);
+  const [binaryAnalysisData, setBinaryAnalysisData] = useState<any>(null);
+  const [performanceMetrics, setPerformanceMetrics] = useState<any>(null);
+  const [currentHistoryBranch, setCurrentHistoryBranch] = useState('main');
+  const [historyBranches, setHistoryBranches] = useState<Array<{ id: string; name: string }>>([]);
+  
   // Phase 6: Performance & Advanced Features
   const [textRunsCache, setTextRunsCache] = useState<Record<number, { runs: PdfTextRun[]; timestamp: number }>>({});
   
@@ -1825,10 +1836,30 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       // Scale context to handle device pixel ratio
       context.scale(devicePixelRatio, devicePixelRatio);
 
-      await page.render({ 
-        canvasContext: context, 
-        viewport,
-      } as any).promise;
+      // Engine Integration: Use advanced rendering pipeline if available
+      if (pdfEngineRef.current && progressiveRendering) {
+        try {
+          const pipeline = pdfEngineRef.current.getRenderingPipeline();
+          await pipeline.renderPage(page, canvas, viewport, {
+            useCache: useCache,
+            progressive: progressiveRendering,
+            quality: renderingQuality,
+          });
+        } catch (error) {
+          console.warn('Progressive rendering failed, falling back to standard:', error);
+          // Fallback to standard rendering
+          await page.render({ 
+            canvasContext: context, 
+            viewport,
+          } as any).promise;
+        }
+      } else {
+        // Standard rendering
+        await page.render({ 
+          canvasContext: context, 
+          viewport,
+        } as any).promise;
+      }
       
       // Phase 2.1: Extract text layer after rendering (with correct viewport)
       await extractTextLayer(pageNumber, viewport);
@@ -6028,6 +6059,85 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                       </button>
+
+                      {/* Engine Integration: Advanced Features */}
+                      {pdfEngineRef.current && (
+                        <>
+                          <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+                          
+                          {/* Performance Dashboard */}
+                          <button
+                            onClick={() => {
+                              setShowPerformanceDashboard(!showPerformanceDashboard);
+                              if (!showPerformanceDashboard && pdfEngineRef.current) {
+                                const metrics = pdfEngineRef.current.getPerformanceMetrics();
+                                setPerformanceMetrics(metrics);
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showPerformanceDashboard
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="Performance Dashboard"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                          </button>
+
+                          {/* Binary Analysis */}
+                          <button
+                            onClick={async () => {
+                              setShowBinaryAnalysis(!showBinaryAnalysis);
+                              if (!showBinaryAnalysis && file && pdfEngineRef.current) {
+                                try {
+                                  const arrayBuffer = await file.arrayBuffer();
+                                  const pdfBytes = new Uint8Array(arrayBuffer);
+                                  const analysis = await pdfEngineRef.current.analyzeBinaryStructure(pdfBytes);
+                                  setBinaryAnalysisData(analysis);
+                                } catch (error) {
+                                  console.error('Binary analysis error:', error);
+                                  toast.error('Failed to analyze PDF structure');
+                                }
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showBinaryAnalysis
+                                ? 'bg-purple-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="Binary Structure Analysis"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </button>
+
+                          {/* History Branches */}
+                          <button
+                            onClick={() => {
+                              setShowHistoryBranches(!showHistoryBranches);
+                              if (!showHistoryBranches && pdfEngineRef.current) {
+                                const status = pdfEngineRef.current.getUndoRedoStatus();
+                                if (status.branches) {
+                                  setHistoryBranches(status.branches.map((name, idx) => ({ id: `branch-${idx}`, name })));
+                                }
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showHistoryBranches
+                                ? 'bg-green-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="History Branches"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -6900,6 +7010,255 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         </div>
       )}
       
+      {/* Engine Integration: Performance Dashboard */}
+      {showPerformanceDashboard && pdfEngineRef.current && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPerformanceDashboard(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Performance Dashboard</h3>
+              <button
+                onClick={() => setShowPerformanceDashboard(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {performanceMetrics && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Render Cache Size</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                      {performanceMetrics.renderCacheSize || 0}
+                    </div>
+                  </div>
+                  <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Layer Cache Size</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                      {performanceMetrics.layerCacheSize || 0}
+                    </div>
+                  </div>
+                  <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Queue Length</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                      {performanceMetrics.queueLength || 0}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="border-t border-slate-300 dark:border-slate-600 pt-4">
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Rendering Options</h4>
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={progressiveRendering}
+                        onChange={(e) => setProgressiveRendering(e.target.checked)}
+                        className="rounded"
+                      />
+                      <span className="text-sm text-slate-700 dark:text-slate-300">Progressive Rendering</span>
+                    </label>
+                    <div>
+                      <label className="block text-sm text-slate-700 dark:text-slate-300 mb-1">Quality</label>
+                      <select
+                        value={renderingQuality}
+                        onChange={(e) => setRenderingQuality(e.target.value as any)}
+                        className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="ultra">Ultra</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Engine Integration: Binary Structure Analysis */}
+      {showBinaryAnalysis && binaryAnalysisData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowBinaryAnalysis(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Binary Structure Analysis</h3>
+              <button
+                onClick={() => setShowBinaryAnalysis(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {binaryAnalysisData.header && (
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">PDF Header</h4>
+                  <div className="text-sm text-slate-700 dark:text-slate-300">
+                    <div>Version: {binaryAnalysisData.header.version}</div>
+                    <div>Offset: {binaryAnalysisData.header.offset}</div>
+                  </div>
+                </div>
+              )}
+              
+              {binaryAnalysisData.xref && (
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Cross-Reference Table</h4>
+                  <div className="text-sm text-slate-700 dark:text-slate-300">
+                    <div>Subsections: {binaryAnalysisData.xref.subsections?.length || 0}</div>
+                    {binaryAnalysisData.xref.trailer && (
+                      <div className="mt-2">
+                        <div>Size: {binaryAnalysisData.xref.trailer.Size}</div>
+                        <div>Root: {binaryAnalysisData.xref.trailer.Root}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {binaryAnalysisData.objects && (
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">PDF Objects</h4>
+                  <div className="text-sm text-slate-700 dark:text-slate-300">
+                    Total Objects: {binaryAnalysisData.objects.length}
+                  </div>
+                </div>
+              )}
+              
+              {binaryAnalysisData.validation && (
+                <div className={`p-4 rounded-lg ${
+                  binaryAnalysisData.validation.valid 
+                    ? 'bg-green-100 dark:bg-green-900' 
+                    : 'bg-red-100 dark:bg-red-900'
+                }`}>
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Validation</h4>
+                  <div className="text-sm">
+                    <div className={binaryAnalysisData.validation.valid ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}>
+                      Status: {binaryAnalysisData.validation.valid ? 'Valid' : 'Invalid'}
+                    </div>
+                    {binaryAnalysisData.validation.errors?.length > 0 && (
+                      <div className="mt-2">
+                        <div className="font-semibold">Errors:</div>
+                        <ul className="list-disc list-inside">
+                          {binaryAnalysisData.validation.errors.map((error: string, idx: number) => (
+                            <li key={idx}>{error}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {binaryAnalysisData.validation.warnings?.length > 0 && (
+                      <div className="mt-2">
+                        <div className="font-semibold">Warnings:</div>
+                        <ul className="list-disc list-inside">
+                          {binaryAnalysisData.validation.warnings.map((warning: string, idx: number) => (
+                            <li key={idx}>{warning}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Engine Integration: History Branches */}
+      {showHistoryBranches && pdfEngineRef.current && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowHistoryBranches(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">History Branches</h3>
+              <button
+                onClick={() => setShowHistoryBranches(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="New branch name..."
+                  className="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                  onKeyDown={async (e) => {
+                    if (e.key === 'Enter' && e.currentTarget.value.trim() && pdfEngineRef.current) {
+                      const branchId = pdfEngineRef.current.createHistoryBranch(e.currentTarget.value.trim());
+                      setHistoryBranches(prev => [...prev, { id: branchId, name: e.currentTarget.value.trim() }]);
+                      e.currentTarget.value = '';
+                      toast.success('Branch created');
+                    }
+                  }}
+                />
+                <button
+                  onClick={async () => {
+                    const input = document.querySelector('input[placeholder="New branch name..."]') as HTMLInputElement;
+                    if (input?.value.trim() && pdfEngineRef.current) {
+                      const branchId = pdfEngineRef.current.createHistoryBranch(input.value.trim());
+                      setHistoryBranches(prev => [...prev, { id: branchId, name: input.value.trim() }]);
+                      input.value = '';
+                      toast.success('Branch created');
+                    }
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                >
+                  Create
+                </button>
+              </div>
+              
+              <div className="space-y-2">
+                {historyBranches.map((branch) => (
+                  <div
+                    key={branch.id}
+                    className={`flex items-center justify-between p-3 rounded-lg ${
+                      currentHistoryBranch === branch.id
+                        ? 'bg-blue-100 dark:bg-blue-900'
+                        : 'bg-slate-100 dark:bg-slate-700'
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-slate-900 dark:text-white">{branch.name}</span>
+                    <div className="flex items-center gap-2">
+                      {currentHistoryBranch !== branch.id && (
+                        <button
+                          onClick={async () => {
+                            if (pdfEngineRef.current) {
+                              const switched = pdfEngineRef.current.switchHistoryBranch(branch.id);
+                              if (switched) {
+                                setCurrentHistoryBranch(branch.id);
+                                toast.success(`Switched to branch: ${branch.name}`);
+                              }
+                            }
+                          }}
+                          className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs"
+                        >
+                          Switch
+                        </button>
+                      )}
+                      {currentHistoryBranch === branch.id && (
+                        <span className="px-3 py-1 bg-green-600 text-white rounded-md text-xs">Current</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Advanced: Page Features Panel */}
       {showPageFeatures && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPageFeatures(false)}>
