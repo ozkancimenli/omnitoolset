@@ -10,6 +10,7 @@ import type { PdfEditorProps, ToolType, Annotation, PdfTextItem, PdfTextRun } fr
 import { PDF_MAX_SIZE, AUTO_SAVE_INTERVAL, DEBOUNCE_DELAY, RENDER_CACHE_SIZE } from './pdf-editor/constants';
 import { validatePDFFile, logError, measurePerformance, sanitizeTextForPDF, sanitizeFileName, PDFValidationError, PDFProcessingError } from './pdf-editor/utils';
 import { mapTextItemsToRuns, findTextRunAtPosition as findTextRunAtPositionUtil } from './pdf-editor/utils/textExtraction';
+import { usePdfLoader, useTextEditing } from './pdf-editor/hooks';
 
 // Legacy constants (will be moved to constants.ts)
 const PDF_SUPPORTED_TYPES = ['application/pdf'];
@@ -188,15 +189,33 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [watermarkText, setWatermarkText] = useState('DRAFT');
   const [watermarkOpacity, setWatermarkOpacity] = useState(0.3);
   
-  // PDF Text Layer - Phase 2
-  const [pdfTextItems, setPdfTextItems] = useState<Record<number, PdfTextItem[]>>({});
-  const [pdfTextRuns, setPdfTextRuns] = useState<Record<number, PdfTextRun[]>>({});
   // Store current viewport for coordinate conversion
   const viewportRef = useRef<{ width: number; height: number; scale: number } | null>(null);
-  const [selectedTextRun, setSelectedTextRun] = useState<string | null>(null);
-  const [editingTextRun, setEditingTextRun] = useState<string | null>(null);
   const [textSelection, setTextSelection] = useState<{ start: number; end: number; runId: string } | null>(null);
-  const [textEditMode, setTextEditMode] = useState(false); // True when editing existing PDF text
+  
+  // Use text editing hook
+  const {
+    pdfTextItems,
+    pdfTextRuns,
+    selectedTextRun,
+    editingTextRun,
+    editingTextValue,
+    textEditMode,
+    textRunsCache,
+    previewTimeoutRef,
+    setPdfTextItems,
+    setPdfTextRuns,
+    setSelectedTextRun,
+    setEditingTextRun,
+    setEditingTextValue,
+    setTextEditMode,
+    extractTextLayer,
+    findTextRunAtPosition: findTextRunAtPositionFromHook,
+  } = useTextEditing({
+    pdfDocRef,
+    canvasRef,
+    pageNum,
+  });
   
   // Advanced Text Editing - Phase 4
   const [isSelectingText, setIsSelectingText] = useState(false);
@@ -1516,10 +1535,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
   // Phase 2.2: Map text items to text runs - using utility function (removed, using imported)
 
-  // Phase 2.3: Find text run at click position - using utility
+  // Phase 2.3: Find text run at click position - using hook
   const findTextRunAtPosition = (x: number, y: number, pageNumber: number): PdfTextRun | null => {
-    const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
-    return findTextRunAtPositionUtil(x, y, runs, 200); // 200px tolerance
+    return findTextRunAtPositionFromHook(x, y, pageNumber);
   };
 
   // Phase 4.1: Find character index at position within a text run
