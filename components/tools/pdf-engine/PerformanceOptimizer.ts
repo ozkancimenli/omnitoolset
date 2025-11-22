@@ -59,7 +59,9 @@ export class PerformanceOptimizer {
             // Remove oldest if at capacity
             if (target.size >= maxSize) {
               const firstKey = target.keys().next().value;
-              target.delete(firstKey);
+              if (firstKey !== undefined) {
+                target.delete(firstKey);
+              }
             }
             
             // Check TTL
