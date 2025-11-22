@@ -1034,6 +1034,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const textInputRef = useRef<HTMLInputElement>(null);
   const pdfDocRef = useRef<any>(null);
   const pdfLibDocRef = useRef<PDFDocument | null>(null);
+  const pdfEngineRef = useRef<import('./pdf-engine').PdfEngine | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const textLayerRef = useRef<HTMLDivElement>(null);
 
