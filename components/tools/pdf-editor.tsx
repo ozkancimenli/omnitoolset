@@ -2124,6 +2124,13 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const coords = getCanvasCoordinates(e);
+    console.log('[CLICK] Mouse down at:', { 
+      clientX: e.clientX, 
+      clientY: e.clientY,
+      pageNum,
+      tool 
+    });
+    console.log('[CLICK] Converted PDF coords:', coords);
     
     // Mouse Pan: Space + drag or Middle mouse button or Right-click drag
     const isPanTrigger = spacePressed || e.button === 1 || (e.button === 2 && e.ctrlKey);
@@ -2136,36 +2143,50 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     
     // AGGRESSIVE: Always try to find text on click, regardless of tool
     const runs: PdfTextRun[] = pdfTextRuns[pageNum] || [];
+    console.log('[CLICK] Available text runs:', runs.length);
+    
     if (runs.length === 0 && pdfDocRef.current) {
       // Auto-extract if not already extracted
+      console.log('[CLICK] No runs found, extracting text layer...');
       extractTextLayer(pageNum).then(() => {
+        console.log('[CLICK] Text layer extracted');
         toast.info('Text layer extracted. Click on text to edit.');
       });
-    }
-    
-      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
-    if (clickedRun) {
-      // DIRECT EDIT MODE - no tool selection needed
-      setTool('edit-text');
-      setTextEditMode(true);
-      setEditingTextRun(clickedRun.id);
-      setEditingTextValue(clickedRun.text);
-      setSelectedTextRun(clickedRun.id);
-      if ((e as any).ctrlKey || (e as any).metaKey) {
-        setSelectedTextRuns(prev => new Set([...prev, clickedRun.id]));
-      } else {
-        setSelectedTextRuns(new Set([clickedRun.id]));
-      }
-      toast.success(`Editing: "${clickedRun.text.substring(0, 30)}${clickedRun.text.length > 30 ? '...' : ''}"`);
-      e.preventDefault();
-      e.stopPropagation();
       return;
     }
     
-    // AGGRESSIVE: Always check for text on ANY click - no tool needed
-    const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+    // Log all runs for debugging
+    if (runs.length > 0) {
+      console.log('[CLICK] All runs:', runs.map(r => ({
+        id: r.id,
+        text: r.text.substring(0, 30),
+        x: r.x,
+        y: r.y,
+        width: r.width,
+        height: r.height,
+        bounds: {
+          left: r.x,
+          right: r.x + r.width,
+          top: r.y - r.height,
+          bottom: r.y
+        }
+      })));
+    }
+    
+    // Try to find text run at click position
+      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+    console.log('[CLICK] Clicked run result:', clickedRun ? { 
+      id: clickedRun.id, 
+      text: clickedRun.text.substring(0, 50),
+      distance: clickedRun ? Math.sqrt(
+        Math.pow(coords.x - (clickedRun.x + clickedRun.width/2), 2) + 
+        Math.pow(coords.y - (clickedRun.y - clickedRun.height/2), 2)
+      ) : Infinity
+    } : 'NONE');
+    
     if (clickedRun) {
-      // DIRECT EDIT - no double-click needed
+      // DIRECT EDIT MODE - no tool selection needed
+      console.log('[CLICK] Starting edit mode for:', clickedRun.id);
       setTool('edit-text');
       setTextEditMode(true);
       setEditingTextRun(clickedRun.id);
@@ -2176,9 +2197,31 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
       setEditingCharIndex(charIndex);
       setIsSelectingText(true);
+      
+      if ((e as any).ctrlKey || (e as any).metaKey) {
+        setSelectedTextRuns(prev => new Set([...prev, clickedRun.id]));
+      } else {
+        setSelectedTextRuns(new Set([clickedRun.id]));
+      }
+      
+      toast.success(`Editing: "${clickedRun.text.substring(0, 30)}${clickedRun.text.length > 30 ? '...' : ''}"`);
+      
+      // Focus input after a short delay
+      setTimeout(() => {
+        if (textInputRef.current) {
+          textInputRef.current.focus();
+          textInputRef.current.select();
+          console.log('[CLICK] Input focused and selected');
+        } else {
+          console.warn('[CLICK] Input ref not available');
+        }
+      }, 100);
+      
       e.preventDefault();
       e.stopPropagation();
       return;
+    } else {
+      console.log('[CLICK] No text run found at click position');
     }
     
     // Phase 2.3 & 4.1: Check if clicking on PDF text (edit mode) - legacy support
@@ -6834,8 +6877,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                       value: editingTextValue || run.text, // Controlled input - CRITICAL
                       onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
                         const newValue = e.target.value;
+                        console.log('[TEXT INPUT] onChange triggered:', {
+                          newValue: newValue.substring(0, 50),
+                          editingTextRun,
+                          pageNum
+                        });
                         setEditingTextValue(newValue);
-                        console.log('[TEXT INPUT] onChange:', newValue.substring(0, 30));
                         
                         // Real-time preview
                         if (realTimePreview && editingTextRun) {
@@ -6854,6 +6901,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                             clearTimeout(previewTimeoutRef.current);
                           }
                           previewTimeoutRef.current = setTimeout(() => {
+                            console.log('[TEXT INPUT] Re-rendering page for preview');
                             renderPage(pageNum, false);
                             previewTimeoutRef.current = null;
                           }, 300);

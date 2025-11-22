@@ -72,7 +72,7 @@ export const findTextRunAtPosition = (
   x: number,
   y: number,
   runs: PdfTextRun[],
-  tolerance: number = 50 // Reduced from 200 to 50 for more precise detection
+  tolerance: number = 100 // Increased to 100px for more aggressive detection
 ): PdfTextRun | null => {
   if (runs.length === 0) {
     console.log('[TEXT DETECT] No runs available');

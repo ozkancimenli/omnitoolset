@@ -80,7 +80,8 @@ export const useTextEditing = ({ pdfDocRef, canvasRef, pageNum }: UseTextEditing
   // Find text run at position
   const findTextRunAtPositionLocal = useCallback((x: number, y: number, pageNumber: number): PdfTextRun | null => {
     const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
-    return findTextRunAtPosition(x, y, runs, 200); // 200px tolerance
+    console.log('[HOOK] findTextRunAtPosition called:', { x, y, pageNumber, runsCount: runs.length });
+    return findTextRunAtPosition(x, y, runs, 150); // 150px tolerance for aggressive detection
   }, [pdfTextRuns]);
 
   return {
