@@ -322,6 +322,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [showSocialShare, setShowSocialShare] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>('');
   
+  // Performance & Analytics
+  const [showPerformancePanel, setShowPerformancePanel] = useState(false);
+  const [performanceStats, setPerformanceStats] = useState<any>(null);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
+  
   // Advanced: Search options
   const [useRegex, setUseRegex] = useState(false);
   const [caseSensitive, setCaseSensitive] = useState(false);
