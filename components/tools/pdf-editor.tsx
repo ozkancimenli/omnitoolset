@@ -279,7 +279,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [showFindReplace, setShowFindReplace] = useState(false);
   const [findText, setFindText] = useState('');
   const [replaceText, setReplaceText] = useState('');
-  const [findResults, setFindResults] = useState<Array<{ runId: string; startIndex: number; endIndex: number }>>([]);
+  const [findResults, setFindResults] = useState<Array<{ runId: string; startIndex: number; endIndex: number; page: number; text: string }>>([]);
+  const [searchAllPages, setSearchAllPages] = useState(false);
   const [currentFindIndex, setCurrentFindIndex] = useState(-1);
   
   // Advanced Text Editor features
@@ -4399,15 +4400,16 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   // Phase 4.6: Find text in PDF (Advanced: with regex support)
-  const findTextInPdf = (searchText: string) => {
+  // Enhanced: Search across all pages
+  const findTextInPdf = (searchText: string, searchAllPages: boolean = false) => {
     if (!searchText.trim()) {
       setFindResults([]);
       setCurrentFindIndex(-1);
       return;
     }
     
-    const results: Array<{ runId: string; startIndex: number; endIndex: number }> = [];
-    const runs = pdfTextRuns[pageNum] || [];
+    const results: Array<{ runId: string; startIndex: number; endIndex: number; page: number; text: string }> = [];
+    const highlighted: Array<{ runId: string; startIndex: number; endIndex: number; page: number }> = [];
     
     try {
       let regex: RegExp;
@@ -4424,43 +4426,48 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         regex = new RegExp(pattern, flags);
       }
       
-      const highlighted: Array<{ runId: string; startIndex: number; endIndex: number; page: number }> = [];
+      // Search in current page or all pages
+      const pagesToSearch = searchAllPages 
+        ? Object.keys(pdfTextRuns).map(Number).sort((a, b) => a - b)
+        : [pageNum];
+      
+      pagesToSearch.forEach(pageNumber => {
+        const runs = pdfTextRuns[pageNumber] || [];
       
       runs.forEach(run => {
         const matches = Array.from(run.text.matchAll(regex));
         matches.forEach(match => {
           if (match.index !== undefined) {
-            const startIndex = match.index;
-            const endIndex = startIndex + match[0].length;
+              const startIndex = match.index;
+              const endIndex = startIndex + match[0].length;
+              const matchText = run.text.substring(Math.max(0, startIndex - 20), Math.min(run.text.length, endIndex + 20));
+              
             results.push({
               runId: run.id,
-              startIndex,
-              endIndex,
-            });
-            highlighted.push({
-              runId: run.id,
-              startIndex,
-              endIndex,
-              page: pageNum,
-            });
-          }
+                startIndex,
+                endIndex,
+                page: pageNumber,
+                text: matchText,
+              });
+              highlighted.push({
+                runId: run.id,
+                startIndex,
+                endIndex,
+                page: pageNumber,
+              });
+            }
+          });
         });
       });
       
       setFindResults(results);
       setHighlightedSearchResults(highlighted);
+      
       if (results.length > 0) {
         setCurrentFindIndex(0);
-        // Highlight first result
-        const firstResult = results[0];
-        const run = runs.find(r => r.id === firstResult.runId);
-        if (run) {
-          setSelectedTextRun(run.id);
-          setTextSelectionStart({ x: 0, y: 0, runId: run.id, charIndex: firstResult.startIndex });
-          setTextSelectionEnd({ x: 0, y: 0, runId: run.id, charIndex: firstResult.endIndex });
-          renderPage(pageNum);
-        }
-        toast.success(`Found ${results.length} result(s)`);
+        // Navigate to first result
+        navigateToFindResult(0);
+        toast.success(`Found ${results.length} result(s)${searchAllPages ? ' across all pages' : ' on this page'}`);
       } else {
         toast.info('No results found');
       }
@@ -4468,6 +4475,46 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       toast.error('Invalid regex pattern');
       console.error('Regex error:', error);
     }
+  };
+
+  // Navigate to a specific find result
+  const navigateToFindResult = (index: number) => {
+    if (index < 0 || index >= findResults.length) return;
+    
+    const result = findResults[index];
+    const runs = pdfTextRuns[result.page] || [];
+    const run = runs.find(r => r.id === result.runId);
+    
+    if (run) {
+      // Switch to the page if needed
+      if (result.page !== pageNum) {
+        setPageNum(result.page);
+      }
+      
+      setSelectedTextRun(run.id);
+      setTextSelectionStart({ x: 0, y: 0, runId: run.id, charIndex: result.startIndex });
+      setTextSelectionEnd({ x: 0, y: 0, runId: run.id, charIndex: result.endIndex });
+      setCurrentFindIndex(index);
+      
+      // Scroll to result after page renders
+      setTimeout(() => {
+        renderPage(result.page);
+      }, 100);
+    }
+  };
+
+  // Navigate to next/previous result
+  const navigateFindResult = (direction: 'next' | 'prev') => {
+    if (findResults.length === 0) {
+      toast.warning('No search results');
+      return;
+    }
+    
+    const newIndex = direction === 'next'
+      ? (currentFindIndex + 1) % findResults.length
+      : (currentFindIndex - 1 + findResults.length) % findResults.length;
+    
+    navigateToFindResult(newIndex);
   };
 
   // Phase 4.6: Replace text in PDF (using OmniPDF Engine - advanced)
@@ -6792,15 +6839,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         value={findText}
                         onChange={(e) => setFindText(e.target.value)}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            findTextInPdf(findText);
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            findTextInPdf(findText, searchAllPages);
+                          } else if (e.key === 'Enter' && e.shiftKey) {
+                            navigateFindResult('prev');
+                          } else if (e.key === 'Escape') {
+                            setShowFindReplace(false);
                           }
                         }}
                         placeholder="Find..."
                         className="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
                       />
                       <button
-                        onClick={() => findTextInPdf(findText)}
+                        onClick={() => findTextInPdf(findText, searchAllPages)}
                         className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
                       >
                         Find
@@ -6823,6 +6874,15 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     </div>
                     {/* Advanced: Search Options */}
                     <div className="flex flex-wrap gap-3 text-sm pt-2 border-t border-slate-200 dark:border-slate-700">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={searchAllPages}
+                          onChange={(e) => setSearchAllPages(e.target.checked)}
+                          className="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-500"
+                        />
+                        <span className="text-gray-700 dark:text-gray-300">All Pages</span>
+                      </label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
@@ -6852,6 +6912,33 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         <span className="text-gray-700 dark:text-gray-300">Whole Words</span>
                       </label>
                     </div>
+                    {/* Search Results List */}
+                    {findResults.length > 0 && (
+                      <div className="max-h-48 overflow-y-auto border border-slate-200 dark:border-slate-700 rounded-md">
+                        <div className="p-2 bg-slate-50 dark:bg-slate-900 text-xs font-semibold text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                          Results ({findResults.length})
+                        </div>
+                        {findResults.map((result, index) => (
+                          <button
+                            key={`${result.runId}-${result.startIndex}-${index}`}
+                            onClick={() => navigateToFindResult(index)}
+                            className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 border-b border-slate-200 dark:border-slate-700 ${
+                              index === currentFindIndex ? 'bg-blue-100 dark:bg-blue-900' : ''
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Page {result.page + 1}</span>
+                              <span className="text-xs text-slate-500 dark:text-slate-500">
+                                {index + 1}/{findResults.length}
+                              </span>
+                            </div>
+                            <div className="text-slate-800 dark:text-slate-200 mt-1 truncate">
+                              ...{result.text}...
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     {findResults.length > 0 && (
                       <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
                         <span>
@@ -6859,14 +6946,16 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         </span>
                         <div className="flex gap-2">
                           <button
-                            onClick={() => navigateFindResults('prev')}
+                            onClick={() => navigateFindResult('prev')}
                             className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded hover:bg-slate-200 dark:hover:bg-slate-600"
+                            title="Previous (Shift+Enter)"
                           >
                             ↑ Prev
                           </button>
                           <button
-                            onClick={() => navigateFindResults('next')}
+                            onClick={() => navigateFindResult('next')}
                             className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded hover:bg-slate-200 dark:hover:bg-slate-600"
+                            title="Next (Enter)"
                           >
                             Next ↓
                           </button>
