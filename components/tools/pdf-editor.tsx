@@ -2447,6 +2447,21 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       return;
     }
     
+    // Enhanced PDF Text Editing: Enable edit mode by default when clicking on text
+    // Auto-enable edit-text tool when clicking on PDF text
+    if (!tool && pdfTextRuns[pageNum]) {
+      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+      if (clickedRun) {
+        // Auto-enable edit mode
+        setTool('edit-text');
+        setTextEditMode(true);
+        setEditingTextRun(clickedRun.id);
+        setSelectedTextRun(clickedRun.id);
+        toast.info('Text edit mode enabled. Double-click to edit.');
+        return;
+      }
+    }
+    
     // Enhanced PDF Text Editing: Always check for PDF text first (even without edit-text tool)
     const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
     if (clickedRun) {
@@ -5991,7 +6006,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         <button
                           onClick={() => {
                             setZoomMode('custom');
-                            setZoom(Math.max(0.5, zoom - 0.25));
+                            const newZoom = Math.max(0.5, zoom - 0.25);
+                            setZoom(newZoom);
+                            setTimeout(() => renderPage(pageNum), 0);
                           }}
                           className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 transition-all"
                           title="Zoom Out (-)"
@@ -6007,7 +6024,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         <button
                           onClick={() => {
                             setZoomMode('custom');
-                            setZoom(Math.min(5, zoom + 0.25));
+                            const newZoom = Math.min(5, zoom + 0.25);
+                            setZoom(newZoom);
+                            setTimeout(() => renderPage(pageNum), 0);
                           }}
                           className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 transition-all"
                           title="Zoom In (+)"
@@ -6021,6 +6040,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           onClick={() => {
                             setZoomMode('fit-page');
                             setZoom(1);
+                            setTimeout(() => renderPage(pageNum), 0);
                           }}
                           className="p-2 rounded-md hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 transition-all"
                           title="Reset Zoom (100%)"
