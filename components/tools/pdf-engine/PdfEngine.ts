@@ -724,7 +724,11 @@ export class PdfEngine {
    */
   async encryptPdf(
     password: string,
-    options?: { ownerPassword?: string; permissions?: any; algorithm?: string }
+    options?: { 
+      ownerPassword?: string; 
+      permissions?: { print?: boolean; modify?: boolean; copy?: boolean; annotate?: boolean }; 
+      algorithm?: 'AES-128' | 'AES-256' | 'RC4-40' | 'RC4-128' 
+    }
   ): Promise<{ success: boolean; error?: string }> {
     try {
       if (!this.pdfDoc) {
