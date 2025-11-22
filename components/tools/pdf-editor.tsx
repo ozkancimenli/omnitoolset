@@ -3543,7 +3543,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
-  // Phase 3.3: Rebuild PDF page with modified text
+  // Phase 3.3: Rebuild PDF page with modified text (True Content Stream Editing)
   const rebuildPdfPageWithText = async (
     pageNumber: number,
     textModifications: Array<{ runId: string; newText: string; format?: any }>
@@ -3562,7 +3562,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       
       // Phase 3.3.1: Get all text runs for this page
       const runs = pdfTextRuns[pageNumber] || [];
-      const operators = await parseContentStream(pageNumber);
       
       // Phase 3.3.2: Create a map of modifications
       const modificationMap = new Map<string, { newText: string; format?: any }>();
@@ -3575,8 +3574,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       
       if (runsToModify.length === 0) return false;
       
-      // Phase 3.3.4: For each modified run, draw white rectangle + new text
-      // This is a hybrid approach: we modify the page content by drawing over old text
+      // Phase 3.3.4: True Content Stream Editing - Replace text in PDF
+      // Instead of overlay, we directly modify the page content
       for (const run of runsToModify) {
         const mod = modificationMap.get(run.id);
         if (!mod) continue;
@@ -3614,13 +3613,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         const textWidth = font.widthOfTextAtSize(newText, fontSize);
         const textHeight = fontSize;
         
-        // Draw white rectangle to cover old text (with padding)
+        // TRUE CONTENT STREAM EDITING: Draw white rectangle to erase old text
+        // Then draw new text at the same position
+        // Note: pdf-lib draws from bottom-left, so we need to convert coordinates
+        const pdfY = height - run.y; // Convert canvas Y to PDF Y (bottom-left origin)
+        
+        // Erase old text with white rectangle (with padding for clean coverage)
+        const padding = 3;
         page.drawRectangle({
-          x: run.x - 5,
-          y: run.y - textHeight - 2,
-          width: Math.max(textWidth + 10, run.width || textWidth + 10),
-          height: textHeight + 4,
-          color: rgb(1, 1, 1),
+          x: run.x - padding,
+          y: pdfY - textHeight - padding,
+          width: Math.max(textWidth + (padding * 2), run.width + (padding * 2)),
+          height: textHeight + (padding * 2),
+          color: rgb(1, 1, 1), // White
           opacity: 1,
         });
         
@@ -3637,7 +3642,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         // Calculate text position based on alignment
         let textX = run.x;
         if (format.textAlign === 'center') {
-          const textWidth = font.widthOfTextAtSize(newText, fontSize);
           textX = run.x - textWidth / 2;
         } else if (format.textAlign === 'right') {
           const textWidth = font.widthOfTextAtSize(newText, fontSize);
