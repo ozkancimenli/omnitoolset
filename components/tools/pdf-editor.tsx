@@ -1703,7 +1703,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
     
     // Fallback to legacy method
-    const runs = pdfTextRuns[pageNumber] || [];
+    const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
     if (runs.length === 0) {
       console.log('[Edit] No text runs found for page', pageNumber, 'total pages:', Object.keys(pdfTextRuns).length);
       return null;
