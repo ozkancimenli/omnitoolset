@@ -3677,7 +3677,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           // Reload PDF to show changes
           if (file) {
             const pdfBytes = await pdfEngineRef.current.savePdf();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
             const newUrl = URL.createObjectURL(blob);
             
             if (pdfUrl) {
@@ -4031,7 +4031,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         // Reload PDF to show changes
         if (file && pdfEngineRef.current) {
           const pdfBytes = await pdfEngineRef.current.savePdf();
-          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
           const newUrl = URL.createObjectURL(blob);
           
           if (pdfUrl) {
@@ -4109,7 +4109,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         // Reload PDF to show changes
         if (file && pdfEngineRef.current) {
           const pdfBytes = await pdfEngineRef.current.savePdf();
-          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
           const newUrl = URL.createObjectURL(blob);
           
           if (pdfUrl) {
