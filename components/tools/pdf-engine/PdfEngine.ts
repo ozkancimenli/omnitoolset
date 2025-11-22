@@ -732,10 +732,12 @@ export class PdfEngine {
       }
 
       const pdfBytes = await this.pdfDoc.save();
+      const algorithm: 'AES-128' | 'AES-256' | 'RC4-40' | 'RC4-128' = 
+        options?.algorithm || 'AES-256';
       const encrypted = await PdfEncryption.encrypt(pdfBytes, {
         userPassword: password,
         ownerPassword: options?.ownerPassword,
-        algorithm: (options?.algorithm || 'AES-256') as 'AES-128' | 'AES-256' | 'RC4-40' | 'RC4-128',
+        algorithm,
         permissions: options?.permissions,
       });
 
