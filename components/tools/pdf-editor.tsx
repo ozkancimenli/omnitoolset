@@ -2532,16 +2532,30 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     
     // Enhanced PDF Text Editing: Enable edit mode by default when clicking on text
     // Auto-enable edit-text tool when clicking on PDF text
-    if (!tool && pdfTextRuns[pageNum]) {
-      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
-      if (clickedRun) {
-        // Auto-enable edit mode
-        setTool('edit-text');
-        setTextEditMode(true);
-        setEditingTextRun(clickedRun.id);
-        setSelectedTextRun(clickedRun.id);
-        toast.info('Text edit mode enabled. Double-click to edit.');
-        return;
+    if (!tool) {
+      const runs: PdfTextRun[] = pdfTextRuns[pageNum] || [];
+      console.log('[Edit] Checking for text runs. Page:', pageNum, 'Runs:', runs.length);
+      if (runs.length > 0) {
+        const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+        console.log('[Edit] Clicked at:', coords.x, coords.y, 'Found run:', clickedRun?.text?.substring(0, 20));
+        if (clickedRun) {
+          // Auto-enable edit mode
+          setTool('edit-text');
+          setTextEditMode(true);
+          setEditingTextRun(clickedRun.id);
+          setSelectedTextRun(clickedRun.id);
+          toast.info('Text edit mode enabled. Double-click to edit.');
+          return;
+        }
+      } else {
+        console.log('[Edit] No text runs found for page', pageNum, 'Extracting...');
+        // Try to extract text layer if not already extracted
+        if (pdfDocRef.current) {
+          extractTextLayer(pageNum).then(() => {
+            console.log('[Edit] Text layer extracted, try clicking again');
+            toast.info('Text layer extracted. Please click on text again.');
+          });
+        }
       }
     }
     
