@@ -1235,10 +1235,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
   // Production: Enhanced PDF loading - now using hook
   // Alias for backward compatibility
-  const loadPDF = loadPDFFromHook;
+  const loadPDF = useCallback(async (fileToLoad?: File) => {
+    await loadPDFFromHook(fileToLoad);
+  }, [loadPDFFromHook]);
   
-  // Legacy loadPDF function removed - using hook version
-  const loadPDFLegacy = async (fileToLoad?: File) => {
+  // Legacy loadPDF implementation removed - using hook version above
     const targetFile = fileToLoad || file;
     if (!targetFile) {
       console.warn('[PDF Editor] loadPDF called but no file provided');
