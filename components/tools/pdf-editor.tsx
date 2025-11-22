@@ -7336,6 +7336,53 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         setEditingTextFormat({});
                       },
                       onKeyDown: async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                        // Enhanced keyboard shortcuts for text editing
+                        
+                        // Save and finish editing: Enter (single line) or Ctrl+Enter (multi-line)
+                        if (e.key === 'Enter' && (!multiLineEditing || (e.ctrlKey || e.metaKey))) {
+                          e.preventDefault();
+                          const finalValue = editingTextValue || run.text;
+                          if (finalValue !== run.text) {
+                            await updatePdfText(run.id, finalValue, editingTextFormat);
+                          }
+                          (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).blur();
+                          return;
+                        }
+                        
+                        // Cancel editing: Escape
+                        if (e.key === 'Escape') {
+                          e.preventDefault();
+                          setEditingTextRun(null);
+                          setEditingTextValue('');
+                          setTextEditMode(false);
+                          setShowTextFormatPanel(false);
+                          setEditingTextFormat({});
+                          toast.info('Editing cancelled');
+                          return;
+                        }
+                        
+                        // Format shortcuts (only when not in multi-line mode or with Ctrl)
+                        if (!multiLineEditing || (e.ctrlKey || e.metaKey)) {
+                          if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                            e.preventDefault();
+                            setEditingTextFormat({ ...editingTextFormat, fontWeight: editingTextFormat.fontWeight === 'bold' ? 'normal' : 'bold' });
+                            toast.info(`Text ${editingTextFormat.fontWeight === 'bold' ? 'unbolded' : 'bolded'}`);
+                            return;
+                          }
+                          if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                            e.preventDefault();
+                            setEditingTextFormat({ ...editingTextFormat, fontStyle: editingTextFormat.fontStyle === 'italic' ? 'normal' : 'italic' });
+                            toast.info(`Text ${editingTextFormat.fontStyle === 'italic' ? 'unitalicized' : 'italicized'}`);
+                            return;
+                          }
+                          if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+                            e.preventDefault();
+                            setEditingTextFormat({ ...editingTextFormat, textDecoration: editingTextFormat.textDecoration === 'underline' ? 'none' : 'underline' });
+                            toast.info(`Text ${editingTextFormat.textDecoration === 'underline' ? 'ununderlined' : 'underlined'}`);
+                            return;
+                          }
+                        }
+                        
                         // Paste from clipboard (Ctrl+V / Cmd+V)
                         if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
                           e.preventDefault();
@@ -7357,16 +7404,58 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                           return;
                         }
                         
-                        if (e.key === 'Enter' && !multiLineEditing) {
-                          (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).blur();
-                        } else if (e.key === 'Escape') {
-                          setEditingTextRun(null);
-                          setEditingTextValue('');
-                          setTextEditMode(false);
-                          setShowTextFormatPanel(false);
-                          setEditingTextFormat({});
-                        } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && multiLineEditing) {
-                          (e.currentTarget as HTMLInputElement | HTMLTextAreaElement).blur();
+                        // Tab: Move to next text run (if available)
+                        if (e.key === 'Tab' && !e.shiftKey) {
+                          e.preventDefault();
+                          const runs = pdfTextRuns[pageNum] || [];
+                          const currentIndex = runs.findIndex(r => r.id === run.id);
+                          if (currentIndex < runs.length - 1) {
+                            const nextRun = runs[currentIndex + 1];
+                            setEditingTextRun(nextRun.id);
+                            setEditingTextValue(nextRun.text);
+                            toast.info('Moved to next text');
+                          }
+                          return;
+                        }
+                        
+                        // Shift+Tab: Move to previous text run
+                        if (e.key === 'Tab' && e.shiftKey) {
+                          e.preventDefault();
+                          const runs = pdfTextRuns[pageNum] || [];
+                          const currentIndex = runs.findIndex(r => r.id === run.id);
+                          if (currentIndex > 0) {
+                            const prevRun = runs[currentIndex - 1];
+                            setEditingTextRun(prevRun.id);
+                            setEditingTextValue(prevRun.text);
+                            toast.info('Moved to previous text');
+                          }
+                          return;
+                        }
+                      },
+                      onChange: (e) => {
+                        setEditingTextValue(e.target.value);
+                        // Real-time preview: Update canvas immediately (debounced)
+                        const value = e.target.value;
+                        if (value !== run.text) {
+                          // Debounce preview updates for performance
+                          const timeoutId = setTimeout(() => {
+                            // Update text run preview in state (visual only, not saved yet)
+                            setPdfTextRuns(prev => {
+                              const pageRuns = prev[pageNum] || [];
+                              return {
+                                ...prev,
+                                [pageNum]: pageRuns.map(r => 
+                                  r.id === run.id ? { ...r, text: value } : r
+                                ),
+                              };
+                            });
+                            // Trigger re-render for preview
+                            requestAnimationFrame(() => {
+                              renderPage(pageNum, false);
+                            });
+                          }, 300); // 300ms debounce for preview
+                          
+                          return () => clearTimeout(timeoutId);
                         }
                       },
                       style: {
