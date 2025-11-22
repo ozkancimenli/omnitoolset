@@ -339,6 +339,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [showTextStyles, setShowTextStyles] = useState(false);
   const [realTimePreview, setRealTimePreview] = useState(true);
   const [editingTextValue, setEditingTextValue] = useState<string>('');
+  const [highlightedSearchResults, setHighlightedSearchResults] = useState<Array<{ runId: string; startIndex: number; endIndex: number; page: number }>>([]);
+  const [selectedTextRuns, setSelectedTextRuns] = useState<Set<string>>(new Set());
+  const [showBatchOperations, setShowBatchOperations] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState<number | null>(null);
   
   // Advanced: Search options
   const [useRegex, setUseRegex] = useState(false);
