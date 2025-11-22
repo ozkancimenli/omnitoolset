@@ -1515,13 +1515,16 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         });
       }
       
-      // Draw text selection highlight
-      if (textSelectionStart && textSelectionEnd && textSelectionStart.runId === textSelectionEnd.runId && pageNumber === pageNum) {
+      // Enhanced: Draw text selection highlight (supports cross-run selection)
+      if (textSelectionStart && textSelectionEnd && pageNumber === pageNum) {
         const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
-        const run = runs.find(r => r.id === textSelectionStart.runId);
-        if (run && canvasRef.current) {
-          const context = canvasRef.current.getContext('2d');
-          if (context) {
+        const context = canvasRef.current?.getContext('2d');
+        if (!context) return;
+        
+        // Single run selection
+        if (textSelectionStart.runId === textSelectionEnd.runId) {
+          const run = runs.find(r => r.id === textSelectionStart.runId);
+          if (run) {
             context.font = `${run.fontSize}px ${run.fontName}`;
             const startIdx = Math.min(textSelectionStart.charIndex, textSelectionEnd.charIndex);
             const endIdx = Math.max(textSelectionStart.charIndex, textSelectionEnd.charIndex);
@@ -1538,6 +1541,43 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               endX - startX,
               run.height
             );
+          }
+        } else {
+          // Multi-run selection - highlight all runs between start and end
+          const startRunIndex = runs.findIndex(r => r.id === textSelectionStart.runId);
+          const endRunIndex = runs.findIndex(r => r.id === textSelectionEnd.runId);
+          
+          if (startRunIndex !== -1 && endRunIndex !== -1) {
+            const minIndex = Math.min(startRunIndex, endRunIndex);
+            const maxIndex = Math.max(startRunIndex, endRunIndex);
+            
+            runs.slice(minIndex, maxIndex + 1).forEach((run, idx) => {
+              context.font = `${run.fontSize}px ${run.fontName}`;
+              
+              let startX = run.x;
+              let endX = run.x + run.width;
+              
+              // First run: start from selection start
+              if (idx === 0 && startRunIndex === minIndex) {
+                const startText = run.text.substring(0, textSelectionStart.charIndex);
+                startX = run.x + context.measureText(startText).width;
+              }
+              
+              // Last run: end at selection end
+              if (idx === maxIndex - minIndex && endRunIndex === maxIndex) {
+                const endText = run.text.substring(0, textSelectionEnd.charIndex);
+                endX = run.x + context.measureText(endText).width;
+              }
+              
+              // Draw selection highlight for this run
+              context.fillStyle = 'rgba(0, 123, 255, 0.3)';
+              context.fillRect(
+                startX,
+                run.y - run.height,
+                endX - startX,
+                run.height
+              );
+            });
           }
         }
       }
@@ -2448,15 +2488,48 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       return;
     }
     
-    // Phase 4.1: Handle text selection drag
+    // Enhanced: Handle text selection drag (supports cross-run selection)
     if (isSelectingText && textSelectionStart && (tool === 'edit-text' || textEditMode || selectedTextRun)) {
       const coords = getCanvasCoordinates(e);
-      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
-      if (clickedRun) {
-        const charIndex = findCharIndexAtPosition(coords.x, clickedRun, pageNum);
-        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: clickedRun.id, charIndex });
+      const runs = pdfTextRuns[pageNum] || [];
+      
+      // Find the run at current mouse position
+      const currentRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+      
+      if (currentRun) {
+        const charIndex = findCharIndexAtPosition(coords.x, currentRun, pageNum);
+        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: currentRun.id, charIndex });
+        
+        // Enhanced: Support cross-run selection
+        // If selection spans multiple runs, highlight all runs in between
+        const startRun = runs.find(r => r.id === textSelectionStart.runId);
+        if (startRun && startRun.id !== currentRun.id) {
+          // Multi-run selection - find all runs between start and end
+          const startIndex = runs.findIndex(r => r.id === textSelectionStart.runId);
+          const endIndex = runs.findIndex(r => r.id === currentRun.id);
+          
+          if (startIndex !== -1 && endIndex !== -1) {
+            const minIndex = Math.min(startIndex, endIndex);
+            const maxIndex = Math.max(startIndex, endIndex);
+            const runsInSelection = runs.slice(minIndex, maxIndex + 1);
+            
+            // Update selection to include all runs
+            setTextSelectionEnd({ 
+              x: coords.x, 
+              y: coords.y, 
+              runId: currentRun.id, 
+              charIndex: endIndex > startIndex ? currentRun.text.length : 0 
+            });
+          }
+        }
+        
         // Trigger re-render to show selection
+        requestAnimationFrame(() => {
         renderPage(pageNum);
+        });
+      } else {
+        // Mouse is outside any text run - still update selection end
+        setTextSelectionEnd({ x: coords.x, y: coords.y, runId: textSelectionStart.runId, charIndex: textSelectionStart.charIndex });
       }
     }
     
