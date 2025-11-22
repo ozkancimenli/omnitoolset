@@ -349,6 +349,18 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [textTemplates, setTextTemplates] = useState<Array<{ id: string; name: string; text: string; format?: any }>>([]);
   const [showTextTemplates, setShowTextTemplates] = useState(false);
   
+  // God Level Features
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
+  const [showCollaboration, setShowCollaboration] = useState(false);
+  const [collaborationSession, setCollaborationSession] = useState<any>(null);
+  const [showOCRPanel, setShowOCRPanel] = useState(false);
+  const [show3DPanel, setShow3DPanel] = useState(false);
+  const [showMediaPanel, setShowMediaPanel] = useState(false);
+  const [showCloudSync, setShowCloudSync] = useState(false);
+  const [showVersionControl, setShowVersionControl] = useState(false);
+  const [webglEnabled, setWebglEnabled] = useState(false);
+  
   // Advanced: Search options
   const [useRegex, setUseRegex] = useState(false);
   const [caseSensitive, setCaseSensitive] = useState(false);
@@ -1774,11 +1786,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       } else {
         // Fallback: direct comparison (assumes same coordinate system)
         const isWithinBounds = (
-          x >= run.x - tolerance &&
-          x <= run.x + run.width + tolerance &&
-          y >= run.y - run.height - tolerance &&
-          y <= run.y + tolerance
-        );
+        x >= run.x - tolerance &&
+        x <= run.x + run.width + tolerance &&
+        y >= run.y - run.height - tolerance &&
+        y <= run.y + tolerance
+      );
         
         if (isWithinBounds) {
           const centerX = run.x + run.width / 2;
@@ -1969,10 +1981,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         } catch (error) {
           console.warn('Progressive rendering failed, falling back to standard:', error);
           // Fallback to standard rendering
-          await page.render({ 
-            canvasContext: context, 
-            viewport,
-          } as any).promise;
+      await page.render({ 
+        canvasContext: context, 
+        viewport,
+      } as any).promise;
         }
       } else {
         // Standard rendering
@@ -2629,7 +2641,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       const runs: PdfTextRun[] = pdfTextRuns[pageNum] || [];
       console.log('[Edit] Checking for text runs. Page:', pageNum, 'Runs:', runs.length);
       if (runs.length > 0) {
-        const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
+      const clickedRun = findTextRunAtPosition(coords.x, coords.y, pageNum);
         console.log('[Edit] Clicked at:', coords.x, coords.y, 'Found run:', clickedRun?.text?.substring(0, 20));
         if (clickedRun) {
           // Auto-enable edit mode
@@ -6828,6 +6840,268 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 </div>
               )}
 
+              {/* God Level: AI Panel */}
+              {showAIPanel && pdfEngineRef.current && (
+                <div className="absolute top-20 right-4 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-2xl border border-slate-300 dark:border-slate-700 p-4 min-w-[350px] max-w-[500px]">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">🤖 AI Features</h3>
+                    <button
+                      onClick={() => setShowAIPanel(false)}
+                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm text-gray-700 dark:text-gray-300 mb-1 block">Text Context:</label>
+                      <textarea
+                        value={editingTextValue || ''}
+                        onChange={(e) => setEditingTextValue(e.target.value)}
+                        placeholder="Type text for AI suggestions..."
+                        className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm min-h-[80px]"
+                      />
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (pdfEngineRef.current && editingTextValue) {
+                          const suggestions = await pdfEngineRef.current.getAISuggestions(editingTextValue, cursorPosition || 0);
+                          setAiSuggestions(suggestions);
+                          if (suggestions.length > 0) {
+                            toast.success(`Found ${suggestions.length} AI suggestion(s)`);
+                          } else {
+                            toast.info('No suggestions available');
+                          }
+                        }
+                      }}
+                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                      Get AI Suggestions
+                    </button>
+                    {aiSuggestions.length > 0 && (
+                      <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Suggestions:</label>
+                        {aiSuggestions.map((suggestion, idx) => (
+                          <div
+                            key={idx}
+                            className="p-2 bg-slate-100 dark:bg-slate-700 rounded cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600"
+                            onClick={() => {
+                              setEditingTextValue(suggestion.text);
+                              toast.success('Suggestion applied');
+                            }}
+                          >
+                            <div className="text-sm text-gray-900 dark:text-white">{suggestion.text}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              {suggestion.type} • {Math.round(suggestion.confidence * 100)}% confidence
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div className="pt-2 border-t border-slate-300 dark:border-slate-600">
+                      <button
+                        onClick={async () => {
+                          if (pdfEngineRef.current && editingTextValue) {
+                            const detected = pdfEngineRef.current.detectLanguage(editingTextValue);
+                            toast.info(`Detected language: ${detected.language} (${Math.round(detected.confidence * 100)}% confidence)`);
+                          }
+                        }}
+                        className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
+                      >
+                        Detect Language
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* God Level: Collaboration Panel */}
+              {showCollaboration && pdfEngineRef.current && (
+                <div className="absolute top-20 right-4 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-2xl border border-slate-300 dark:border-slate-700 p-4 min-w-[300px]">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">👥 Collaboration</h3>
+                    <button
+                      onClick={() => setShowCollaboration(false)}
+                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {!collaborationSession ? (
+                      <>
+                        <input
+                          type="text"
+                          placeholder="Your name..."
+                          className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                          onKeyDown={async (e) => {
+                            if (e.key === 'Enter' && pdfEngineRef.current && e.currentTarget.value) {
+                              const session = pdfEngineRef.current.createCollaborationSession(e.currentTarget.value);
+                              setCollaborationSession(session);
+                              toast.success(`Session created: ${session.id}`);
+                            }
+                          }}
+                        />
+                        <button
+                          onClick={async () => {
+                            const name = prompt('Your name:');
+                            if (name && pdfEngineRef.current) {
+                              const session = pdfEngineRef.current.createCollaborationSession(name);
+                              setCollaborationSession(session);
+                              toast.success(`Session created: ${session.id}`);
+                            }
+                          }}
+                          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                        >
+                          Create Session
+                        </button>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Share session ID with others to collaborate in real-time
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded">
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">Session ID:</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400 font-mono">{collaborationSession.id}</div>
+                        </div>
+                        <div className="text-sm text-gray-700 dark:text-gray-300">
+                          Participants: {collaborationSession.participants.length}
+                        </div>
+                        <div className="text-sm text-gray-700 dark:text-gray-300">
+                          Version: {collaborationSession.version}
+                        </div>
+                        <button
+                          onClick={() => {
+                            setCollaborationSession(null);
+                            toast.info('Left collaboration session');
+                          }}
+                          className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                        >
+                          Leave Session
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* God Level: OCR Panel */}
+              {showOCRPanel && pdfEngineRef.current && (
+                <div className="absolute top-20 right-4 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-2xl border border-slate-300 dark:border-slate-700 p-4 min-w-[300px]">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">👁️ OCR</h3>
+                    <button
+                      onClick={() => setShowOCRPanel(false)}
+                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="text-sm text-gray-700 dark:text-gray-300">
+                      Extract text from images and recognize handwriting
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file && pdfEngineRef.current) {
+                          const reader = new FileReader();
+                          reader.onload = async (event) => {
+                            const img = new Image();
+                            img.onload = async () => {
+                              const canvas = document.createElement('canvas');
+                              canvas.width = img.width;
+                              canvas.height = img.height;
+                              const ctx = canvas.getContext('2d');
+                              if (ctx) {
+                                ctx.drawImage(img, 0, 0);
+                                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                                const results = await pdfEngineRef.current.performOCR(imageData, { detectHandwriting: true });
+                                if (results.length > 0) {
+                                  toast.success(`OCR: Found ${results.length} text block(s)`);
+                                  console.log('OCR Results:', results);
+                                } else {
+                                  toast.info('No text found in image');
+                                }
+                              }
+                            };
+                            img.src = event.target?.result as string;
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                    />
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Supports: Images, scanned documents, handwriting
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* God Level: Cloud Sync Panel */}
+              {showCloudSync && pdfEngineRef.current && (
+                <div className="absolute top-20 right-4 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-2xl border border-slate-300 dark:border-slate-700 p-4 min-w-[300px]">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">☁️ Cloud Sync</h3>
+                    <button
+                      onClick={() => setShowCloudSync(false)}
+                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <select
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                      defaultValue=""
+                    >
+                      <option value="">Select cloud provider...</option>
+                      <option value="google-drive">Google Drive</option>
+                      <option value="dropbox">Dropbox</option>
+                      <option value="onedrive">OneDrive</option>
+                    </select>
+                    <button
+                      onClick={async () => {
+                        if (pdfEngineRef.current && file) {
+                          const pdfBytes = await pdfEngineRef.current.savePdf();
+                          const result = await pdfEngineRef.current.setupCloudSync({
+                            provider: 'google-drive',
+                            fileId: `file-${Date.now()}`,
+                            lastSync: Date.now(),
+                          });
+                          if (result.success) {
+                            const syncResult = await pdfEngineRef.current.getGodLevelFeatures().syncToCloud(pdfBytes);
+                            if (syncResult.success) {
+                              toast.success('Synced to cloud');
+                            } else {
+                              toast.error(syncResult.error || 'Sync failed');
+                            }
+                          }
+                        }
+                      }}
+                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                      Sync to Cloud
+                    </button>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Keep your PDFs synchronized across devices
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Phase 4.6: Find & Replace Panel */}
               {showFindReplace && (
                 <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-2xl border border-slate-300 dark:border-slate-700 p-4 min-w-[400px]">
@@ -7074,7 +7348,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         if (editingTextRun) {
                           const finalValue = editingTextValue || e.target.value;
                           if (finalValue !== run.text) {
-                            // Phase 2.5: Update PDF text with formatting
+                          // Phase 2.5: Update PDF text with formatting
                             updatePdfText(run.id, finalValue, editingTextFormat);
                           }
                         }
@@ -7300,23 +7574,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                               {/* Phase 7: Text Transformation & Rotation */}
                               <div className="space-y-2 pt-2 border-t border-slate-300 dark:border-slate-600">
                                 <div className="flex items-center gap-2">
-                                  <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Transform:</label>
-                                  <div className="flex gap-1 flex-1">
-                                    {(['uppercase', 'lowercase', 'capitalize'] as const).map(transform => (
-                                      <button
-                                        key={transform}
-                                        onClick={() => {
-                                          if (editingTextRun && run) {
-                                            const transformed = transformText(run.text, transform);
-                                            updatePdfText(run.id, transformed, editingTextFormat);
-                                          }
-                                        }}
-                                        className="px-3 py-1 rounded text-sm bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 capitalize"
-                                        title={transform}
-                                      >
-                                        {transform === 'uppercase' ? 'ABC' : transform === 'lowercase' ? 'abc' : 'Abc'}
-                                      </button>
-                                    ))}
+                                <label className="text-sm text-gray-700 dark:text-gray-300 w-20">Transform:</label>
+                                <div className="flex gap-1 flex-1">
+                                  {(['uppercase', 'lowercase', 'capitalize'] as const).map(transform => (
+                                    <button
+                                      key={transform}
+                                      onClick={() => {
+                                        if (editingTextRun && run) {
+                                          const transformed = transformText(run.text, transform);
+                                          updatePdfText(run.id, transformed, editingTextFormat);
+                                        }
+                                      }}
+                                      className="px-3 py-1 rounded text-sm bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 capitalize"
+                                      title={transform}
+                                    >
+                                      {transform === 'uppercase' ? 'ABC' : transform === 'lowercase' ? 'abc' : 'Abc'}
+                                    </button>
+                                  ))}
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -8706,7 +8980,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           </div>
         </div>
       )}
-
+      
       {/* Advanced: Page Features Panel */}
       {showPageFeatures && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPageFeatures(false)}>
