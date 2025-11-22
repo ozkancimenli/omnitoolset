@@ -236,7 +236,9 @@ export class ContentStreamParser {
       
       // Handle TJ operator (array of text and spacing)
       if (op.operator === 'TJ' && op.operands.length > 0) {
-        const array = op.operands[0] as any[];
+        const operand = op.operands[0];
+        if (!Array.isArray(operand)) return;
+        const array = operand as Array<string | number>;
         let currentX = textMatrix[4];
         
         for (const item of array) {
@@ -303,8 +305,10 @@ export class ContentStreamParser {
       
       // Handle TJ operator
       if (op.operator === 'TJ' && op.operands.length > 0) {
-        const array = op.operands[0] as any[];
-        const newArray: any[] = [];
+        const operand = op.operands[0];
+        if (!Array.isArray(operand)) return stream;
+        const array = operand as Array<string | number>;
+        const newArray: Array<string | number> = [];
         let modified = false;
         
         for (const item of array) {

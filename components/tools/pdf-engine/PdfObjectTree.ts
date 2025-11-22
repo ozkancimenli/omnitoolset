@@ -167,10 +167,12 @@ export class PdfObjectTree {
         }
       } else {
         // Dictionary key
-        if (current.type === 'dictionary' && typeof current.value === 'object') {
-          const value = (current.value as any)[segment];
+        if (current.type === 'dictionary' && typeof current.value === 'object' && current.value !== null) {
+          const dict = current.value as Record<string, unknown>;
+          const value = dict[segment];
           if (value && typeof value === 'object' && 'objectNumber' in value) {
-            const refKey = `${(value as PdfObjectReference).objectNumber}-${(value as PdfObjectReference).generationNumber}`;
+            const ref = value as PdfObjectReference;
+            const refKey = `${ref.objectNumber}-${ref.generationNumber}`;
             current = this.objectMap.get(refKey) || null;
           } else {
             return null;
