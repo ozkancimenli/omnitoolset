@@ -1711,8 +1711,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
     if (runs.length === 0) {
       console.log('[Edit] No text runs found for page', pageNumber, 'total pages:', Object.keys(pdfTextRuns).length);
+      console.log('[Edit] Available pages with runs:', Object.keys(pdfTextRuns));
       return null;
     }
+    
+    console.log('[Edit] Searching', runs.length, 'runs at position', x, y);
     
     let closestRun: PdfTextRun | null = null;
     let closestDistance = Infinity;
@@ -3984,7 +3987,64 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
     
     try {
-      // Phase 3.3: Rebuild PDF page with modified text
+      // Phase 3.3: Use PdfEngine to modify text (preferred method)
+      if (pdfEngineRef.current) {
+        console.log('[Edit] Using PdfEngine to modify text:', runId, sanitizedText);
+        const result = await pdfEngineRef.current.modifyText(pageNum, [{
+          runId,
+          newText: sanitizedText,
+          format: {
+            fontSize: format?.fontSize,
+            fontFamily: format?.fontFamily,
+            fontWeight: format?.fontWeight,
+            fontStyle: format?.fontStyle,
+            color: format?.color,
+            textAlign: format?.textAlign,
+            textDecoration: format?.textDecoration,
+          },
+        }]);
+        
+        if (result.success) {
+          console.log('[Edit] PdfEngine modifyText succeeded');
+          // Update the text run in our state
+          setPdfTextRuns(prev => {
+            const pageRuns = prev[pageNum] || [];
+            const updatedRuns = pageRuns.map(r => {
+              if (r.id === runId) {
+                return {
+                  ...r,
+                  text: sanitizedText,
+                  fontSize: format?.fontSize || r.fontSize,
+                  fontName: format?.fontFamily || r.fontName,
+                  fontWeight: format?.fontWeight || r.fontWeight,
+                  fontStyle: format?.fontStyle || r.fontStyle,
+                  color: format?.color || r.color,
+                };
+              }
+              return r;
+            });
+            return {
+              ...prev,
+              [pageNum]: updatedRuns,
+            };
+          });
+          
+          // Re-render the page to show changes
+          await renderPage(pageNum);
+          
+          // Save to text edit history
+          saveTextEditToHistory(runId, run.text, sanitizedText, format);
+          
+          toast.success('PDF text updated successfully!');
+          return;
+        } else {
+          console.log('[Edit] PdfEngine modifyText failed:', result.error);
+          toast.warning('Engine modification failed, trying rebuild method...');
+        }
+      }
+      
+      // Fallback: Phase 3.3: Rebuild PDF page with modified text
+      console.log('[Edit] Using rebuildPdfPageWithText fallback');
       const success = await rebuildPdfPageWithText(pageNum, [{
         runId,
         newText: sanitizedText,
