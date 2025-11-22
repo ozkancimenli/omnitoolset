@@ -64,7 +64,12 @@ export class WebAssemblyProcessor {
       },
       decrypt: (data: Uint8Array, password: string) => {
         // Decryption is same as encryption for XOR
-        return this.encrypt(data, password);
+        const key = this.hashPassword(password);
+        const result = new Uint8Array(data.length);
+        for (let i = 0; i < data.length; i++) {
+          result[i] = data[i] ^ key[i % key.length];
+        }
+        return result;
       },
       optimize: (data: Uint8Array) => {
         // Fallback: return optimized version
