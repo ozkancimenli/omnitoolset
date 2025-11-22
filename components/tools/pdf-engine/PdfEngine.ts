@@ -10,6 +10,9 @@
  */
 
 import { PDFDocument, PDFPage, rgb, StandardFonts, PDFFont } from 'pdf-lib';
+import { ContentStreamParser } from './ContentStreamParser';
+import { TextLayoutEngine } from './TextLayoutEngine';
+import { PdfOptimizer } from './PdfOptimizer';
 
 export interface PdfTextRun {
   id: string;
@@ -601,6 +604,150 @@ export class PdfEngine {
       canUndo: this.undoStack.length > 0,
       canRedo: this.redoStack.length > 0,
     };
+  }
+
+  /**
+   * Advanced: Search and replace text across all pages
+   */
+  async searchAndReplace(
+    searchText: string,
+    replaceText: string,
+    options?: {
+      caseSensitive?: boolean;
+      wholeWords?: boolean;
+      regex?: boolean;
+    }
+  ): Promise<{ success: boolean; replacements: number; error?: string }> {
+    if (!this.pdfDoc) {
+      return { success: false, replacements: 0, error: 'PDF not loaded' };
+    }
+
+    let totalReplacements = 0;
+    const pages = this.pdfDoc.getPages();
+    
+    try {
+      for (let pageNum = 1; pageNum <= pages.length; pageNum++) {
+        const runs = this.textRuns.get(pageNum) || [];
+        const modifications: TextModification[] = [];
+        
+        for (const run of runs) {
+          let searchRegex: RegExp;
+          
+          if (options?.regex) {
+            try {
+              searchRegex = new RegExp(
+                searchText,
+                options.caseSensitive ? 'g' : 'gi'
+              );
+            } catch {
+              // Invalid regex, skip
+              continue;
+            }
+          } else {
+            const escaped = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const pattern = options?.wholeWords 
+              ? `\\b${escaped}\\b` 
+              : escaped;
+            searchRegex = new RegExp(
+              pattern,
+              options?.caseSensitive ? 'g' : 'gi'
+            );
+          }
+          
+          if (searchRegex.test(run.text)) {
+            const newText = run.text.replace(searchRegex, replaceText);
+            if (newText !== run.text) {
+              modifications.push({
+                runId: run.id,
+                newText,
+              });
+              totalReplacements++;
+            }
+          }
+        }
+        
+        if (modifications.length > 0) {
+          await this.modifyText(pageNum, modifications, { skipHistory: false });
+        }
+      }
+      
+      return { success: true, replacements: totalReplacements };
+    } catch (error: any) {
+      return {
+        success: false,
+        replacements: totalReplacements,
+        error: error.message || 'Failed to search and replace',
+      };
+    }
+  }
+
+  /**
+   * Advanced: Optimize PDF
+   */
+  async optimize(options?: {
+    compressImages?: boolean;
+    removeUnusedFonts?: boolean;
+    compressContentStreams?: boolean;
+  }): Promise<{ success: boolean; result?: any; error?: string }> {
+    if (!this.pdfDoc) {
+      return { success: false, error: 'PDF not loaded' };
+    }
+
+    try {
+      const result = await PdfOptimizer.optimize(this.pdfDoc, options || {});
+      return { success: true, result };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Failed to optimize' };
+    }
+  }
+
+  /**
+   * Advanced: Analyze PDF structure
+   */
+  async analyzeStructure(): Promise<{ success: boolean; structure?: any; error?: string }> {
+    if (!this.pdfDoc) {
+      return { success: false, error: 'PDF not loaded' };
+    }
+
+    try {
+      const structure = await PdfOptimizer.analyzeStructure(this.pdfDoc);
+      return { success: true, structure };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Failed to analyze' };
+    }
+  }
+
+  /**
+   * Advanced: Get text metrics
+   */
+  getTextMetrics(
+    text: string,
+    fontSize: number,
+    fontFamily: string,
+    options?: {
+      letterSpacing?: number;
+      wordSpacing?: number;
+    }
+  ) {
+    return TextLayoutEngine.measureText(text, fontSize, fontFamily, options);
+  }
+
+  /**
+   * Advanced: Layout text with wrapping
+   */
+  layoutText(
+    text: string,
+    maxWidth: number,
+    fontSize: number,
+    fontFamily: string,
+    options?: {
+      letterSpacing?: number;
+      wordSpacing?: number;
+      lineHeight?: number;
+      textAlign?: 'left' | 'center' | 'right' | 'justify';
+    }
+  ) {
+    return TextLayoutEngine.layoutText(text, maxWidth, fontSize, fontFamily, options);
   }
 
   /**
