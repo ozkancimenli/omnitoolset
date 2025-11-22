@@ -1054,22 +1054,24 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setNumPages(0);
       setErrorState(null);
       
-      // Set file state and immediately load PDF
+      // Set file state
       setFile(selectedFile);
       toast.info('Loading PDF...');
       
       console.log('[PDF Editor] Calling loadPDF with file:', selectedFile.name);
       
-      // Call loadPDF directly with the selected file to avoid closure issues
-      loadPDF(selectedFile).catch((error) => {
-        console.error('[PDF Editor] loadPDF error:', error);
-        logError(error as Error, 'handleFileSelect loadPDF', { fileName: selectedFile.name });
-        toast.error('Failed to load PDF. Please try again.');
-        setFile(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-      });
+      // Call loadPDF directly with the selected file - use setTimeout to ensure state is set
+      setTimeout(() => {
+        loadPDF(selectedFile).catch((error) => {
+          console.error('[PDF Editor] loadPDF error:', error);
+          logError(error as Error, 'handleFileSelect loadPDF', { fileName: selectedFile.name });
+          toast.error('Failed to load PDF. Please try again.');
+          setFile(null);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        });
+      }, 0);
     } catch (error) {
       console.error('[PDF Editor] handleFileSelect error:', error);
       logError(error as Error, 'handleFileSelect', { fileName: selectedFile.name });
@@ -1132,16 +1134,21 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setNumPages(0);
       setErrorState(null);
       
-      // Set file state and immediately load PDF
+      // Set file state first
       setFile(droppedFile);
       toast.info('Loading PDF...');
       
-      // Call loadPDF directly with the dropped file to avoid closure issues
-      loadPDF(droppedFile).catch((error) => {
-        logError(error as Error, 'handleDrop loadPDF', { fileName: droppedFile.name });
-        toast.error('Failed to load PDF. Please try again.');
-        setFile(null);
-      });
+      console.log('[PDF Editor] Calling loadPDF with dropped file:', droppedFile.name);
+      
+      // Call loadPDF directly with the dropped file - use setTimeout to ensure state is set
+      setTimeout(() => {
+        loadPDF(droppedFile).catch((error) => {
+          console.error('[PDF Editor] loadPDF error in handleDrop:', error);
+          logError(error as Error, 'handleDrop loadPDF', { fileName: droppedFile.name });
+          toast.error('Failed to load PDF. Please try again.');
+          setFile(null);
+        });
+      }, 0);
     } catch (error) {
       logError(error as Error, 'handleDrop', { fileName: droppedFile.name });
       toast.error('Error processing dropped file. Please try again.');
@@ -1208,7 +1215,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   }, [annotations, pageNum]);
 
   // Production: Enhanced PDF loading with error handling and performance monitoring
-  const loadPDF = useCallback(async (fileToLoad?: File) => {
+  // Note: Not using useCallback to avoid closure issues - function is recreated each render
+  // but this ensures it always has access to latest state and refs
+  const loadPDF = async (fileToLoad?: File) => {
     const targetFile = fileToLoad || file;
     if (!targetFile) {
       console.warn('[PDF Editor] loadPDF called but no file provided');
@@ -1386,8 +1395,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         message: errorMessage,
         code: errorCode,
         retry: () => {
-          if (targetFile) {
-            loadPDF(targetFile);
+          if (fileToLoad) {
+            loadPDF(fileToLoad);
           }
         },
       });
@@ -1405,8 +1414,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setIsProcessing(false);
       setOperationStatus(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   // Production: Cleanup effect for memory management
   useEffect(() => {
