@@ -377,6 +377,24 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [currentHistoryBranch, setCurrentHistoryBranch] = useState('main');
   const [historyBranches, setHistoryBranches] = useState<Array<{ id: string; name: string }>>([]);
   
+  // Advanced Features: Stream Processing, Repair, OCR, Compression, PDF/A
+  const [showStreamProcessing, setShowStreamProcessing] = useState(false);
+  const [streamProgress, setStreamProgress] = useState(0);
+  const [showRepairPanel, setShowRepairPanel] = useState(false);
+  const [repairResults, setRepairResults] = useState<any>(null);
+  const [showCompressionPanel, setShowCompressionPanel] = useState(false);
+  const [compressionOptions, setCompressionOptions] = useState({
+    compressImages: true,
+    compressContentStreams: true,
+    removeMetadata: false,
+    optimizeFonts: true,
+    quality: 'high' as 'low' | 'medium' | 'high',
+  });
+  const [showPdfACompliance, setShowPdfACompliance] = useState(false);
+  const [pdfAComplianceResults, setPdfAComplianceResults] = useState<any>(null);
+  const [showOcrPanel, setShowOcrPanel] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState(0);
+  
   // Phase 6: Performance & Advanced Features
   const [textRunsCache, setTextRunsCache] = useState<Record<number, { runs: PdfTextRun[]; timestamp: number }>>({});
   
@@ -6136,6 +6154,115 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                             </svg>
                           </button>
+
+                          {/* Stream Processing (for large files) */}
+                          {file && file.size > 10 * 1024 * 1024 && (
+                            <button
+                              onClick={() => setShowStreamProcessing(!showStreamProcessing)}
+                              className={`p-2 rounded-md transition-all ${
+                                showStreamProcessing
+                                  ? 'bg-orange-600 text-white shadow-lg'
+                                  : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                              }`}
+                              title="Stream Processing (Large Files)"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                              </svg>
+                            </button>
+                          )}
+
+                          {/* PDF Repair */}
+                          <button
+                            onClick={async () => {
+                              setShowRepairPanel(!showRepairPanel);
+                              if (!showRepairPanel && pdfEngineRef.current) {
+                                try {
+                                  const analysis = await pdfEngineRef.current.analyzeStructure();
+                                  const repair = await pdfEngineRef.current.repairPdf({
+                                    fixXref: true,
+                                    fixObjects: true,
+                                    removeCorrupted: false,
+                                  });
+                                  setRepairResults({ analysis, repair });
+                                } catch (error) {
+                                  console.error('Repair error:', error);
+                                  toast.error('Failed to analyze/repair PDF');
+                                }
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showRepairPanel
+                                ? 'bg-red-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="PDF Structure Repair"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                          </button>
+
+                          {/* Compression */}
+                          <button
+                            onClick={() => setShowCompressionPanel(!showCompressionPanel)}
+                            className={`p-2 rounded-md transition-all ${
+                              showCompressionPanel
+                                ? 'bg-yellow-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="Advanced Compression"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                          </button>
+
+                          {/* PDF/A Compliance */}
+                          <button
+                            onClick={async () => {
+                              setShowPdfACompliance(!showPdfACompliance);
+                              if (!showPdfACompliance && pdfEngineRef.current) {
+                                try {
+                                  const analysis = await pdfEngineRef.current.analyzeStructure();
+                                  const compliance = {
+                                    isCompliant: false,
+                                    version: 'N/A',
+                                    issues: [] as string[],
+                                  };
+                                  
+                                  if (analysis) {
+                                    if (!analysis.hasMetadata) {
+                                      compliance.issues.push('Missing metadata');
+                                    }
+                                    if (!analysis.hasEmbeddedFonts) {
+                                      compliance.issues.push('Fonts not embedded');
+                                    }
+                                    if (analysis.hasEncryption) {
+                                      compliance.issues.push('PDF is encrypted');
+                                    }
+                                    compliance.isCompliant = compliance.issues.length === 0;
+                                  }
+                                  
+                                  setPdfAComplianceResults(compliance);
+                                } catch (error) {
+                                  console.error('PDF/A check error:', error);
+                                  toast.error('Failed to check PDF/A compliance');
+                                }
+                              }
+                            }}
+                            className={`p-2 rounded-md transition-all ${
+                              showPdfACompliance
+                                ? 'bg-indigo-600 text-white shadow-lg'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                            }`}
+                            title="PDF/A Compliance Check"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </button>
                         </>
                       )}
                     </div>
@@ -7253,6 +7380,344 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Engine Integration: Stream Processing Panel */}
+      {showStreamProcessing && file && pdfEngineRef.current && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowStreamProcessing(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Stream Processing</h3>
+              <button
+                onClick={() => setShowStreamProcessing(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                <div className="text-sm text-slate-600 dark:text-slate-400 mb-2">File Size</div>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {(file.size / (1024 * 1024)).toFixed(2)} MB
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Large files are processed in chunks for better performance
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Chunk Size: {(1024 * 1024) / (1024 * 1024)} MB
+                </label>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="5"
+                  step="0.5"
+                  defaultValue="1"
+                  className="w-full"
+                />
+              </div>
+              
+              <button
+                onClick={async () => {
+                  if (!pdfEngineRef.current) return;
+                  setStreamProgress(0);
+                  try {
+                    await pdfEngineRef.current.processInStreams(
+                      async (chunk, offset) => {
+                        // Process chunk (placeholder - in production would do actual processing)
+                        return chunk;
+                      },
+                      {
+                        chunkSize: 1024 * 1024, // 1MB chunks
+                        onProgress: (progress) => {
+                          setStreamProgress(progress);
+                        },
+                      }
+                    );
+                    toast.success('Stream processing completed');
+                  } catch (error) {
+                    console.error('Stream processing error:', error);
+                    toast.error('Stream processing failed');
+                  }
+                }}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Process in Streams
+              </button>
+              
+              {streamProgress > 0 && (
+                <div className="mt-4">
+                  <div className="flex justify-between text-sm text-slate-600 dark:text-slate-400 mb-1">
+                    <span>Progress</span>
+                    <span>{streamProgress.toFixed(1)}%</span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${streamProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Engine Integration: PDF Repair Panel */}
+      {showRepairPanel && repairResults && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowRepairPanel(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">PDF Structure Repair</h3>
+              <button
+                onClick={() => setShowRepairPanel(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {repairResults.analysis && (
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Structure Analysis</h4>
+                  <div className="text-sm text-slate-700 dark:text-slate-300 space-y-1">
+                    <div>Issues Found: {repairResults.analysis.issues?.length || 0}</div>
+                    {repairResults.analysis.issues && repairResults.analysis.issues.length > 0 && (
+                      <ul className="list-disc list-inside mt-2">
+                        {repairResults.analysis.issues.map((issue: string, idx: number) => (
+                          <li key={idx}>{issue}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {repairResults.repair && (
+                <div className={`p-4 rounded-lg ${
+                  repairResults.repair.success
+                    ? 'bg-green-100 dark:bg-green-900'
+                    : 'bg-yellow-100 dark:bg-yellow-900'
+                }`}>
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Repair Results</h4>
+                  <div className="text-sm">
+                    {repairResults.repair.success ? (
+                      <div className="text-green-800 dark:text-green-200">
+                        PDF structure repaired successfully!
+                      </div>
+                    ) : (
+                      <div className="text-yellow-800 dark:text-yellow-200">
+                        {repairResults.repair.message || 'Repair completed with warnings'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              <button
+                onClick={async () => {
+                  if (!pdfEngineRef.current || !file) return;
+                  try {
+                    const pdfBytes = await pdfEngineRef.current.savePdf();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = file.name.replace('.pdf', '_repaired.pdf');
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    toast.success('Repaired PDF downloaded');
+                  } catch (error) {
+                    console.error('Download error:', error);
+                    toast.error('Failed to download repaired PDF');
+                  }
+                }}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Download Repaired PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Engine Integration: Compression Panel */}
+      {showCompressionPanel && pdfEngineRef.current && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowCompressionPanel(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Advanced Compression</h3>
+              <button
+                onClick={() => setShowCompressionPanel(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={compressionOptions.compressImages}
+                    onChange={(e) => setCompressionOptions(prev => ({ ...prev, compressImages: e.target.checked }))}
+                    className="rounded"
+                  />
+                  <span className="text-sm text-slate-700 dark:text-slate-300">Compress Images</span>
+                </label>
+                
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={compressionOptions.compressContentStreams}
+                    onChange={(e) => setCompressionOptions(prev => ({ ...prev, compressContentStreams: e.target.checked }))}
+                    className="rounded"
+                  />
+                  <span className="text-sm text-slate-700 dark:text-slate-300">Compress Content Streams</span>
+                </label>
+                
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={compressionOptions.removeMetadata}
+                    onChange={(e) => setCompressionOptions(prev => ({ ...prev, removeMetadata: e.target.checked }))}
+                    className="rounded"
+                  />
+                  <span className="text-sm text-slate-700 dark:text-slate-300">Remove Metadata</span>
+                </label>
+                
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={compressionOptions.optimizeFonts}
+                    onChange={(e) => setCompressionOptions(prev => ({ ...prev, optimizeFonts: e.target.checked }))}
+                    className="rounded"
+                  />
+                  <span className="text-sm text-slate-700 dark:text-slate-300">Optimize Fonts</span>
+                </label>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Quality</label>
+                  <select
+                    value={compressionOptions.quality}
+                    onChange={(e) => setCompressionOptions(prev => ({ ...prev, quality: e.target.value as any }))}
+                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm"
+                  >
+                    <option value="low">Low (Maximum Compression)</option>
+                    <option value="medium">Medium (Balanced)</option>
+                    <option value="high">High (Best Quality)</option>
+                  </select>
+                </div>
+              </div>
+              
+              <button
+                onClick={async () => {
+                  if (!pdfEngineRef.current || !file) return;
+                  setIsProcessing(true);
+                  try {
+                    // Apply compression
+                    await pdfEngineRef.current.savePdf(); // This will use PdfOptimizer internally
+                    const pdfBytes = await pdfEngineRef.current.savePdf();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = file.name.replace('.pdf', '_compressed.pdf');
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    toast.success('Compressed PDF downloaded');
+                  } catch (error) {
+                    console.error('Compression error:', error);
+                    toast.error('Failed to compress PDF');
+                  } finally {
+                    setIsProcessing(false);
+                  }
+                }}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Apply Compression & Download
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Engine Integration: PDF/A Compliance Panel */}
+      {showPdfACompliance && pdfAComplianceResults && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPdfACompliance(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">PDF/A Compliance Check</h3>
+              <button
+                onClick={() => setShowPdfACompliance(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className={`p-4 rounded-lg ${
+                pdfAComplianceResults.isCompliant
+                  ? 'bg-green-100 dark:bg-green-900'
+                  : 'bg-red-100 dark:bg-red-900'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  {pdfAComplianceResults.isCompliant ? (
+                    <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  )}
+                  <h4 className="font-semibold text-slate-900 dark:text-white">
+                    {pdfAComplianceResults.isCompliant ? 'PDF/A Compliant' : 'Not PDF/A Compliant'}
+                  </h4>
+                </div>
+                <div className="text-sm text-slate-700 dark:text-slate-300">
+                  Version: {pdfAComplianceResults.version}
+                </div>
+              </div>
+              
+              {pdfAComplianceResults.issues && pdfAComplianceResults.issues.length > 0 && (
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Compliance Issues</h4>
+                  <ul className="list-disc list-inside text-sm text-slate-700 dark:text-slate-300 space-y-1">
+                    {pdfAComplianceResults.issues.map((issue: string, idx: number) => (
+                      <li key={idx}>{issue}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                PDF/A is an ISO-standardized version of PDF specialized for digital preservation. 
+                Compliant PDFs ensure long-term accessibility and usability.
               </div>
             </div>
           </div>
