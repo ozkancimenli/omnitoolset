@@ -16,6 +16,8 @@ interface AIPanelProps {
   file: File | null;
   pageNum: number;
   renderPage: (pageNum: number) => void;
+  setShowSocialShare: (show: boolean) => void;
+  setShowPdfComparison: (show: boolean) => void;
   toast: any;
 }
 
@@ -32,6 +34,8 @@ export const AIPanel: React.FC<AIPanelProps> = ({
   file,
   pageNum,
   renderPage,
+  setShowSocialShare,
+  setShowPdfComparison,
   toast,
 }) => {
   if (!showAIPanel || !pdfEngineRef.current) return null;
@@ -245,22 +249,13 @@ export const AIPanel: React.FC<AIPanelProps> = ({
               📽️ PowerPoint
             </button>
             <button
-              onClick={() => {
-                // This will be handled by parent component
-                if (typeof window !== 'undefined' && (window as any).setShowSocialShare) {
-                  (window as any).setShowSocialShare(true);
-                }
-              }}
+              onClick={() => setShowSocialShare(true)}
               className="px-3 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-lg hover:from-pink-600 hover:to-rose-700 transition-all text-xs font-semibold col-span-3"
             >
               🚀 Share PDF
             </button>
             <button
-              onClick={() => {
-                if (typeof window !== 'undefined' && (window as any).setShowPdfComparison) {
-                  (window as any).setShowPdfComparison(true);
-                }
-              }}
+              onClick={() => setShowPdfComparison(true)}
               className="px-3 py-2 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-lg hover:from-orange-600 hover:to-amber-700 transition-all text-xs font-semibold col-span-3 mt-2"
             >
               🔍 Compare PDFs
