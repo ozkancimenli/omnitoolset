@@ -964,22 +964,6 @@ export class PdfEngine {
   }
 
   /**
-   * Advanced: Analyze PDF structure
-   */
-  async analyzeStructure(): Promise<{ success: boolean; structure?: any; error?: string }> {
-    if (!this.pdfDoc) {
-      return { success: false, error: 'PDF not loaded' };
-    }
-
-    try {
-      const structure = await PdfOptimizer.analyzeStructure(this.pdfDoc);
-      return { success: true, structure };
-    } catch (error: any) {
-      return { success: false, error: error.message || 'Failed to analyze' };
-    }
-  }
-
-  /**
    * Advanced: Get text metrics
    */
   getTextMetrics(
