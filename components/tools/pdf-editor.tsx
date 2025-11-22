@@ -4103,19 +4103,75 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   }, [textEditHistory, textEditHistoryIndex, pageNum, pdfTextRuns, file, pdfUrl]);
 
   // Phase 6: Calculate text statistics
-  const calculateTextStats = () => {
-    const runs = pdfTextRuns[pageNum] || [];
+  // Enhanced: Calculate text statistics for current page or all pages
+  const calculateTextStats = (allPages: boolean = false) => {
+    const pagesToAnalyze = allPages 
+      ? Object.keys(pdfTextRuns).map(Number).sort((a, b) => a - b)
+      : [pageNum];
+    
     let totalChars = 0;
     let totalWords = 0;
-    let totalRuns = runs.length;
+    let totalRuns = 0;
+    let totalLines = 0;
+    let totalParagraphs = 0;
+    let totalSentences = 0;
+    const pageStats: Array<{ page: number; chars: number; words: number; runs: number }> = [];
+    
+    pagesToAnalyze.forEach(pageNumber => {
+      const runs = pdfTextRuns[pageNumber] || [];
+      let pageChars = 0;
+      let pageWords = 0;
+      let pageLines = 0;
+      const pageTexts: string[] = [];
     
     runs.forEach(run => {
+        pageChars += run.text.length;
       totalChars += run.text.length;
+        
       const words = run.text.trim().split(/\s+/).filter(w => w.length > 0);
+        pageWords += words.length;
       totalWords += words.length;
+        
+        // Count lines (text runs are typically on separate lines)
+        if (run.text.trim().length > 0) {
+          pageLines++;
+          totalLines++;
+        }
+        
+        pageTexts.push(run.text);
+      });
+      
+      totalRuns += runs.length;
+      
+      // Count paragraphs (empty lines separate paragraphs)
+      const fullPageText = pageTexts.join('\n');
+      const paragraphs = fullPageText.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+      totalParagraphs += paragraphs.length;
+      
+      // Count sentences (basic sentence detection)
+      const sentences = fullPageText.match(/[.!?]+/g) || [];
+      totalSentences += sentences.length;
+      
+      pageStats.push({
+        page: pageNumber,
+        chars: pageChars,
+        words: pageWords,
+        runs: runs.length,
+      });
     });
     
-    return { totalChars, totalWords, totalRuns };
+    return {
+      totalChars,
+      totalWords,
+      totalRuns,
+      totalLines,
+      totalParagraphs,
+      totalSentences,
+      pageStats,
+      pagesAnalyzed: pagesToAnalyze.length,
+      averageWordsPerPage: pagesToAnalyze.length > 0 ? Math.round(totalWords / pagesToAnalyze.length) : 0,
+      averageCharsPerPage: pagesToAnalyze.length > 0 ? Math.round(totalChars / pagesToAnalyze.length) : 0,
+    };
   };
 
   // Phase 6: Save text style
@@ -6480,37 +6536,82 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                       </svg>
                     </button>
                   </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Characters:</span>
-                      <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.characterCount.toLocaleString()}</span>
+                  <div className="space-y-3 text-sm">
+                    {/* Scope indicator */}
+                    {textStatistics.pagesAnalyzed && (
+                      <div className="text-xs text-slate-500 dark:text-slate-400 pb-2 border-b border-slate-200 dark:border-slate-700">
+                        Analyzing {textStatistics.pagesAnalyzed} page(s)
+                      </div>
+                    )}
+                    
+                    {/* Main stats */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex flex-col">
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Characters</span>
+                        <span className="font-semibold text-gray-900 dark:text-white text-lg">{textStatistics.characterCount.toLocaleString()}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Words</span>
+                        <span className="font-semibold text-gray-900 dark:text-white text-lg">{textStatistics.wordCount.toLocaleString()}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Lines</span>
+                        <span className="font-semibold text-gray-900 dark:text-white text-lg">{textStatistics.lineCount.toLocaleString()}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Paragraphs</span>
+                        <span className="font-semibold text-gray-900 dark:text-white text-lg">{textStatistics.paragraphCount.toLocaleString()}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Sentences</span>
+                        <span className="font-semibold text-gray-900 dark:text-white text-lg">{textStatistics.sentenceCount.toLocaleString()}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Text Runs</span>
+                        <span className="font-semibold text-gray-900 dark:text-white text-lg">{textStatistics.totalRuns?.toLocaleString() || 'N/A'}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Words:</span>
-                      <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.wordCount.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Lines:</span>
-                      <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.lineCount.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Paragraphs:</span>
-                      <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.paragraphCount.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Sentences:</span>
-                      <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.sentenceCount.toLocaleString()}</span>
-                    </div>
-                    <div className="border-t border-slate-200 dark:border-slate-700 pt-2 mt-2">
-                      <div className="flex justify-between">
+                    
+                    {/* Averages */}
+                    <div className="border-t border-slate-200 dark:border-slate-700 pt-2 space-y-1">
+                      <div className="flex justify-between text-xs">
                         <span className="text-gray-600 dark:text-gray-400">Avg. Words/Sentence:</span>
-                        <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.averageWordsPerSentence.toFixed(1)}</span>
+                        <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.averageWordsPerSentence?.toFixed(1) || '0.0'}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between text-xs">
                         <span className="text-gray-600 dark:text-gray-400">Avg. Chars/Word:</span>
-                        <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.averageCharactersPerWord.toFixed(1)}</span>
+                        <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.averageCharactersPerWord?.toFixed(1) || '0.0'}</span>
                       </div>
+                      {textStatistics.averageWordsPerPage && (
+                        <div className="flex justify-between text-xs">
+                          <span className="text-gray-600 dark:text-gray-400">Avg. Words/Page:</span>
+                          <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.averageWordsPerPage.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {textStatistics.averageCharsPerPage && (
+                        <div className="flex justify-between text-xs">
+                          <span className="text-gray-600 dark:text-gray-400">Avg. Chars/Page:</span>
+                          <span className="font-semibold text-gray-900 dark:text-white">{textStatistics.averageCharsPerPage.toLocaleString()}</span>
+                        </div>
+                      )}
                     </div>
+                    
+                    {/* Page breakdown (if analyzing all pages) */}
+                    {textStatistics.pageStats && textStatistics.pageStats.length > 1 && (
+                      <div className="border-t border-slate-200 dark:border-slate-700 pt-2">
+                        <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Page Breakdown</div>
+                        <div className="max-h-32 overflow-y-auto space-y-1">
+                          {textStatistics.pageStats.map((pageStat: any) => (
+                            <div key={pageStat.page} className="flex justify-between text-xs">
+                              <span className="text-gray-600 dark:text-gray-400">Page {pageStat.page + 1}:</span>
+                              <span className="text-gray-900 dark:text-white">
+                                {pageStat.words} words, {pageStat.chars} chars
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -7622,9 +7723,17 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                               <div className="flex items-center gap-2 pt-2 border-t border-slate-300 dark:border-slate-600">
                                 <button
                                   onClick={() => {
-                                    const stats = calculateTextStats();
-                                    toast.info(`${stats.totalWords} words, ${stats.totalChars} chars, ${stats.totalRuns} runs`);
-                                    setShowTextStats(!showTextStats);
+                                    const stats = calculateTextStats(false); // Current page only
+                                    setTextStatistics({
+                                      characterCount: stats.totalChars,
+                                      wordCount: stats.totalWords,
+                                      lineCount: stats.totalLines,
+                                      paragraphCount: stats.totalParagraphs,
+                                      sentenceCount: stats.totalSentences,
+                                      averageWordsPerSentence: stats.totalSentences > 0 ? stats.totalWords / stats.totalSentences : 0,
+                                      averageCharactersPerWord: stats.totalWords > 0 ? stats.totalChars / stats.totalWords : 0,
+                                    });
+                                    setShowTextStatistics(true);
                                   }}
                                   className="px-3 py-1 rounded text-sm bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"
                                   title="Text Statistics"
@@ -9631,7 +9740,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 <div className="space-y-2">
                   {/* Text Statistics Button */}
                   <button
-                    onClick={calculateTextStats}
+                    onClick={() => {
+                      const stats = calculateTextStats(true); // All pages
+                      setTextStatistics({
+                        characterCount: stats.totalChars,
+                        wordCount: stats.totalWords,
+                        lineCount: stats.totalLines,
+                        paragraphCount: stats.totalParagraphs,
+                        sentenceCount: stats.totalSentences,
+                        averageWordsPerSentence: stats.totalSentences > 0 ? stats.totalWords / stats.totalSentences : 0,
+                        averageCharactersPerWord: stats.totalWords > 0 ? stats.totalChars / stats.totalWords : 0,
+                        pagesAnalyzed: stats.pagesAnalyzed,
+                        averageWordsPerPage: stats.averageWordsPerPage,
+                        averageCharsPerPage: stats.averageCharsPerPage,
+                        pageStats: stats.pageStats,
+                      });
+                      setShowTextStatistics(true);
+                    }}
                     className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                     title="Text Statistics (Alt+S)"
                   >
