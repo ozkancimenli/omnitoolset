@@ -1541,6 +1541,38 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         }
       }
       
+      // Draw batch selection highlights (multiple selected text runs)
+      if (selectedTextRuns.size > 0 && pageNumber === pageNum) {
+        const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
+        const context = canvasRef.current?.getContext('2d');
+        if (context) {
+          runs.forEach(run => {
+            if (selectedTextRuns.has(run.id)) {
+              // Draw highlight around selected text run
+              context.strokeStyle = '#3b82f6';
+              context.lineWidth = 2;
+              context.setLineDash([5, 5]);
+              context.strokeRect(
+                run.x - 2,
+                run.y - run.height - 2,
+                run.width + 4,
+                run.height + 4
+              );
+              context.setLineDash([]);
+              
+              // Draw semi-transparent overlay
+              context.fillStyle = 'rgba(59, 130, 246, 0.1)';
+              context.fillRect(
+                run.x - 2,
+                run.y - run.height - 2,
+                run.width + 4,
+                run.height + 4
+              );
+            }
+          });
+        }
+      }
+      
       // Draw annotations (Advanced: Filter hidden layers)
       const pageAnnotations = annotations.filter(ann => ann.page === pageNumber && !hiddenLayers.has(ann.id));
       pageAnnotations.forEach(ann => {
@@ -3821,6 +3853,96 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     await updatePdfTextInStream(runId, newText, format);
   };
 
+  // Batch Text Operations: Apply format to multiple selected text runs
+  const applyFormatToBatchTextRuns = useCallback(async (format: {
+    fontWeight?: 'normal' | 'bold';
+    fontStyle?: 'normal' | 'italic';
+    textDecoration?: 'none' | 'underline';
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+    textAlign?: 'left' | 'center' | 'right';
+  }) => {
+    if (selectedTextRuns.size === 0) {
+      toast.warning('No text selected. Select text runs with Ctrl/Cmd+Click');
+      return;
+    }
+
+    const runs = pdfTextRuns[pageNum] || [];
+    let updatedCount = 0;
+
+    for (const runId of selectedTextRuns) {
+      const run = runs.find(r => r.id === runId);
+      if (run) {
+        // Apply format to each selected run
+        await updatePdfText(runId, run.text, format);
+        updatedCount++;
+      }
+    }
+
+    toast.success(`Format applied to ${updatedCount} text run(s)`);
+    renderPage(pageNum);
+  }, [selectedTextRuns, pdfTextRuns, pageNum, updatePdfText]);
+
+  // Batch Text Operations: Delete multiple selected text runs
+  const deleteBatchTextRuns = useCallback(async () => {
+    if (selectedTextRuns.size === 0) {
+      toast.warning('No text selected');
+      return;
+    }
+
+    if (!confirm(`Delete ${selectedTextRuns.size} text run(s)?`)) {
+      return;
+    }
+
+    const runs = pdfTextRuns[pageNum] || [];
+    const runsToDelete = Array.from(selectedTextRuns);
+    
+    // Remove text runs from state
+    setPdfTextRuns(prev => {
+      const pageRuns = prev[pageNum] || [];
+      return {
+        ...prev,
+        [pageNum]: pageRuns.filter(r => !runsToDelete.includes(r.id))
+      };
+    });
+
+    // Update PDF using engine if available
+    if (pdfEngineRef.current) {
+      for (const runId of runsToDelete) {
+        const run = runs.find(r => r.id === runId);
+        if (run) {
+          await pdfEngineRef.current.modifyText(pageNum, runId, '');
+        }
+      }
+    }
+
+    setSelectedTextRuns(new Set());
+    toast.success(`Deleted ${runsToDelete.length} text run(s)`);
+    renderPage(pageNum);
+  }, [selectedTextRuns, pdfTextRuns, pageNum]);
+
+  // Batch Text Operations: Copy selected text runs
+  const copyBatchTextRuns = useCallback(() => {
+    if (selectedTextRuns.size === 0) {
+      toast.warning('No text selected');
+      return;
+    }
+
+    const runs = pdfTextRuns[pageNum] || [];
+    const selectedRuns = Array.from(selectedTextRuns)
+      .map(runId => runs.find(r => r.id === runId))
+      .filter(Boolean) as PdfTextRun[];
+
+    const textToCopy = selectedRuns.map(r => r.text).join('\n');
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      toast.success(`Copied ${selectedRuns.length} text run(s) to clipboard`);
+    }).catch(err => {
+      console.error('Failed to copy text:', err);
+      toast.error('Failed to copy text');
+    });
+  }, [selectedTextRuns, pdfTextRuns, pageNum]);
+
   // Phase 6: Undo/Redo for text edits (using OmniPDF Engine)
   const undoTextEdit = useCallback(async () => {
     // Use engine undo if available
@@ -4994,6 +5116,25 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                       </div>
 
                       <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+
+                      {/* Batch Text Operations - Show when text runs are selected */}
+                      {selectedTextRuns.size > 0 && (
+                        <>
+                          <div className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900 rounded-lg p-1">
+                            <button
+                              onClick={() => setShowBatchOperations(!showBatchOperations)}
+                              className="p-2 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 font-medium text-sm flex items-center gap-1"
+                              title={`${selectedTextRuns.size} text(s) selected - Batch Operations`}
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                              </svg>
+                              Batch ({selectedTextRuns.size})
+                            </button>
+                          </div>
+                          <div className="w-px h-8 bg-slate-300 dark:bg-slate-600" />
+                        </>
+                      )}
 
                       {/* Undo/Redo - Icon Buttons */}
                       <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
