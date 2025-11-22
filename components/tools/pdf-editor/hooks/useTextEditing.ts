@@ -103,3 +103,4 @@ export const useTextEditing = ({ pdfDocRef, canvasRef, pageNum }: UseTextEditing
   };
 };
 
+

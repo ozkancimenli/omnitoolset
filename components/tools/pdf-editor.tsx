@@ -216,6 +216,28 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     canvasRef,
     pageNum,
   });
+
+  // Use PDF loader hook
+  const { loadPDF: loadPDFFromHook } = usePdfLoader({
+    setFile,
+    setPdfUrl,
+    setIsProcessing,
+    setProcessingProgress,
+    setProcessingMessage,
+    setNumPages,
+    setPageNum,
+    setIsEditable,
+    setPageThumbnails,
+    setErrorState,
+    setOperationStatus,
+    pdfDocRef,
+    pdfLibDocRef,
+    pdfEngineRef,
+    renderPage,
+    extractTextLayer,
+    autoSaveEnabled,
+    loadAutoSave,
+  });
   
   // Advanced Text Editing - Phase 4
   const [isSelectingText, setIsSelectingText] = useState(false);
@@ -1211,10 +1233,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   }, [annotations, pageNum]);
 
-  // Production: Enhanced PDF loading with error handling and performance monitoring
-  // Note: Not using useCallback to avoid closure issues - function is recreated each render
-  // but this ensures it always has access to latest state and refs
-  const loadPDF = async (fileToLoad?: File) => {
+  // Production: Enhanced PDF loading - now using hook
+  // Alias for backward compatibility
+  const loadPDF = loadPDFFromHook;
+  
+  // Legacy loadPDF function removed - using hook version
+  const loadPDFLegacy = async (fileToLoad?: File) => {
     const targetFile = fileToLoad || file;
     if (!targetFile) {
       console.warn('[PDF Editor] loadPDF called but no file provided');

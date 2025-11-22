@@ -89,3 +89,4 @@ export interface PdfTextRun {
   textAlign?: 'left' | 'center' | 'right';
 }
 
+

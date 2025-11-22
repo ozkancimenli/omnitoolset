@@ -15,11 +15,16 @@ interface UsePdfLoaderProps {
   setNumPages: (pages: number) => void;
   setPageNum: (page: number) => void;
   setIsEditable: (editable: boolean) => void;
+  setPageThumbnails: (thumbnails: string[]) => void;
+  setErrorState: (error: Error | null) => void;
+  setOperationStatus: (status: any) => void;
   pdfDocRef: React.MutableRefObject<any>;
   pdfLibDocRef: React.MutableRefObject<PDFDocument | null>;
   pdfEngineRef: React.MutableRefObject<PdfEngine | null>;
   renderPage: (pageNumber: number) => Promise<void>;
+  extractTextLayer: (pageNumber: number) => Promise<void>;
   autoSaveEnabled: boolean;
+  loadAutoSave?: () => void;
 }
 
 export const usePdfLoader = ({
@@ -31,11 +36,16 @@ export const usePdfLoader = ({
   setNumPages,
   setPageNum,
   setIsEditable,
+  setPageThumbnails,
+  setErrorState,
+  setOperationStatus,
   pdfDocRef,
   pdfLibDocRef,
   pdfEngineRef,
   renderPage,
+  extractTextLayer,
   autoSaveEnabled,
+  loadAutoSave,
 }: UsePdfLoaderProps) => {
   const loadPDF = useCallback(async (fileToLoad?: File, targetFile?: File) => {
     const finalFile = fileToLoad || targetFile;
@@ -87,6 +97,7 @@ export const usePdfLoader = ({
         // Generate thumbnails
         setProcessingProgress(40);
         setProcessingMessage('Generating thumbnails...');
+        setOperationStatus({ type: 'loading', message: 'Generating thumbnails...', progress: 40 });
         const maxThumbnails = Math.min(pdf.numPages, 10);
         const thumbnails: string[] = [];
         
@@ -104,11 +115,13 @@ export const usePdfLoader = ({
             }
             const progress = 40 + (i / maxThumbnails) * 20;
             setProcessingProgress(progress);
+            setOperationStatus({ type: 'loading', message: `Generating thumbnails... (${i}/${maxThumbnails})`, progress });
           } catch (thumbError) {
             logError(thumbError as Error, 'generateThumbnail', { pageNumber: i });
             thumbnails.push('');
           }
         }
+        setPageThumbnails(thumbnails);
         
         // Initialize OmniPDF Engine
         setProcessingProgress(70);
@@ -177,36 +190,88 @@ export const usePdfLoader = ({
         
         // Load first page
         setProcessingProgress(95);
+        setOperationStatus({ type: 'loading', message: 'Rendering first page...', progress: 95 });
         await renderPage(1);
+        await extractTextLayer(1); // Extract text layer for first page
+        
+        // Phase 8: Check for auto-saved data
+        if (loadAutoSave) {
+          loadAutoSave();
+        }
         
         setProcessingProgress(100);
-        setProcessingMessage('PDF loaded successfully!');
-        toast.success(`PDF loaded: ${pdf.numPages} page${pdf.numPages !== 1 ? 's' : ''}`);
+        setProcessingMessage('Complete!');
+        setOperationStatus({ type: 'success', message: 'PDF loaded successfully!' });
+        setTimeout(() => setOperationStatus(null), 2000);
+        toast.success(`PDF loaded successfully! ${pdf.numPages} page${pdf.numPages !== 1 ? 's' : ''}`);
       });
     } catch (error) {
       logError(error as Error, 'loadPDF', { fileName: finalFile.name });
-      toast.error('Failed to load PDF. Please try again.');
+      
+      let errorMessage = 'Unknown error occurred';
+      let errorCode = 'UNKNOWN_ERROR';
+      
+      if (error instanceof PDFProcessingError) {
+        errorMessage = error.message;
+        errorCode = error.code;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+        if (errorMessage.includes('password') || errorMessage.includes('encrypted')) {
+          errorCode = 'ENCRYPTED_PDF';
+          errorMessage = 'This PDF is password-protected. Please unlock it first.';
+        } else if (errorMessage.includes('corrupted') || errorMessage.includes('invalid')) {
+          errorCode = 'CORRUPTED_PDF';
+          errorMessage = 'The PDF file appears to be corrupted or invalid.';
+        } else if (errorMessage.includes('size') || errorMessage.includes('too large')) {
+          errorCode = 'FILE_TOO_LARGE';
+          errorMessage = 'The PDF file is too large. Maximum size is 50MB.';
+        }
+      }
+      
+      setErrorState({
+        message: errorMessage,
+        code: errorCode,
+        retry: () => {
+          loadPDF(finalFile);
+        },
+      } as any);
+      
+      toast.error(`Error loading PDF: ${errorMessage}`);
+      
+      // Cleanup on error
+      if (tempUrl) URL.revokeObjectURL(tempUrl);
+      setPdfUrl(null);
+      pdfDocRef.current = null;
+      pdfLibDocRef.current = null;
+      setIsEditable(true);
       setFile(null);
-      throw error;
     } finally {
       setIsProcessing(false);
-      setProcessingProgress(0);
-      setProcessingMessage('');
+      setProcessingProgress(100);
+      setProcessingMessage('Done');
+      setOperationStatus(null);
     }
   }, [
+    setFile,
+    setPdfUrl,
     setIsProcessing,
     setProcessingProgress,
     setProcessingMessage,
     setNumPages,
-    setPdfUrl,
+    setPageThumbnails,
     setIsEditable,
+    setErrorState,
+    setOperationStatus,
     pdfDocRef,
     pdfLibDocRef,
     pdfEngineRef,
     renderPage,
+    extractTextLayer,
     autoSaveEnabled,
+    loadAutoSave,
   ]);
 
   return { loadPDF };
 };
+
 
