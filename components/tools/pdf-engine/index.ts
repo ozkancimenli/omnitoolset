@@ -25,3 +25,15 @@ export type { PdfStructureInfo, PdfIssue, PdfRepairOptions } from './PdfStructur
 export { PdfObjectTree } from './PdfObjectTree';
 export type { PdfObject, PdfObjectReference, PdfTraversalContext } from './PdfObjectTree';
 
+export { BinaryPdfParser } from './BinaryPdfParser';
+export type { PdfHeader, PdfXrefTable, PdfXrefEntry, PdfObjectHeader } from './BinaryPdfParser';
+
+export { AdvancedRenderingPipeline } from './AdvancedRenderingPipeline';
+export type { RenderLayer, RenderContext, RenderOptions } from './AdvancedRenderingPipeline';
+
+export { AdvancedUndoRedo } from './AdvancedUndoRedo';
+export type { HistoryNode, HistoryBranch } from './AdvancedUndoRedo';
+
+export { StreamProcessor } from './StreamProcessor';
+export type { StreamChunk, StreamProcessorOptions } from './StreamProcessor';
+

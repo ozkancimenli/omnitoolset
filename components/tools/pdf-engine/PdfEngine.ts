@@ -17,6 +17,10 @@ import { FontManager } from './FontManager';
 import { CoordinateTransformer } from './CoordinateTransformer';
 import { PerformanceOptimizer } from './PerformanceOptimizer';
 import { PdfStructureAnalyzer } from './PdfStructureAnalyzer';
+import { BinaryPdfParser } from './BinaryPdfParser';
+import { AdvancedRenderingPipeline } from './AdvancedRenderingPipeline';
+import { AdvancedUndoRedo } from './AdvancedUndoRedo';
+import { StreamProcessor } from './StreamProcessor';
 
 export interface PdfTextRun {
   id: string;
@@ -69,6 +73,8 @@ export class PdfEngine {
   private fontCache: Map<string, PDFFont> = new Map();
   private fontManager: FontManager = new FontManager();
   private performanceOptimizer: PerformanceOptimizer = new PerformanceOptimizer();
+  private advancedUndoRedo: AdvancedUndoRedo = new AdvancedUndoRedo();
+  private renderingPipeline: AdvancedRenderingPipeline = new AdvancedRenderingPipeline();
 
   constructor(config: PdfEngineConfig = {}) {
     this.config = {
@@ -389,6 +395,12 @@ export class PdfEngine {
         this.undoStack.push(historyEntry);
         // Clear redo stack when new modification is made
         this.redoStack = [];
+        
+        // Also save to advanced undo/redo system
+        this.advancedUndoRedo.createNode('modifyText', {
+          page: pageNumber,
+          modifications,
+        });
       }
 
       return { success: true, batchId: options?.batchId };
@@ -418,26 +430,22 @@ export class PdfEngine {
   }
 
   /**
-   * Undo last text modification
+   * Undo last text modification (using advanced undo/redo system)
    */
   async undo(): Promise<{ success: boolean; error?: string }> {
-    if (this.undoStack.length === 0) {
-      return { success: false, error: 'Nothing to undo' };
-    }
-
-    try {
-      const lastModification = this.undoStack.pop()!;
+    // Try advanced undo/redo first
+    const advancedNode = this.advancedUndoRedo.undo();
+    if (advancedNode) {
+      // Restore from advanced history
+      const { page, modifications } = advancedNode.data;
+      const runs = this.textRuns.get(page) || [];
       
-      // Get original text runs before modification
-      const runs = this.textRuns.get(lastModification.page) || [];
-      
-      // Reverse the modifications
-      const reverseModifications: TextModification[] = lastModification.modifications.map(mod => {
+      const reverseModifications: TextModification[] = modifications.map((mod: TextModification) => {
         const run = runs.find(r => r.id === mod.runId);
         if (run) {
           return {
             runId: mod.runId,
-            newText: run.text, // Restore original text
+            newText: run.text,
             format: {
               fontSize: run.fontSize,
               fontFamily: run.fontName,
@@ -450,7 +458,40 @@ export class PdfEngine {
         return mod;
       });
 
-      // Apply reverse modifications
+      const result = await this.modifyText(page, reverseModifications, { skipHistory: true });
+      if (result.success) {
+        return { success: true };
+      }
+    }
+
+    // Fallback to simple undo
+    if (this.undoStack.length === 0) {
+      return { success: false, error: 'Nothing to undo' };
+    }
+
+    try {
+      const lastModification = this.undoStack.pop()!;
+      
+      const runs = this.textRuns.get(lastModification.page) || [];
+      
+      const reverseModifications: TextModification[] = lastModification.modifications.map(mod => {
+        const run = runs.find(r => r.id === mod.runId);
+        if (run) {
+          return {
+            runId: mod.runId,
+            newText: run.text,
+            format: {
+              fontSize: run.fontSize,
+              fontFamily: run.fontName,
+              fontWeight: run.fontWeight,
+              fontStyle: run.fontStyle,
+              color: run.color,
+            },
+          };
+        }
+        return mod;
+      });
+
       const result = await this.modifyText(
         lastModification.page,
         reverseModifications,
@@ -458,7 +499,6 @@ export class PdfEngine {
       );
 
       if (result.success) {
-        // Move to redo stack
         this.redoStack.push(lastModification);
         return { success: true };
       }
@@ -470,17 +510,26 @@ export class PdfEngine {
   }
 
   /**
-   * Redo last undone modification
+   * Redo last undone modification (using advanced undo/redo system)
    */
   async redo(): Promise<{ success: boolean; error?: string }> {
+    // Try advanced undo/redo first
+    const advancedNode = this.advancedUndoRedo.redo();
+    if (advancedNode) {
+      const { page, modifications } = advancedNode.data;
+      const result = await this.modifyText(page, modifications, { skipHistory: true });
+      if (result.success) {
+        return { success: true };
+      }
+    }
+
+    // Fallback to simple redo
     if (this.redoStack.length === 0) {
       return { success: false, error: 'Nothing to redo' };
     }
 
     try {
       const modification = this.redoStack.pop()!;
-      
-      // Re-apply the modification
       const result = await this.modifyText(
         modification.page,
         modification.modifications,
@@ -488,7 +537,6 @@ export class PdfEngine {
       );
 
       if (result.success) {
-        // Move back to undo stack
         this.undoStack.push(modification);
         return { success: true };
       }
@@ -563,13 +611,73 @@ export class PdfEngine {
   }
 
   /**
-   * Get undo/redo status
+   * Get undo/redo status (with advanced system support)
    */
-  getUndoRedoStatus(): { canUndo: boolean; canRedo: boolean } {
+  getUndoRedoStatus(): { canUndo: boolean; canRedo: boolean; branches?: string[] } {
+    const branches = this.advancedUndoRedo.getBranches();
     return {
-      canUndo: this.undoStack.length > 0,
+      canUndo: this.undoStack.length > 0 || branches.some(b => b.head !== ''),
       canRedo: this.redoStack.length > 0,
+      branches: branches.map(b => b.name),
     };
+  }
+
+  /**
+   * Advanced: Create history branch
+   */
+  createHistoryBranch(name: string): string {
+    return this.advancedUndoRedo.createBranch(name);
+  }
+
+  /**
+   * Advanced: Switch history branch
+   */
+  switchHistoryBranch(branchId: string): boolean {
+    return this.advancedUndoRedo.switchBranch(branchId);
+  }
+
+  /**
+   * Advanced: Get branch history
+   */
+  getBranchHistory(branchId?: string) {
+    return this.advancedUndoRedo.getBranchHistory(branchId);
+  }
+
+  /**
+   * Advanced: Analyze PDF binary structure
+   */
+  async analyzeBinaryStructure(pdfBytes: Uint8Array): Promise<{
+    success: boolean;
+    header?: any;
+    xref?: any;
+    objects?: any[];
+    validation?: any;
+  }> {
+    try {
+      const header = BinaryPdfParser.parseHeader(pdfBytes);
+      const xref = BinaryPdfParser.parseXrefTable(pdfBytes);
+      const objects = BinaryPdfParser.findObjects(pdfBytes);
+      const validation = BinaryPdfParser.validateStructure(pdfBytes);
+
+      return {
+        success: true,
+        header,
+        xref,
+        objects,
+        validation,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+      };
+    }
+  }
+
+  /**
+   * Advanced: Get rendering pipeline
+   */
+  getRenderingPipeline(): AdvancedRenderingPipeline {
+    return this.renderingPipeline;
   }
 
   /**
@@ -797,6 +905,26 @@ export class PdfEngine {
   }
 
   /**
+   * Advanced: Process PDF in streams
+   */
+  async processInStreams(
+    processor: (chunk: Uint8Array, offset: number) => Promise<Uint8Array> | Uint8Array,
+    options?: { chunkSize?: number; onProgress?: (progress: number) => void }
+  ): Promise<Uint8Array | null> {
+    if (!this.pdfDoc) {
+      return null;
+    }
+
+    try {
+      const pdfBytes = await this.pdfDoc.save();
+      return await StreamProcessor.processInChunks(pdfBytes, processor, options);
+    } catch (error) {
+      console.error('Error processing streams:', error);
+      return null;
+    }
+  }
+
+  /**
    * Clear all data
    */
   clear(): void {
@@ -810,6 +938,8 @@ export class PdfEngine {
     this.fontCache.clear();
     this.fontManager.clearCache();
     this.performanceOptimizer.clearMetrics();
+    this.advancedUndoRedo.clear();
+    this.renderingPipeline.clearCache();
   }
 }
 
