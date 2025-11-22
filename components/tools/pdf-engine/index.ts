@@ -8,10 +8,10 @@ export { TextLayoutEngine } from './TextLayoutEngine';
 export type { TextMetrics, TextLayout, TextLine } from './TextLayoutEngine';
 
 export { PdfOptimizer } from './PdfOptimizer';
-export type { OptimizationOptions, OptimizationResult } from './PdfOptimizer';
+export type { OptimizationOptions, OptimizationResult as PdfOptimizationResult } from './PdfOptimizer';
 
 export { FontManager } from './FontManager';
-export type { FontMetrics, FontSubset } from './FontManager';
+export type { FontMetrics as FontManagerMetrics, FontSubset as FontManagerSubset } from './FontManager';
 
 export { CoordinateTransformer } from './CoordinateTransformer';
 export type { TransformMatrix, CoordinateSystem } from './CoordinateTransformer';
@@ -53,7 +53,7 @@ export { DigitalSignature } from './DigitalSignature';
 export type { SignatureInfo, SignatureField } from './DigitalSignature';
 
 export { ContentStreamOptimizer } from './ContentStreamOptimizer';
-export type { OptimizationResult } from './ContentStreamOptimizer';
+export type { OptimizationResult as ContentStreamOptimizationResult } from './ContentStreamOptimizer';
 
 export { MemoryMappedFile } from './MemoryMappedFile';
 export type { MemoryMap } from './MemoryMappedFile';

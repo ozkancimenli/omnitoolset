@@ -3804,7 +3804,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         
         // TRUE CONTENT STREAM EDITING: Draw new text directly on PDF page
         // pdf-lib uses bottom-left origin, so convert canvas Y to PDF Y
-        const pdfY = height - run.y; // Convert canvas Y (top-left) to PDF Y (bottom-left)
+        // pdfY already defined above, reuse it
         
         page.drawText(newText, {
           x: textX,
@@ -3935,7 +3935,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       ann.id.startsWith(`pdf-text-edit-${runId}`) || 
       ann.id.startsWith(`pdf-text-cover-${runId}`)
     );
-    const newAnnotations = annotations.filter(ann => !existingOverlays.includes(ann));
+    const filteredAnnotations = annotations.filter(ann => !existingOverlays.includes(ann));
     
     // Calculate text width for new text
     let textWidth = run.width;
@@ -3984,9 +3984,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       zIndex: 1001, // Above white rectangle
     };
     
-    const newAnnotations = [...annotations, whiteRect, newAnnotation];
-    setAnnotations(newAnnotations);
-    saveToHistory(newAnnotations);
+    const updatedAnnotations = [...filteredAnnotations, whiteRect, newAnnotation];
+    setAnnotations(updatedAnnotations);
+    saveToHistory(updatedAnnotations);
     
     // Phase 6: Save to text edit history for undo/redo
     const oldText = run.text;
