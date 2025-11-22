@@ -1466,28 +1466,35 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   }, [file, pdfUrl]);
 
   // Phase 2.1: Extract text layer from PDF
-  const extractTextLayer = async (pageNumber: number) => {
+  const extractTextLayer = async (pageNumber: number, viewport?: any) => {
     if (!pdfDocRef.current) return;
 
     try {
       const page = await pdfDocRef.current.getPage(pageNumber);
       const textContent = await page.getTextContent();
-      const viewport = page.getViewport({ scale: 1.0 });
+      // Use provided viewport or get default scale 1.0 viewport
+      const textViewport = viewport || page.getViewport({ scale: 1.0 });
       
       const textItems: PdfTextItem[] = [];
       
       textContent.items.forEach((item: any, index: number) => {
+        if (!item.str || item.str.trim() === '') return; // Skip empty items
+        
         // Parse transformation matrix
         const transform = item.transform || [1, 0, 0, 1, 0, 0];
-        const x = transform[4];
-        const y = viewport.height - transform[5]; // Flip Y coordinate
+        // PDF coordinates: transform[4] = x, transform[5] = y (in PDF coordinate system, y=0 at bottom)
+        // Canvas coordinates: y=0 at top, so we need to flip: canvasY = viewportHeight - pdfY
+        const pdfX = transform[4];
+        const pdfY = transform[5];
+        const canvasY = textViewport.height - pdfY; // Flip Y coordinate for canvas
+        
         const fontSize = item.height || (item.transform ? Math.abs(transform[3]) : 12);
         const width = item.width || 0;
         
         textItems.push({
           str: item.str || '',
-          x,
-          y,
+          x: pdfX,
+          y: canvasY, // Use canvas coordinate system
           width,
           height: fontSize,
           fontName: item.fontName || 'Arial',
@@ -1772,9 +1779,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         viewport,
       } as any).promise;
       
-      // Phase 2.1: Extract text layer after rendering
-      // Temporarily disabled to fix garbled text issue
-      // await extractTextLayer(pageNumber);
+      // Phase 2.1: Extract text layer after rendering (with correct viewport)
+      await extractTextLayer(pageNumber, viewport);
       
       // Draw annotations (Advanced: Filter hidden layers)
       const pageAnnotations = annotations.filter(ann => ann.page === pageNumber && !hiddenLayers.has(ann.id));
