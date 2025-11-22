@@ -11,53 +11,11 @@ import { PDF_MAX_SIZE, AUTO_SAVE_INTERVAL, DEBOUNCE_DELAY, RENDER_CACHE_SIZE } f
 import { validatePDFFile, logError, measurePerformance, sanitizeTextForPDF, sanitizeFileName, PDFValidationError, PDFProcessingError } from './pdf-editor/utils';
 import { mapTextItemsToRuns, findTextRunAtPosition as findTextRunAtPositionUtil } from './pdf-editor/utils/textExtraction';
 
-// Production: Constants for configuration
-const PDF_MAX_SIZE = 50 * 1024 * 1024; // 50MB
+// Legacy constants (will be moved to constants.ts)
 const PDF_SUPPORTED_TYPES = ['application/pdf'];
 const PDF_EXTENSIONS = ['.pdf'];
 const THUMBNAIL_MAX_PAGES = 10;
 const THUMBNAIL_SCALE = 0.5;
-const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
-const DEBOUNCE_DELAY = 300; // ms for debouncing
-const RENDER_CACHE_SIZE = 5; // Number of pages to cache
-
-// Production: Error types for better error handling
-class PDFValidationError extends Error {
-  constructor(message: string, public code: string) {
-    super(message);
-    this.name = 'PDFValidationError';
-  }
-}
-
-class PDFProcessingError extends Error {
-  constructor(message: string, public code: string, public originalError?: Error) {
-    super(message);
-    this.name = 'PDFProcessingError';
-  }
-}
-
-// Production: Utility functions
-const validatePDFFile = (file: File): { valid: boolean; error?: string } => {
-  // Type validation
-  const isValidType = PDF_SUPPORTED_TYPES.includes(file.type) || 
-    PDF_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext));
-  
-  if (!isValidType) {
-    return { valid: false, error: 'Please select a valid PDF file.' };
-  }
-  
-  // Size validation
-  if (file.size > PDF_MAX_SIZE) {
-    return { valid: false, error: `File size is too large. Maximum size is ${PDF_MAX_SIZE / (1024 * 1024)}MB.` };
-  }
-  
-  // Empty file check
-  if (file.size === 0) {
-    return { valid: false, error: 'File is empty. Please select a valid PDF file.' };
-  }
-  
-  return { valid: true };
-};
 
 // Production: Debounce utility
 const useDebounce = <T,>(value: T, delay: number): T => {
@@ -134,96 +92,8 @@ const sanitizeFileName = (fileName: string): string => {
     .substring(0, 255); // Limit length
 };
 
-interface PdfEditorProps {
-  toolId?: string;
-}
-
-type ToolType = 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'eraser' | 'signature' | 'watermark' | 'redaction' | 'edit-text' | 'stamp' | 'ruler' | 'measure' | 'polygon' | 'callout' | 'form-field' | null;
+// Legacy type definitions (using imported types from pdf-editor/types.ts)
 type ShapeType = 'rectangle' | 'circle' | 'line' | 'arrow';
-
-interface Annotation {
-  id: string;
-  type: 'text' | 'image' | 'highlight' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'link' | 'note' | 'freehand' | 'signature' | 'watermark' | 'redaction' | 'stamp' | 'ruler' | 'measure' | 'polygon' | 'callout' | 'form-field';
-  x: number;
-  y: number;
-  text?: string;
-  fontSize?: number;
-  fontFamily?: string; // Font family (Arial, Times, Helvetica, Courier)
-  textAlign?: 'left' | 'center' | 'right'; // Text alignment
-  fontWeight?: 'normal' | 'bold'; // Text weight
-  fontStyle?: 'normal' | 'italic'; // Text style
-  textDecoration?: 'none' | 'underline'; // Text decoration
-  color?: string;
-  strokeColor?: string;
-  fillColor?: string;
-  page: number;
-  width?: number;
-  height?: number;
-  imageData?: string;
-  endX?: number;
-  endY?: number;
-  url?: string; // For link annotations
-  comment?: string; // For sticky notes
-  isEditing?: boolean; // For inline text editing
-  freehandPath?: { x: number; y: number }[]; // For freehand drawing
-  zIndex?: number; // Layer order
-  opacity?: number; // Opacity (0-1)
-  rotation?: number; // Rotation in degrees
-  watermarkText?: string; // For watermark
-  watermarkOpacity?: number; // Watermark opacity
-  letterSpacing?: number; // Letter spacing (Phase 8)
-  lineHeight?: number; // Line height (Phase 8)
-  textShadow?: { offsetX: number; offsetY: number; blur: number; color: string }; // Text shadow (Phase 8)
-  textOutline?: { width: number; color: string }; // Text outline (Phase 8)
-  distance?: number; // For measure tool - distance in pixels
-  measurementUnit?: 'px' | 'mm' | 'cm' | 'in'; // Measurement unit
-  points?: { x: number; y: number }[]; // For polygon shapes
-  calloutPoints?: { x: number; y: number }[]; // For callout shapes
-  formFieldType?: 'text' | 'checkbox' | 'radio' | 'dropdown' | 'date' | 'number'; // Form field type
-  formFieldName?: string; // Form field name
-  formFieldValue?: string; // Form field value
-  formFieldRequired?: boolean; // Required field
-  formFieldOptions?: string[]; // Options for dropdown/radio
-  commentThread?: string; // Comment thread ID
-  commentReplies?: Array<{ id: string; text: string; author?: string; timestamp: number }>; // Comment replies
-}
-
-// PDF Text Layer - Extracted from PDF content
-interface PdfTextItem {
-  str: string; // Text content
-  x: number; // X position in PDF coordinates
-  y: number; // Y position in PDF coordinates
-  width: number; // Text width
-  height: number; // Text height
-  fontName: string; // Font name
-  fontSize: number; // Font size
-  transform: number[]; // Transformation matrix [a, b, c, d, e, f]
-  page: number; // Page number
-  dir: string; // Text direction ('ltr' or 'rtl')
-  hasEOL?: boolean; // End of line
-}
-
-interface PdfTextRun {
-  id: string;
-  text: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  fontSize: number;
-  fontName: string;
-  page: number;
-  startIndex: number; // Start index in original text
-  endIndex: number; // End index in original text
-  isSelected?: boolean;
-  isEditing?: boolean;
-  fontWeight?: 'normal' | 'bold';
-  fontStyle?: 'normal' | 'italic';
-  textDecoration?: 'none' | 'underline';
-  color?: string;
-  textAlign?: 'left' | 'center' | 'right';
-  transform?: number[]; // PDF transformation matrix
-}
 
 export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [file, setFile] = useState<File | null>(null);
