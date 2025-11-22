@@ -308,8 +308,8 @@ export class ContentStreamParser {
         const operand = op.operands[0];
         if (!Array.isArray(operand)) {
           // Write original operator if operand is not an array
-          for (const op of op.operands) {
-            output += this.formatOperand(op) + ' ';
+          for (const operandItem of op.operands) {
+            output += this.formatOperand(operandItem) + ' ';
           }
           output += op.operator + '\n';
           continue;
