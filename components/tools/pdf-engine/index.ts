@@ -64,3 +64,6 @@ export type { CacheEntry, CacheOptions } from './AdvancedCache';
 export { AdvancedTextEditor } from './AdvancedTextEditor';
 export type { TextSelection, TextStatistics, TextStyle, TextTransform } from './AdvancedTextEditor';
 
+export { GodLevelFeatures } from './GodLevelFeatures';
+export type { AISuggestion, CollaborationSession, OCRResult, PDF3DObject, MediaEmbed, FormAutomation, PDFDiff, CloudSync, SecurityFeature } from './GodLevelFeatures';
+

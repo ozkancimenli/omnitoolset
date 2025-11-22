@@ -30,6 +30,7 @@ import { ContentStreamOptimizer } from './ContentStreamOptimizer';
 import { MemoryMappedFile } from './MemoryMappedFile';
 import { AdvancedCache } from './AdvancedCache';
 import { AdvancedTextEditor, TextStyle, TextStatistics, TextTransform } from './AdvancedTextEditor';
+import { GodLevelFeatures, AISuggestion, CollaborationSession, OCRResult, PDF3DObject, MediaEmbed, FormAutomation, PDFDiff, CloudSync, SecurityFeature } from './GodLevelFeatures';
 
 export interface PdfTextRun {
   id: string;
@@ -95,6 +96,7 @@ export class PdfEngine {
     compress: true,
   });
   private advancedTextEditor: AdvancedTextEditor = new AdvancedTextEditor();
+  private godLevelFeatures: GodLevelFeatures = new GodLevelFeatures();
 
   constructor(config: PdfEngineConfig = {}) {
     this.config = {
