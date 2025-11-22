@@ -13,6 +13,10 @@ import { PDFDocument, PDFPage, rgb, StandardFonts, PDFFont } from 'pdf-lib';
 import { ContentStreamParser } from './ContentStreamParser';
 import { TextLayoutEngine } from './TextLayoutEngine';
 import { PdfOptimizer } from './PdfOptimizer';
+import { FontManager } from './FontManager';
+import { CoordinateTransformer } from './CoordinateTransformer';
+import { PerformanceOptimizer } from './PerformanceOptimizer';
+import { PdfStructureAnalyzer } from './PdfStructureAnalyzer';
 
 export interface PdfTextRun {
   id: string;
@@ -63,6 +67,8 @@ export class PdfEngine {
   private undoStack: Array<{ page: number; modifications: TextModification[]; timestamp: number }> = [];
   private redoStack: Array<{ page: number; modifications: TextModification[]; timestamp: number }> = [];
   private fontCache: Map<string, PDFFont> = new Map();
+  private fontManager: FontManager = new FontManager();
+  private performanceOptimizer: PerformanceOptimizer = new PerformanceOptimizer();
 
   constructor(config: PdfEngineConfig = {}) {
     this.config = {
@@ -396,7 +402,7 @@ export class PdfEngine {
   }
 
   /**
-   * Get appropriate PDF font (with caching for performance)
+   * Get appropriate PDF font (using FontManager for advanced features)
    */
   private async getFont(
     fontFamily: string,
@@ -407,48 +413,8 @@ export class PdfEngine {
       throw new Error('PDF not loaded');
     }
 
-    // Create cache key
-    const cacheKey = `${fontFamily}-${fontWeight}-${fontStyle}`;
-    
-    // Check cache first
-    if (this.fontCache.has(cacheKey)) {
-      return this.fontCache.get(cacheKey)!;
-    }
-
-    let pdfFont: StandardFonts;
-    
-    if (fontFamily.toLowerCase().includes('times')) {
-      pdfFont = fontWeight === 'bold' && fontStyle === 'italic' 
-        ? StandardFonts.TimesRomanBoldItalic
-        : fontWeight === 'bold' 
-        ? StandardFonts.TimesRomanBold
-        : fontStyle === 'italic' 
-        ? StandardFonts.TimesRomanItalic
-        : StandardFonts.TimesRoman;
-    } else if (fontFamily.toLowerCase().includes('courier')) {
-      pdfFont = fontWeight === 'bold' 
-        ? StandardFonts.CourierBold
-        : fontStyle === 'italic' 
-        ? StandardFonts.CourierOblique
-        : StandardFonts.Courier;
-    } else {
-      pdfFont = fontWeight === 'bold' && fontStyle === 'italic' 
-        ? StandardFonts.HelveticaBoldOblique
-        : fontWeight === 'bold' 
-        ? StandardFonts.HelveticaBold
-        : fontStyle === 'italic' 
-        ? StandardFonts.HelveticaOblique
-        : StandardFonts.Helvetica;
-    }
-
-    const font = await this.pdfDoc.embedFont(pdfFont);
-    
-    // Cache the font
-    if (this.config.enableCaching) {
-      this.fontCache.set(cacheKey, font);
-    }
-    
-    return font;
+    // Use FontManager for advanced font operations
+    return await this.fontManager.getFont(this.pdfDoc, fontFamily, fontWeight, fontStyle);
   }
 
   /**
@@ -751,6 +717,86 @@ export class PdfEngine {
   }
 
   /**
+   * Advanced: Transform coordinates
+   */
+  transformCoordinates(
+    x: number,
+    y: number,
+    fromSystem: 'pdf' | 'canvas',
+    toSystem: 'pdf' | 'canvas',
+    viewportHeight: number
+  ): { x: number; y: number } {
+    if (fromSystem === 'pdf' && toSystem === 'canvas') {
+      return CoordinateTransformer.pdfToCanvas(x, y, viewportHeight);
+    } else if (fromSystem === 'canvas' && toSystem === 'pdf') {
+      return CoordinateTransformer.canvasToPdf(x, y, viewportHeight);
+    }
+    return { x, y };
+  }
+
+  /**
+   * Advanced: Get font metrics
+   */
+  getFontMetrics(
+    font: PDFFont,
+    fontSize: number,
+    text: string
+  ) {
+    return this.fontManager.getFontMetrics(font, fontSize, text);
+  }
+
+  /**
+   * Advanced: Analyze PDF structure
+   */
+  async analyzeStructure(): Promise<{ success: boolean; structure?: any; error?: string }> {
+    if (!this.pdfDoc) {
+      return { success: false, error: 'PDF not loaded' };
+    }
+
+    try {
+      const structure = await PdfStructureAnalyzer.analyze(this.pdfDoc);
+      return { success: true, structure };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Failed to analyze' };
+    }
+  }
+
+  /**
+   * Advanced: Detect and repair PDF issues
+   */
+  async repairPdf(options?: {
+    fixCorruptedObjects?: boolean;
+    removeOrphanedObjects?: boolean;
+    rebuildXref?: boolean;
+    optimizeStructure?: boolean;
+  }): Promise<{ success: boolean; fixedIssues: number; errors: string[] }> {
+    if (!this.pdfDoc) {
+      return { success: false, fixedIssues: 0, errors: ['PDF not loaded'] };
+    }
+
+    try {
+      const result = await PdfStructureAnalyzer.repair(this.pdfDoc, options || {});
+      return result;
+    } catch (error: any) {
+      return { success: false, fixedIssues: 0, errors: [error.message || 'Repair failed'] };
+    }
+  }
+
+  /**
+   * Advanced: Get performance metrics
+   */
+  getPerformanceMetrics() {
+    return this.performanceOptimizer.getMetrics();
+  }
+
+  /**
+   * Advanced: Get font cache statistics
+   */
+  getFontCacheStats() {
+    return this.fontManager.getCacheStats();
+  }
+
+  /**
    * Clear all data
    */
   clear(): void {
@@ -762,6 +808,8 @@ export class PdfEngine {
     this.undoStack = [];
     this.redoStack = [];
     this.fontCache.clear();
+    this.fontManager.clearCache();
+    this.performanceOptimizer.clearMetrics();
   }
 }
 
