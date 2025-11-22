@@ -3755,7 +3755,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   };
 
-  // Phase 2.5: Update PDF text content (overlay mode - fallback)
+  // Phase 2.5: Update PDF text content (overlay mode - improved)
   const updatePdfTextOverlay = (runId: string, newText: string, format?: {
     fontWeight?: 'normal' | 'bold';
     fontStyle?: 'normal' | 'italic';
@@ -3769,32 +3769,58 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     const run = runs.find(r => r.id === runId);
     if (!run) return;
     
-    // Use overlay approach (white rectangle + new text)
+    // Remove any existing overlay annotations for this text run
+    const existingOverlays = annotations.filter(ann => 
+      ann.id.startsWith(`pdf-text-edit-${runId}`) || 
+      ann.id.startsWith(`pdf-text-cover-${runId}`)
+    );
+    const newAnnotations = annotations.filter(ann => !existingOverlays.includes(ann));
+    
+    // Calculate text width for new text
+    let textWidth = run.width;
+    if (canvasRef.current) {
+      const context = canvasRef.current.getContext('2d');
+      if (context) {
+        const fontSize = format?.fontSize || run.fontSize;
+        const fontFamily = format?.fontFamily || run.fontName;
+        context.font = `${fontSize}px ${fontFamily}`;
+        textWidth = Math.max(context.measureText(newText).width, run.width);
+      }
+    }
+    
+    // Add white rectangle to cover old text (with padding)
+    const padding = 3;
+    const whiteRect: Annotation = {
+      id: `pdf-text-cover-${runId}-${Date.now()}`,
+      type: 'rectangle',
+      x: run.x - padding,
+      y: run.y - run.height - padding,
+      width: Math.max(run.width, textWidth) + (padding * 2),
+      height: run.height + (padding * 2),
+      fillColor: '#FFFFFF',
+      strokeColor: '#FFFFFF',
+      page: pageNum,
+      zIndex: 1000, // High z-index to cover original text
+    };
+    
+    // Add new text annotation with formatting
     const newAnnotation: Annotation = {
-      id: `pdf-text-edit-${Date.now()}`,
+      id: `pdf-text-edit-${runId}-${Date.now()}`,
       type: 'text',
       x: run.x,
       y: run.y,
       text: newText,
-      fontSize: run.fontSize,
-      fontFamily: run.fontName,
-      color: '#000000',
+      fontSize: format?.fontSize || run.fontSize,
+      fontFamily: format?.fontFamily || run.fontName,
+      fontWeight: format?.fontWeight || run.fontWeight || 'normal',
+      fontStyle: format?.fontStyle || run.fontStyle || 'normal',
+      textDecoration: format?.textDecoration || run.textDecoration || 'none',
+      color: format?.color || run.color || '#000000',
+      textAlign: format?.textAlign || run.textAlign || 'left',
       page: pageNum,
-      width: run.width,
-      height: run.height,
-    };
-    
-    // Add white rectangle to cover old text
-    const whiteRect: Annotation = {
-      id: `pdf-text-cover-${Date.now()}`,
-      type: 'rectangle',
-      x: run.x - 2,
-      y: run.y - run.height - 2,
-      width: run.width + 4,
-      height: run.height + 4,
-      fillColor: '#FFFFFF',
-      strokeColor: '#FFFFFF',
-      page: pageNum,
+      width: textWidth,
+      height: format?.fontSize || run.fontSize,
+      zIndex: 1001, // Above white rectangle
     };
     
     const newAnnotations = [...annotations, whiteRect, newAnnotation];
