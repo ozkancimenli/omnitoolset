@@ -1240,7 +1240,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   }, [loadPDFFromHook]);
   
   // Legacy loadPDF implementation removed - using hook version above
-    const targetFile = fileToLoad || file;
     if (!targetFile) {
       console.warn('[PDF Editor] loadPDF called but no file provided');
       return;
