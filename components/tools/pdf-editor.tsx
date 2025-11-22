@@ -1068,6 +1068,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const pdfEngineRef = useRef<import('./pdf-engine').PdfEngine | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const textLayerRef = useRef<HTMLDivElement>(null);
+  const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Undo/Redo system
   const saveToHistory = useCallback((newAnnotations: Annotation[]) => {
@@ -2627,7 +2628,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           } else {
             setSelectedTextRuns(new Set([clickedRun.id]));
           }
-          toast.info('Text edit mode enabled. Double-click to edit.');
+          console.log('[Edit] Text clicked, edit mode enabled:', clickedRun.id, clickedRun.text.substring(0, 30));
+          // Auto-start editing immediately (no need for double-click)
+          toast.info('Text edit mode enabled. Start typing to edit.');
           return;
         }
       } else {
@@ -2663,8 +2666,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         setSelectedTextRun(clickedRun.id);
         setEditingCharIndex(charIndex);
         setEditingTextRun(clickedRun.id);
+        setEditingTextValue(clickedRun.text); // Initialize editing value
         setTextEditMode(true);
-        toast.info('Editing mode activated. Click outside to finish.');
+        console.log('[Edit] Editing mode activated:', clickedRun.id);
+        toast.info('Editing mode activated. Start typing to edit.');
         return;
       }
       // Shift+click: Extend selection
@@ -4046,6 +4051,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   }) => {
     if (!pdfLibDocRef.current) {
       // Fallback to overlay mode
+      console.log('[Edit] pdfLibDocRef is null, using overlay mode');
       updatePdfTextOverlay(runId, newText, format);
       return;
     }
@@ -4257,7 +4263,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   // Phase 2.5: Update PDF text content (wrapper - tries Phase 3 first)
-  const updatePdfText = (runId: string, newText: string, format?: {
+  const updatePdfText = async (runId: string, newText: string, format?: {
     fontWeight?: 'normal' | 'bold';
     fontStyle?: 'normal' | 'italic';
     textDecoration?: 'none' | 'underline';
@@ -4266,8 +4272,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     color?: string;
     textAlign?: 'left' | 'center' | 'right';
   }) => {
+    console.log('[Edit] updatePdfText called:', runId, 'newText:', newText.substring(0, 50));
     // Try Phase 3 (content stream editing) first, fallback to Phase 2 (overlay)
-    updatePdfTextInStream(runId, newText, format);
+    await updatePdfTextInStream(runId, newText, format);
   };
 
   // Phase 6: Undo/Redo for text edits (using OmniPDF Engine)
@@ -7320,13 +7327,23 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                     const InputComponent = multiLineEditing ? 'textarea' : 'input';
                     const inputProps: any = {
                       ref: textInputRef,
-                      defaultValue: run.text,
-                      onBlur: (e: any) => {
+                      value: editingTextValue || run.text, // Controlled input
+                      onBlur: async (e: any) => {
                         if (editingTextRun) {
                           const finalValue = editingTextValue || e.target.value;
-                          if (finalValue !== run.text) {
-                          // Phase 2.5: Update PDF text with formatting
-                            updatePdfText(run.id, finalValue, editingTextFormat);
+                          if (finalValue && finalValue.trim() && finalValue !== run.text) {
+                            console.log('[Edit] Saving text edit:', run.id, 'from', run.text, 'to', finalValue);
+                            try {
+                              // Phase 2.5: Update PDF text with formatting
+                              await updatePdfText(run.id, finalValue, editingTextFormat);
+                              console.log('[Edit] Text edit saved successfully');
+                              toast.success('Text updated successfully!');
+                            } catch (error) {
+                              console.error('[Edit] Error saving text edit:', error);
+                              toast.error('Failed to save text edit. Please try again.');
+                            }
+                          } else {
+                            console.log('[Edit] No changes to save or empty text');
                           }
                         }
                         setEditingTextRun(null);
@@ -7433,12 +7450,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         }
                       },
                       onChange: (e) => {
-                        setEditingTextValue(e.target.value);
-                        // Real-time preview: Update canvas immediately (debounced)
                         const value = e.target.value;
-                        if (value !== run.text) {
+                        setEditingTextValue(value);
+                        
+                        // Real-time preview: Update canvas immediately (debounced)
+                        if (realTimePreview && value !== run.text) {
+                          // Clear previous timeout
+                          if (previewTimeoutRef.current) {
+                            clearTimeout(previewTimeoutRef.current);
+                          }
+                          
                           // Debounce preview updates for performance
-                          const timeoutId = setTimeout(() => {
+                          previewTimeoutRef.current = setTimeout(() => {
+                            console.log('[Edit] Real-time preview update:', value.substring(0, 30));
                             // Update text run preview in state (visual only, not saved yet)
                             setPdfTextRuns(prev => {
                               const pageRuns = prev[pageNum] || [];
@@ -7453,9 +7477,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                             requestAnimationFrame(() => {
                               renderPage(pageNum, false);
                             });
+                            previewTimeoutRef.current = null;
                           }, 300); // 300ms debounce for preview
-                          
-                          return () => clearTimeout(timeoutId);
                         }
                       },
                       style: {
