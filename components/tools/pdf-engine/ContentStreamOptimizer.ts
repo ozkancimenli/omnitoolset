@@ -37,25 +37,25 @@ export class ContentStreamOptimizer {
     // Remove redundant operations
     if (removeRedundant) {
       const result = this.removeRedundantOperations(optimized);
-      optimized = result.stream;
+      optimized = new Uint8Array(result.stream);
       operationsRemoved += result.removed;
     }
 
     // Compress whitespace
     if (compressWhitespace) {
-      optimized = this.compressWhitespace(optimized);
+      optimized = new Uint8Array(this.compressWhitespace(optimized));
     }
 
     // Optimize operators
     if (optimizeOperators) {
       const result = this.optimizeOperators(optimized);
-      optimized = result.stream;
+      optimized = new Uint8Array(result.stream);
       operationsOptimized += result.optimized;
     }
 
     // Merge paths
     if (mergePaths) {
-      optimized = this.mergePaths(optimized);
+      optimized = new Uint8Array(this.mergePaths(optimized));
     }
 
     const originalSize = stream.length;
