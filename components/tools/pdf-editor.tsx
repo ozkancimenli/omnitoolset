@@ -7815,6 +7815,195 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         </div>
       )}
 
+      {/* Ultra-Deep: WebAssembly Panel */}
+      {showWasmPanel && wasmMetrics && pdfEngineRef.current && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowWasmPanel(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">WebAssembly Processor</h3>
+              <button onClick={() => setShowWasmPanel(false)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">WASM Supported</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{wasmMetrics.wasmSupported ? 'Yes' : 'No'}</div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Initialized</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{wasmMetrics.initialized ? 'Yes' : 'No'}</div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg col-span-2">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Mode</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{wasmMetrics.fallbackMode ? 'Fallback (JavaScript)' : 'WebAssembly'}</div>
+                </div>
+              </div>
+              <button onClick={async () => {
+                if (!pdfEngineRef.current) return;
+                setIsProcessing(true);
+                try {
+                  const result = await pdfEngineRef.current.processWithWasm({ optimize: true });
+                  if (result) toast.success('WASM processing completed');
+                } catch (error) {
+                  console.error('WASM processing error:', error);
+                  toast.error('WASM processing failed');
+                } finally {
+                  setIsProcessing(false);
+                }
+              }} className="w-full px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">
+                Process with WebAssembly
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ultra-Deep: Worker Pool Panel */}
+      {showWorkerPanel && workerStats && pdfEngineRef.current && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowWorkerPanel(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Worker Pool</h3>
+              <button onClick={() => setShowWorkerPanel(false)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Total Workers</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{workerStats.totalWorkers}</div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Active Tasks</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{workerStats.activeTasks}</div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Queued Tasks</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{workerStats.queuedTasks}</div>
+                </div>
+              </div>
+              <button onClick={async () => {
+                if (!pdfEngineRef.current) return;
+                setIsProcessing(true);
+                try {
+                  const result = await pdfEngineRef.current.processWithWorkers('optimize', {});
+                  if (result?.success) toast.success('Worker processing completed');
+                } catch (error) {
+                  console.error('Worker processing error:', error);
+                  toast.error('Worker processing failed');
+                } finally {
+                  setIsProcessing(false);
+                }
+              }} className="w-full px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition-colors">
+                Process with Workers (Optimize)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ultra-Deep: Encryption Panel */}
+      {showEncryptionPanel && pdfEngineRef.current && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowEncryptionPanel(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">PDF Encryption</h3>
+              <button onClick={() => setShowEncryptionPanel(false)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                <div className="text-sm text-slate-600 dark:text-slate-400 mb-2">Encryption Status</div>
+                <div className="text-lg font-bold text-slate-900 dark:text-white">{pdfEngineRef.current.isEncrypted() ? 'Encrypted' : 'Not Encrypted'}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Password</label>
+                <input type="password" value={encryptionPassword} onChange={(e) => setEncryptionPassword(e.target.value)} className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm" placeholder="Enter password..." />
+              </div>
+              <div className="flex gap-2">
+                <button onClick={async () => {
+                  if (!pdfEngineRef.current || !encryptionPassword) { toast.error('Please enter a password'); return; }
+                  setIsProcessing(true);
+                  try {
+                    const result = await pdfEngineRef.current.encryptPdf(encryptionPassword);
+                    if (result.success) toast.success('PDF encrypted successfully');
+                    else toast.error(result.error || 'Encryption failed');
+                  } catch (error) {
+                    console.error('Encryption error:', error);
+                    toast.error('Encryption failed');
+                  } finally {
+                    setIsProcessing(false);
+                  }
+                }} className="flex-1 px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-colors">
+                  Encrypt PDF
+                </button>
+                <button onClick={async () => {
+                  if (!pdfEngineRef.current || !encryptionPassword) { toast.error('Please enter a password'); return; }
+                  setIsProcessing(true);
+                  try {
+                    const result = await pdfEngineRef.current.decryptPdf(encryptionPassword);
+                    if (result.success) toast.success('PDF decrypted successfully');
+                    else toast.error(result.error || 'Decryption failed');
+                  } catch (error) {
+                    console.error('Decryption error:', error);
+                    toast.error('Decryption failed');
+                  } finally {
+                    setIsProcessing(false);
+                  }
+                }} className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                  Decrypt PDF
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ultra-Deep: Advanced Font Panel */}
+      {showFontPanel && fontStats && pdfEngineRef.current && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowFontPanel(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Advanced Font Management</h3>
+              <button onClick={() => setShowFontPanel(false)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Font Subsets</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{fontStats.fontSubsets || 0}</div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Metrics Cache</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{fontStats.metricsCache || 0}</div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Embedded Fonts</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{fontStats.embeddedFonts || 0}</div>
+                </div>
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                Advanced font management includes subsetting (only include used glyphs), metrics calculation, and optimized embedding for smaller file sizes.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Advanced: Page Features Panel */}
       {showPageFeatures && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPageFeatures(false)}>
