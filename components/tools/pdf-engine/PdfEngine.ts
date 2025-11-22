@@ -58,6 +58,7 @@ export interface TextModification {
     fontStyle?: 'normal' | 'italic';
     color?: string;
     textAlign?: 'left' | 'center' | 'right';
+    textDecoration?: 'none' | 'underline' | 'line-through';
   };
 }
 
