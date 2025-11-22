@@ -10,7 +10,7 @@ import type { PdfEditorProps, ToolType, Annotation, PdfTextItem, PdfTextRun } fr
 import { PDF_MAX_SIZE, AUTO_SAVE_INTERVAL, DEBOUNCE_DELAY, RENDER_CACHE_SIZE } from './pdf-editor/constants';
 import { validatePDFFile, logError, measurePerformance, sanitizeTextForPDF, sanitizeFileName, PDFValidationError, PDFProcessingError } from './pdf-editor/utils';
 import { mapTextItemsToRuns, findTextRunAtPosition as findTextRunAtPositionUtil } from './pdf-editor/utils/textExtraction';
-import { usePdfLoader, useTextEditing } from './pdf-editor/hooks';
+import { usePdfLoader, useTextEditing, useZoom, useCanvas, useAnnotations } from './pdf-editor/hooks';
 
 // Legacy constants (will be moved to constants.ts)
 const PDF_SUPPORTED_TYPES = ['application/pdf'];
@@ -104,9 +104,40 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [processingMessage, setProcessingMessage] = useState(''); // Production: User feedback
   const [pageNum, setPageNum] = useState(1);
   const [numPages, setNumPages] = useState(0);
-  const [annotations, setAnnotations] = useState<Annotation[]>([]);
-  const [history, setHistory] = useState<Annotation[][]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
+  // Use annotations hook
+  const {
+    annotations,
+    selectedAnnotation: selectedAnnotationFromHook,
+    selectedAnnotations: selectedAnnotationsFromHook,
+    editingAnnotation: editingAnnotationFromHook,
+    history,
+    historyIndex,
+    setAnnotations,
+    setSelectedAnnotation: setSelectedAnnotationFromHook,
+    setEditingAnnotation: setEditingAnnotationFromHook,
+    addAnnotation,
+    updateAnnotation,
+    deleteAnnotation,
+    deleteAnnotations,
+    clearAnnotations,
+    getPageAnnotations,
+    selectAnnotation,
+    undo,
+    redo,
+    saveToHistory,
+  } = useAnnotations({
+    pageNum,
+    onAnnotationChange: (newAnnotations) => {
+      // Additional logic if needed
+    },
+  });
+
+  // Keep backward compatibility aliases
+  const selectedAnnotation = selectedAnnotationFromHook;
+  const selectedAnnotations = selectedAnnotationsFromHook;
+  const editingAnnotation = editingAnnotationFromHook;
+  const setSelectedAnnotation = setSelectedAnnotationFromHook;
+  const setEditingAnnotation = setEditingAnnotationFromHook;
   const [currentText, setCurrentText] = useState('');
   const [fontSize, setFontSize] = useState(16);
   const [textColor, setTextColor] = useState('#000000');
@@ -116,6 +147,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [strokeWidth, setStrokeWidth] = useState(2);
   const [tool, setTool] = useState<ToolType>(null);
   const [isEditable, setIsEditable] = useState(true);
+  // Zoom state (useZoom will be initialized after renderPage is defined)
   const [zoom, setZoom] = useState(1);
   const [zoomMode, setZoomMode] = useState<'custom' | 'fit-width' | 'fit-page' | 'fit-height'>('fit-page');
   const [showThumbnails, setShowThumbnails] = useState(true);
@@ -976,42 +1008,19 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     toast.success(`Annotations distributed ${direction}`);
   }, [selectedAnnotations, annotations, pageNum]);
   
+  // Refs (must be defined before hooks that use them)
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pdfDocRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const textInputRef = useRef<HTMLInputElement>(null);
-  const pdfDocRef = useRef<any>(null);
   const pdfLibDocRef = useRef<PDFDocument | null>(null);
   const pdfEngineRef = useRef<import('./pdf-engine').PdfEngine | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const textLayerRef = useRef<HTMLDivElement>(null);
   const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Undo/Redo system
-  const saveToHistory = useCallback((newAnnotations: Annotation[]) => {
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push([...newAnnotations]);
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  }, [history, historyIndex]);
-
-  const undo = () => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1;
-      setHistoryIndex(newIndex);
-      setAnnotations([...history[newIndex]]);
-      toast.info('Undone');
-    }
-  };
-
-  const redo = () => {
-    if (historyIndex < history.length - 1) {
-      const newIndex = historyIndex + 1;
-      setHistoryIndex(newIndex);
-      setAnnotations([...history[newIndex]]);
-      toast.info('Redone');
-    }
-  };
+  // Undo/Redo system - now using useAnnotations hook (removed duplicate)
 
   // Production: Enhanced file validation
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
