@@ -110,6 +110,9 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   
   // Advanced: Context menu for annotations - using useContextMenu hook (must be before useBatchAnnotations)
   // Note: getCanvasCoordinates will be defined after refs are initialized
+  // We'll use a ref-based pattern to pass the function
+  const getCanvasCoordinatesRef = useRef<((e: React.MouseEvent<HTMLCanvasElement>) => { x: number; y: number }) | null>(null);
+  
   const {
     contextMenu,
     setContextMenu,
@@ -121,7 +124,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     ungroupAnnotations,
     alignAnnotations,
     distributeAnnotations,
-    handleCanvasContextMenu,
+    handleCanvasContextMenu: handleCanvasContextMenuFromHook,
   } = useContextMenu({
     annotations,
     selectedAnnotations,
@@ -138,7 +141,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     setIsDrawingPolygon,
     setTool,
     setSelectedAnnotation,
-    getCanvasCoordinates,
+    getCanvasCoordinates: (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (getCanvasCoordinatesRef.current) {
+        return getCanvasCoordinatesRef.current(e);
+      }
+      return { x: 0, y: 0 };
+    },
   });
   
   // Batch annotation operations - using hook
