@@ -739,11 +739,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     }
   }, [zoom, zoomMode, pageNum, file]);
 
-  // Use utility function for coordinate conversion
-  const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    return getCanvasCoordinatesUtil(e, canvasRef, viewportRef);
-  };
-
   // Canvas mouse handlers are now provided by useCanvasHandlers hook (see below)
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
