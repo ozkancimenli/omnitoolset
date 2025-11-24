@@ -152,6 +152,7 @@ export const useAnnotations = ({
     historyIndex,
     setAnnotations,
     setSelectedAnnotation,
+    setSelectedAnnotations,
     setEditingAnnotation,
     addAnnotation,
     updateAnnotation,

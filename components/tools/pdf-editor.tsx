@@ -51,6 +51,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     historyIndex,
     setAnnotations,
     setSelectedAnnotation: setSelectedAnnotationFromHook,
+    setSelectedAnnotations: setSelectedAnnotationsFromHook,
     setEditingAnnotation: setEditingAnnotationFromHook,
     addAnnotation,
     updateAnnotation,
@@ -74,6 +75,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const selectedAnnotations = selectedAnnotationsFromHook;
   const editingAnnotation = editingAnnotationFromHook;
   const setSelectedAnnotation = setSelectedAnnotationFromHook;
+  const setSelectedAnnotations = setSelectedAnnotationsFromHook;
   const setEditingAnnotation = setEditingAnnotationFromHook;
   const [currentText, setCurrentText] = useState('');
   const [highlightColor, setHighlightColor] = useState('#FFFF00');
