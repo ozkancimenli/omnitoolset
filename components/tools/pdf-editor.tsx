@@ -104,6 +104,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [isDrawingFreehand, setIsDrawingFreehand] = useState(false);
   
   const [batchMode, setBatchMode] = useState(false);
+  const [copiedAnnotations, setCopiedAnnotations] = useState<Annotation[]>([]);
   // Batch annotation operations - using hook
   const {
     batchSelectAnnotations,
@@ -124,7 +125,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     toggleLockAnnotation,
     groupAnnotations,
   });
-  const [copiedAnnotations, setCopiedAnnotations] = useState<Annotation[]>([]);
   const [snapToGrid, setSnapToGrid] = useState(false);
   const [gridSize, setGridSize] = useState(20);
   const [watermarkText, setWatermarkText] = useState('DRAFT');
