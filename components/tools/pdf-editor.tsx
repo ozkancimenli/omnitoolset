@@ -107,6 +107,44 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   
   const [batchMode, setBatchMode] = useState(false);
   const [copiedAnnotations, setCopiedAnnotations] = useState<Annotation[]>([]);
+  
+  // Define getCanvasCoordinates before useContextMenu hook
+  const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    return getCanvasCoordinatesUtil(e, canvasRef, viewportRef);
+  };
+  
+  // Advanced: Context menu for annotations - using useContextMenu hook (must be before useBatchAnnotations)
+  const {
+    contextMenu,
+    setContextMenu,
+    lockedAnnotations,
+    annotationGroups,
+    duplicateAnnotation,
+    toggleLockAnnotation,
+    groupAnnotations,
+    ungroupAnnotations,
+    alignAnnotations,
+    distributeAnnotations,
+    handleCanvasContextMenu,
+  } = useContextMenu({
+    annotations,
+    selectedAnnotations,
+    pageNum,
+    onAnnotationChange: setAnnotations,
+    onHistorySave: saveToHistory,
+    onSelectionChange: (ids) => setSelectedAnnotations(new Set(ids)),
+    tool,
+    isDrawingPolygon,
+    polygonPoints,
+    strokeColor,
+    fillColor,
+    setPolygonPoints,
+    setIsDrawingPolygon,
+    setTool,
+    setSelectedAnnotation,
+    getCanvasCoordinates,
+  });
+  
   // Batch annotation operations - using hook
   const {
     batchSelectAnnotations,
