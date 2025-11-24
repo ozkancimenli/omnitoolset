@@ -409,40 +409,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [operationStatus, setOperationStatus] = useState<{ type: string; message: string; progress?: number } | null>(null);
 
   // Page management functions are now provided by usePageManagement hook above
-
-  // Advanced: Context menu for annotations - using useContextMenu hook
-  const {
-    contextMenu,
-    setContextMenu,
-    lockedAnnotations,
-    annotationGroups,
-    duplicateAnnotation,
-    toggleLockAnnotation,
-    groupAnnotations,
-    ungroupAnnotations,
-    alignAnnotations,
-    distributeAnnotations,
-    handleCanvasContextMenu,
-  } = useContextMenu({
-    annotations,
-    selectedAnnotations,
-    pageNum,
-    onAnnotationChange: setAnnotations,
-    onHistorySave: saveToHistory,
-    onSelectionChange: (ids) => setSelectedAnnotations(new Set(ids)),
-    tool,
-    isDrawingPolygon,
-    polygonPoints,
-    strokeColor,
-    fillColor,
-    setPolygonPoints,
-    setIsDrawingPolygon,
-    setTool,
-    setSelectedAnnotation,
-    getCanvasCoordinates,
-  });
-
-  // Context menu functions are now provided by useContextMenu hook above
+  // Context menu functions are now provided by useContextMenu hook above (moved before useBatchAnnotations)
   
   // Refs (must be defined before hooks that use them)
   const canvasRef = useRef<HTMLCanvasElement>(null);
