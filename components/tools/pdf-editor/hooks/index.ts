@@ -20,5 +20,4 @@ export { useAdvancedFeaturesState } from './useAdvancedFeaturesState';
 export { useRenderOptimization } from './useRenderOptimization';
 export { useOptimizedRender } from './useOptimizedRender';
 export { useOptimizedState, useBatchedOptimizedState, useOptimizedSelector, useStableState, useComputedState } from './useOptimizedState';
-export { useRenderOptimization } from './useRenderOptimization';
 

@@ -46,6 +46,3 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = memo(({
 
 LoadingOverlay.displayName = 'LoadingOverlay';
 
-export const LoadingOverlay = memo(LoadingOverlayComponent);
-LoadingOverlay.displayName = 'LoadingOverlay';
-

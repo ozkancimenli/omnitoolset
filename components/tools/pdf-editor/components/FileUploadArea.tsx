@@ -74,6 +74,3 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = memo(({
 
 FileUploadArea.displayName = 'FileUploadArea';
 
-export const FileUploadArea = memo(FileUploadAreaComponent);
-FileUploadArea.displayName = 'FileUploadArea';
-

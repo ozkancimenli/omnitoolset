@@ -2,8 +2,8 @@
 
 import React, { useRef } from 'react';
 import { toast } from '@/components/Toast';
-import RichTextEditor from '../enhancements/richTextEditor';
-import TextFormatPanel from './TextFormatPanel';
+import { RichTextEditor } from '../enhancements/richTextEditor';
+import { TextFormatPanel } from './TextFormatPanel';
 import type { PdfTextRun } from '../types';
 
 interface PdfTextEditorProps {
@@ -106,10 +106,8 @@ export default function PdfTextEditor({
   const scaleY = canvas && rect ? (canvas.height / devicePixelRatio) / rect.height : 1;
   // Use Rich Text Editor if enabled
   if (useRichTextEditor && viewportRef.current) {
-    const canvas = canvasRef.current;
     if (!canvas) return null;
     
-    const rect = canvas.getBoundingClientRect();
     const viewport = viewportRef.current;
     
     // Convert PDF coordinates to canvas coordinates
@@ -144,10 +142,8 @@ export default function PdfTextEditor({
     );
   }
   
-  const canvas = canvasRef.current;
-  if (!canvas || !viewportRef.current) return null;
+  if (!canvas || !viewportRef.current || !rect) return null;
   
-  const rect = canvas.getBoundingClientRect();
   const viewport = viewportRef.current;
   
   // Convert PDF coordinates to canvas coordinates

@@ -414,7 +414,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const pdfLibDocRef = useRef<PDFDocument | null>(null);
   const pdfEngineRef = useRef<import('./pdf-engine').PdfEngine | null>(null);
   const textLayerRef = useRef<HTMLDivElement>(null);
-  const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Mobile detection is handled by useUIState hook
 

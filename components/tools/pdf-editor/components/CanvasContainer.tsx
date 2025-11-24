@@ -75,6 +75,3 @@ export const CanvasContainer: React.FC<CanvasContainerProps> = memo(({
 
 CanvasContainer.displayName = 'CanvasContainer';
 
-export const CanvasContainer = memo(CanvasContainerComponent);
-CanvasContainer.displayName = 'CanvasContainer';
-
