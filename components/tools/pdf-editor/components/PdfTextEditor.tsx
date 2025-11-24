@@ -106,7 +106,7 @@ export function PdfTextEditor({
   const scaleY = canvas && rect ? (canvas.height / devicePixelRatio) / rect.height : 1;
   // Use Rich Text Editor if enabled
   if (useRichTextEditor && viewportRef.current) {
-    if (!canvas) return null;
+    if (!canvas || !rect) return null;
     
     const viewport = viewportRef.current;
     
