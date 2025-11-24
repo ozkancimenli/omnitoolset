@@ -406,7 +406,7 @@ const ToolbarComponent: React.FC<ToolbarProps> = ({
       </div>
     </div>
   );
-});
+};
 
 export const Toolbar = memo(ToolbarComponent);
 Toolbar.displayName = 'Toolbar';
