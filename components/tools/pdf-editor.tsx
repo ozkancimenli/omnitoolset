@@ -108,6 +108,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [batchMode, setBatchMode] = useState(false);
   const [copiedAnnotations, setCopiedAnnotations] = useState<Annotation[]>([]);
   
+  // Define state variables needed by useContextMenu before the hook
+  const [polygonPoints, setPolygonPoints] = useState<{ x: number; y: number }[]>([]);
+  const [isDrawingPolygon, setIsDrawingPolygon] = useState(false);
+  
   // Advanced: Context menu for annotations - using useContextMenu hook (must be before useBatchAnnotations)
   // Note: getCanvasCoordinates will be defined after refs are initialized
   // We'll use a ref-based pattern to pass the function
@@ -337,9 +341,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [measurementUnit, setMeasurementUnit] = useState<'px' | 'mm' | 'cm' | 'in'>('px');
   const [measureStart, setMeasureStart] = useState<{ x: number; y: number } | null>(null);
   const [rulerLength, setRulerLength] = useState(200); // Default ruler length in pixels
-  
-  const [polygonPoints, setPolygonPoints] = useState<{ x: number; y: number }[]>([]);
-  const [isDrawingPolygon, setIsDrawingPolygon] = useState(false);
   
   // Advanced: Performance - Virtual scrolling
   const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set([1]));
