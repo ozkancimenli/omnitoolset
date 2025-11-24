@@ -108,12 +108,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [batchMode, setBatchMode] = useState(false);
   const [copiedAnnotations, setCopiedAnnotations] = useState<Annotation[]>([]);
   
-  // Define getCanvasCoordinates before useContextMenu hook
-  const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    return getCanvasCoordinatesUtil(e, canvasRef, viewportRef);
-  };
-  
   // Advanced: Context menu for annotations - using useContextMenu hook (must be before useBatchAnnotations)
+  // Note: getCanvasCoordinates will be defined after refs are initialized
   const {
     contextMenu,
     setContextMenu,
@@ -421,6 +417,22 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const pdfLibDocRef = useRef<PDFDocument | null>(null);
   const pdfEngineRef = useRef<import('./pdf-engine').PdfEngine | null>(null);
   const textLayerRef = useRef<HTMLDivElement>(null);
+  
+  // Define getCanvasCoordinates after refs are initialized
+  const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    return getCanvasCoordinatesUtil(e, canvasRef, viewportRef);
+  };
+  
+  // Update the ref so useContextMenu can use it
+  getCanvasCoordinatesRef.current = getCanvasCoordinates;
+  
+  // Create handleCanvasContextMenu wrapper
+  const handleCanvasContextMenu = handleCanvasContextMenuFromHook;
+  
+  // Define getCanvasCoordinates after refs are initialized
+  const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    return getCanvasCoordinatesUtil(e, canvasRef, viewportRef);
+  };
 
   // Mobile detection is handled by useUIState hook
 
