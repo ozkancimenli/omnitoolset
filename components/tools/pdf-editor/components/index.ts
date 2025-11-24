@@ -48,5 +48,5 @@ export { FileUploadArea } from './FileUploadArea';
 export { ErrorStateComponent } from './ErrorState';
 export { StatusNotification } from './StatusNotification';
 export { CanvasContainer } from './CanvasContainer';
-export { default as PdfTextEditor } from './PdfTextEditor';
+export { PdfTextEditor } from './PdfTextEditor';
 

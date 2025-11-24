@@ -56,7 +56,7 @@ interface PdfTextEditorProps {
   setTextTemplates: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-export default function PdfTextEditor({
+export function PdfTextEditor({
   editingTextRun,
   pdfTextRuns,
   pageNum,

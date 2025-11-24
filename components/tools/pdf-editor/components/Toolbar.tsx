@@ -408,6 +408,7 @@ const ToolbarComponent: React.FC<ToolbarProps> = ({
   );
 });
 
+export const Toolbar = memo(ToolbarComponent);
 Toolbar.displayName = 'Toolbar';
 
 
