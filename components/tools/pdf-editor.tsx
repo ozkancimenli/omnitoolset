@@ -427,12 +427,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const textLayerRef = useRef<HTMLDivElement>(null);
   
   // Define getCanvasCoordinates after refs are initialized
-  const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const getCanvasCoordinates = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     return getCanvasCoordinatesUtil(e, canvasRef, viewportRef);
-  };
+  }, []);
   
   // Update the ref so useContextMenu can use it
-  getCanvasCoordinatesRef.current = getCanvasCoordinates;
+  useEffect(() => {
+    getCanvasCoordinatesRef.current = getCanvasCoordinates;
+  }, [getCanvasCoordinates]);
   
   // Create handleCanvasContextMenu wrapper
   const handleCanvasContextMenu = handleCanvasContextMenuFromHook;
