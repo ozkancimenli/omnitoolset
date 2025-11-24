@@ -43,10 +43,7 @@ export default function Home() {
 
   const categories = Array.from(new Set(tools.map(t => t.category))).sort();
 
-  // Track page view
-  useMemo(() => {
-    trackPageView('/', 'Home - OmniToolset');
-  }, []);
+  // Track page view - handled by global analytics
 
   // Keyboard shortcuts
   const handleKeyboardShortcut = useCallback((action: ShortcutAction) => {
