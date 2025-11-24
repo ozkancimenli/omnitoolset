@@ -1656,8 +1656,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                       />
                     );
                   })()}
-                </div>
-              </div>
+              </CanvasContainer>
 
               {/* Annotations Panel - Using extracted component */}
               <AnnotationsPanel
