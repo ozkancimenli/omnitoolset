@@ -1,11 +1,11 @@
 'use client';
 
+import { memo, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { getRecentTools, clearRecentTools, RecentTool } from '@/lib/recent-tools';
-import { useState, useEffect } from 'react';
 import { toast } from './Toast';
 
-export default function RecentTools() {
+const RecentTools = memo(function RecentTools() {
   const [recentTools, setRecentTools] = useState<RecentTool[]>([]);
 
   useEffect(() => {
@@ -16,11 +16,11 @@ export default function RecentTools() {
     return null;
   }
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     clearRecentTools();
     setRecentTools([]);
     toast.success('Recent tools cleared!');
-  };
+  }, []);
 
   return (
     <div className="bg-slate-800/50 dark:bg-slate-800/50 light:bg-gray-50 border border-slate-700 dark:border-slate-700 light:border-gray-200 rounded-xl p-6 mb-8">
@@ -49,5 +49,9 @@ export default function RecentTools() {
       </div>
     </div>
   );
-}
+});
+
+RecentTools.displayName = 'RecentTools';
+
+export default RecentTools;
 

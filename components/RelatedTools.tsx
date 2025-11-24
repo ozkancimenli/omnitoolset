@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useMemo } from 'react';
 import Link from 'next/link';
 import { Tool } from '@/data/tools';
 import { tools } from '@/data/tools';
@@ -9,14 +10,17 @@ interface RelatedToolsProps {
   limit?: number;
 }
 
-export default function RelatedTools({ currentTool, limit = 4 }: RelatedToolsProps) {
+const RelatedTools = memo(function RelatedTools({ currentTool, limit = 4 }: RelatedToolsProps) {
   // Get tools from the same category, excluding current tool
-  const related = tools
-    .filter(tool => 
-      tool.category === currentTool.category && 
-      tool.id !== currentTool.id
-    )
-    .slice(0, limit);
+  const related = useMemo(() => 
+    tools
+      .filter(tool => 
+        tool.category === currentTool.category && 
+        tool.id !== currentTool.id
+      )
+      .slice(0, limit),
+    [currentTool.category, currentTool.id, limit]
+  );
 
   if (related.length === 0) return null;
 
@@ -38,5 +42,9 @@ export default function RelatedTools({ currentTool, limit = 4 }: RelatedToolsPro
       </div>
     </div>
   );
-}
+});
+
+RelatedTools.displayName = 'RelatedTools';
+
+export default RelatedTools;
 

@@ -1,9 +1,10 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
 import ThemeToggle from './ThemeToggle';
 
-export default function Header() {
+const Header = memo(function Header() {
   return (
     <header className="bg-slate-800/80 dark:bg-slate-800/80 light:bg-white/80 backdrop-blur-lg border-b border-slate-700 dark:border-slate-700 light:border-gray-200 sticky top-0 z-50">
       <div className="container py-4">
@@ -46,4 +47,8 @@ export default function Header() {
       </div>
     </header>
   );
-}
+});
+
+Header.displayName = 'Header';
+
+export default Header;

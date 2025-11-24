@@ -159,6 +159,197 @@ export const renderAnnotation = (
   context.restore();
 };
 
+// Render multiple annotations
+export const renderAnnotations = (
+  context: CanvasRenderingContext2D,
+  annotations: Annotation[],
+  viewport: { width: number; height: number },
+  strokeColor: string,
+  fillColor: string,
+  highlightColor: string,
+  strokeWidth: number,
+  hexToRgb: (hex: string) => { r: number; g: number; b: number }
+) => {
+  annotations.forEach(ann => {
+    renderAnnotation(context, ann, viewport, strokeColor, fillColor, highlightColor, strokeWidth);
+    
+    // Handle additional annotation types not in renderAnnotation
+    if (ann.type === 'link' && ann.width && ann.height) {
+      context.strokeStyle = ann.strokeColor || '#0066cc';
+      context.fillStyle = 'rgba(0, 102, 204, 0.1)';
+      context.lineWidth = 2;
+      context.setLineDash([5, 5]);
+      context.fillRect(ann.x, ann.y, ann.width, ann.height);
+      context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+      context.setLineDash([]);
+      if (ann.url) {
+        context.fillStyle = '#0066cc';
+        context.font = '12px Arial';
+        context.fillText('🔗', ann.x + 5, ann.y + 15);
+      }
+    } else if (ann.type === 'note' && ann.width && ann.height) {
+      context.fillStyle = ann.fillColor || '#FFFF99';
+      context.strokeStyle = ann.strokeColor || '#FFD700';
+      context.lineWidth = 2;
+      context.fillRect(ann.x, ann.y, ann.width, ann.height);
+      context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+      if (ann.comment) {
+        context.fillStyle = '#000000';
+        context.font = '12px Arial';
+        context.textAlign = 'left';
+        const lines = ann.comment.split('\n');
+        lines.forEach((line, i) => {
+          context.fillText(line.substring(0, 20), ann.x + 5, ann.y + 15 + i * 15);
+        });
+      }
+    } else if (ann.type === 'freehand' && ann.freehandPath && ann.freehandPath.length > 0) {
+      context.strokeStyle = ann.strokeColor || strokeColor;
+      context.lineWidth = strokeWidth;
+      context.lineCap = 'round';
+      context.lineJoin = 'round';
+      context.beginPath();
+      context.moveTo(ann.freehandPath[0].x, ann.freehandPath[0].y);
+      for (let i = 1; i < ann.freehandPath.length; i++) {
+        context.lineTo(ann.freehandPath[i].x, ann.freehandPath[i].y);
+      }
+      context.stroke();
+    } else if (ann.type === 'watermark' && ann.watermarkText) {
+      context.save();
+      context.globalAlpha = ann.watermarkOpacity || 0.3;
+      context.fillStyle = ann.color || '#CCCCCC';
+      context.font = `${ann.fontSize || 48}px ${ann.fontFamily || 'Arial'}`;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.rotate(-Math.PI / 4);
+      context.fillText(ann.watermarkText, ann.x, ann.y);
+      context.restore();
+    } else if (ann.type === 'signature' && ann.width && ann.height) {
+      context.strokeStyle = ann.strokeColor || '#000000';
+      context.lineWidth = 2;
+      context.setLineDash([5, 5]);
+      context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+      context.setLineDash([]);
+      context.fillStyle = '#000000';
+      context.font = '12px Arial';
+      context.textAlign = 'center';
+      context.fillText('Signature', ann.x + ann.width / 2, ann.y + ann.height / 2);
+    } else if (ann.type === 'redaction' && ann.width && ann.height) {
+      context.fillStyle = ann.fillColor || '#000000';
+      context.fillRect(ann.x, ann.y, ann.width, ann.height);
+    } else if (ann.type === 'stamp' && ann.text && ann.width && ann.height) {
+      context.save();
+      const stampColor = ann.color || '#10b981';
+      const rgbColor = hexToRgb(stampColor);
+      context.strokeStyle = stampColor;
+      context.fillStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.1)`;
+      context.lineWidth = 3;
+      context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+      context.fillRect(ann.x, ann.y, ann.width, ann.height);
+      context.fillStyle = stampColor;
+      context.font = `bold ${ann.fontSize || 24}px Arial`;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(ann.text, ann.x + ann.width / 2, ann.y + ann.height / 2);
+      context.restore();
+    } else if (ann.type === 'ruler' && ann.endX !== undefined) {
+      context.strokeStyle = ann.strokeColor || '#000000';
+      context.lineWidth = 2;
+      context.beginPath();
+      context.moveTo(ann.x, ann.y);
+      context.lineTo(ann.endX, ann.y);
+      context.stroke();
+      if (ann.distance !== undefined) {
+        context.fillStyle = '#000000';
+        context.font = '12px Arial';
+        context.textAlign = 'center';
+        context.fillText(
+          `${ann.distance.toFixed(2)}${ann.measurementUnit || 'px'}`,
+          (ann.x + ann.endX) / 2,
+          ann.y - 10
+        );
+      }
+    } else if (ann.type === 'measure' && ann.endX !== undefined && ann.endY !== undefined) {
+      context.strokeStyle = ann.strokeColor || '#3b82f6';
+      context.lineWidth = 2;
+      context.setLineDash([5, 5]);
+      context.beginPath();
+      context.moveTo(ann.x, ann.y);
+      context.lineTo(ann.endX, ann.endY);
+      context.stroke();
+      context.setLineDash([]);
+      if (ann.distance !== undefined) {
+        context.fillStyle = '#3b82f6';
+        context.font = '12px Arial';
+        context.textAlign = 'center';
+        context.fillText(
+          `${ann.distance.toFixed(2)}${ann.measurementUnit || 'px'}`,
+          (ann.x + ann.endX) / 2,
+          (ann.y + ann.endY) / 2 - 10
+        );
+      }
+      context.fillStyle = '#3b82f6';
+      context.beginPath();
+      context.arc(ann.x, ann.y, 4, 0, 2 * Math.PI);
+      context.fill();
+      context.beginPath();
+      context.arc(ann.endX, ann.endY, 4, 0, 2 * Math.PI);
+      context.fill();
+    } else if (ann.type === 'polygon' && ann.points && ann.points.length > 2) {
+      context.strokeStyle = ann.strokeColor || strokeColor;
+      context.fillStyle = ann.fillColor || fillColor;
+      context.lineWidth = strokeWidth;
+      context.beginPath();
+      context.moveTo(ann.points[0].x, ann.points[0].y);
+      for (let i = 1; i < ann.points.length; i++) {
+        context.lineTo(ann.points[i].x, ann.points[i].y);
+      }
+      context.closePath();
+      context.fill();
+      context.stroke();
+    } else if (ann.type === 'callout' && ann.calloutPoints && ann.calloutPoints.length >= 3) {
+      context.strokeStyle = ann.strokeColor || strokeColor;
+      context.fillStyle = ann.fillColor || fillColor;
+      context.lineWidth = strokeWidth;
+      context.beginPath();
+      if (ann.calloutPoints.length >= 3) {
+        context.moveTo(ann.calloutPoints[0].x, ann.calloutPoints[0].y);
+        context.lineTo(ann.calloutPoints[1].x, ann.calloutPoints[1].y);
+        context.lineTo(ann.calloutPoints[2].x, ann.calloutPoints[2].y);
+        context.closePath();
+        context.fill();
+        context.stroke();
+        if (ann.calloutPoints.length > 3) {
+          context.beginPath();
+          context.moveTo(ann.calloutPoints[2].x, ann.calloutPoints[2].y);
+          for (let i = 3; i < ann.calloutPoints.length; i++) {
+            context.lineTo(ann.calloutPoints[i].x, ann.calloutPoints[i].y);
+          }
+          context.closePath();
+          context.fill();
+          context.stroke();
+        }
+      }
+    } else if (ann.type === 'form-field' && ann.width && ann.height) {
+      context.strokeStyle = ann.strokeColor || '#3b82f6';
+      context.fillStyle = ann.fillColor || '#f0f9ff';
+      context.lineWidth = 2;
+      context.fillRect(ann.x, ann.y, ann.width, ann.height);
+      context.strokeRect(ann.x, ann.y, ann.width, ann.height);
+      context.fillStyle = '#3b82f6';
+      context.font = '12px Arial';
+      context.textAlign = 'left';
+      const label = ann.formFieldName || ann.formFieldType || 'Field';
+      const required = ann.formFieldRequired ? '*' : '';
+      context.fillText(`${label}${required}`, ann.x + 5, ann.y + 15);
+      if (ann.formFieldValue) {
+        context.fillStyle = '#000000';
+        context.font = '14px Arial';
+        context.fillText(ann.formFieldValue, ann.x + 5, ann.y + 35);
+      }
+    }
+  });
+};
+
 // Helper function to convert hex to RGB
 const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -170,4 +361,6 @@ const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
       }
     : { r: 0, g: 0, b: 0 };
 };
+
+
 

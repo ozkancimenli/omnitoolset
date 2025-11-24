@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useCallback } from 'react';
 import Link from 'next/link';
 import { Tool } from '@/data/tools';
 import { addRecentTool } from '@/lib/recent-tools';
@@ -8,14 +9,14 @@ interface ToolCardProps {
   tool: Tool;
 }
 
-export default function ToolCard({ tool }: ToolCardProps) {
-  const handleClick = () => {
+const ToolCard = memo(function ToolCard({ tool }: ToolCardProps) {
+  const handleClick = useCallback(() => {
     addRecentTool({
       id: tool.id,
       title: tool.title,
       slug: tool.slug,
     });
-  };
+  }, [tool.id, tool.title, tool.slug]);
 
   return (
     <Link href={`/tools/${tool.slug}`} onClick={handleClick}>
@@ -29,4 +30,8 @@ export default function ToolCard({ tool }: ToolCardProps) {
       </div>
     </Link>
   );
-}
+});
+
+ToolCard.displayName = 'ToolCard';
+
+export default ToolCard;

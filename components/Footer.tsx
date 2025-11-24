@@ -1,9 +1,10 @@
+import { memo, useMemo } from 'react';
 import Link from 'next/link';
 import { tools } from '@/data/tools';
 
-export default function Footer() {
-  const categories = Array.from(new Set(tools.map(t => t.category))).sort();
-  const currentYear = new Date().getFullYear();
+function FooterComponent() {
+  const categories = useMemo(() => Array.from(new Set(tools.map(t => t.category))).sort(), []);
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   return (
     <footer className="bg-slate-800/80 backdrop-blur-lg border-t border-slate-700 py-12 mt-16">
@@ -76,3 +77,8 @@ export default function Footer() {
     </footer>
   );
 }
+
+const Footer = memo(FooterComponent);
+Footer.displayName = 'Footer';
+
+export default Footer;

@@ -72,26 +72,41 @@ export const findTextRunAtPosition = (
   x: number,
   y: number,
   runs: PdfTextRun[],
-  tolerance: number = 100 // Increased to 100px for more aggressive detection
+  tolerance: number = 50 // Reduced tolerance since we now have individual items
 ): PdfTextRun | null => {
   if (runs.length === 0) {
-    console.log('[TEXT DETECT] No runs available');
     return null;
   }
-  
-  console.log('[TEXT DETECT] Searching for text at:', { x, y }, 'in', runs.length, 'runs');
   
   let closestRun: PdfTextRun | null = null;
   let closestDistance = Infinity;
   
-  runs.forEach((run, index) => {
-    // PDF coordinates: y=0 at bottom, text runs have y at bottom of text
-    const textTop = run.y - run.height; // Top of text (smaller y value)
-    const textBottom = run.y; // Bottom of text (larger y value)
+  // IMPROVED: Like Sejda - check individual items first, then grouped runs
+  // Individual items (prefixed with "item-") are checked first for precise clicking
+  const individualRuns = runs.filter(r => r.id.startsWith('item-'));
+  const groupedRuns = runs.filter(r => !r.id.startsWith('item-'));
+  
+  // Check individual items first (more precise)
+  const runsToCheck = [...individualRuns, ...groupedRuns];
+  
+  runsToCheck.forEach((run) => {
+    // Canvas coordinates: y=0 at top
+    // Text runs: y is at bottom of text (baseline)
+    const textTop = run.y - run.height;
+    const textBottom = run.y;
     const textLeft = run.x;
     const textRight = run.x + run.width;
     
-    // Check if click is within text bounds (with tolerance)
+    // IMPROVED: More precise detection like Sejda
+    // 1. Direct hit within text bounds (highest priority)
+    const isDirectHit = (
+      x >= textLeft &&
+      x <= textRight &&
+      y >= textTop &&
+      y <= textBottom
+    );
+    
+    // 2. Within expanded bounds (with tolerance)
     const isWithinBounds = (
       x >= textLeft - tolerance &&
       x <= textRight + tolerance &&
@@ -99,32 +114,34 @@ export const findTextRunAtPosition = (
       y <= textBottom + tolerance
     );
     
-    if (isWithinBounds) {
+    // 3. Near text (within character width/height)
+    const charWidth = run.width / Math.max(run.text.length, 1);
+    const isNearText = (
+      Math.abs(x - (textLeft + textRight) / 2) < charWidth * 2 &&
+      Math.abs(y - (textTop + textBottom) / 2) < run.height * 2
+    );
+    
+    if (isDirectHit || isWithinBounds || isNearText) {
+      // Calculate distance to text center
       const centerX = run.x + run.width / 2;
       const centerY = run.y - run.height / 2;
       const distance = Math.sqrt(
         Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
       );
       
-      console.log('[TEXT DETECT] Found candidate run', index, ':', {
-        id: run.id,
-        text: run.text.substring(0, 30),
-        bounds: { left: textLeft, right: textRight, top: textTop, bottom: textBottom },
-        distance
-      });
+      // Prioritize: direct hits > individual items > grouped runs
+      let priority = 1;
+      if (isDirectHit) priority = 0.1; // Direct hits get highest priority
+      if (run.id.startsWith('item-')) priority *= 0.5; // Individual items preferred over grouped
       
-      if (distance < closestDistance) {
-        closestDistance = distance;
+      const adjustedDistance = distance * priority;
+      
+      if (adjustedDistance < closestDistance) {
+        closestDistance = adjustedDistance;
         closestRun = run;
       }
     }
   });
-  
-  if (closestRun) {
-    console.log('[TEXT DETECT] Selected run:', closestRun.id, closestRun.text.substring(0, 50));
-  } else {
-    console.log('[TEXT DETECT] No run found - click outside all text bounds');
-  }
   
   return closestRun;
 };

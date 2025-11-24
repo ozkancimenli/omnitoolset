@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { memo, useState, useEffect, useCallback } from 'react';
 
-export default function ThemeToggle() {
+const ThemeToggle = memo(function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [mounted, setMounted] = useState(false);
 
@@ -16,13 +16,13 @@ export default function ThemeToggle() {
     document.documentElement.classList.toggle('dark', initialTheme === 'dark');
   }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     document.documentElement.classList.toggle('light', newTheme === 'light');
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
-  };
+  }, [theme]);
 
   if (!mounted) {
     return (
@@ -44,5 +44,9 @@ export default function ThemeToggle() {
       </span>
     </button>
   );
-}
+});
+
+ThemeToggle.displayName = 'ThemeToggle';
+
+export default ThemeToggle;
 

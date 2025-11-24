@@ -43,8 +43,13 @@ export default function Home() {
 
   const categories = Array.from(new Set(tools.map(t => t.category))).sort();
 
+  // Track page view
+  useMemo(() => {
+    trackPageView('/', 'Home - OmniToolset');
+  }, []);
+
   // Keyboard shortcuts
-  useKeyboardShortcuts((action: ShortcutAction) => {
+  const handleKeyboardShortcut = useCallback((action: ShortcutAction) => {
     switch (action) {
       case 'search':
         searchInputRef.current?.focus();
@@ -62,7 +67,9 @@ export default function Home() {
         searchInputRef.current?.blur();
         break;
     }
-  });
+  }, [router]);
+
+  useKeyboardShortcuts(handleKeyboardShortcut);
   // Enhanced Structured Data for better SEO
   const structuredData = {
     '@context': 'https://schema.org',
@@ -339,6 +346,7 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        id="structured-data"
       />
     </div>
   );

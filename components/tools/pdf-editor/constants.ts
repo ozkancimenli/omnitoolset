@@ -10,3 +10,6 @@ export const RENDER_CACHE_SIZE = 5; // Number of pages to cache
 export const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
 
 
+
+
+

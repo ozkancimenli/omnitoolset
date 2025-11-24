@@ -1,12 +1,13 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
 
 interface BreadcrumbsProps {
   items: { label: string; href?: string }[];
 }
 
-export default function Breadcrumbs({ items }: BreadcrumbsProps) {
+const Breadcrumbs = memo(function Breadcrumbs({ items }: BreadcrumbsProps) {
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
       <ol className="flex items-center gap-2 text-sm text-slate-400">
@@ -28,5 +29,9 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
       </ol>
     </nav>
   );
-}
+});
+
+Breadcrumbs.displayName = 'Breadcrumbs';
+
+export default Breadcrumbs;
 

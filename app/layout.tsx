@@ -4,6 +4,7 @@ import Script from 'next/script'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ToastContainer } from '@/components/Toast'
 import AdsterraSocialbar from '@/components/AdsterraSocialbar'
+import { GlobalInit } from './global-init'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
@@ -68,6 +69,7 @@ export default function RootLayout({
         <meta name="google-adsense-account" content="ca-pub-8640955536193345" />
       </head>
       <body className={inter.className}>
+        <GlobalInit />
         {/* AdSense Script - beforeInteractive loads in head */}
         <Script
           async

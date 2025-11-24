@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import type { ToolType } from '../types';
 
 interface ToolbarProps {
@@ -83,7 +83,7 @@ interface ToolbarProps {
   toast: any;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({
+const ToolbarComponent: React.FC<ToolbarProps> = ({
   tool,
   setTool,
   isEditable,
@@ -161,19 +161,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   toast,
 }) => {
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-4 py-2">
+    <div className="bg-gradient-to-r from-zinc-50 via-neutral-50 to-zinc-50 dark:from-zinc-950 dark:via-neutral-950 dark:to-zinc-950 border-b border-zinc-200/60 dark:border-zinc-800/60 px-4 py-2 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         {/* Left: Tools */}
         <div className="flex items-center gap-2">
           {/* Basic Tools */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-xl p-1 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50">
             <button
               onClick={() => setTool(tool === 'text' ? null : 'text')}
               disabled={!isEditable}
               className={`p-2.5 rounded-md transition-all ${
                 tool === 'text'
-                  ? 'bg-gray-900 text-white shadow-lg'
-                  : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/50'
+                  : 'hover:bg-white/90 dark:hover:bg-zinc-700/80 text-zinc-700 dark:text-zinc-300 transition-all duration-200'
               } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
               title="Add Text (T)"
             >
@@ -185,7 +185,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </div>
 
           {/* Professional Tools */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-xl p-1 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50">
             <button
               onClick={() => {
                 setTool(tool === 'edit-text' ? null : 'edit-text');
@@ -197,8 +197,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               disabled={!isEditable}
               className={`p-2.5 rounded-md transition-all ${
                 tool === 'edit-text'
-                  ? 'bg-gray-900 text-white shadow-lg'
-                  : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/50'
+                  : 'hover:bg-white/90 dark:hover:bg-zinc-700/80 text-zinc-700 dark:text-zinc-300 transition-all duration-200'
               } ${!isEditable ? 'opacity-40 cursor-not-allowed' : ''}`}
               title="Edit PDF Text (E)"
             >
@@ -210,8 +210,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setShowPageManager(!showPageManager)}
               className={`p-2.5 rounded-md transition-all ${
                 showPageManager
-                  ? 'bg-gray-900 text-white shadow-lg'
-                  : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/50'
+                  : 'hover:bg-white/90 dark:hover:bg-zinc-700/80 text-zinc-700 dark:text-zinc-300 transition-all duration-200'
               }`}
               title="Page Manager (P)"
             >
@@ -236,8 +236,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setShowSettings(!showSettings)}
               className={`p-2.5 rounded-md transition-all ${
                 showSettings
-                  ? 'bg-slate-700 text-white shadow-lg'
-                  : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/50'
+                  : 'hover:bg-white/90 dark:hover:bg-zinc-700/80 text-zinc-700 dark:text-zinc-300 transition-all duration-200'
               }`}
               title="Settings (Ctrl+,)"
             >
@@ -250,8 +250,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setShowHelp(!showHelp)}
               className={`p-2.5 rounded-md transition-all ${
                 showHelp
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
+                  : 'hover:bg-white/90 dark:hover:bg-zinc-700/80 text-zinc-700 dark:text-zinc-300 transition-all duration-200'
               }`}
               title="Help (H)"
             >
@@ -263,8 +263,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setShowGrid(!showGrid)}
               className={`p-2.5 rounded-md transition-all ${
                 showGrid
-                  ? 'bg-gray-900 text-white shadow-lg'
-                  : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/50'
+                  : 'hover:bg-white/90 dark:hover:bg-zinc-700/80 text-zinc-700 dark:text-zinc-300 transition-all duration-200'
               }`}
               title="Toggle Grid (G)"
             >
@@ -276,8 +276,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               onClick={() => setShowPageFeatures(!showPageFeatures)}
               className={`p-2.5 rounded-md transition-all ${
                 showPageFeatures
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'hover:bg-white dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
+                  : 'hover:bg-white/90 dark:hover:bg-zinc-700/80 text-zinc-700 dark:text-zinc-300 transition-all duration-200'
               }`}
               title="Page Features"
             >
@@ -296,7 +296,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               className={`p-2.5 rounded-md transition-all relative ${
                 showAIPanel
                   ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg animate-pulse'
-                  : 'hover:bg-gradient-to-r hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-900 dark:hover:to-blue-900 text-slate-700 dark:text-slate-300'
+                  : 'hover:bg-gradient-to-r hover:from-violet-100 hover:to-indigo-100 dark:hover:from-violet-900/30 dark:hover:to-indigo-900/30 text-zinc-700 dark:text-zinc-300 transition-all duration-200'
               }`}
               title="🤖 AI-Powered Features"
             >
@@ -334,7 +334,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         {/* Right: View Controls */}
         <div className="flex items-center gap-2">
           {/* Zoom Controls */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-xl p-1 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50">
             <button
               onClick={() => {
                 setZoomMode('fit-page');
@@ -406,5 +406,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </div>
     </div>
   );
-};
+});
+
+Toolbar.displayName = 'Toolbar';
+
+
 
