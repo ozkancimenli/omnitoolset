@@ -439,10 +439,14 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   // Create handleCanvasContextMenu wrapper
   const handleCanvasContextMenu = handleCanvasContextMenuFromHook;
   
-  // Define getCanvasCoordinates after refs are initialized
-  const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  // Define getCanvasCoordinates after refs are initialized and update ref
+  const getCanvasCoordinates = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     return getCanvasCoordinatesUtil(e, canvasRef, viewportRef);
-  };
+  }, []);
+  
+  useEffect(() => {
+    getCanvasCoordinatesRef.current = getCanvasCoordinates;
+  }, [getCanvasCoordinates]);
 
   // Mobile detection is handled by useUIState hook
 
