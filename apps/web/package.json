@@ -4,7 +4,9 @@
   "private": true,
   "description": "OmniToolset Next.js application",
   "scripts": {
+    "predev": "npm run build --prefix ../../packages/pdf-engine",
     "dev": "next dev",
+    "prebuild": "npm run build --prefix ../../packages/pdf-engine",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
