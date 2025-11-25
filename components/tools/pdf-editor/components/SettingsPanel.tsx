@@ -6,7 +6,7 @@ import { toast } from '@/components/Toast';
 interface Settings {
   autoSave: boolean;
   autoSaveInterval: number;
-  defaultZoom: string;
+  defaultZoom: 'custom' | 'fit-width' | 'fit-page' | 'fit-height';
   defaultFontSize: number;
   defaultFontFamily: string;
   showGrid: boolean;
@@ -15,15 +15,15 @@ interface Settings {
   showRulers: boolean;
   showTooltips: boolean;
   enableAnimations: boolean;
-  exportQuality: string;
-  exportFormat: string;
+  exportQuality: 'low' | 'medium' | 'high';
+  exportFormat: 'pdf' | 'pdf-a';
 }
 
 interface SettingsPanelProps {
   show: boolean;
   onClose: () => void;
   settings: Settings;
-  setSettings: (settings: Settings) => void;
+  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
 }
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -91,7 +91,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <label className="text-sm text-slate-700 dark:text-slate-300 w-32">Default Zoom:</label>
-                <select value={settings.defaultZoom} onChange={(e) => setSettings({ ...settings, defaultZoom: e.target.value })} className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm">
+                <select value={settings.defaultZoom} onChange={(e) => setSettings({ ...settings, defaultZoom: e.target.value as Settings['defaultZoom'] })} className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm">
                   <option value="fit-page">Fit Page</option>
                   <option value="fit-width">Fit Width</option>
                   <option value="fit-height">Fit Height</option>
@@ -137,7 +137,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <label className="text-sm text-slate-700 dark:text-slate-300 w-32">Quality:</label>
-                <select value={settings.exportQuality} onChange={(e) => setSettings({ ...settings, exportQuality: e.target.value })} className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm">
+                <select value={settings.exportQuality} onChange={(e) => setSettings({ ...settings, exportQuality: e.target.value as Settings['exportQuality'] })} className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm">
                   <option value="low">Low (Smaller file)</option>
                   <option value="medium">Medium (Balanced)</option>
                   <option value="high">High (Best quality)</option>
@@ -145,7 +145,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </div>
               <div className="flex items-center gap-3">
                 <label className="text-sm text-slate-700 dark:text-slate-300 w-32">Format:</label>
-                <select value={settings.exportFormat} onChange={(e) => setSettings({ ...settings, exportFormat: e.target.value })} className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm">
+                <select value={settings.exportFormat} onChange={(e) => setSettings({ ...settings, exportFormat: e.target.value as Settings['exportFormat'] })} className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-sm">
                   <option value="pdf">PDF</option>
                   <option value="pdf-a">PDF/A (Archival)</option>
                 </select>
@@ -165,7 +165,5 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     </div>
   );
 };
-
-
 
 

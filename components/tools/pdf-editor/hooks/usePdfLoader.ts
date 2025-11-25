@@ -110,7 +110,7 @@ export const usePdfLoader = ({
             if (context) {
               canvas.width = viewport.width;
               canvas.height = viewport.height;
-              await page.render({ canvasContext: context, viewport }).promise;
+              await page.render({ canvasContext: context, viewport, canvas }).promise;
               thumbnails.push(canvas.toDataURL());
             }
             const progress = 40 + (i / maxThumbnails) * 20;
@@ -273,5 +273,4 @@ export const usePdfLoader = ({
 
   return { loadPDF };
 };
-
 

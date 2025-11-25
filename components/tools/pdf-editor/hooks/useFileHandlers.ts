@@ -3,7 +3,7 @@ import { toast } from '@/components/Toast';
 import { validatePDFFile, logError } from '../utils';
 
 export interface UseFileHandlersOptions {
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   pdfUrl: string | null;
   setFile: (file: File | null) => void;
   setPdfUrl: (url: string | null) => void;
@@ -208,5 +208,4 @@ export function useFileHandlers(options: UseFileHandlersOptions) {
     handleDrop,
   };
 }
-
 

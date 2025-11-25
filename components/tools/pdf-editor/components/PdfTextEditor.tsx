@@ -17,10 +17,10 @@ interface PdfTextEditorProps {
   updatePdfTextInStream: (id: string, text: string, format: any) => Promise<void>;
   setEditingTextRun: (id: string | null) => void;
   setTextEditMode: (mode: boolean) => void;
-  canvasRef: React.RefObject<HTMLCanvasElement>;
-  viewportRef: React.RefObject<{ width: number; height: number }>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  viewportRef: React.RefObject<{ width: number; height: number; scale: number } | null>;
   multiLineEditing: boolean;
-  textInputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
+  textInputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>;
   showAISuggestions: boolean;
   aiSuggestions: {
     getSuggestions: (options: any) => void;
@@ -459,4 +459,3 @@ export function PdfTextEditor({
     </div>
   );
 }
-

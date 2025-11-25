@@ -4,8 +4,8 @@
 import React, { memo } from 'react';
 
 interface CanvasContainerProps {
-  containerRef: React.RefObject<HTMLDivElement>;
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   tool: string | null;
   selectedAnnotation: string | null;
   onMouseDown: (e: React.MouseEvent<HTMLCanvasElement>) => void;
@@ -13,6 +13,9 @@ interface CanvasContainerProps {
   onMouseUp: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   onContextMenu: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   children?: React.ReactNode;
+  isPanning?: boolean;
+  spacePressed?: boolean;
+  onWheel?: (event: React.WheelEvent<HTMLDivElement>) => void;
 }
 
 export const CanvasContainer: React.FC<CanvasContainerProps> = memo(({
@@ -74,4 +77,3 @@ export const CanvasContainer: React.FC<CanvasContainerProps> = memo(({
 });
 
 CanvasContainer.displayName = 'CanvasContainer';
-

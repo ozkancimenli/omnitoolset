@@ -10,9 +10,9 @@ import React from 'react';
  */
 export function createOptimizedMemo<T extends React.ComponentType<any>>(
   Component: T,
-  areEqual?: (prevProps: React.ComponentProps<T>, nextProps: React.ComponentProps<T>) => boolean
+  areEqual?: (prevProps: Readonly<React.ComponentProps<T>>, nextProps: Readonly<React.ComponentProps<T>>) => boolean
 ): React.MemoExoticComponent<T> {
-  return React.memo(Component, areEqual);
+  return React.memo(Component, areEqual) as React.MemoExoticComponent<T>;
 }
 
 /**
@@ -53,9 +53,9 @@ export function deepEqual<T extends Record<string, any>>(
  */
 export function memoWithEquality<T extends React.ComponentType<any>>(
   Component: T,
-  equalityFn: (prev: React.ComponentProps<T>, next: React.ComponentProps<T>) => boolean
+  equalityFn: (prev: Readonly<React.ComponentProps<T>>, next: Readonly<React.ComponentProps<T>>) => boolean
 ): React.MemoExoticComponent<T> {
-  return React.memo(Component, equalityFn);
+  return React.memo(Component, equalityFn) as React.MemoExoticComponent<T>;
 }
 
 /**
@@ -126,4 +126,3 @@ export function useOptimizedHandlers<T extends Record<string, (...args: any[]) =
 ): T {
   return React.useMemo(() => handlers, [JSON.stringify(Object.keys(handlers))]);
 }
-

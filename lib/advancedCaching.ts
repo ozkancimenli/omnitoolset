@@ -31,8 +31,10 @@ export class AdvancedCacheManager {
   set(key: string, data: any, ttl: number = 3600000): void {
     // Remove oldest entries if cache is full
     if (this.cache.size >= this.maxSize) {
-      const oldestKey = this.cache.keys().next().value;
-      this.cache.delete(oldestKey);
+      const oldestEntry = this.cache.keys().next()
+      if (!oldestEntry.done && typeof oldestEntry.value === 'string') {
+        this.cache.delete(oldestEntry.value)
+      }
     }
 
     this.cache.set(key, {
@@ -325,4 +327,3 @@ export async function prefetchAndCache(
     console.warn('Prefetch failed:', error);
   }
 }
-

@@ -130,9 +130,9 @@ export const useTextEditing = ({ pdfDocRef, canvasRef, pageNum }: UseTextEditing
     setEditingTextRun,
     setEditingTextValue,
     setTextEditMode,
+    setTextRunsCache,
     extractTextLayer,
     findTextRunAtPosition: findTextRunAtPositionLocal,
   };
 };
-
 

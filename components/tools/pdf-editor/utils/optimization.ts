@@ -198,7 +198,7 @@ export function lazyLoadElement(
   const observer = createOptimizedIntersectionObserver(async (entries) => {
     if (entries[0].isIntersecting) {
       await loader();
-      observer.disconnect();
+      observer?.disconnect();
     }
   }, options);
   
@@ -269,4 +269,3 @@ export function preloadResource(
   if (options?.integrity) link.integrity = options.integrity;
   document.head.appendChild(link);
 }
-

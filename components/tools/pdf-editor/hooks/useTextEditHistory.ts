@@ -1,5 +1,5 @@
 // Text Edit History Hook
-import { useCallback } from 'react';
+import { useCallback, type Dispatch, type SetStateAction } from 'react';
 import { PDFDocument } from 'pdf-lib';
 import { toast } from '@/components/Toast';
 import type { PdfTextRun } from '../types';
@@ -8,8 +8,8 @@ import { updatePdfTextOverlay as updatePdfTextOverlayUtil } from '../utils/pdfTe
 interface UseTextEditHistoryProps {
   textEditHistory: Array<{ runId: string; oldText: string; newText: string; format?: any }>;
   textEditHistoryIndex: number;
-  setTextEditHistory: (updater: (prev: Array<{ runId: string; oldText: string; newText: string; format?: any }>) => Array<{ runId: string; oldText: string; newText: string; format?: any }>) => void;
-  setTextEditHistoryIndex: (updater: (prev: number) => number) => void;
+  setTextEditHistory: Dispatch<SetStateAction<Array<{ runId: string; oldText: string; newText: string; format?: any }>>>;
+  setTextEditHistoryIndex: Dispatch<SetStateAction<number>>;
   pdfTextRuns: Record<number, PdfTextRun[]>;
   pageNum: number;
   pdfEngineRef: React.MutableRefObject<any>;
@@ -214,5 +214,4 @@ export const useTextEditHistory = (props: UseTextEditHistoryProps) => {
     saveTextEditToHistory,
   };
 };
-
 

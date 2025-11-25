@@ -4,7 +4,7 @@ import type { Annotation } from '../types';
 
 export interface HandleImageSelectOptions {
   file: File;
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   pageNum: number;
   annotations: Annotation[];
   setAnnotations: (annotations: Annotation[]) => void;
@@ -42,5 +42,4 @@ export const handleImageSelect = (
   };
   reader.readAsDataURL(e.target.files[0]);
 };
-
 

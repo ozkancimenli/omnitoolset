@@ -168,7 +168,7 @@ export const renderAnnotations = (
   fillColor: string,
   highlightColor: string,
   strokeWidth: number,
-  hexToRgb: (hex: string) => { r: number; g: number; b: number }
+  hexToRgb: (hex: string) => { r: number; g: number; b: number } | null
 ) => {
   annotations.forEach(ann => {
     renderAnnotation(context, ann, viewport, strokeColor, fillColor, highlightColor, strokeWidth);
@@ -239,7 +239,7 @@ export const renderAnnotations = (
     } else if (ann.type === 'stamp' && ann.text && ann.width && ann.height) {
       context.save();
       const stampColor = ann.color || '#10b981';
-      const rgbColor = hexToRgb(stampColor);
+      const rgbColor = hexToRgb(stampColor) || { r: 0, g: 0, b: 0 };
       context.strokeStyle = stampColor;
       context.fillStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.1)`;
       context.lineWidth = 3;
@@ -361,6 +361,4 @@ const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
       }
     : { r: 0, g: 0, b: 0 };
 };
-
-
 

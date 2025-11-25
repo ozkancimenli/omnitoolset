@@ -4,17 +4,18 @@ import type { ToolType, Annotation, PdfTextRun } from '../types';
 import { getCanvasCoordinates as getCanvasCoordinatesUtil } from '../utils/coordinates';
 
 export interface UseCanvasHandlersOptions {
-  canvasRef: React.RefObject<HTMLCanvasElement>;
-  containerRef: React.RefObject<HTMLDivElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   tool: ToolType;
   pageNum: number;
   isEditable: boolean;
   spacePressed: boolean;
   pdfTextRuns: Record<number, PdfTextRun[]>;
   pdfDocRef: React.RefObject<any>;
-  textInputRef: React.RefObject<HTMLInputElement>;
+  textInputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>;
   annotations: Annotation[];
   selectedAnnotation: string | null;
+  selectedTextRun: string | null;
   lockedAnnotations: Set<string>;
   selectedAnnotations: Set<string>;
   isDragging: boolean;
@@ -79,6 +80,7 @@ export function useCanvasHandlers(options: UseCanvasHandlersOptions) {
     textInputRef,
     annotations,
     selectedAnnotation,
+    selectedTextRun,
     lockedAnnotations,
     selectedAnnotations,
     isDragging,
@@ -470,7 +472,6 @@ export function useCanvasHandlers(options: UseCanvasHandlersOptions) {
     strokeColor,
     fillColor,
     strokeWidth,
-    getCanvasCoordinates,
     findTextRunAtPosition,
     findCharIndexAtPosition,
     setPanStart,
@@ -550,7 +551,6 @@ export function useCanvasHandlers(options: UseCanvasHandlersOptions) {
     pdfTextRuns,
     pageNum,
     annotations,
-    getCanvasCoordinates,
     getSelectedText,
     setIsPanning,
     setPanStart,
@@ -568,4 +568,3 @@ export function useCanvasHandlers(options: UseCanvasHandlersOptions) {
     handleCanvasMouseUp,
   };
 }
-

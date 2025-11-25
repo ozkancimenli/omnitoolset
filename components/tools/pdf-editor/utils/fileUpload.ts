@@ -1,12 +1,12 @@
 // File Upload Utilities
-import type { React } from 'react';
+import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
 
 /**
  * Create a file input element and handle file selection
  * This utility handles the complex file input creation and polling logic
  */
 export const createFileInputHandler = (
-  handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleFileSelect: (e: ChangeEvent<HTMLInputElement>) => void
 ): void => {
   const tempInput = document.createElement('input');
   tempInput.type = 'file';
@@ -21,7 +21,7 @@ export const createFileInputHandler = (
       console.log('[PDF Editor] File selected via native event:', target.files[0].name);
       const syntheticEvent = {
         target: { files: target.files },
-      } as React.ChangeEvent<HTMLInputElement>;
+      } as ChangeEvent<HTMLInputElement>;
       handleFileSelect(syntheticEvent);
     }
     // Clean up
@@ -43,7 +43,7 @@ export const createFileInputHandler = (
         clearInterval(interval);
         const syntheticEvent = {
           target: { files: tempInput.files },
-        } as React.ChangeEvent<HTMLInputElement>;
+        } as ChangeEvent<HTMLInputElement>;
         handleFileSelect(syntheticEvent);
         if (tempInput.parentNode) {
           tempInput.parentNode.removeChild(tempInput);
@@ -67,8 +67,8 @@ export const createFileInputHandler = (
  * Handle file upload area click
  */
 export const handleUploadAreaClick = (
-  e: React.MouseEvent,
-  handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
+  e: MouseEvent,
+  handleFileSelect: (e: ChangeEvent<HTMLInputElement>) => void
 ): void => {
   e.preventDefault();
   e.stopPropagation();
@@ -80,8 +80,8 @@ export const handleUploadAreaClick = (
  * Handle keyboard events on upload area
  */
 export const handleUploadAreaKeyDown = (
-  e: React.KeyboardEvent,
-  fileInputRef: React.RefObject<HTMLInputElement>
+  e: KeyboardEvent,
+  fileInputRef: RefObject<HTMLInputElement | null>
 ): void => {
   if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault();
@@ -90,5 +90,3 @@ export const handleUploadAreaKeyDown = (
     }
   }
 };
-
-

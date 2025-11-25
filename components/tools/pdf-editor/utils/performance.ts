@@ -124,10 +124,10 @@ export const createPerformanceMonitor = () => {
 /**
  * Lazy load component
  */
-export const lazyLoad = <T>(
+export const lazyLoad = <T extends React.ComponentType<any>>(
   loader: () => Promise<{ default: T }>,
   fallback?: React.ReactNode
-): React.LazyExoticComponent<React.ComponentType<T>> => {
+): React.LazyExoticComponent<T> => {
   return React.lazy(loader);
 };
 
@@ -148,4 +148,3 @@ export const createIntersectionObserver = (
     ...options,
   });
 };
-

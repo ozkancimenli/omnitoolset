@@ -98,9 +98,13 @@ export class TestUtilities {
   /**
    * Mock function
    */
-  createMock<T extends (...args: any[]) => any>(implementation?: T): jest.Mock<T> {
-    const mock = jest.fn(implementation);
-    return mock as any;
+  createMock<T extends (...args: any[]) => any>(implementation?: T): (...args: Parameters<T>) => ReturnType<T> {
+    const jestGlobal = (globalThis as any).jest;
+    if (!jestGlobal?.fn) {
+      throw new Error('Jest is not available in this environment');
+    }
+    const mock = jestGlobal.fn(implementation);
+    return mock as (...args: Parameters<T>) => ReturnType<T>;
   }
 
   /**
@@ -190,4 +194,3 @@ export const getTestUtilities = (): TestUtilities => {
   }
   return testUtilitiesInstance;
 };
-

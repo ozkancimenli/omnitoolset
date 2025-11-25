@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { toast } from '@/components/Toast';
-import type { Annotation } from '../types';
+import type { Annotation, ToolType } from '../types';
 
 export interface UseContextMenuOptions {
   annotations: Annotation[];
@@ -9,14 +9,14 @@ export interface UseContextMenuOptions {
   onAnnotationChange: (annotations: Annotation[]) => void;
   onHistorySave: (annotations: Annotation[]) => void;
   onSelectionChange: (ids: string[]) => void;
-  tool: string | null;
+  tool: ToolType;
   isDrawingPolygon: boolean;
   polygonPoints: { x: number; y: number }[];
   strokeColor: string;
   fillColor: string;
   setPolygonPoints: (points: { x: number; y: number }[]) => void;
   setIsDrawingPolygon: (isDrawing: boolean) => void;
-  setTool: (tool: string | null) => void;
+  setTool: Dispatch<SetStateAction<ToolType>>;
   setSelectedAnnotation: (id: string | null) => void;
   getCanvasCoordinates: (e: React.MouseEvent<HTMLCanvasElement>) => { x: number; y: number };
 }
@@ -352,4 +352,3 @@ export function useContextMenu({
     handleCanvasContextMenu,
   };
 }
-

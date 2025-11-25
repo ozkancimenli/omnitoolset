@@ -61,6 +61,16 @@ export const TextFormatPanel: React.FC<TextFormatPanelProps> = ({
   aiSuggestions = [],
   onApplySuggestion,
   editingTextValue = '',
+  textRotation,
+  textScaleX,
+  textScaleY,
+  onRotationChange,
+  onScaleXChange,
+  onScaleYChange,
+  onTransformText,
+  textTemplates = [],
+  onApplyTemplate,
+  onSaveTemplate,
 }) => {
   return (
     <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-300 dark:border-slate-700 p-3 z-50 min-w-[300px]">

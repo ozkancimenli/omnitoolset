@@ -49,6 +49,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     editingAnnotation: editingAnnotationFromHook,
     history,
     historyIndex,
+    setHistory,
+    setHistoryIndex,
     setAnnotations,
     setSelectedAnnotation: setSelectedAnnotationFromHook,
     setSelectedAnnotations: setSelectedAnnotationsFromHook,
@@ -107,6 +109,232 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   
   const [batchMode, setBatchMode] = useState(false);
   const [copiedAnnotations, setCopiedAnnotations] = useState<Annotation[]>([]);
+
+  const {
+    showThumbnails,
+    setShowThumbnails,
+    showToolPanel,
+    setShowToolPanel,
+    showPageManager,
+    setShowPageManager,
+    showTemplatesPanel,
+    setShowTemplatesPanel,
+    showSettings,
+    setShowSettings,
+    showHelp,
+    setShowHelp,
+    showGrid,
+    setShowGrid,
+    showPageFeatures,
+    setShowPageFeatures,
+    showAIPanel,
+    setShowAIPanel,
+    showPerformancePanel,
+    setShowPerformancePanel,
+    showLayerPanel,
+    setShowLayerPanel,
+    showTextTemplates,
+    setShowTextTemplates,
+    showTextFormatPanel,
+    setShowTextFormatPanel,
+    showBatchOperations,
+    setShowBatchOperations,
+    showExportOptions,
+    setShowExportOptions,
+    showPageJump,
+    setShowPageJump,
+    showKeyboardShortcuts,
+    setShowKeyboardShortcuts,
+    showFindReplace,
+    setShowFindReplace,
+    showTextStats,
+    setShowTextStats,
+    showCollaborationPanel,
+    setShowCollaborationPanel,
+    showPdfComparison,
+    setShowPdfComparison,
+    showSocialShare,
+    setShowSocialShare,
+    showPerformanceDashboard,
+    setShowPerformanceDashboard,
+    showBinaryAnalysis,
+    setShowBinaryAnalysis,
+    showHistoryBranches,
+    setShowHistoryBranches,
+    showStreamProcessing,
+    setShowStreamProcessing,
+    showRepairPanel,
+    setShowRepairPanel,
+    showCompressionPanel,
+    setShowCompressionPanel,
+    showPdfACompliance,
+    setShowPdfACompliance,
+    showOcrPanel,
+    setShowOcrPanel,
+    showWasmPanel,
+    setShowWasmPanel,
+    showWorkerPanel,
+    setShowWorkerPanel,
+    showEncryptionPanel,
+    setShowEncryptionPanel,
+    showFontPanel,
+    setShowFontPanel,
+    showSignaturePanel,
+    setShowSignaturePanel,
+    showOptimizationPanel,
+    setShowOptimizationPanel,
+    showCachePanel,
+    setShowCachePanel,
+    showCloudSync,
+    setShowCloudSync,
+    show3DPanel,
+    setShow3DPanel,
+    showMediaPanel,
+    setShowMediaPanel,
+    showVersionControl,
+    setShowVersionControl,
+    showOCRPanel,
+    setShowOCRPanel,
+    showFloatingToolbar,
+    setShowFloatingToolbar,
+    floatingToolbarPosition,
+    setFloatingToolbarPosition,
+    selectedTextForFormatting,
+    setSelectedTextForFormatting,
+  } = useUIState();
+
+  const {
+    aiSuggestions,
+    setAiSuggestions,
+    showCollaboration,
+    setShowCollaboration,
+    collaborationSession,
+    setCollaborationSession,
+    webglEnabled,
+    setWebglEnabled,
+    comparisonFile,
+    setComparisonFile,
+    shareUrl,
+    setShareUrl,
+    performanceStats,
+    setPerformanceStats,
+    analyticsEnabled,
+    setAnalyticsEnabled,
+    progressiveRendering,
+    setProgressiveRendering,
+    renderingQuality,
+    setRenderingQuality,
+    binaryAnalysisData,
+    setBinaryAnalysisData,
+    performanceMetrics,
+    setPerformanceMetrics,
+    currentHistoryBranch,
+    setCurrentHistoryBranch,
+    historyBranches,
+    setHistoryBranches,
+    streamProgress,
+    setStreamProgress,
+    repairResults,
+    setRepairResults,
+    compressionOptions,
+    setCompressionOptions,
+    pdfAComplianceResults,
+    setPdfAComplianceResults,
+    ocrProgress,
+    setOcrProgress,
+    wasmMetrics,
+    setWasmMetrics,
+    workerStats,
+    setWorkerStats,
+    encryptionPassword,
+    setEncryptionPassword,
+    fontStats,
+    setFontStats,
+    signatureFields,
+    setSignatureFields,
+    optimizationResults,
+    setOptimizationResults,
+    cacheStats,
+    setCacheStats,
+    spellCheckEnabled,
+    setSpellCheckEnabled,
+    spellCheckResults,
+    setSpellCheckResults,
+    exportQuality,
+    setExportQuality,
+    exportFormat,
+    setExportFormat,
+    exportToFormat,
+    setExportToFormat,
+    useRegex,
+    setUseRegex,
+    caseSensitive,
+    setCaseSensitive,
+    wholeWords,
+    setWholeWords,
+    hiddenLayers,
+    setHiddenLayers,
+    autoSaveEnabled,
+    setAutoSaveEnabled,
+    autoSaveInterval,
+    setAutoSaveInterval,
+    textStyles,
+    setTextStyles,
+  } = useAdvancedFeaturesState();
+
+  const {
+    fontSize,
+    setFontSize,
+    fontFamily,
+    setFontFamily,
+    textColor,
+    setTextColor,
+    textAlign,
+    setTextAlign,
+    fontWeight,
+    setFontWeight,
+    fontStyle,
+    setFontStyle,
+    textDecoration,
+    setTextDecoration,
+    editingTextFormat,
+    setEditingTextFormat,
+    multiLineEditing,
+    setMultiLineEditing,
+    textRotation,
+    setTextRotation,
+    textScaleX,
+    setTextScaleX,
+    textScaleY,
+    setTextScaleY,
+    textTemplates,
+    setTextTemplates,
+  } = useTextFormattingState();
+  const [showAISuggestions, setShowAISuggestions] = useState(false);
+  const loadAutoSave = useCallback(() => {
+    loadAutoSaveUtil(file, setAnnotations, setPageNum);
+  }, [file, setAnnotations, setPageNum]);
+  const applyTextTemplate = useCallback((template: { name: string; text: string; format?: any }) => {
+    applyTextTemplateUtil(
+      template,
+      setCurrentText,
+      setFontSize,
+      setFontFamily,
+      setFontWeight,
+      setFontStyle,
+      setTextColor,
+      setTool,
+      fontSize,
+      fontFamily,
+      fontWeight,
+      fontStyle,
+      textColor
+    );
+  }, [fontSize, fontFamily, fontStyle, fontWeight, setCurrentText, setFontFamily, setFontSize, setFontStyle, setFontWeight, setTextColor, setTool, textColor]);
+  const aiTextSuggestionTools = useAITextSuggestions();
+  const [errorState, setErrorState] = useState<{ message: string; code?: string; retry?: () => void } | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [operationStatus, setOperationStatus] = useState<{ type: string; message: string; progress?: number } | null>(null);
   
   // Define state variables needed by useContextMenu before the hook
   const [polygonPoints, setPolygonPoints] = useState<{ x: number; y: number }[]>([]);
@@ -181,6 +409,29 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   // Store current viewport for coordinate conversion
   const viewportRef = useRef<{ width: number; height: number; scale: number } | null>(null);
   const [textSelection, setTextSelection] = useState<{ start: number; end: number; runId: string } | null>(null);
+  const [enableMultiCursor, setEnableMultiCursor] = useState(false);
+  const multiCursor = useMultiCursorEditing();
+
+  // Refs (must be defined before hooks that use them)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pdfDocRef = useRef<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const pdfLibDocRef = useRef<PDFDocument | null>(null);
+  const pdfEngineRef = useRef<import('./pdf-engine').PdfEngine | null>(null);
+  const textLayerRef = useRef<HTMLDivElement>(null);
+
+  // Define getCanvasCoordinates after refs are initialized
+  const getCanvasCoordinates = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    return getCanvasCoordinatesUtil(e, canvasRef, viewportRef);
+  }, []);
+
+  // Update the ref so useContextMenu can use it
+  useEffect(() => {
+    getCanvasCoordinatesRef.current = getCanvasCoordinates;
+  }, [getCanvasCoordinates]);
   
   // Use text editing hook
   const {
@@ -198,6 +449,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     setEditingTextRun,
     setEditingTextValue,
     setTextEditMode,
+    setTextRunsCache,
     extractTextLayer,
     findTextRunAtPosition: findTextRunAtPositionFromHook,
   } = useTextEditing({
@@ -238,9 +490,11 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [findResults, setFindResults] = useState<Array<{ runId: string; startIndex: number; endIndex: number; page: number; text: string }>>([]);
   const [searchAllPages, setSearchAllPages] = useState(false);
   const [currentFindIndex, setCurrentFindIndex] = useState(-1);
+  const editingTextRunObject = editingTextRun ? (pdfTextRuns[pageNum] || []).find(run => run.id === editingTextRun) || null : null;
   
   // Advanced Text Editor features
   const [showTextStatistics, setShowTextStatistics] = useState(false);
+  const [showTextStyles, setShowTextStyles] = useState(false);
   const [textStatistics, setTextStatistics] = useState<any>(null);
   const [realTimePreview, setRealTimePreview] = useState(true);
   const [useRichTextEditor, setUseRichTextEditor] = useState(false); // Toggle for rich text editor
@@ -289,10 +543,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       setSelectedTextForFormatting(null);
     }
   }, [selectedAnnotation, selectedAnnotations, annotations]);
-
-  const applyFormatToSelectedText = useCallback((format: Partial<Annotation>) => {
-    applyFormatToSelectedTextFromHook(format, selectedTextForFormatting, selectedAnnotations);
-  }, [applyFormatToSelectedTextFromHook, selectedTextForFormatting, selectedAnnotations]);
 
   
   // Use page management hook
@@ -369,7 +619,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     { name: 'Approved Stamp', annotation: { type: 'stamp', text: 'APPROVED', color: '#10b981', width: 120, height: 120 } },
     { name: 'Confidential Watermark', annotation: { type: 'watermark', watermarkText: 'CONFIDENTIAL', watermarkOpacity: 0.3 } },
   ]);
-  const [showTemplatesPanel, setShowTemplatesPanel] = useState(false);
   
   // Advanced: Batch operations
   const [batchOperationMode, setBatchOperationMode] = useState<'select' | 'move' | 'delete' | 'format' | null>(null);
@@ -382,8 +631,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   // Advanced: Performance - Intersection Observer for lazy loading
   const pageObserverRef = useRef<IntersectionObserver | null>(null);
   
-  // Advanced: Settings and preferences
-  const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState({
     autoSave: false,
     autoSaveInterval: 30, // seconds
@@ -401,41 +648,12 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   });
   
   // Advanced: Help and tutorial
-  const [showHelp, setShowHelp] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
   const [hasSeenTutorial, setHasSeenTutorial] = useState(false);
   
-  // Advanced: Better error states
-  const [errorState, setErrorState] = useState<{ message: string; code?: string; retry?: () => void } | null>(null);
-  const [isRetrying, setIsRetrying] = useState(false);
-  
-  // Advanced: Operation status
-  const [operationStatus, setOperationStatus] = useState<{ type: string; message: string; progress?: number } | null>(null);
-
   // Page management functions are now provided by usePageManagement hook above
   // Context menu functions are now provided by useContextMenu hook above (moved before useBatchAnnotations)
-  
-  // Refs (must be defined before hooks that use them)
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const pdfDocRef = useRef<any>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
-  const textInputRef = useRef<HTMLInputElement>(null);
-  const pdfLibDocRef = useRef<PDFDocument | null>(null);
-  const pdfEngineRef = useRef<import('./pdf-engine').PdfEngine | null>(null);
-  const textLayerRef = useRef<HTMLDivElement>(null);
-  
-  // Define getCanvasCoordinates after refs are initialized
-  const getCanvasCoordinates = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    return getCanvasCoordinatesUtil(e, canvasRef, viewportRef);
-  }, []);
-  
-  // Update the ref so useContextMenu can use it
-  useEffect(() => {
-    getCanvasCoordinatesRef.current = getCanvasCoordinates;
-  }, [getCanvasCoordinates]);
   
   // Create handleCanvasContextMenu wrapper
   const handleCanvasContextMenu = handleCanvasContextMenuFromHook;
@@ -447,13 +665,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const CLICK_DELAY = 300; // ms between clicks to be considered double-click
   const DOUBLE_CLICK_DISTANCE = 10; // pixels - max distance for double-click
 
-  const applyAnnotationTemplate = useCallback((template: { name: string; annotation: Partial<Annotation> }) => {
-    applyAnnotationTemplateFromHook(template, pageNum);
-  }, [applyAnnotationTemplateFromHook, pageNum]);
-
-  const handleBatchSelection = useCallback((startX: number, startY: number, endX: number, endY: number) => {
-    handleBatchSelectionFromHook(startX, startY, endX, endY, pageNum, setSelectedAnnotations);
-  }, [handleBatchSelectionFromHook, pageNum, setSelectedAnnotations]);
 
   const loadPDF = useCallback(async (fileToLoad?: File) => {
     await loadPDFFromHook(fileToLoad);
@@ -528,7 +739,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
   const getSelectedTextLocal = getSelectedText;
 
-  const renderPage = async (pageNumber: number, useCache: boolean = true) => {
+  async function renderPage(pageNumber: number, useCache: boolean = true) {
     if (!pdfDocRef.current || !canvasRef.current || !containerRef.current) return;
     
     // Production: Check render cache
@@ -603,6 +814,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       await page.render({ 
         canvasContext: context, 
         viewport,
+        canvas
       } as any).promise;
         }
       } else {
@@ -610,6 +822,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         await page.render({ 
           canvasContext: context, 
           viewport,
+          canvas
         } as any).promise;
       }
       
@@ -660,7 +873,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     } catch (error) {
       console.error('Error rendering page:', error);
     }
-  };
+  }
 
   // Use zoom hook (after renderPage is defined)
   const {
@@ -751,9 +964,6 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   };
 
   // hexToRgb is imported from utils.ts
-
-  // removeAnnotation is now provided by useAnnotationOperations hook
-  const removeAnnotation = removeAnnotationFromHook;
 
   const clearAllAnnotations = () => {
     if (confirm('Are you sure you want to clear all annotations?')) {
@@ -1063,6 +1273,44 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     toggleLockAnnotation,
     groupAnnotations,
   });
+  const applyFormatToSelectedText = useCallback((format: Partial<Annotation>) => {
+    applyFormatToSelectedTextFromHook(format, selectedTextForFormatting, selectedAnnotations);
+  }, [applyFormatToSelectedTextFromHook, selectedTextForFormatting, selectedAnnotations]);
+  const applyAnnotationTemplate = useCallback((template: { name: string; annotation: Partial<Annotation> }) => {
+    applyAnnotationTemplateFromHook(template, pageNum);
+  }, [applyAnnotationTemplateFromHook, pageNum]);
+  const handleBatchSelection = useCallback((startX: number, startY: number, endX: number, endY: number) => {
+    handleBatchSelectionFromHook(startX, startY, endX, endY, pageNum, setSelectedAnnotations);
+  }, [handleBatchSelectionFromHook, pageNum, setSelectedAnnotations]);
+  const removeAnnotation = removeAnnotationFromHook;
+  const applyFormatToBatchTextRuns = useCallback((format: Parameters<typeof applyFormatToBatchTextRunsUtil>[3]) => {
+    return applyFormatToBatchTextRunsUtil(
+      selectedTextRuns,
+      pdfTextRuns,
+      pageNum,
+      format,
+      (runId, newText, fmt) => updatePdfTextInStream(runId, newText, fmt),
+      (page) => {
+        void renderPage(page);
+      }
+    );
+  }, [selectedTextRuns, pdfTextRuns, pageNum, updatePdfTextInStream, renderPage]);
+  const deleteBatchTextRuns = useCallback(() => {
+    return deleteBatchTextRunsUtil(
+      selectedTextRuns,
+      pdfTextRuns,
+      pageNum,
+      pdfEngineRef,
+      setPdfTextRuns,
+      setSelectedTextRuns,
+      (page) => {
+        void renderPage(page);
+      }
+    );
+  }, [selectedTextRuns, pdfTextRuns, pageNum, pdfEngineRef, setPdfTextRuns, setSelectedTextRuns, renderPage]);
+  const copyBatchTextRuns = useCallback(() => {
+    copyBatchTextRunsUtil(selectedTextRuns, pdfTextRuns, pageNum);
+  }, [selectedTextRuns, pdfTextRuns, pageNum]);
 
   // Canvas handlers - using hook
   const {
@@ -1081,6 +1329,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     textInputRef,
     annotations,
     selectedAnnotation,
+    selectedTextRun,
     lockedAnnotations,
     selectedAnnotations,
     isDragging,
@@ -1328,7 +1577,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 show={showTextStyles}
                 onClose={() => setShowTextStyles(false)}
                 pdfEngineRef={pdfEngineRef}
-                editingTextRun={editingTextRun}
+                editingTextRun={editingTextRunObject}
                 applyTextStyle={applyTextStyle}
               />
 
@@ -1360,7 +1609,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
               <AIPanel
                 showAIPanel={showAIPanel}
                 setShowAIPanel={setShowAIPanel}
-                editingTextRun={editingTextRun}
+                editingTextRun={editingTextRunObject}
                 editingTextValue={editingTextValue}
                 setEditingTextValue={setEditingTextValue}
                 cursorPosition={cursorPosition}
@@ -1587,7 +1836,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                         multiLineEditing={multiLineEditing}
                         textInputRef={textInputRef}
                         showAISuggestions={showAISuggestions}
-                        aiSuggestions={aiSuggestions}
+                        aiSuggestions={aiTextSuggestionTools}
                         realTimePreview={realTimePreview}
                         previewTimeoutRef={previewTimeoutRef}
                         setPdfTextRuns={setPdfTextRuns}
@@ -1741,17 +1990,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         onJump={jumpToPage}
       />
       
-      {pdfEngineRef.current && (
-        <PerformanceDashboard
-          show={showPerformanceDashboard}
-          onClose={() => setShowPerformanceDashboard(false)}
-          performanceMetrics={performanceMetrics}
-          progressiveRendering={progressiveRendering}
-          renderingQuality={renderingQuality}
-          onProgressiveRenderingChange={(value) => setProgressiveRendering(value)}
-          onRenderingQualityChange={(value) => setRenderingQuality(value)}
-        />
-      )}
+      <PerformanceDashboard
+        isOpen={pdfEngineRef.current !== null && showPerformanceDashboard}
+        onClose={() => setShowPerformanceDashboard(false)}
+      />
 
       <BinaryAnalysisPanel
         show={showBinaryAnalysis}

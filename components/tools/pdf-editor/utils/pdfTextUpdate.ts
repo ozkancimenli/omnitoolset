@@ -26,7 +26,7 @@ export const updatePdfTextOverlay = (
   run: PdfTextRun,
   pageNum: number,
   annotations: Annotation[],
-  canvasRef: React.RefObject<HTMLCanvasElement>,
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
   format?: TextFormat,
   setAnnotations?: (annotations: Annotation[]) => void,
   saveToHistory?: (annotations: Annotation[]) => void,
@@ -255,5 +255,4 @@ export const updatePdfTextInStream = async (
     updatePdfTextOverlayFn?.(runId, newText, format);
   }
 };
-
 

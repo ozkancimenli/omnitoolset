@@ -4,12 +4,12 @@
 import React, { memo } from 'react';
 
 interface FileUploadAreaProps {
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onUploadAreaClick: (e: React.MouseEvent<HTMLDivElement>, handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void) => void;
-  onUploadAreaKeyDown: (e: React.KeyboardEvent<HTMLDivElement>, fileInputRef: React.RefObject<HTMLInputElement>) => void;
+  onUploadAreaKeyDown: (e: React.KeyboardEvent<HTMLDivElement>, fileInputRef: React.RefObject<HTMLInputElement | null>) => void;
 }
 
 export const FileUploadArea: React.FC<FileUploadAreaProps> = memo(({
@@ -73,4 +73,3 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = memo(({
 });
 
 FileUploadArea.displayName = 'FileUploadArea';
-

@@ -12,7 +12,7 @@ export interface Viewport {
  */
 export const getCanvasCoordinates = (
   e: React.MouseEvent<HTMLCanvasElement>,
-  canvasRef: React.RefObject<HTMLCanvasElement>,
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
   viewportRef: React.MutableRefObject<Viewport | null>
 ): { x: number; y: number } => {
   if (!canvasRef.current) return { x: 0, y: 0 };
@@ -42,5 +42,4 @@ export const getCanvasCoordinates = (
     y: (e.clientY - rect.top) * scaleY
   };
 };
-
 

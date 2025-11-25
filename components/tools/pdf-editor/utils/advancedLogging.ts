@@ -130,7 +130,7 @@ export class AdvancedLogger {
     this.addLog(entry);
 
     // Console output
-    const consoleMethod = level === 'debug' ? 'log' : level;
+    const consoleMethod = level === 'debug' ? 'log' : level === 'fatal' ? 'error' : level;
     console[consoleMethod](`[${level.toUpperCase()}] ${message}`, context || '');
   }
 
@@ -304,4 +304,3 @@ export const getAdvancedLogger = (): AdvancedLogger => {
   }
   return loggerInstance;
 };
-

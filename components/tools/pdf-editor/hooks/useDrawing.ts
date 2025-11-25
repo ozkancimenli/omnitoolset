@@ -72,7 +72,7 @@ export function useDrawing({
         y: Math.min(...freehandPath.map(p => p.y)),
         width: Math.max(...freehandPath.map(p => p.x)) - Math.min(...freehandPath.map(p => p.x)),
         height: Math.max(...freehandPath.map(p => p.y)) - Math.min(...freehandPath.map(p => p.y)),
-        path: [...freehandPath],
+        freehandPath: [...freehandPath],
         strokeColor,
         strokeWidth,
         page: pageNum,
@@ -160,5 +160,4 @@ export function useDrawing({
     cancelDrawing,
   };
 }
-
 

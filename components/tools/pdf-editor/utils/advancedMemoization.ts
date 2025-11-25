@@ -16,7 +16,7 @@ export function useMemoWithEquality<T>(
     return a.every((val, idx) => val === b[idx]);
   }
 ): T {
-  const ref = useRef<{ deps: any[]; value: T }>();
+  const ref = useRef<{ deps: any[]; value: T } | null>(null);
 
   if (!ref.current || !equalityFn(ref.current.deps, deps)) {
     ref.current = { deps, value: factory() };
@@ -33,7 +33,7 @@ export function useCallbackWithEquality<T extends (...args: any[]) => any>(
   deps: any[],
   equalityFn?: (a: any[], b: any[]) => boolean
 ): T {
-  const ref = useRef<{ deps: any[]; callback: T }>();
+  const ref = useRef<{ deps: any[]; callback: T } | null>(null);
 
   if (!ref.current || !equalityFn || !equalityFn(ref.current.deps, deps)) {
     ref.current = { deps, callback };
@@ -83,7 +83,7 @@ export function useMemoWithTTL<T>(
   deps: any[],
   ttl: number = 5000
 ): T {
-  const ref = useRef<{ deps: any[]; value: T; timestamp: number }>();
+  const ref = useRef<{ deps: any[]; value: T; timestamp: number } | null>(null);
 
   const now = Date.now();
 
@@ -121,4 +121,3 @@ export function useDeepMemo<T>(value: T, deps: any[]): T {
     (a, b) => JSON.stringify(a) === JSON.stringify(b)
   );
 }
-

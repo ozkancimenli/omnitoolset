@@ -105,8 +105,12 @@ export function useSelector<T, R>(
   selector: (state: T) => R,
   equalityFn?: (a: R, b: R) => boolean
 ): R {
-  const prevResultRef = useRef<R>();
+  const prevResultRef = useRef<R | null>(null);
   const prevStateRef = useRef<T>(state);
+
+  if (prevResultRef.current === null) {
+    prevResultRef.current = selector(state);
+  }
 
   if (prevStateRef.current !== state) {
     const newResult = selector(state);
@@ -124,4 +128,3 @@ export function useSelector<T, R>(
 
   return prevResultRef.current!;
 }
-

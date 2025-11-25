@@ -21,6 +21,7 @@ export interface Annotation {
   textDecoration?: 'none' | 'underline';
   color?: string;
   strokeColor?: string;
+  strokeWidth?: number;
   fillColor?: string;
   page: number;
   width?: number;
@@ -77,6 +78,7 @@ export interface PdfTextRun {
   height: number;
   fontSize: number;
   fontName: string;
+  fontFamily?: string;
   page: number;
   startIndex: number;
   endIndex: number;
@@ -88,8 +90,6 @@ export interface PdfTextRun {
   color?: string;
   textAlign?: 'left' | 'center' | 'right';
 }
-
-
 
 
 

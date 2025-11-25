@@ -25,7 +25,7 @@ interface ToolbarProps {
   setShowPerformancePanel: (show: boolean) => void;
   textEditMode: boolean;
   setTextEditMode: (mode: boolean) => void;
-  imageInputRef: React.RefObject<HTMLInputElement>;
+  imageInputRef: React.RefObject<HTMLInputElement | null>;
   // Tool options
   currentText: string;
   setCurrentText: (text: string) => void;
@@ -60,8 +60,8 @@ interface ToolbarProps {
   setStampSize: (size: number) => void;
   measurementUnit: 'px' | 'mm' | 'cm' | 'in';
   setMeasurementUnit: (unit: 'px' | 'mm' | 'cm' | 'in') => void;
-  formFieldType: string;
-  setFormFieldType: (type: string) => void;
+  formFieldType: 'text' | 'checkbox' | 'radio' | 'dropdown' | 'date' | 'number';
+  setFormFieldType: (type: 'text' | 'checkbox' | 'radio' | 'dropdown' | 'date' | 'number') => void;
   formFieldName: string;
   setFormFieldName: (name: string) => void;
   formFieldRequired: boolean;
@@ -410,6 +410,4 @@ const ToolbarComponent: React.FC<ToolbarProps> = ({
 
 export const Toolbar = memo(ToolbarComponent);
 Toolbar.displayName = 'Toolbar';
-
-
 

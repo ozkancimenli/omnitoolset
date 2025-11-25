@@ -27,7 +27,7 @@ export function optimizeCanvasContext(
     desynchronized,
     willReadFrequently,
     colorSpace,
-  } as any);
+  } as any) as CanvasRenderingContext2D | null;
 }
 
 /**
@@ -197,4 +197,3 @@ export class CanvasStateManager {
     this.states = [];
   }
 }
-

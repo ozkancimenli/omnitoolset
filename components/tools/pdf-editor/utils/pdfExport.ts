@@ -8,7 +8,7 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
  * Export current page to image (PNG/JPG)
  */
 export const exportToImage = async (
-  canvasRef: React.RefObject<HTMLCanvasElement>,
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
   pageNum: number,
   file: File | null,
   exportQuality: 'low' | 'medium' | 'high' = 'high',

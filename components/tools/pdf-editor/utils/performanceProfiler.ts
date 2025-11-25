@@ -49,9 +49,8 @@ export class PerformanceProfiler {
     this.activeProfiles.push(entry);
 
     // Measure memory if available
-    let memoryBefore: number | undefined;
     if ((performance as any).memory) {
-      memoryBefore = (performance as any).memory.usedJSHeapSize;
+      const memoryBefore = (performance as any).memory.usedJSHeapSize || 0;
       entry.memory = { before: memoryBefore, after: 0, delta: 0 };
     }
 
@@ -198,4 +197,3 @@ export const getPerformanceProfiler = (): PerformanceProfiler => {
   }
   return profilerInstance;
 };
-

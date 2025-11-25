@@ -5,7 +5,7 @@ import { toast } from '@/components/Toast';
 export type ZoomMode = 'custom' | 'fit-width' | 'fit-page' | 'fit-height';
 
 interface UseZoomProps {
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   pdfWidth?: number;
   pdfHeight?: number;
   renderPage: (pageNumber: number, useCache?: boolean) => Promise<void>;
@@ -143,7 +143,6 @@ export const useZoom = ({
     calculateZoom,
   };
 };
-
 
 
 

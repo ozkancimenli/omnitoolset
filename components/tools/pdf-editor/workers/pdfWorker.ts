@@ -65,7 +65,7 @@ async function processPDF(payload: { pdfBytes: ArrayBuffer }): Promise<any> {
   
   return {
     pageCount: pages.length,
-    metadata: await pdfDoc.getMetadata(),
+    metadata: extractPdfMetadata(pdfDoc),
   };
 }
 
@@ -87,7 +87,7 @@ async function compressPDF(payload: { pdfBytes: ArrayBuffer; quality: number }):
   
   // Compression logic here
   const compressedBytes = await pdfDoc.save();
-  return compressedBytes;
+  return toArrayBuffer(compressedBytes);
 }
 
 async function mergePDFs(payload: { pdfBytesArray: ArrayBuffer[] }): Promise<ArrayBuffer> {
@@ -100,6 +100,36 @@ async function mergePDFs(payload: { pdfBytesArray: ArrayBuffer[] }): Promise<Arr
     pages.forEach((page) => mergedPdf.addPage(page));
   }
   
-  return await mergedPdf.save();
+  const mergedBytes = await mergedPdf.save();
+  return toArrayBuffer(mergedBytes);
 }
 
+interface PdfMetadata {
+  title?: string
+  author?: string
+  subject?: string
+  keywords?: string
+  creator?: string
+  producer?: string
+  creationDate?: string
+  modificationDate?: string
+}
+
+function extractPdfMetadata(pdfDoc: PDFDocument): PdfMetadata {
+  return {
+    title: pdfDoc.getTitle() ?? undefined,
+    author: pdfDoc.getAuthor() ?? undefined,
+    subject: pdfDoc.getSubject() ?? undefined,
+    keywords: pdfDoc.getKeywords() ?? undefined,
+    creator: pdfDoc.getCreator() ?? undefined,
+    producer: pdfDoc.getProducer() ?? undefined,
+    creationDate: pdfDoc.getCreationDate()?.toISOString(),
+    modificationDate: pdfDoc.getModificationDate()?.toISOString(),
+  }
+}
+
+function toArrayBuffer(data: Uint8Array): ArrayBuffer {
+  const buffer = new ArrayBuffer(data.byteLength)
+  new Uint8Array(buffer).set(data)
+  return buffer
+}

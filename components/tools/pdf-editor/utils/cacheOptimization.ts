@@ -122,6 +122,9 @@ export class LRUCache<T> {
     // Check size limit
     while (this.cache.size >= this.maxSize && this.cache.size > 0) {
       const firstKey = this.cache.keys().next().value;
+      if (firstKey === undefined) {
+        break;
+      }
       this.delete(firstKey);
     }
 
@@ -212,4 +215,3 @@ export class TTLCache<T> {
     this.cache.clear();
   }
 }
-

@@ -4,7 +4,7 @@ import React from 'react';
 import type { Annotation } from '../types';
 
 interface ContextMenuProps {
-  contextMenu: { x: number; y: number; annotationId: string } | null;
+  contextMenu: { x: number; y: number; annotationId: string | null } | null;
   selectedAnnotations: Set<string>;
   lockedAnnotations: Set<string>;
   onClose: () => void;
@@ -29,6 +29,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   onGroup,
 }) => {
   if (!contextMenu || !contextMenu.annotationId) return null;
+  const annotationId = contextMenu.annotationId;
 
   return (
     <div
@@ -38,7 +39,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     >
       <button
         onClick={() => {
-          onDuplicate(contextMenu.annotationId);
+          onDuplicate(annotationId);
           onClose();
         }}
         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
@@ -47,17 +48,17 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       </button>
       <button
         onClick={() => {
-          onToggleLock(contextMenu.annotationId);
+          onToggleLock(annotationId);
           onClose();
         }}
         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
       >
-        <span>{lockedAnnotations.has(contextMenu.annotationId) ? '🔓' : '🔒'}</span>
-        {lockedAnnotations.has(contextMenu.annotationId) ? 'Unlock' : 'Lock'}
+        <span>{lockedAnnotations.has(annotationId) ? '🔓' : '🔒'}</span>
+        {lockedAnnotations.has(annotationId) ? 'Unlock' : 'Lock'}
       </button>
       <button
         onClick={() => {
-          onDelete(contextMenu.annotationId);
+          onDelete(annotationId);
           onClose();
         }}
         className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
@@ -145,5 +146,3 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     </div>
   );
 };
-
-

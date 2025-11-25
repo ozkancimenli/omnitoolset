@@ -10,8 +10,8 @@ import { useEffect, useRef, useState, useCallback } from 'react';
  */
 export function useIntersectionObserver(
   options: IntersectionObserverInit = {}
-): [React.RefObject<HTMLElement>, boolean] {
-  const elementRef = useRef<HTMLElement>(null);
+): [React.RefObject<HTMLElement | null>, boolean] {
+  const elementRef = useRef<HTMLElement | null>(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export function useIntersectionObserver(
  */
 export function useLazyLoad(
   options: IntersectionObserverInit = {}
-): [React.RefObject<HTMLElement>, boolean, () => void] {
+): [React.RefObject<HTMLElement | null>, boolean, () => void] {
   const [elementRef, isIntersecting] = useIntersectionObserver(options);
   const [hasLoaded, setHasLoaded] = useState(false);
 
@@ -69,7 +69,7 @@ export function usePagePreloader(
   currentPage: number,
   totalPages: number,
   preloadCount: number = 2
-): void {
+): React.RefObject<HTMLElement | null> {
   const [elementRef, isIntersecting] = useIntersectionObserver();
 
   useEffect(() => {
@@ -132,4 +132,3 @@ export function useMultipleIntersectionObserver(
 
   return intersections;
 }
-

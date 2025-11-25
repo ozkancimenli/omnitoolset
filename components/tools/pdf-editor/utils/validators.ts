@@ -3,7 +3,8 @@
  * Provides comprehensive validation functions
  */
 
-import type { Annotation, ExportOptions } from '../types';
+import type { Annotation } from '../types';
+import type { ExportOptions } from '../types/export';
 
 /**
  * Validate annotation
@@ -192,4 +193,3 @@ export function validateDimensions(width: number, height: number): boolean {
     typeof height === 'number' && height > 0 && isFinite(height)
   );
 }
-

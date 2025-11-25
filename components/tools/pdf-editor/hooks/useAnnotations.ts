@@ -150,6 +150,8 @@ export const useAnnotations = ({
     editingAnnotation,
     history,
     historyIndex,
+    setHistory,
+    setHistoryIndex,
     setAnnotations,
     setSelectedAnnotation,
     setSelectedAnnotations,
@@ -166,7 +168,6 @@ export const useAnnotations = ({
     saveToHistory,
   };
 };
-
 
 
 
