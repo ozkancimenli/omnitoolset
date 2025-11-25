@@ -2,6 +2,10 @@
 
 # dependencies
 /node_modules
+/apps/web/.next
+/apps/web/out
+/apps/web/node_modules
+/packages/pdf-engine/dist
 /.pnp
 .pnp.js
 
@@ -33,4 +37,4 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+apps/web/next-env.d.ts

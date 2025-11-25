@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { PDFDocument } from 'pdf-lib';
+import { loadPdf, mergePdfs, exportPdf, releasePdf } from '@omni/pdf-engine';
 import { toast } from '@/components/Toast';
 import ToolBase, { formatFileSize, validateFile } from './ToolBase';
 import FileUploadArea from './FileUploadArea';
@@ -66,43 +66,48 @@ export default function PdfMerge() {
     setIsProcessing(true);
     setProgress(0);
 
+    let mergedDoc: Awaited<ReturnType<typeof mergePdfs>> | null = null;
+    const loadedDocs: Awaited<ReturnType<typeof loadPdf>>[] = [];
+
     try {
-      toast.info('Starting merge process...');
-      const { PDFDocument } = await import('pdf-lib');
-      const mergedPdf = await PDFDocument.create();
+      toast.info('Loading PDF files...');
       let pageCount = 0;
 
       for (let i = 0; i < files.length; i++) {
-        setProgress(((i + 1) / (files.length + 1)) * 80);
-        toast.info(`Processing file ${i + 1} of ${files.length}: ${files[i].name}`);
-        
+        const currentFile = files[i];
+        setProgress(((i + 1) / (files.length + 3)) * 60);
+        toast.info(`Processing ${currentFile.name}`);
+
         try {
-          const fileBytes = await files[i].arrayBuffer();
-          const pdf = await PDFDocument.load(fileBytes);
-          const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-          
-          pages.forEach((page) => {
-            mergedPdf.addPage(page);
-            pageCount++;
-          });
-        } catch (error) {
-          console.error(`Error processing ${files[i].name}:`, error);
-          toast.error(`Failed to process ${files[i].name}. Skipping...`);
+          const fileBytes = await currentFile.arrayBuffer();
+          const doc = await loadPdf(fileBytes, { sourceName: currentFile.name });
+          loadedDocs.push(doc);
+          pageCount += doc.pages.length;
+        } catch (loadError) {
+          console.error(`Error processing ${currentFile.name}:`, loadError);
+          toast.error(`Failed to process ${currentFile.name}. Skipping...`);
         }
       }
 
-      setProgress(90);
+      if (!loadedDocs.length) {
+        throw new Error('Unable to load any of the selected PDFs');
+      }
+
+      setProgress(80);
       toast.info('Creating merged PDF...');
-      const mergedPdfBytes = await mergedPdf.save();
+      mergedDoc = await mergePdfs(loadedDocs);
       setTotalPages(pageCount);
-      
+
+      const exported = await exportPdf(mergedDoc, { asBlob: true });
+      const blob = exported instanceof Blob
+        ? exported
+        : new Blob([exported], { type: 'application/pdf' });
+
       setProgress(95);
-      const blob = new Blob([mergedPdfBytes as any], { type: 'application/pdf' });
-      
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = files.length === 1 
+      a.download = files.length === 1
         ? files[0].name.replace('.pdf', '_merged.pdf')
         : 'merged.pdf';
       document.body.appendChild(a);
@@ -128,6 +133,10 @@ export default function PdfMerge() {
       
       toast.error(errorMessage);
     } finally {
+      loadedDocs.forEach((doc) => releasePdf(doc));
+      if (mergedDoc) {
+        releasePdf(mergedDoc);
+      }
       setIsProcessing(false);
       setTimeout(() => setProgress(0), 2000);
     }
