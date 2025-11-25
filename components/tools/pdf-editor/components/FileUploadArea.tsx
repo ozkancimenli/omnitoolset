@@ -10,6 +10,8 @@ interface FileUploadAreaProps {
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onUploadAreaClick: (e: React.MouseEvent<HTMLDivElement>, handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void) => void;
   onUploadAreaKeyDown: (e: React.KeyboardEvent<HTMLDivElement>, fileInputRef: React.RefObject<HTMLInputElement | null>) => void;
+  onQuickStart?: () => void;
+  quickStartLoading?: boolean;
 }
 
 export const FileUploadArea: React.FC<FileUploadAreaProps> = memo(({
@@ -19,6 +21,8 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = memo(({
   onDragOver,
   onUploadAreaClick,
   onUploadAreaKeyDown,
+  onQuickStart,
+  quickStartLoading,
 }) => {
 
   return (
@@ -36,6 +40,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = memo(({
       >
         <input
           ref={fileInputRef}
+          id="pdf-file-input"
           type="file"
           accept=".pdf,application/pdf"
           onChange={(e) => {
@@ -67,6 +72,22 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = memo(({
             <span>100% Free • No Registration • Secure</span>
           </div>
         </div>
+
+        {onQuickStart && (
+          <div className="mt-10 flex flex-col items-center gap-2">
+            <button
+              type="button"
+              onClick={onQuickStart}
+              disabled={quickStartLoading}
+              className="px-6 py-3 rounded-full bg-gradient-to-r from-slate-900 to-indigo-900 text-white font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {quickStartLoading ? 'Preparing editor…' : 'Start with demo PDF'}
+            </button>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Loads a ready-to-edit sample PDF instantly.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

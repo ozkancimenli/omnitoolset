@@ -41,78 +41,20 @@ export function useFileHandlers(options: UseFileHandlersOptions) {
     loadPDF,
   } = options;
 
-  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (!selectedFile) {
-      if (fileInputRef.current?.files?.[0]) {
-        const directFile = fileInputRef.current.files[0];
-        const syntheticEvent = {
-          target: { files: fileInputRef.current.files },
-        } as React.ChangeEvent<HTMLInputElement>;
-        return handleFileSelect(syntheticEvent);
-      }
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      return;
-    }
-    
-    try {
-      const validation = validatePDFFile(selectedFile);
-      if (!validation.valid) {
-        toast.error(validation.error || 'Invalid file');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-        return;
-      }
-      
-      // Cleanup previous resources
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-        setPdfUrl(null);
-      }
-      
-      // Reset state
-      setAnnotations([]);
-      setHistory([]);
-      setHistoryIndex(-1);
-      setPageNum(1);
-      setIsEditable(true);
-      setZoom(1);
-      setPdfTextRuns({});
-      setPdfTextItems({});
-      setTextRunsCache({});
-      setPdfUrl(null);
-      setNumPages(0);
-      setErrorState(null);
-      
-      setFile(selectedFile);
-      toast.info('Loading PDF...');
-      
-      try {
-        await loadPDF(selectedFile);
-      } catch (error) {
-        logError(error as Error, 'handleFileSelect loadPDF', { fileName: selectedFile.name });
-        toast.error('Failed to load PDF. Please try again.');
-        setFile(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-      }
-    } catch (error) {
-      logError(error as Error, 'handleFileSelect', { fileName: selectedFile.name });
-      toast.error('Error processing file. Please try again.');
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      setFile(null);
-    }
+  const resetEditorState = useCallback(() => {
+    setAnnotations([]);
+    setHistory([]);
+    setHistoryIndex(-1);
+    setPageNum(1);
+    setIsEditable(true);
+    setZoom(1);
+    setPdfTextRuns({});
+    setPdfTextItems({});
+    setTextRunsCache({});
+    setPdfUrl(null);
+    setNumPages(0);
+    setErrorState(null);
   }, [
-    fileInputRef,
-    pdfUrl,
-    setFile,
-    setPdfUrl,
     setAnnotations,
     setHistory,
     setHistoryIndex,
@@ -122,10 +64,56 @@ export function useFileHandlers(options: UseFileHandlersOptions) {
     setPdfTextRuns,
     setPdfTextItems,
     setTextRunsCache,
+    setPdfUrl,
     setNumPages,
     setErrorState,
-    loadPDF,
   ]);
+
+  const cleanupPreviousUrl = useCallback(() => {
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl);
+    }
+  }, [pdfUrl]);
+
+  const loadFileDirect = useCallback(async (file: File): Promise<boolean> => {
+    const validation = validatePDFFile(file);
+    if (!validation.valid) {
+      toast.error(validation.error || 'Invalid file');
+      return false;
+    }
+
+    cleanupPreviousUrl();
+    resetEditorState();
+
+    setFile(file);
+    toast.info('Loading PDF...');
+
+    try {
+      await loadPDF(file);
+      return true;
+    } catch (error) {
+      logError(error as Error, 'loadFileDirect loadPDF', { fileName: file.name });
+      toast.error('Failed to load PDF. Please try again.');
+      setFile(null);
+      return false;
+    }
+  }, [cleanupPreviousUrl, resetEditorState, setFile, loadPDF]);
+
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] || fileInputRef.current?.files?.[0];
+    if (!selectedFile) {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
+
+    await loadFileDirect(selectedFile);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [fileInputRef, loadFileDirect]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -141,71 +129,14 @@ export function useFileHandlers(options: UseFileHandlersOptions) {
       toast.warning('No file dropped');
       return;
     }
-    
-    try {
-      const validation = validatePDFFile(droppedFile);
-      if (!validation.valid) {
-        toast.error(validation.error || 'Invalid file');
-        return;
-      }
-      
-      // Cleanup previous resources
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-        setPdfUrl(null);
-      }
-      
-      // Reset state
-      setAnnotations([]);
-      setHistory([]);
-      setHistoryIndex(-1);
-      setPageNum(1);
-      setIsEditable(true);
-      setZoom(1);
-      setPdfTextRuns({});
-      setPdfTextItems({});
-      setTextRunsCache({});
-      setPdfUrl(null);
-      setNumPages(0);
-      setErrorState(null);
-      
-      setFile(droppedFile);
-      toast.info('Loading PDF...');
-      
-      try {
-        await loadPDF(droppedFile);
-      } catch (error) {
-        logError(error as Error, 'handleDrop loadPDF', { fileName: droppedFile.name });
-        toast.error('Failed to load PDF. Please try again.');
-        setFile(null);
-      }
-    } catch (error) {
-      logError(error as Error, 'handleDrop', { fileName: droppedFile.name });
-      toast.error('Error processing dropped file. Please try again.');
-      setFile(null);
-    }
-  }, [
-    pdfUrl,
-    setFile,
-    setPdfUrl,
-    setAnnotations,
-    setHistory,
-    setHistoryIndex,
-    setPageNum,
-    setIsEditable,
-    setZoom,
-    setPdfTextRuns,
-    setPdfTextItems,
-    setTextRunsCache,
-    setNumPages,
-    setErrorState,
-    loadPDF,
-  ]);
+
+    await loadFileDirect(droppedFile);
+  }, [loadFileDirect]);
 
   return {
     handleFileSelect,
     handleDragOver,
     handleDrop,
+    loadFileDirect,
   };
 }
-

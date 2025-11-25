@@ -39,6 +39,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [processingMessage, setProcessingMessage] = useState('');
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [pageNum, setPageNum] = useState(1);
   const [numPages, setNumPages] = useState(0);
   // Use annotations hook
@@ -671,7 +672,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   }, [loadPDFFromHook]);
 
   // Use file handlers hook
-  const { handleFileSelect, handleDragOver, handleDrop } = useFileHandlers({
+  const { handleFileSelect, handleDragOver, handleDrop, loadFileDirect } = useFileHandlers({
     fileInputRef,
     pdfUrl,
     setFile,
@@ -690,6 +691,65 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     loadPDF,
   });
   
+
+  const startInstantEdit = useCallback(async () => {
+    if (isProcessing || isDemoLoading) return;
+
+    try {
+      setIsDemoLoading(true);
+      const pdfDoc = await PDFDocument.create();
+      const page = pdfDoc.addPage([612, 792]);
+      const { height } = page.getSize();
+      const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+      const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const margin = 72;
+
+      page.drawText('OmniPDF Demo Document', {
+        x: margin,
+        y: height - margin,
+        size: 24,
+        font: titleFont,
+        color: rgb(36 / 255, 33 / 255, 69 / 255),
+      });
+
+      page.drawText('This sample PDF is ready to edit. Try selecting text, drawing, or adding annotations.', {
+        x: margin,
+        y: height - margin - 40,
+        size: 14,
+        font: bodyFont,
+        color: rgb(60 / 255, 60 / 255, 60 / 255),
+        maxWidth: 468,
+        lineHeight: 18,
+      });
+
+      page.drawText('Everything runs locally in your browser for privacy and speed.', {
+        x: margin,
+        y: height - margin - 70,
+        size: 12,
+        font: bodyFont,
+        color: rgb(80 / 255, 80 / 255, 80 / 255),
+      });
+
+      const pdfBytes = await pdfDoc.save();
+      const demoBuffer = new ArrayBuffer(pdfBytes.byteLength);
+      new Uint8Array(demoBuffer).set(pdfBytes);
+      const demoBlob = new Blob([demoBuffer], { type: 'application/pdf' });
+      const demoFile = new File([demoBlob], `omnipdf-demo-${Date.now()}.pdf`, {
+        type: 'application/pdf',
+        lastModified: Date.now(),
+      });
+
+      const loaded = await loadFileDirect(demoFile);
+      if (loaded) {
+        toast.success('Demo PDF ready! Start editing.');
+      }
+    } catch (error) {
+      logError(error as Error, 'startInstantEdit');
+      toast.error('Could not create demo PDF. Please upload your file.');
+    } finally {
+      setIsDemoLoading(false);
+    }
+  }, [isProcessing, isDemoLoading, loadFileDirect]);
 
   useEffect(() => {
     if (!file) {
@@ -1438,6 +1498,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
           onDragOver={handleDragOver}
           onUploadAreaClick={handleUploadAreaClick}
           onUploadAreaKeyDown={handleUploadAreaKeyDown}
+          onQuickStart={startInstantEdit}
+          quickStartLoading={isDemoLoading || isProcessing}
         />
       )}
 
