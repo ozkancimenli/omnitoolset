@@ -82,6 +82,33 @@ function persistDocument(source: PDFDocument, options?: LoadPdfOptions & { reuse
   };
 }
 
+function resolvePageIndices(doc: PdfDocument, pageIds: string[]): number[] {
+  const indexMap = new Map(doc.pages.map((page) => [page.id, page.index]));
+  const indices: number[] = [];
+  pageIds.forEach((id) => {
+    const idx = indexMap.get(id);
+    if (typeof idx === 'number') {
+      indices.push(idx);
+    }
+  });
+  if (!indices.length) {
+    throw new Error('No matching page ids found in the document');
+  }
+  return indices;
+}
+
+async function buildDocumentFromPageIndices(
+  sourceDoc: PdfDocument,
+  pageIndices: number[],
+  options?: LoadPdfOptions & { reuseId?: string }
+): Promise<PdfDocument> {
+  const sourceHandle = getPdfHandle(sourceDoc.id);
+  const target = await PDFDocument.create();
+  const copiedPages = await target.copyPages(sourceHandle, pageIndices);
+  copiedPages.forEach((page) => target.addPage(page));
+  return persistDocument(target, options);
+}
+
 function toUint8Array(input: ArrayBuffer | Uint8Array): Uint8Array {
   return input instanceof Uint8Array ? input : new Uint8Array(input);
 }
@@ -143,11 +170,20 @@ export async function deletePages(doc: PdfDocument, pageIds: string[]): Promise<
   if (!pageIds.length) {
     return doc;
   }
-  const pagesToKeep = doc.pages.filter((page) => !pageIds.includes(page.id)).map((page) => page.id);
+  const pagesToKeep = doc.pages.filter((page) => !pageIds.includes(page.id));
   if (!pagesToKeep.length) {
     throw new Error('Cannot delete all pages from a document');
   }
-  return reorderPages(doc, pagesToKeep);
+  const indices = pagesToKeep.map((page) => page.index);
+  return buildDocumentFromPageIndices(doc, indices, { reuseId: doc.id, sourceName: doc.sourceName });
+}
+
+export async function extractPages(doc: PdfDocument, pageIds: string[]): Promise<PdfDocument> {
+  if (!pageIds.length) {
+    throw new Error('extractPages requires at least one page id');
+  }
+  const indices = resolvePageIndices(doc, pageIds);
+  return buildDocumentFromPageIndices(doc, indices, { sourceName: doc.sourceName });
 }
 
 export function rotatePage(doc: PdfDocument, pageId: string, rotation: PdfRotation): PdfDocument {
