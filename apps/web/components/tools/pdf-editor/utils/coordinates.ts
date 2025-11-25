@@ -7,8 +7,8 @@ export interface Viewport {
 }
 
 /**
- * Convert mouse event coordinates to PDF coordinates
- * Handles coordinate system conversion (canvas Y=0 at top, PDF Y=0 at bottom)
+ * Convert mouse event coordinates to canvas-space coordinates (origin at top-left)
+ * The returned values match how annotations/text runs are stored/rendered.
  */
 export const getCanvasCoordinates = (
   e: React.MouseEvent<HTMLCanvasElement>,
@@ -23,16 +23,14 @@ export const getCanvasCoordinates = (
   const clickX = e.clientX - rect.left;
   const clickY = e.clientY - rect.top;
   
-  // Convert to PDF coordinates using viewport
+  // Convert to canvas coordinates scaled by viewport size (no Y flip)
   if (viewportRef.current) {
     const viewport = viewportRef.current;
-    // Canvas display size (rect.width/height) matches viewport size
-    const pdfX = (clickX / rect.width) * viewport.width;
-    // PDF Y=0 is at bottom, Canvas Y=0 is at top - flip Y coordinate
-    const pdfY = viewport.height - ((clickY / rect.height) * viewport.height);
-    return { x: pdfX, y: pdfY };
+    const canvasX = (clickX / rect.width) * viewport.width;
+    const canvasY = (clickY / rect.height) * viewport.height;
+    return { x: canvasX, y: canvasY };
   }
-  
+
   // Fallback: use device pixel ratio (should not happen if viewportRef is set)
   const devicePixelRatio = window.devicePixelRatio || 1;
   const scaleX = (canvas.width / devicePixelRatio) / rect.width;
@@ -42,4 +40,3 @@ export const getCanvasCoordinates = (
     y: (e.clientY - rect.top) * scaleY
   };
 };
-
