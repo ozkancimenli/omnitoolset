@@ -12,6 +12,7 @@ interface CanvasContainerProps {
   onMouseMove: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   onMouseUp: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   onContextMenu: (e: React.MouseEvent<HTMLCanvasElement>) => void;
+  onMouseLeave?: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   children?: React.ReactNode;
   isPanning?: boolean;
   spacePressed?: boolean;
@@ -27,6 +28,7 @@ export const CanvasContainer: React.FC<CanvasContainerProps> = memo(({
   onMouseMove,
   onMouseUp,
   onContextMenu,
+  onMouseLeave,
   isPanning = false,
   spacePressed = false,
   onWheel,
@@ -64,6 +66,7 @@ export const CanvasContainer: React.FC<CanvasContainerProps> = memo(({
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUp}
           onContextMenu={onContextMenu}
+          onMouseLeave={onMouseLeave}
           className="block max-w-full h-auto"
           style={{ 
             cursor: isPanning || spacePressed ? 'grabbing' : tool ? 'crosshair' : selectedAnnotation ? 'move' : 'default', 

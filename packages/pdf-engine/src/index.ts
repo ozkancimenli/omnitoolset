@@ -1,4 +1,4 @@
-import { PDFDocument, degrees } from 'pdf-lib';
+import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
 import type {
   ExportOptions,
   LoadPdfOptions,
@@ -6,9 +6,15 @@ import type {
   PdfMetadata,
   PdfPage,
   PdfRotation,
+  PdfTextRun,
+  TextFormat,
 } from './types';
+import { extractTextRunsFromPage } from './textExtraction';
+import { loadPdfJs } from './pdfjs';
 
 const pdfStore = new Map<string, PDFDocument>();
+const pdfBytesStore = new Map<string, Uint8Array>();
+const textIndexStore = new Map<string, Map<number, PdfTextRun[]>>();
 
 const ORDERED_ROTATIONS: PdfRotation[] = [0, 90, 180, 270];
 
@@ -71,15 +77,43 @@ function snapshotPages(source: PDFDocument, docId: string): PdfPage[] {
   });
 }
 
-function persistDocument(source: PDFDocument, options?: LoadPdfOptions & { reuseId?: string }): PdfDocument {
+type PersistOptions = LoadPdfOptions & { reuseId?: string; initialBytes?: Uint8Array };
+
+function persistDocument(source: PDFDocument, options?: PersistOptions): PdfDocument {
   const docId = options?.reuseId ?? options?.id ?? randomId('pdf');
   pdfStore.set(docId, source);
+  if (options?.initialBytes) {
+    pdfBytesStore.set(docId, options.initialBytes);
+  } else {
+    pdfBytesStore.delete(docId);
+  }
+  textIndexStore.delete(docId);
   return {
     id: docId,
     pages: snapshotPages(source, docId),
     metadata: extractMetadata(source),
     sourceName: options?.sourceName,
   };
+}
+
+async function getPdfBytes(docId: string): Promise<Uint8Array> {
+  const cached = pdfBytesStore.get(docId);
+  if (cached) return cached;
+  const pdf = getPdfHandle(docId);
+  const bytes = await pdf.save();
+  const buffer = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  pdfBytesStore.set(docId, buffer);
+  return buffer;
+}
+
+function invalidateTextCache(docId: string, pageNumber?: number): void {
+  const cache = textIndexStore.get(docId);
+  if (!cache) return;
+  if (typeof pageNumber === 'number') {
+    cache.delete(pageNumber);
+  } else {
+    textIndexStore.delete(docId);
+  }
 }
 
 function resolvePageIndices(doc: PdfDocument, pageIds: string[]): number[] {
@@ -116,7 +150,7 @@ function toUint8Array(input: ArrayBuffer | Uint8Array): Uint8Array {
 export async function loadPdf(input: ArrayBuffer | Uint8Array, options?: LoadPdfOptions): Promise<PdfDocument> {
   const bytes = toUint8Array(input);
   const pdfDoc = await PDFDocument.load(bytes, { ignoreEncryption: false });
-  return persistDocument(pdfDoc, options);
+  return persistDocument(pdfDoc, { ...options, initialBytes: bytes });
 }
 
 export async function mergePdfs(documents: PdfDocument[]): Promise<PdfDocument> {
@@ -131,7 +165,8 @@ export async function mergePdfs(documents: PdfDocument[]): Promise<PdfDocument> 
     copiedPages.forEach((page) => merged.addPage(page));
   }
 
-  return persistDocument(merged);
+  const persisted = persistDocument(merged);
+  return persisted;
 }
 
 export async function reorderPages(doc: PdfDocument, newOrder: string[]): Promise<PdfDocument> {
@@ -163,7 +198,10 @@ export async function reorderPages(doc: PdfDocument, newOrder: string[]): Promis
   const reordered = await PDFDocument.create();
   const pages = await reordered.copyPages(pdf, resolvedIndices);
   pages.forEach((page) => reordered.addPage(page));
-  return persistDocument(reordered, { sourceName: doc.sourceName });
+  const updated = persistDocument(reordered, { sourceName: doc.sourceName });
+  invalidateTextCache(updated.id);
+  pdfBytesStore.delete(updated.id);
+  return updated;
 }
 
 export async function deletePages(doc: PdfDocument, pageIds: string[]): Promise<PdfDocument> {
@@ -175,7 +213,10 @@ export async function deletePages(doc: PdfDocument, pageIds: string[]): Promise<
     throw new Error('Cannot delete all pages from a document');
   }
   const indices = pagesToKeep.map((page) => page.index);
-  return buildDocumentFromPageIndices(doc, indices, { reuseId: doc.id, sourceName: doc.sourceName });
+  const updated = await buildDocumentFromPageIndices(doc, indices, { reuseId: doc.id, sourceName: doc.sourceName });
+  invalidateTextCache(updated.id);
+  pdfBytesStore.delete(updated.id);
+  return updated;
 }
 
 export async function extractPages(doc: PdfDocument, pageIds: string[]): Promise<PdfDocument> {
@@ -183,7 +224,8 @@ export async function extractPages(doc: PdfDocument, pageIds: string[]): Promise
     throw new Error('extractPages requires at least one page id');
   }
   const indices = resolvePageIndices(doc, pageIds);
-  return buildDocumentFromPageIndices(doc, indices, { sourceName: doc.sourceName });
+  const extracted = await buildDocumentFromPageIndices(doc, indices, { sourceName: doc.sourceName });
+  return extracted;
 }
 
 export function rotatePage(doc: PdfDocument, pageId: string, rotation: PdfRotation): PdfDocument {
@@ -194,7 +236,178 @@ export function rotatePage(doc: PdfDocument, pageId: string, rotation: PdfRotati
   }
   const page = pdf.getPages()[pageMeta.index];
   page.setRotation(degrees(rotation));
-  return persistDocument(pdf, { reuseId: doc.id, sourceName: doc.sourceName });
+  const updated = persistDocument(pdf, { reuseId: doc.id, sourceName: doc.sourceName });
+  invalidateTextCache(updated.id);
+  pdfBytesStore.delete(updated.id);
+  return updated;
+}
+
+export async function getTextRuns(doc: PdfDocument, pageNumber: number): Promise<PdfTextRun[]> {
+  if (pageNumber < 1 || pageNumber > doc.pages.length) {
+    throw new Error(`Page ${pageNumber} is out of range`);
+  }
+  let pageCache = textIndexStore.get(doc.id);
+  if (!pageCache) {
+    pageCache = new Map();
+    textIndexStore.set(doc.id, pageCache);
+  }
+  const cached = pageCache.get(pageNumber);
+  if (cached) {
+    return cached;
+  }
+
+  const hasWindow = typeof globalThis !== 'undefined' && typeof (globalThis as any).window !== 'undefined';
+  const context: 'browser' | 'node' = hasWindow ? 'browser' : 'node';
+  const pdfjs = await loadPdfJs(context);
+  const bytes = await getPdfBytes(doc.id);
+  const loadingTask = pdfjs.getDocument({ data: bytes });
+  const pdf = await loadingTask.promise;
+  const page = await pdf.getPage(pageNumber);
+  const viewport = page.getViewport({ scale: 1 });
+  const runs = await extractTextRunsFromPage(page, pageNumber, { viewport });
+  pageCache.set(pageNumber, runs);
+  return runs;
+}
+
+function resolveFontName(fontName?: string, format?: TextFormat): StandardFonts {
+  const base = (fontName || '').toLowerCase();
+  const bold = format?.fontWeight === 'bold';
+  const italic = format?.fontStyle === 'italic';
+
+  const family = base.includes('times')
+    ? 'times'
+    : base.includes('courier')
+      ? 'courier'
+      : base.includes('symbol')
+        ? 'symbol'
+        : base.includes('zapfdingbats')
+          ? 'zapf'
+          : 'helvetica';
+
+  if (family === 'times') {
+    if (bold && italic) return StandardFonts.TimesRomanBoldItalic;
+    if (bold) return StandardFonts.TimesRomanBold;
+    if (italic) return StandardFonts.TimesRomanItalic;
+    return StandardFonts.TimesRoman;
+  }
+  if (family === 'courier') {
+    if (bold && italic) return StandardFonts.CourierBoldOblique;
+    if (bold) return StandardFonts.CourierBold;
+    if (italic) return StandardFonts.CourierOblique;
+    return StandardFonts.Courier;
+  }
+  if (family === 'symbol') return StandardFonts.Symbol;
+  if (family === 'zapf') return StandardFonts.ZapfDingbats;
+
+  if (bold && italic) return StandardFonts.HelveticaBoldOblique;
+  if (bold) return StandardFonts.HelveticaBold;
+  if (italic) return StandardFonts.HelveticaOblique;
+  return StandardFonts.Helvetica;
+}
+
+function parseRgb(color?: string) {
+  if (!color) return rgb(0, 0, 0);
+  const hex = color.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
+  return rgb(r, g, b);
+}
+
+export async function formatTextRuns(
+  doc: PdfDocument,
+  pageNumber: number,
+  runIds: string[],
+  format: TextFormat
+): Promise<PdfDocument> {
+  if (!runIds.length) {
+    return doc;
+  }
+  if (!format || Object.keys(format).length === 0) {
+    return doc;
+  }
+
+  const pdf = getPdfHandle(doc.id);
+  const page = pdf.getPages()[pageNumber - 1];
+  if (!page) {
+    throw new Error(`Page ${pageNumber} not found`);
+  }
+
+  const runs = await getTextRuns(doc, pageNumber);
+  const targetRuns = runs.filter((run) => runIds.includes(run.id));
+  if (!targetRuns.length) {
+    throw new Error('No matching text runs found');
+  }
+
+  const pageHeight = page.getHeight();
+  for (const run of targetRuns) {
+    const pdfBaselineY = pageHeight - run.y;
+    const fontSize = format.fontSize || run.fontSize || 12;
+    const font = await pdf.embedFont(resolveFontName(format.fontFamily || run.fontName, format));
+    const textWidth = font.widthOfTextAtSize(run.text, fontSize);
+    let drawX = run.x;
+    if (format.textAlign === 'center') {
+      drawX = run.x - textWidth / 2;
+    } else if (format.textAlign === 'right') {
+      drawX = run.x - textWidth;
+    }
+
+    page.drawRectangle({
+      x: drawX - 1,
+      y: pdfBaselineY - run.height - 1,
+      width: textWidth + 2,
+      height: run.height + 2,
+      color: rgb(1, 1, 1),
+    });
+
+    page.drawText(run.text, {
+      x: drawX,
+      y: pdfBaselineY - run.height,
+      size: fontSize,
+      font,
+      color: parseRgb(format.color),
+    });
+  }
+
+  const updated = persistDocument(pdf, { reuseId: doc.id, sourceName: doc.sourceName });
+  invalidateTextCache(updated.id, pageNumber);
+  pdfBytesStore.delete(updated.id);
+  return updated;
+}
+
+export async function deleteTextRuns(
+  doc: PdfDocument,
+  pageNumber: number,
+  runIds: string[]
+): Promise<PdfDocument> {
+  if (!runIds.length) {
+    return doc;
+  }
+
+  const pdf = getPdfHandle(doc.id);
+  const runs = await getTextRuns(doc, pageNumber);
+  const targetRuns = runs.filter((run) => runIds.includes(run.id));
+  if (!targetRuns.length) {
+    return doc;
+  }
+
+  const page = pdf.getPages()[pageNumber - 1];
+  const pageHeight = page.getHeight();
+  for (const run of targetRuns) {
+    const pdfBaselineY = pageHeight - run.y;
+    page.drawRectangle({
+      x: run.x - 1,
+      y: pdfBaselineY - run.height - 1,
+      width: run.width + 2,
+      height: run.height + 2,
+      color: rgb(1, 1, 1),
+    });
+  }
+
+  const updated = persistDocument(pdf, { reuseId: doc.id, sourceName: doc.sourceName });
+  invalidateTextCache(updated.id, pageNumber);
+  pdfBytesStore.delete(updated.id);
+  return updated;
 }
 
 export async function exportPdf(doc: PdfDocument, options?: ExportOptions): Promise<Blob | ArrayBuffer> {
@@ -210,6 +423,8 @@ export async function exportPdf(doc: PdfDocument, options?: ExportOptions): Prom
 
 export function releasePdf(doc: PdfDocument): void {
   pdfStore.delete(doc.id);
+  pdfBytesStore.delete(doc.id);
+  textIndexStore.delete(doc.id);
 }
 
 export type {
@@ -217,6 +432,8 @@ export type {
   PdfMetadata,
   PdfPage,
   PdfRotation,
+  PdfTextRun,
   LoadPdfOptions,
   ExportOptions,
+  TextFormat,
 } from './types';

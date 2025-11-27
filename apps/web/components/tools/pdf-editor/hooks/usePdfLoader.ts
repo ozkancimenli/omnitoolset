@@ -1,6 +1,7 @@
 // PDF Loader Hook
 import { useCallback, useRef } from 'react';
 import { PDFDocument } from 'pdf-lib';
+import { loadPdf as engineLoadPdf, type PdfDocument as EnginePdfDocument } from '@omni/pdf-engine';
 import { toast } from '@/components/Toast';
 import { PdfEngine } from '../../pdf-engine';
 import { logError, measurePerformance, PDFProcessingError } from '../utils';
@@ -21,6 +22,7 @@ interface UsePdfLoaderProps {
   pdfDocRef: React.MutableRefObject<any>;
   pdfLibDocRef: React.MutableRefObject<PDFDocument | null>;
   pdfEngineRef: React.MutableRefObject<PdfEngine | null>;
+  engineDocRef: React.MutableRefObject<EnginePdfDocument | null>;
   renderPage: (pageNumber: number) => Promise<void>;
   extractTextLayer: (pageNumber: number) => Promise<void>;
   autoSaveEnabled: boolean;
@@ -42,6 +44,7 @@ export const usePdfLoader = ({
   pdfDocRef,
   pdfLibDocRef,
   pdfEngineRef,
+  engineDocRef,
   renderPage,
   extractTextLayer,
   autoSaveEnabled,
@@ -151,6 +154,13 @@ export const usePdfLoader = ({
         setProcessingMessage('Loading PDF for editing...');
         const arrayBufferForEditing = await finalFile.arrayBuffer();
         const fileBytes = new Uint8Array(arrayBufferForEditing);
+
+        try {
+          engineDocRef.current = await engineLoadPdf(arrayBufferForEditing);
+        } catch (engineError) {
+          logError(engineError as Error, 'engine loadPdf (editing buffer)');
+          engineDocRef.current = null;
+        }
         
         try {
           const pdfLibDoc = await PDFDocument.load(fileBytes, {
@@ -273,4 +283,3 @@ export const usePdfLoader = ({
 
   return { loadPDF };
 };
-

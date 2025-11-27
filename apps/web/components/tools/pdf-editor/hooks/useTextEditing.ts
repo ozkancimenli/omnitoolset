@@ -2,15 +2,17 @@
 import { useState, useRef, useCallback } from 'react';
 import { toast } from '@/components/Toast';
 import type { PdfTextRun, PdfTextItem } from '../types';
+import { getTextRuns as engineGetTextRuns, type PdfDocument as EnginePdfDocument } from '@omni/pdf-engine';
 import { mapTextItemsToRuns, findTextRunAtPosition } from '../utils/textExtraction';
 
 interface UseTextEditingProps {
   pdfDocRef: React.MutableRefObject<any>;
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
   pageNum: number;
+  engineDocRef: React.MutableRefObject<EnginePdfDocument | null>;
 }
 
-export const useTextEditing = ({ pdfDocRef, canvasRef, pageNum }: UseTextEditingProps) => {
+export const useTextEditing = ({ pdfDocRef, canvasRef, pageNum, engineDocRef }: UseTextEditingProps) => {
   const [pdfTextItems, setPdfTextItems] = useState<Record<number, PdfTextItem[]>>({});
   const [pdfTextRuns, setPdfTextRuns] = useState<Record<number, PdfTextRun[]>>({});
   const [selectedTextRun, setSelectedTextRun] = useState<string | null>(null);
@@ -22,6 +24,50 @@ export const useTextEditing = ({ pdfDocRef, canvasRef, pageNum }: UseTextEditing
 
   // Extract text layer from PDF - IMPROVED: Better coordinate conversion like Sejda
   const extractTextLayer = useCallback(async (pageNumber: number, viewport?: any) => {
+    if (engineDocRef.current) {
+      try {
+        const engineRuns = await engineGetTextRuns(engineDocRef.current, pageNumber);
+        const engineItems: PdfTextItem[] = engineRuns.map((run, index) => ({
+          str: run.text,
+          x: run.x,
+          y: run.y,
+          width: run.width,
+          height: run.height,
+          fontName: run.fontName,
+          fontSize: run.fontSize,
+          transform: [1, 0, 0, 1, run.x, run.y],
+          page: pageNumber,
+          dir: 'ltr',
+          hasEOL: false,
+        }));
+        setPdfTextItems((prev) => ({ ...prev, [pageNumber]: engineItems }));
+
+        const individualRuns: PdfTextRun[] = engineItems.map((item, index) => ({
+          id: `engine-item-${pageNumber}-${index}`,
+          text: item.str,
+          x: item.x,
+          y: item.y,
+          width: item.width,
+          height: item.height,
+          fontSize: item.fontSize,
+          fontName: item.fontName,
+          page: pageNumber,
+          startIndex: index,
+          endIndex: index,
+        }));
+        const groupedRuns = mapTextItemsToRuns(engineItems, pageNumber);
+        const allRuns = [...individualRuns, ...groupedRuns];
+        setPdfTextRuns((prev) => ({ ...prev, [pageNumber]: allRuns }));
+        setTextRunsCache((prev) => ({
+          ...prev,
+          [pageNumber]: { runs: allRuns, timestamp: Date.now() },
+        }));
+        return;
+      } catch (engineError) {
+        console.error('Engine text extraction failed, falling back:', engineError);
+      }
+    }
+
     if (!pdfDocRef.current) {
       console.log('[Edit] extractTextLayer: No PDF document');
       return;
@@ -103,7 +149,7 @@ export const useTextEditing = ({ pdfDocRef, canvasRef, pageNum }: UseTextEditing
     } catch (error) {
       console.error('Error extracting text layer:', error);
     }
-  }, [pdfDocRef]);
+  }, [engineDocRef, pdfDocRef]);
 
   // Find text run at position - AGGRESSIVE detection
   const findTextRunAtPositionLocal = useCallback((x: number, y: number, pageNumber: number): PdfTextRun | null => {
@@ -135,4 +181,3 @@ export const useTextEditing = ({ pdfDocRef, canvasRef, pageNum }: UseTextEditing
     findTextRunAtPosition: findTextRunAtPositionLocal,
   };
 };
-

@@ -26,6 +26,7 @@ export interface RenderOverlaysOptions {
   tool: string | null;
   selectedTextRun: string | null;
   editingTextRun: string | null;
+  hoveredTextRun: string | null;
   textSelectionStart: { x: number; y: number; runId: string; charIndex: number } | null;
   textSelectionEnd: { x: number; y: number; runId: string; charIndex: number } | null;
   highlightedSearchResults: Array<{ runId: string; startIndex: number; endIndex: number; page: number }>;
@@ -39,6 +40,7 @@ export interface RenderOverlaysOptions {
   highlightColor: string;
   strokeWidth: number;
   hexToRgb: (hex: string) => { r: number; g: number; b: number } | null;
+  showTextGuides: boolean;
   renderAnnotationsUtil: (context: CanvasRenderingContext2D, annotations: Annotation[], viewport: any, strokeColor: string, fillColor: string, highlightColor: string, strokeWidth: number, hexToRgb: (hex: string) => { r: number; g: number; b: number } | null) => void;
   drawSearchHighlights: (context: CanvasRenderingContext2D, highlightedSearchResults: Array<{ runId: string; startIndex: number; endIndex: number; page: number }>, findResults: Array<{ runId: string; startIndex: number; endIndex: number; page: number; text: string }>, currentFindIndex: number, runs: PdfTextRun[], pageNumber: number) => void;
   drawTextSelection: (context: CanvasRenderingContext2D, textSelectionStart: { x: number; y: number; runId: string; charIndex: number }, textSelectionEnd: { x: number; y: number; runId: string; charIndex: number }, runs: PdfTextRun[]) => void;
@@ -166,16 +168,26 @@ export const drawTextRunHighlights = (
   context: CanvasRenderingContext2D,
   runs: PdfTextRun[],
   selectedTextRun: string | null,
-  editingTextRun: string | null
+  editingTextRun: string | null,
+  hoveredTextRun: string | null,
+  showGuides: boolean
 ): void => {
   runs.forEach(run => {
-    if (selectedTextRun === run.id || editingTextRun === run.id) {
+    const isActive = selectedTextRun === run.id || editingTextRun === run.id;
+    const isHovered = hoveredTextRun === run.id;
+    if (showGuides || isActive || isHovered) {
       context.save();
-      context.fillStyle = 'rgba(59, 130, 246, 0.2)'; // Blue highlight
+      context.fillStyle = isActive
+        ? 'rgba(59, 130, 246, 0.25)'
+        : isHovered
+          ? 'rgba(59, 130, 246, 0.18)'
+          : 'rgba(148, 163, 184, 0.15)';
       context.fillRect(run.x, run.y - run.height, run.width, run.height);
-      context.strokeStyle = '#3b82f6';
-      context.lineWidth = 1;
+      context.strokeStyle = isActive ? '#3b82f6' : isHovered ? '#60a5fa' : 'rgba(148, 163, 184, 0.8)';
+      context.lineWidth = isActive ? 1.5 : 0.75;
+      context.setLineDash(isActive ? [] : [4, 4]);
       context.strokeRect(run.x, run.y - run.height, run.width, run.height);
+      context.setLineDash([]);
       context.restore();
     }
   });
@@ -232,6 +244,7 @@ export const renderPageOverlays = (options: RenderOverlaysOptions): void => {
     tool,
     selectedTextRun,
     editingTextRun,
+    hoveredTextRun,
     textSelectionStart,
     textSelectionEnd,
     highlightedSearchResults,
@@ -249,6 +262,7 @@ export const renderPageOverlays = (options: RenderOverlaysOptions): void => {
     drawSearchHighlights,
     drawTextSelection,
     drawBatchSelection,
+    showTextGuides,
     viewport,
   } = options;
 
@@ -256,7 +270,9 @@ export const renderPageOverlays = (options: RenderOverlaysOptions): void => {
   if (pageNumber === pageNum) {
     const runs: PdfTextRun[] = pdfTextRuns[pageNumber] || [];
     
-    // Draw search highlights
+    // Draw text guides and search highlights
+    drawTextRunHighlights(context, runs, selectedTextRun, editingTextRun, hoveredTextRun, showTextGuides);
+
     if (highlightedSearchResults.length > 0) {
       drawSearchHighlights(context, highlightedSearchResults, findResults, currentFindIndex, runs, pageNumber);
     }
@@ -293,7 +309,6 @@ export const renderPageOverlays = (options: RenderOverlaysOptions): void => {
     }
     
     // Draw run highlights
-    drawTextRunHighlights(context, runs, selectedTextRun, editingTextRun);
   }
 };
 
@@ -328,5 +343,3 @@ export const manageRenderCache = (
     }
   }
 };
-
-

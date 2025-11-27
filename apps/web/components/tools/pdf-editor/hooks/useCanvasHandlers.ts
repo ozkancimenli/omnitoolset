@@ -65,6 +65,8 @@ export interface UseCanvasHandlersOptions {
   findCharIndexAtPosition: (x: number, run: PdfTextRun, page: number) => number;
   getSelectedText: (start: { x: number; y: number; runId: string; charIndex: number }, end: { x: number; y: number; runId: string; charIndex: number }, runs: PdfTextRun[]) => string | null;
   viewportRef: React.MutableRefObject<{ width: number; height: number; scale: number } | null>;
+  hoveredTextRun: string | null;
+  setHoveredTextRun: (id: string | null) => void;
 }
 
 export function useCanvasHandlers(options: UseCanvasHandlersOptions) {
@@ -129,6 +131,8 @@ export function useCanvasHandlers(options: UseCanvasHandlersOptions) {
     findCharIndexAtPosition,
     getSelectedText,
     viewportRef,
+    hoveredTextRun,
+    setHoveredTextRun,
   } = options;
 
   const lastClickTimeRef = useRef<number>(0);
@@ -448,6 +452,23 @@ export function useCanvasHandlers(options: UseCanvasHandlersOptions) {
       }
       return;
     }
+
+    if (
+      !isSelectingText &&
+      !isDragging &&
+      !isDrawingFreehand &&
+      !(isDrawingPolygon && (tool === 'polygon' || tool === 'callout')) &&
+      tool !== 'freehand'
+    ) {
+      const hoverCandidate = findTextRunAtPosition(coords.x, coords.y, pageNum);
+      if (hoverCandidate) {
+        if (hoveredTextRun !== hoverCandidate.id) {
+          setHoveredTextRun(hoverCandidate.id);
+        }
+      } else if (hoveredTextRun) {
+        setHoveredTextRun(null);
+      }
+    }
   }, [
     isPanning,
     panStart,
@@ -479,6 +500,9 @@ export function useCanvasHandlers(options: UseCanvasHandlersOptions) {
     setAnnotations,
     setFreehandPath,
     renderPage,
+    isDragging,
+    hoveredTextRun,
+    setHoveredTextRun,
   ]);
 
   const handleCanvasMouseUp = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -562,9 +586,14 @@ export function useCanvasHandlers(options: UseCanvasHandlersOptions) {
     saveToHistory,
   ]);
 
+  const handleCanvasMouseLeave = useCallback(() => {
+    setHoveredTextRun(null);
+  }, [setHoveredTextRun]);
+
   return {
     handleCanvasMouseDown,
     handleCanvasMouseMove,
     handleCanvasMouseUp,
+    handleCanvasMouseLeave,
   };
 }

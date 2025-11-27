@@ -23,6 +23,28 @@ export interface PdfDocument {
   sourceName?: string;
 }
 
+export interface PdfTextRun {
+  id: string;
+  page: number;
+  text: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fontName: string;
+  fontSize: number;
+}
+
+export interface TextFormat {
+  fontWeight?: 'normal' | 'bold';
+  fontStyle?: 'normal' | 'italic';
+  textDecoration?: 'none' | 'underline';
+  fontSize?: number;
+  fontFamily?: string;
+  color?: string;
+  textAlign?: 'left' | 'center' | 'right';
+}
+
 export interface LoadPdfOptions {
   id?: string;
   sourceName?: string;

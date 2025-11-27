@@ -4,6 +4,8 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { toast } from '@/components/Toast';
 import { PdfEngine } from './pdf-engine';
+import type { PdfDocument as EnginePdfDocument } from '@omni/pdf-engine';
+import { releasePdf as releaseEnginePdf, formatTextRuns as engineFormatTextRuns, deleteTextRuns as engineDeleteTextRuns } from '@omni/pdf-engine';
 
 // Import modular components
 import type { PdfEditorProps, ToolType, Annotation, PdfTextItem, PdfTextRun } from './pdf-editor/types';
@@ -29,9 +31,12 @@ import { usePdfLoader, useTextEditing, useZoom, useCanvas, useAnnotations, useDr
 import { loadAutoSave as loadAutoSaveUtil, applyTextTemplate as applyTextTemplateUtil } from './pdf-editor/utils/textTemplates';
 import { handleUploadAreaClick, handleUploadAreaKeyDown } from './pdf-editor/utils/fileUpload';
 import { Toolbar, AIPanel, ComparisonPanel, SocialSharePanel, PerformancePanel, FindReplacePanel, BatchOperationsPanel, ExportOptionsPanel, PageJumpModal, PerformanceDashboard, BinaryAnalysisPanel, RepairPanel, CompressionPanel, OCRPanel, CollaborationPanel, WASMPanel, WorkerPanel, EncryptionPanel, FontPanel, SignaturePanel, OptimizationPanel, CachePanel, TextStatisticsPanel, TextStylesPanel, CloudSyncPanel, PageFeaturesPanel, PageManagerPanel, TemplatesPanel, SettingsPanel, HelpPanel, KeyboardShortcutsPanel, ContextMenu, InlineTextEditor, LayerPanel, HistoryBranchesPanel, StreamProcessingPanel, PdfACompliancePanel, ThumbnailsPanel, TextFormatPanel, TextFormatPanelNew, AnnotationTextEditor, AnnotationsPanel, DownloadBar, FloatingToolbar, LoadingOverlay, FileUploadArea, ErrorStateComponent, StatusNotification, CanvasContainer, PdfTextEditor } from './pdf-editor/components';
+import { InlineTextPalette } from './pdf-editor/components/InlineTextPalette';
 import { RichTextEditor } from './pdf-editor/enhancements/richTextEditor';
 import { useAITextSuggestions } from './pdf-editor/enhancements/aiTextSuggestions';
 import { useMultiCursorEditing } from './pdf-editor/enhancements/multiCursorEditing';
+
+const TEXT_LAYER_REFRESH_INTERVAL = 1000 * 60 * 5; // refresh text layer every 5 minutes per page
 
 export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [file, setFile] = useState<File | null>(null);
@@ -40,6 +45,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [processingProgress, setProcessingProgress] = useState(0);
   const [processingMessage, setProcessingMessage] = useState('');
   const [isDemoLoading, setIsDemoLoading] = useState(false);
+  const [showTextGuides, setShowTextGuides] = useState(true);
+  const [hoveredTextRun, setHoveredTextRun] = useState<string | null>(null);
   const [pageNum, setPageNum] = useState(1);
   const [numPages, setNumPages] = useState(0);
   // Use annotations hook
@@ -422,6 +429,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const textInputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const pdfLibDocRef = useRef<PDFDocument | null>(null);
   const pdfEngineRef = useRef<import('./pdf-engine').PdfEngine | null>(null);
+  const engineDocRef = useRef<EnginePdfDocument | null>(null);
   const textLayerRef = useRef<HTMLDivElement>(null);
 
   // Define getCanvasCoordinates after refs are initialized
@@ -457,7 +465,24 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     pdfDocRef,
     canvasRef,
     pageNum,
+    engineDocRef,
   });
+  const cachedRunsForPage = textRunsCache[pageNum];
+
+  useEffect(() => {
+    if (!file || !pdfDocRef.current) return;
+    const needsRefresh = !cachedRunsForPage || (Date.now() - cachedRunsForPage.timestamp > TEXT_LAYER_REFRESH_INTERVAL);
+    if (!needsRefresh) return;
+    let cancelled = false;
+    extractTextLayer(pageNum).catch((error) => {
+      if (!cancelled) {
+        logError(error as Error, 'auto extract text layer', { page: pageNum });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [file, pageNum, cachedRunsForPage, extractTextLayer]);
 
   // Use PDF loader hook
   const { loadPDF: loadPDFFromHook } = usePdfLoader({
@@ -475,6 +500,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     pdfDocRef,
     pdfLibDocRef,
     pdfEngineRef,
+    engineDocRef,
     renderPage,
     extractTextLayer,
     autoSaveEnabled,
@@ -492,6 +518,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [searchAllPages, setSearchAllPages] = useState(false);
   const [currentFindIndex, setCurrentFindIndex] = useState(-1);
   const editingTextRunObject = editingTextRun ? (pdfTextRuns[pageNum] || []).find(run => run.id === editingTextRun) || null : null;
+  const hoveredTextRunData = hoveredTextRun ? (pdfTextRuns[pageNum] || []).find(run => run.id === hoveredTextRun) || null : null;
   
   // Advanced Text Editor features
   const [showTextStatistics, setShowTextStatistics] = useState(false);
@@ -501,7 +528,82 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   const [useRichTextEditor, setUseRichTextEditor] = useState(false); // Toggle for rich text editor
   const [highlightedSearchResults, setHighlightedSearchResults] = useState<Array<{ runId: string; startIndex: number; endIndex: number; page: number }>>([]);
   const [selectedTextRuns, setSelectedTextRuns] = useState<Set<string>>(new Set());
+  const primarySelectedRun = useMemo(() => {
+    if (selectedTextRuns.size === 0) return null;
+    const runs = pdfTextRuns[pageNum] || [];
+    for (const run of runs) {
+      if (selectedTextRuns.has(run.id)) {
+        return run;
+      }
+    }
+    return null;
+  }, [selectedTextRuns, pdfTextRuns, pageNum]);
+  const paletteRun = primarySelectedRun || hoveredTextRunData;
+  const getActiveTextRuns = useCallback((syncSelection = false): Set<string> | null => {
+    if (selectedTextRuns.size > 0) {
+      return selectedTextRuns;
+    }
+    if (hoveredTextRun) {
+      const single = new Set([hoveredTextRun]);
+      if (syncSelection) {
+        setSelectedTextRuns(single);
+      }
+      return single;
+    }
+    return null;
+  }, [selectedTextRuns, hoveredTextRun]);
+
+  const formatRunsWithEngine = useCallback(
+    async (runIds: Set<string>, format: Parameters<typeof engineFormatTextRuns>[3]) => {
+      if (!engineDocRef.current) return false;
+      try {
+        engineDocRef.current = await engineFormatTextRuns(engineDocRef.current, pageNum, Array.from(runIds), format);
+        await extractTextLayer(pageNum);
+        await renderPage(pageNum);
+        toast.success('Formatting applied');
+        return true;
+      } catch (error) {
+        logError(error as Error, 'engine format runs');
+        toast.error('Failed to format text via engine');
+        return false;
+      }
+    },
+    [engineDocRef, pageNum, extractTextLayer, renderPage]
+  );
+
+  const deleteRunsWithEngine = useCallback(
+    async (runIds: Set<string>) => {
+      if (!engineDocRef.current) return false;
+      try {
+        engineDocRef.current = await engineDeleteTextRuns(engineDocRef.current, pageNum, Array.from(runIds));
+        await extractTextLayer(pageNum);
+        await renderPage(pageNum);
+        setSelectedTextRuns(new Set());
+        toast.success('Text removed');
+        return true;
+      } catch (error) {
+        logError(error as Error, 'engine delete runs');
+        toast.error('Failed to delete text via engine');
+        return false;
+      }
+    },
+    [engineDocRef, pageNum, extractTextLayer, renderPage]
+  );
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+  const [inlinePalettePercent, setInlinePalettePercent] = useState<{ left: number; top: number } | null>(null);
+
+  useEffect(() => {
+    if (!paletteRun || !viewportRef.current) {
+      setInlinePalettePercent(null);
+      return;
+    }
+    const viewport = viewportRef.current;
+    const width = viewport.width || 1;
+    const height = viewport.height || 1;
+    const left = (paletteRun.x / width) * 100;
+    const top = ((paletteRun.y - paletteRun.height) / height) * 100;
+    setInlinePalettePercent({ left, top: Math.max(0, top) });
+  }, [paletteRun, pageNum, zoom, zoomMode]);
   
   const renderCacheRef = useRef<Map<number, { imageData: string; timestamp: number }>>(new Map());
   const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
@@ -765,6 +867,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         pdfEngineRef.current.clear();
         pdfEngineRef.current = null;
       }
+      if (engineDocRef.current) {
+        releaseEnginePdf(engineDocRef.current);
+        engineDocRef.current = null;
+      }
       setNumPages(0);
       setPageThumbnails([]);
     }
@@ -783,6 +889,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         pdfEngineRef.current.clear();
         pdfEngineRef.current = null;
       }
+      if (engineDocRef.current) {
+        releaseEnginePdf(engineDocRef.current);
+        engineDocRef.current = null;
+      }
     };
   }, [file, pdfUrl]);
 
@@ -791,11 +901,25 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
   // Text utilities - using hook and imported functions directly
   const findTextRunAtPosition = findTextRunAtPositionFromHook;
-  
+
   const findCharIndexAtPositionLocal = (x: number, run: PdfTextRun, pageNumber: number): number => {
     if (!canvasRef.current) return 0;
     return findCharIndexAtPosition(x, run, canvasRef.current);
   };
+
+  const handleRefreshTextLayer = useCallback(async () => {
+    if (!file) return;
+    setOperationStatus({ type: 'loading', message: 'Refreshing text layer...', progress: 10 });
+    try {
+      await extractTextLayer(pageNum);
+      toast.success('Text layer updated for this page');
+    } catch (error) {
+      logError(error as Error, 'refresh text layer', { pageNum });
+      toast.error('Unable to refresh text layer. Please try again.');
+    } finally {
+      setOperationStatus(null);
+    }
+  }, [extractTextLayer, file, pageNum]);
 
   const getSelectedTextLocal = getSelectedText;
 
@@ -925,6 +1049,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
         drawSearchHighlights,
         drawTextSelection,
         drawBatchSelection,
+        hoveredTextRun,
+        showTextGuides,
         viewport,
       });
       
@@ -1343,9 +1469,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     handleBatchSelectionFromHook(startX, startY, endX, endY, pageNum, setSelectedAnnotations);
   }, [handleBatchSelectionFromHook, pageNum, setSelectedAnnotations]);
   const removeAnnotation = removeAnnotationFromHook;
-  const applyFormatToBatchTextRuns = useCallback((format: Parameters<typeof applyFormatToBatchTextRunsUtil>[3]) => {
+  const applyFormatToBatchTextRuns = useCallback((format: Parameters<typeof applyFormatToBatchTextRunsUtil>[3], targetRuns?: Set<string>) => {
+    const runsToUse = targetRuns ?? selectedTextRuns;
     return applyFormatToBatchTextRunsUtil(
-      selectedTextRuns,
+      runsToUse,
       pdfTextRuns,
       pageNum,
       format,
@@ -1355,9 +1482,10 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       }
     );
   }, [selectedTextRuns, pdfTextRuns, pageNum, updatePdfTextInStream, renderPage]);
-  const deleteBatchTextRuns = useCallback(() => {
+  const deleteBatchTextRuns = useCallback((targetRuns?: Set<string>) => {
+    const runsToUse = targetRuns ?? selectedTextRuns;
     return deleteBatchTextRunsUtil(
-      selectedTextRuns,
+      runsToUse,
       pdfTextRuns,
       pageNum,
       pdfEngineRef,
@@ -1368,15 +1496,53 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
       }
     );
   }, [selectedTextRuns, pdfTextRuns, pageNum, pdfEngineRef, setPdfTextRuns, setSelectedTextRuns, renderPage]);
-  const copyBatchTextRuns = useCallback(() => {
-    copyBatchTextRunsUtil(selectedTextRuns, pdfTextRuns, pageNum);
+  const copyBatchTextRuns = useCallback((targetRuns?: Set<string>) => {
+    const runsToUse = targetRuns ?? selectedTextRuns;
+    copyBatchTextRunsUtil(runsToUse, pdfTextRuns, pageNum);
   }, [selectedTextRuns, pdfTextRuns, pageNum]);
+
+  const applyQuickFormat = useCallback(
+    async (format: Parameters<typeof applyFormatToBatchTextRunsUtil>[3]) => {
+      const targets = getActiveTextRuns(true);
+      if (!targets) {
+        toast.warning('Hover or select text to format');
+        return;
+      }
+      const usedEngine = await formatRunsWithEngine(targets, format);
+      if (usedEngine) return;
+      await applyFormatToBatchTextRuns(format, targets);
+      await extractTextLayer(pageNum);
+    },
+    [getActiveTextRuns, formatRunsWithEngine, applyFormatToBatchTextRuns, extractTextLayer, pageNum]
+  );
+
+  const handleDeleteRuns = useCallback(async () => {
+    const targets = getActiveTextRuns(true);
+    if (!targets) {
+      toast.warning('Hover or select text to delete');
+      return;
+    }
+    const usedEngine = await deleteRunsWithEngine(targets);
+    if (usedEngine) return;
+    await deleteBatchTextRuns(targets);
+    await extractTextLayer(pageNum);
+  }, [getActiveTextRuns, deleteRunsWithEngine, deleteBatchTextRuns, extractTextLayer, pageNum]);
+
+  const handleCopyRuns = useCallback(() => {
+    const targets = getActiveTextRuns(true);
+    if (!targets) {
+      toast.warning('Hover or select text to copy');
+      return;
+    }
+    copyBatchTextRuns(targets);
+  }, [getActiveTextRuns, copyBatchTextRuns]);
 
   // Canvas handlers - using hook
   const {
     handleCanvasMouseDown,
     handleCanvasMouseMove,
     handleCanvasMouseUp,
+    handleCanvasMouseLeave,
   } = useCanvasHandlers({
     canvasRef,
     containerRef,
@@ -1438,6 +1604,8 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
     findCharIndexAtPosition: findCharIndexAtPositionLocal,
     getSelectedText: getSelectedTextLocal,
     viewportRef,
+    hoveredTextRun,
+    setHoveredTextRun,
   });
 
   // Keyboard shortcuts - using hook
@@ -1488,7 +1656,7 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
   });
 
   return (
-    <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 overflow-hidden" style={{ height: '100%', minHeight: '800px' }}>
+    <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 overflow-hidden relative" style={{ height: '100%', minHeight: '800px' }}>
       {/* File Upload - Premium Design - Using extracted component */}
       {!file && (
         <FileUploadArea
@@ -1505,6 +1673,125 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
 
       {file && (
         <div className="flex-1 flex flex-col overflow-hidden relative bg-slate-100 dark:bg-slate-900" style={{ height: '100%', minHeight: '800px' }}>
+          <div className="absolute top-4 right-4 z-30 flex flex-col gap-2 items-end">
+            <button
+              type="button"
+              onClick={() => setShowTextGuides((prev) => !prev)}
+              className={`px-4 py-2 rounded-full text-sm font-medium shadow ${
+                showTextGuides
+                  ? 'bg-indigo-600 text-white shadow-indigo-500/40'
+                  : 'bg-white/80 text-slate-700 dark:bg-slate-800 dark:text-slate-100'
+              }`}
+            >
+              {showTextGuides ? 'Text Guides: On' : 'Text Guides: Off'}
+            </button>
+            <button
+              type="button"
+              onClick={handleRefreshTextLayer}
+              className="px-4 py-2 rounded-full text-sm font-medium bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-100 shadow hover:bg-white"
+            >
+              Refresh Text Layer
+            </button>
+            {paletteRun && (
+              <div className="max-w-sm rounded-2xl bg-white/95 dark:bg-slate-900/95 shadow-lg px-4 py-3 text-left border border-slate-200/70 dark:border-slate-800/70">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">{selectedTextRuns.size > 0 ? `${selectedTextRuns.size} selected` : 'Hover editing'}</p>
+                    <p className="text-sm text-slate-800 dark:text-slate-100 truncate">{paletteRun.text || 'Text run'}</p>
+                  </div>
+                  {selectedTextRuns.size > 0 && (
+                    <button
+                      onClick={() => setSelectedTextRuns(new Set())}
+                      className="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap items-center gap-1">
+                  <button
+                    onClick={() => applyQuickFormat({ fontWeight: paletteRun.fontWeight === 'bold' ? 'normal' : 'bold' })}
+                    className={`px-2 py-1 rounded-lg text-sm font-semibold ${paletteRun.fontWeight === 'bold' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'}`}
+                  >
+                    B
+                  </button>
+                  <button
+                    onClick={() => applyQuickFormat({ fontStyle: paletteRun.fontStyle === 'italic' ? 'normal' : 'italic' })}
+                    className={`px-2 py-1 rounded-lg text-sm italic ${paletteRun.fontStyle === 'italic' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-200' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'}`}
+                  >
+                    I
+                  </button>
+                  <button
+                    onClick={() => applyQuickFormat({ textDecoration: paletteRun.textDecoration === 'underline' ? 'none' : 'underline' })}
+                    className={`px-2 py-1 rounded-lg text-sm underline ${paletteRun.textDecoration === 'underline' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-200' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'}`}
+                  >
+                    U
+                  </button>
+                  <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1" />
+                  <button
+                    onClick={() => applyQuickFormat({ textAlign: 'left' })}
+                    className={`px-2 py-1 rounded-lg text-xs font-semibold ${paletteRun.textAlign === 'left' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
+                  >
+                    ⬅
+                  </button>
+                  <button
+                    onClick={() => applyQuickFormat({ textAlign: 'center' })}
+                    className={`px-2 py-1 rounded-lg text-xs font-semibold ${paletteRun.textAlign === 'center' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
+                  >
+                    ⇆
+                  </button>
+                  <button
+                    onClick={() => applyQuickFormat({ textAlign: 'right' })}
+                    className={`px-2 py-1 rounded-lg text-xs font-semibold ${paletteRun.textAlign === 'right' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}
+                  >
+                    ➡
+                  </button>
+                  <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1" />
+                  <input
+                    type="color"
+                    value={paletteRun.color || '#111111'}
+                    onChange={(e) => applyQuickFormat({ color: e.target.value })}
+                    className="w-9 h-9 rounded-lg border border-slate-300 dark:border-slate-700"
+                    title="Text color"
+                  />
+                  <input
+                    type="number"
+                    min={6}
+                    max={128}
+                    value={Math.round(paletteRun.fontSize || 12)}
+                    onChange={(e) => applyQuickFormat({ fontSize: Number(e.target.value) })}
+                    className="w-16 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm"
+                    title="Font size"
+                  />
+                  <button
+                    onClick={() => applyQuickFormat({ fontSize: (paletteRun.fontSize || 12) + 1 })}
+                    className="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  >
+                    +
+                  </button>
+                  <button
+                    onClick={() => applyQuickFormat({ fontSize: Math.max(6, (paletteRun.fontSize || 12) - 1) })}
+                    className="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  >
+                    -
+                  </button>
+                  <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1" />
+                  <button
+                    onClick={handleCopyRuns}
+                    className="px-3 py-1 rounded-lg text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200"
+                  >
+                    Copy
+                  </button>
+                  <button
+                    onClick={handleDeleteRuns}
+                    className="px-3 py-1 rounded-lg text-xs bg-rose-500 text-white hover:bg-rose-600"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
           {/* Error State - Using extracted component */}
           <ErrorStateComponent
             errorState={errorState}
@@ -1856,10 +2143,39 @@ export default function PdfEditor({ toolId }: PdfEditorProps) {
                 onMouseMove={handleCanvasMouseMove}
                 onMouseUp={handleCanvasMouseUp}
                 onContextMenu={handleCanvasContextMenu}
+                onMouseLeave={handleCanvasMouseLeave}
                 isPanning={isPanning}
                 spacePressed={spacePressed}
               >
-                  
+                  {inlinePalettePercent && paletteRun && (
+                    <div
+                      className="absolute z-30 pointer-events-auto"
+                      style={{
+                        left: `${inlinePalettePercent.left}%`,
+                        top: `${inlinePalettePercent.top}%`,
+                        transform: 'translate(-50%, -120%)',
+                      }}
+                    >
+                      <InlineTextPalette
+                        isActive={selectedTextRuns.size > 0}
+                        color={paletteRun.color || '#111111'}
+                        fontSize={paletteRun.fontSize || 12}
+                        fontFamily={paletteRun.fontName || 'Helvetica'}
+                        onBold={() => applyQuickFormat({ fontWeight: paletteRun.fontWeight === 'bold' ? 'normal' : 'bold' })}
+                        onItalic={() => applyQuickFormat({ fontStyle: paletteRun.fontStyle === 'italic' ? 'normal' : 'italic' })}
+                        onUnderline={() => applyQuickFormat({ textDecoration: paletteRun.textDecoration === 'underline' ? 'none' : 'underline' })}
+                        onAlignLeft={() => applyQuickFormat({ textAlign: 'left' })}
+                        onAlignCenter={() => applyQuickFormat({ textAlign: 'center' })}
+                        onAlignRight={() => applyQuickFormat({ textAlign: 'right' })}
+                        onColorChange={(color) => applyQuickFormat({ color })}
+                        onFontSizeChange={(size) => applyQuickFormat({ fontSize: size })}
+                        onFontFamilyChange={(family) => applyQuickFormat({ fontFamily: family })}
+                        onCopy={handleCopyRuns}
+                        onDelete={handleDeleteRuns}
+                      />
+                    </div>
+                  )}
+
                   {/* Advanced: Floating Text Formatting Toolbar - Using extracted component */}
                   {showFloatingToolbar && floatingToolbarPosition && selectedTextForFormatting && (() => {
                     const selected = annotations.find(a => a.id === selectedTextForFormatting);
