@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Tools - Complete List of 120+ Free Online Tools | OmniToolset</title>
+    <meta name="description" content="Browse all 120+ free online tools. PDF tools, image converters, text utilities, developer tools, and more. All tools 100% free.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossorigin="anonymous"></script>
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+            <nav style="margin-top: 1rem;">
+                <a href="index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <a href="index.html" class="back-button">← Back to Home</a>
+        <div class="hero-section" style="margin: 2rem 0;">
+            <h2>🛠️ All Tools</h2>
+            <p>Complete list of all <span id="toolCount">120+</span> free online tools.</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search tools..." autocomplete="off">
+        </div>
+
+        <!-- Category Filter -->
+        <div class="category-filter" id="categoryFilter"></div>
+
+        <!-- AdSense Ad (Top) -->
+        <div style="margin: 2rem 0; text-align: center;">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8640955536193345" data-ad-slot="8640955536193345" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <div class="tools-grid" id="toolsGrid"></div>
+
+        <!-- AdSense Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center;">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8640955536193345" data-ad-slot="8640955536193345" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 OmniToolset. All rights reserved.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                100% Free • No Registration • No Watermarks • Unlimited Use
+            </p>
+            <p style="margin-top: 1rem; font-size: 0.8rem;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+        </div>
+    </footer>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+            
+            if (category && typeof tools !== 'undefined') {
+                const filtered = tools.filter(t => t.category === category);
+                if (filtered.length > 0) {
+                    renderTools(filtered);
+                    document.querySelector(`.category-btn:contains("${category}")`)?.classList.add('active');
+                }
+            }
+            
+            const toolCount = document.getElementById('toolCount');
+            if (toolCount && typeof tools !== 'undefined') {
+                toolCount.textContent = tools.length + '+';
+            }
+        });
+    </script>
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+</body>
+</html>
+

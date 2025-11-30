@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Editor - Live Markdown Editor with Preview | OmniToolset</title>
+    <meta name="description" content="Live Markdown editor with preview. Free, online, no registration required.">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+    <style>
+        .markdown-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .markdown-editor, .markdown-preview {
+            min-height: 500px;
+        }
+        .markdown-editor textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            font-family: monospace;
+            resize: vertical;
+        }
+        .markdown-preview {
+            padding: 1rem;
+            background: var(--bg-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+        @media (max-width: 768px) {
+            .markdown-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="../index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="../blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="../categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="../all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>✏️ Markdown Editor</h2>
+            <p>Live Markdown editor with real-time preview.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="margin-bottom: 1rem;">
+                <button class="btn" onclick="insertMarkdown('**', '**')" style="margin-right: 0.5rem;">Bold</button>
+                <button class="btn" onclick="insertMarkdown('*', '*')" style="margin-right: 0.5rem;">Italic</button>
+                <button class="btn" onclick="insertMarkdown('# ', '')" style="margin-right: 0.5rem;">Heading</button>
+                <button class="btn" onclick="insertMarkdown('- ', '')" style="margin-right: 0.5rem;">List</button>
+                <button class="btn" onclick="insertMarkdown('[', '](url)')" style="margin-right: 0.5rem;">Link</button>
+                <button class="btn" onclick="insertMarkdown('```\n', '\n```')" style="margin-right: 0.5rem;">Code</button>
+            </div>
+
+            <div class="markdown-container">
+                <div class="markdown-editor">
+                    <textarea id="markdownInput" placeholder="Start typing Markdown here...&#10;&#10;# Heading&#10;**Bold text**&#10;*Italic text*&#10;&#10;- List item 1&#10;- List item 2"># Welcome to Markdown Editor
+
+This is a **bold** text and this is *italic* text.
+
+## Features
+
+- Real-time preview
+- Markdown syntax support
+- Easy to use
+
+[Visit OmniToolset](https://omnitoolset.com)
+
+\`\`\`javascript
+function hello() {
+    console.log('Hello, World!');
+}
+\`\`\`</textarea>
+                </div>
+                <div class="markdown-preview" id="markdownPreview">
+                    <div style="color: var(--text-secondary);">Preview will appear here...</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1rem;">
+                <button class="btn" onclick="copyMarkdown()" style="width: 100%; margin-bottom: 0.5rem;">Copy Markdown</button>
+                <button class="btn" onclick="copyHTML()" style="width: 100%; margin-bottom: 0.5rem; background: var(--bg-hover);">Copy as HTML</button>
+                <button class="btn" onclick="clearAll()" style="width: 100%; background: var(--bg-hover);">Clear All</button>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+    <script>
+        function markdownToHTML(markdown) {
+            return marked.parse(markdown);
+        }
+
+        function updatePreview() {
+            const markdown = document.getElementById('markdownInput').value;
+            const html = markdownToHTML(markdown);
+            document.getElementById('markdownPreview').innerHTML = html || '<div style="color: var(--text-secondary);">Preview will appear here...</div>';
+        }
+
+        function insertMarkdown(before, after) {
+            const textarea = document.getElementById('markdownInput');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            const newText = before + selectedText + after;
+            
+            textarea.value = textarea.value.substring(0, start) + newText + textarea.value.substring(end);
+            textarea.selectionStart = start + before.length;
+            textarea.selectionEnd = start + before.length + selectedText.length;
+            textarea.focus();
+            updatePreview();
+        }
+
+        function copyMarkdown() {
+            const markdown = document.getElementById('markdownInput').value;
+            navigator.clipboard.writeText(markdown).then(() => {
+                alert('Markdown copied to clipboard!');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = markdown;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Markdown copied to clipboard!');
+            });
+        }
+
+        function copyHTML() {
+            const markdown = document.getElementById('markdownInput').value;
+            const html = markdownToHTML(markdown);
+            navigator.clipboard.writeText(html).then(() => {
+                alert('HTML copied to clipboard!');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = html;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('HTML copied to clipboard!');
+            });
+        }
+
+        function clearAll() {
+            document.getElementById('markdownInput').value = '';
+            updatePreview();
+        }
+
+        // Auto-update preview
+        document.getElementById('markdownInput').addEventListener('input', updatePreview);
+        document.getElementById('markdownInput').addEventListener('keyup', updatePreview);
+
+        // Initialize
+        updatePreview();
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

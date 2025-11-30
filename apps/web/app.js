@@ -1,283 +1,163 @@
-// Tools Database
+// Tools Database - All 120+ tools
 const tools = [
-    // PDF Tools
-    {
-        id: 'pdf-merge',
-        title: 'PDF Birleştir',
-        description: 'Birden fazla PDF dosyasını tek bir dosyada birleştirin',
-        icon: '📄',
-        category: 'PDF',
-        page: 'tools/pdf-merge.html'
-    },
-    {
-        id: 'pdf-split',
-        title: 'PDF Böl',
-        description: 'PDF dosyanızı sayfalara göre bölün',
-        icon: '✂️',
-        category: 'PDF',
-        page: 'tools/pdf-split.html'
-    },
-    {
-        id: 'pdf-compress',
-        title: 'PDF Sıkıştır',
-        description: 'PDF dosya boyutunu küçültün',
-        icon: '🗜️',
-        category: 'PDF',
-        page: 'tools/pdf-compress.html'
-    },
-    {
-        id: 'pdf-to-word',
-        title: 'PDF\'den Word\'e',
-        description: 'PDF dosyasını Word formatına dönüştürün',
-        icon: '📝',
-        category: 'PDF',
-        page: 'tools/pdf-to-word.html'
-    },
-    {
-        id: 'pdf-to-image',
-        title: 'PDF\'den JPG',
-        description: 'PDF sayfalarını JPG formatına dönüştürün',
-        icon: '🖼️',
-        category: 'PDF',
-        page: 'tools/pdf-to-jpg.html'
-    },
-    {
-        id: 'jpg-to-pdf',
-        title: 'JPG\'den PDF',
-        description: 'JPG resimlerini PDF formatına dönüştürün',
-        icon: '📄',
-        category: 'PDF',
-        page: 'tools/jpg-to-pdf.html'
-    },
-    {
-        id: 'word-to-pdf',
-        title: 'Word\'den PDF',
-        description: 'Word dosyasını PDF formatına dönüştürün',
-        icon: '📝',
-        category: 'PDF',
-        page: 'tools/word-to-pdf.html'
-    },
-    {
-        id: 'excel-to-pdf',
-        title: 'Excel\'den PDF',
-        description: 'Excel dosyasını PDF formatına dönüştürün',
-        icon: '📊',
-        category: 'PDF',
-        page: 'tools/excel-to-pdf.html'
-    },
-    {
-        id: 'powerpoint-to-pdf',
-        title: 'PowerPoint\'den PDF',
-        description: 'PowerPoint dosyasını PDF formatına dönüştürün',
-        icon: '📽️',
-        category: 'PDF',
-        page: 'tools/powerpoint-to-pdf.html'
-    },
-    {
-        id: 'pdf-encrypt',
-        title: 'PDF Şifrele',
-        description: 'PDF dosyanıza şifre koruması ekleyin',
-        icon: '🔒',
-        category: 'PDF',
-        page: 'tools/pdf-encrypt.html'
-    },
-    {
-        id: 'pdf-rotate',
-        title: 'PDF Döndür',
-        description: 'PDF sayfalarını döndürün',
-        icon: '🔄',
-        category: 'PDF',
-        page: 'tools/pdf-rotate.html'
-    },
-    
-    // Image Tools
-    {
-        id: 'image-compress',
-        title: 'Resim Sıkıştır',
-        description: 'Resim dosya boyutunu küçültün',
-        icon: '🗜️',
-        category: 'Görsel',
-        page: 'tools/image-compress.html'
-    },
-    {
-        id: 'image-convert',
-        title: 'JPG ↔ PNG',
-        description: 'JPG ve PNG formatları arasında dönüştürün',
-        icon: '🔄',
-        category: 'Görsel',
-        page: 'tools/jpg-png-convert.html'
-    },
-    {
-        id: 'webp-convert',
-        title: 'WEBP Dönüştürücü',
-        description: 'WEBP\'yi JPG/PNG\'ye veya JPG/PNG\'yi WEBP\'ye dönüştürün',
-        icon: '🖼️',
-        category: 'Görsel',
-        page: 'tools/webp-convert.html'
-    },
-    {
-        id: 'image-resize',
-        title: 'Resim Boyutlandır',
-        description: 'Resim boyutlarını değiştirin',
-        icon: '📏',
-        category: 'Görsel',
-        page: 'tools/image-resize.html'
-    },
-    {
-        id: 'image-crop',
-        title: 'Resim Kırp',
-        description: 'Resimden istediğiniz bölümü kırpın',
-        icon: '✂️',
-        category: 'Görsel',
-        page: 'tools/image-crop.html'
-    },
-    {
-        id: 'image-watermark',
-        title: 'Filigran Ekle',
-        description: 'Resimlere filigran ekleyin',
-        icon: '💧',
-        category: 'Görsel',
-        page: 'tools/image-watermark.html'
-    },
-    
-    // Text Tools
-    {
-        id: 'text-case',
-        title: 'Metin Dönüştürücü',
-        description: 'Büyük/küçük harf, başlık formatı vb.',
-        icon: '🔤',
-        category: 'Metin',
-        page: 'tools/text-case.html'
-    },
-    {
-        id: 'text-counter',
-        title: 'Karakter Sayacı',
-        description: 'Kelime, karakter ve paragraf sayısını öğrenin',
-        icon: '🔢',
-        category: 'Metin',
-        page: 'tools/text-counter.html'
-    },
-    {
-        id: 'base64-encode',
-        title: 'Base64 Encode',
-        description: 'Metni Base64 formatına dönüştürün',
-        icon: '🔐',
-        category: 'Metin',
-        page: 'tools/base64-encode.html'
-    },
-    {
-        id: 'base64-decode',
-        title: 'Base64 Decode',
-        description: 'Base64 kodunu metne dönüştürün',
-        icon: '🔓',
-        category: 'Metin',
-        page: 'tools/base64-decode.html'
-    },
-    {
-        id: 'url-encode',
-        title: 'URL Encode',
-        description: 'URL kodlaması yapın',
-        icon: '🔗',
-        category: 'Metin',
-        page: 'tools/url-encode.html'
-    },
-    {
-        id: 'json-formatter',
-        title: 'JSON Formatla & Doğrula',
-        description: 'JSON kodunu düzenleyin, formatlayın ve doğrulayın',
-        icon: '📋',
-        category: 'Developer',
-        page: 'tools/json-formatter.html'
-    },
-    {
-        id: 'text-diff',
-        title: 'Metin Karşılaştır',
-        description: 'İki metni karşılaştırın ve farkları görün',
-        icon: '🔍',
-        category: 'Metin',
-        page: 'tools/text-diff.html'
-    },
-    
-    // Media Tools
-    {
-        id: 'mp4-to-mp3',
-        title: 'MP4\'den MP3\'e',
-        description: 'Video dosyasından ses çıkarın',
-        icon: '🎵',
-        category: 'Medya',
-        page: 'tools/mp4-to-mp3.html'
-    },
-    
-    // QR Code Tools
-    {
-        id: 'qr-generator',
-        title: 'QR Kod Oluştur',
-        description: 'Metin veya URL için QR kod oluşturun',
-        icon: '📱',
-        category: 'QR Kod',
-        page: 'tools/qr-generator.html'
-    },
-    {
-        id: 'qr-reader',
-        title: 'QR Kod Oku',
-        description: 'QR kod resimlerini okuyun',
-        icon: '📷',
-        category: 'QR Kod',
-        page: 'tools/qr-reader.html'
-    },
-    
-    // Other Tools
-    {
-        id: 'password-generator',
-        title: 'Şifre Üreteci',
-        description: 'Güvenli şifreler oluşturun',
-        icon: '🔑',
-        category: 'Diğer',
-        page: 'tools/password-generator.html'
-    },
-    {
-        id: 'hash-generator',
-        title: 'Hash Üreteci',
-        description: 'MD5, SHA256 vb. hash değerleri oluşturun',
-        icon: '🔐',
-        category: 'Diğer',
-        page: 'tools/hash-generator.html'
-    },
-    {
-        id: 'color-picker',
-        title: 'Renk Seçici',
-        description: 'Renk paleti oluşturun ve hex kodlarını alın',
-        icon: '🎨',
-        category: 'Diğer',
-        page: 'tools/color-picker.html'
-    },
-    {
-        id: 'lorem-generator',
-        title: 'Lorem Ipsum',
-        description: 'Placeholder metin oluşturun',
-        icon: '📝',
-        category: 'Diğer',
-        page: 'tools/lorem-generator.html'
-    },
-    {
-        id: 'date-converter',
-        title: 'Tarih Dönüştürücü',
-        description: 'Tarih formatlarını dönüştürün',
-        icon: '📅',
-        category: 'Diğer',
-        page: 'tools/date-converter.html'
-    }
+  // PDF Tools
+  { id: 'pdf-merge', title: 'Merge PDF', description: 'Combine multiple PDF files into one', icon: '📄', category: 'PDF', page: 'tools/pdf-merge.html' },
+  { id: 'pdf-split', title: 'Split PDF', description: 'Split your PDF file by pages', icon: '✂️', category: 'PDF', page: 'tools/pdf-split.html' },
+  { id: 'pdf-compress', title: 'Compress PDF', description: 'Reduce PDF file size', icon: '🗜️', category: 'PDF', page: 'tools/pdf-compress.html' },
+  { id: 'pdf-to-word', title: 'PDF to Word', description: 'Convert PDF file to Word format', icon: '📝', category: 'PDF', page: 'tools/pdf-to-word.html' },
+  { id: 'pdf-to-jpg', title: 'PDF to JPG', description: 'Convert PDF pages to JPG format', icon: '🖼️', category: 'PDF', page: 'tools/pdf-to-jpg.html' },
+  { id: 'pdf-to-png', title: 'PDF to PNG', description: 'Convert PDF pages to PNG format', icon: '🖼️', category: 'PDF', page: 'tools/pdf-to-png.html' },
+  { id: 'jpg-to-pdf', title: 'JPG to PDF', description: 'Convert JPG images to PDF format', icon: '📄', category: 'PDF', page: 'tools/jpg-to-pdf.html' },
+  { id: 'png-to-pdf', title: 'PNG to PDF', description: 'Convert PNG images to PDF format', icon: '📄', category: 'PDF', page: 'tools/png-to-pdf.html' },
+  { id: 'word-to-pdf', title: 'Word to PDF', description: 'Convert Word file to PDF format', icon: '📝', category: 'PDF', page: 'tools/word-to-pdf.html' },
+  { id: 'excel-to-pdf', title: 'Excel to PDF', description: 'Convert Excel file to PDF format', icon: '📊', category: 'PDF', page: 'tools/excel-to-pdf.html' },
+  { id: 'powerpoint-to-pdf', title: 'PowerPoint to PDF', description: 'Convert PowerPoint file to PDF format', icon: '📽️', category: 'PDF', page: 'tools/powerpoint-to-pdf.html' },
+  { id: 'txt-to-pdf', title: 'TXT to PDF', description: 'Convert text file to PDF format', icon: '📄', category: 'PDF', page: 'tools/txt-to-pdf.html' },
+  { id: 'pdf-rotate', title: 'Rotate PDF', description: 'Rotate PDF pages 90, 180, or 270 degrees', icon: '🔄', category: 'PDF', page: 'tools/pdf-rotate.html' },
+  { id: 'pdf-delete-pages', title: 'Delete PDF Pages', description: 'Remove specific pages from PDF', icon: '🗑️', category: 'PDF', page: 'tools/pdf-delete-pages.html' },
+  { id: 'pdf-extract-text', title: 'Extract Text from PDF', description: 'Extract text content from PDF file', icon: '📝', category: 'PDF', page: 'tools/pdf-extract-text.html' },
+  { id: 'pdf-page-count', title: 'PDF Page Counter', description: 'Count pages in PDF', icon: '📄', category: 'PDF', page: 'tools/pdf-page-count.html' },
+  { id: 'pdf-merge-images', title: 'PDF from Images', description: 'Create PDF from multiple images', icon: '🖼️', category: 'PDF', page: 'tools/pdf-merge-images.html' },
+  { id: 'epub-to-pdf', title: 'EPUB to PDF', description: 'Convert EPUB ebook files to PDF format', icon: '📚', category: 'PDF', page: 'tools/epub-to-pdf.html' },
+  { id: 'document-converter', title: 'Document Converter', description: 'Convert between various document formats', icon: '📄', category: 'PDF', page: 'tools/document-converter.html' },
+  
+  // Image Tools
+  { id: 'image-resize', title: 'Resize Image', description: 'Resize image dimensions', icon: '📏', category: 'Image', page: 'tools/image-resize.html' },
+  { id: 'image-compress', title: 'Compress Image', description: 'Reduce image file size', icon: '🗜️', category: 'Image', page: 'tools/image-compress.html' },
+  { id: 'jpg-png-convert', title: 'JPG ↔ PNG', description: 'Convert between JPG and PNG formats', icon: '🔄', category: 'Image', page: 'tools/jpg-png-convert.html' },
+  { id: 'webp-convert', title: 'WEBP Converter', description: 'Convert WEBP to JPG/PNG or JPG/PNG to WEBP', icon: '🖼️', category: 'Image', page: 'tools/webp-convert.html' },
+  { id: 'image-to-base64', title: 'Image to Base64', description: 'Convert image to Base64', icon: '🖼️', category: 'Image', page: 'tools/image-to-base64.html' },
+  { id: 'base64-to-image', title: 'Base64 to Image', description: 'Convert Base64 to image', icon: '🖼️', category: 'Image', page: 'tools/base64-to-image.html' },
+  { id: 'image-grayscale', title: 'Image Grayscale', description: 'Convert image to grayscale', icon: '⚫', category: 'Image', page: 'tools/image-grayscale.html' },
+  { id: 'image-invert', title: 'Image Invert', description: 'Invert image colors', icon: '🔄', category: 'Image', page: 'tools/image-invert.html' },
+  { id: 'image-sepia', title: 'Image Sepia', description: 'Apply sepia filter to image', icon: '📸', category: 'Image', page: 'tools/image-sepia.html' },
+  { id: 'heic-to-jpg', title: 'HEIC to JPG', description: 'Convert HEIC images to JPG format', icon: '🖼️', category: 'Image', page: 'tools/heic-to-jpg.html' },
+  { id: 'image-to-pdf', title: 'Image to PDF', description: 'Convert images to PDF format', icon: '📄', category: 'Image', page: 'tools/image-to-pdf.html' },
+  
+  // Media Tools
+  { id: 'mp4-to-mp3', title: 'MP4 to MP3', description: 'Extract audio from video file', icon: '🎵', category: 'Media', page: 'tools/mp4-to-mp3.html' },
+  { id: 'video-converter', title: 'Video Converter', description: 'Convert video files between different formats', icon: '🎬', category: 'Media', page: 'tools/video-converter.html' },
+  { id: 'mp4-converter', title: 'MP4 Converter', description: 'Convert any video to MP4 format', icon: '🎥', category: 'Media', page: 'tools/mp4-converter.html' },
+  { id: 'video-to-gif', title: 'Video to GIF', description: 'Convert video files to animated GIF format', icon: '🎞️', category: 'Media', page: 'tools/video-to-gif.html' },
+  { id: 'mov-to-mp4', title: 'MOV to MP4', description: 'Convert MOV video files to MP4 format', icon: '🎬', category: 'Media', page: 'tools/mov-to-mp4.html' },
+  { id: 'video-to-mp3', title: 'Video to MP3', description: 'Extract audio from video files and convert to MP3', icon: '🎵', category: 'Media', page: 'tools/video-to-mp3.html' },
+  { id: 'audio-converter', title: 'Audio Converter', description: 'Convert audio files between different formats', icon: '🎵', category: 'Media', page: 'tools/audio-converter.html' },
+  { id: 'mp3-converter', title: 'MP3 Converter', description: 'Convert any audio file to MP3 format', icon: '🎶', category: 'Media', page: 'tools/mp3-converter.html' },
+  
+  // Text Tools
+  { id: 'text-case', title: 'Text Case Converter', description: 'Convert text case: uppercase, lowercase, title case', icon: '🔤', category: 'Text', page: 'tools/text-case.html' },
+  { id: 'text-counter', title: 'Character Counter', description: 'Count words, characters, and paragraphs', icon: '🔢', category: 'Text', page: 'tools/text-counter.html' },
+  { id: 'base64-encode', title: 'Base64 Encode', description: 'Encode text to Base64 format', icon: '🔐', category: 'Text', page: 'tools/base64-encode.html' },
+  { id: 'base64-decode', title: 'Base64 Decode', description: 'Decode Base64 to text', icon: '🔓', category: 'Text', page: 'tools/base64-decode.html' },
+  { id: 'url-encode', title: 'URL Encode', description: 'Encode text for URL', icon: '🔗', category: 'Text', page: 'tools/url-encode.html' },
+  { id: 'url-decode', title: 'URL Decode', description: 'Decode URL encoded text', icon: '🔗', category: 'Text', page: 'tools/url-decode.html' },
+  { id: 'lorem-generator', title: 'Lorem Ipsum Generator', description: 'Generate placeholder text', icon: '📝', category: 'Text', page: 'tools/lorem-generator.html' },
+  { id: 'remove-duplicates', title: 'Remove Duplicate Lines', description: 'Remove duplicate lines from text', icon: '🧹', category: 'Text', page: 'tools/remove-duplicates.html' },
+  { id: 'text-sorter', title: 'Text Sorter', description: 'Sort text lines alphabetically', icon: '🔤', category: 'Text', page: 'tools/text-sorter.html' },
+  { id: 'text-diff', title: 'Text Diff', description: 'Compare two texts and find differences', icon: '🔍', category: 'Text', page: 'tools/text-diff.html' },
+  { id: 'markdown-to-html', title: 'Markdown to HTML', description: 'Convert Markdown text to HTML', icon: '📝', category: 'Text', page: 'tools/markdown-to-html.html' },
+  { id: 'html-escape', title: 'HTML Escape', description: 'Escape HTML special characters', icon: '🔐', category: 'Text', page: 'tools/html-escape.html' },
+  { id: 'html-unescape', title: 'HTML Unescape', description: 'Unescape HTML entities', icon: '🔓', category: 'Text', page: 'tools/html-unescape.html' },
+  { id: 'reverse-text', title: 'Reverse Text', description: 'Reverse text characters', icon: '🔄', category: 'Text', page: 'tools/reverse-text.html' },
+  { id: 'text-replace', title: 'Text Replace', description: 'Find and replace text', icon: '🔍', category: 'Text', page: 'tools/text-replace.html' },
+  { id: 'word-count', title: 'Word Count', description: 'Count words in text', icon: '📊', category: 'Text', page: 'tools/word-count.html' },
+  { id: 'text-to-binary', title: 'Text to Binary', description: 'Convert text to binary', icon: '💻', category: 'Text', page: 'tools/text-to-binary.html' },
+  { id: 'binary-to-text', title: 'Binary to Text', description: 'Convert binary to text', icon: '💻', category: 'Text', page: 'tools/binary-to-text.html' },
+  { id: 'text-to-morse', title: 'Text to Morse Code', description: 'Convert text to Morse code', icon: '📡', category: 'Text', page: 'tools/text-to-morse.html' },
+  { id: 'morse-to-text', title: 'Morse Code to Text', description: 'Convert Morse code to text', icon: '📡', category: 'Text', page: 'tools/morse-to-text.html' },
+  { id: 'slug-generator', title: 'Slug Generator', description: 'Generate URL-friendly slugs', icon: '🔗', category: 'Text', page: 'tools/slug-generator.html' },
+  { id: 'camel-case', title: 'Camel Case Converter', description: 'Convert text to camelCase', icon: '🐫', category: 'Text', page: 'tools/camel-case.html' },
+  { id: 'snake-case', title: 'Snake Case Converter', description: 'Convert text to snake_case', icon: '🐍', category: 'Text', page: 'tools/snake-case.html' },
+  { id: 'kebab-case', title: 'Kebab Case Converter', description: 'Convert text to kebab-case', icon: '🍢', category: 'Text', page: 'tools/kebab-case.html' },
+  { id: 'pascal-case', title: 'Pascal Case Converter', description: 'Convert text to PascalCase', icon: '🔤', category: 'Text', page: 'tools/pascal-case.html' },
+  { id: 'extract-emails', title: 'Extract Emails', description: 'Extract email addresses from text', icon: '📧', category: 'Text', page: 'tools/extract-emails.html' },
+  { id: 'extract-urls', title: 'Extract URLs', description: 'Extract URLs from text', icon: '🔗', category: 'Text', page: 'tools/extract-urls.html' },
+  { id: 'add-line-numbers', title: 'Add Line Numbers', description: 'Add line numbers to text', icon: '🔢', category: 'Text', page: 'tools/add-line-numbers.html' },
+  { id: 'text-reverse-lines', title: 'Reverse Lines', description: 'Reverse order of text lines', icon: '🔄', category: 'Text', page: 'tools/text-reverse-lines.html' },
+  { id: 'markdown-editor', title: 'Markdown Editor', description: 'Live Markdown editor with preview', icon: '✏️', category: 'Text', page: 'tools/markdown-editor.html' },
+  
+  // Developer Tools
+  { id: 'json-formatter', title: 'JSON Formatter & Validator', description: 'Format, validate and beautify JSON code', icon: '📋', category: 'Developer', page: 'tools/json-formatter.html' },
+  { id: 'jwt-decoder', title: 'JWT Decoder', description: 'Decode and view JWT tokens', icon: '🔐', category: 'Developer', page: 'tools/jwt-decoder.html' },
+  { id: 'uuid-generator', title: 'UUID Generator', description: 'Generate UUIDs', icon: '🆔', category: 'Developer', page: 'tools/uuid-generator.html' },
+  { id: 'hash-generator', title: 'Hash Generator', description: 'Generate SHA1, SHA256, SHA512 hashes', icon: '🔐', category: 'Developer', page: 'tools/hash-generator.html' },
+  { id: 'regex-tester', title: 'Regex Tester', description: 'Test regular expressions', icon: '🔍', category: 'Developer', page: 'tools/regex-tester.html' },
+  { id: 'color-picker', title: 'Color Picker', description: 'Pick colors and convert Hex/RGB', icon: '🎨', category: 'Developer', page: 'tools/color-picker.html' },
+  { id: 'timestamp-converter', title: 'Timestamp Converter', description: 'Convert Unix timestamp to date and vice versa', icon: '⏰', category: 'Developer', page: 'tools/timestamp-converter.html' },
+  { id: 'json-minify', title: 'JSON Minify', description: 'Minify JSON code', icon: '📋', category: 'Developer', page: 'tools/json-minify.html' },
+  { id: 'css-formatter', title: 'CSS Formatter', description: 'Format and beautify CSS code', icon: '🎨', category: 'Developer', page: 'tools/css-formatter.html' },
+  { id: 'css-minify', title: 'CSS Minify', description: 'Minify CSS code', icon: '🗜️', category: 'Developer', page: 'tools/css-minify.html' },
+  { id: 'html-formatter', title: 'HTML Formatter', description: 'Format and beautify HTML code', icon: '🌐', category: 'Developer', page: 'tools/html-formatter.html' },
+  { id: 'html-minify', title: 'HTML Minify', description: 'Minify HTML code', icon: '🗜️', category: 'Developer', page: 'tools/html-minify.html' },
+  { id: 'javascript-formatter', title: 'JavaScript Formatter', description: 'Format and beautify JavaScript code', icon: '📜', category: 'Developer', page: 'tools/javascript-formatter.html' },
+  { id: 'sql-formatter', title: 'SQL Formatter', description: 'Format SQL queries', icon: '🗄️', category: 'Developer', page: 'tools/sql-formatter.html' },
+  { id: 'xml-formatter', title: 'XML Formatter', description: 'Format XML code', icon: '📄', category: 'Developer', page: 'tools/xml-formatter.html' },
+  { id: 'yaml-formatter', title: 'YAML Formatter', description: 'Format YAML code', icon: '📝', category: 'Developer', page: 'tools/yaml-formatter.html' },
+  { id: 'url-parser', title: 'URL Parser', description: 'Parse and analyze URLs', icon: '🔗', category: 'Developer', page: 'tools/url-parser.html' },
+  { id: 'password-strength', title: 'Password Strength Checker', description: 'Check password strength', icon: '🔐', category: 'Developer', page: 'tools/password-strength.html' },
+  { id: 'jwt-encoder', title: 'JWT Encoder', description: 'Encode JWT tokens', icon: '🔐', category: 'Developer', page: 'tools/jwt-encoder.html' },
+  { id: 'hmac-generator', title: 'HMAC Generator', description: 'Generate HMAC signatures', icon: '🔐', category: 'Developer', page: 'tools/hmac-generator.html' },
+  { id: 'cron-expression', title: 'Cron Expression Generator', description: 'Generate cron expressions', icon: '⏰', category: 'Developer', page: 'tools/cron-expression.html' },
+  { id: 'json-to-csv', title: 'JSON to CSV', description: 'Convert JSON to CSV', icon: '📊', category: 'Developer', page: 'tools/json-to-csv.html' },
+  { id: 'csv-to-json', title: 'CSV to JSON', description: 'Convert CSV to JSON', icon: '📋', category: 'Developer', page: 'tools/csv-to-json.html' },
+  { id: 'json-to-xml', title: 'JSON to XML', description: 'Convert JSON to XML', icon: '📄', category: 'Developer', page: 'tools/json-to-xml.html' },
+  { id: 'xml-to-json', title: 'XML to JSON', description: 'Convert XML to JSON', icon: '📋', category: 'Developer', page: 'tools/xml-to-json.html' },
+  { id: 'json-to-yaml', title: 'JSON to YAML', description: 'Convert JSON to YAML', icon: '📝', category: 'Developer', page: 'tools/json-to-yaml.html' },
+  { id: 'yaml-to-json', title: 'YAML to JSON', description: 'Convert YAML to JSON', icon: '📋', category: 'Developer', page: 'tools/yaml-to-json.html' },
+  { id: 'meta-tag-generator', title: 'Meta Tag Generator', description: 'Generate HTML meta tags', icon: '🏷️', category: 'Developer', page: 'tools/meta-tag-generator.html' },
+  { id: 'open-graph-generator', title: 'Open Graph Generator', description: 'Generate Open Graph meta tags', icon: '📱', category: 'Developer', page: 'tools/open-graph-generator.html' },
+  { id: 'twitter-card-generator', title: 'Twitter Card Generator', description: 'Generate Twitter Card meta tags', icon: '🐦', category: 'Developer', page: 'tools/twitter-card-generator.html' },
+  { id: 'favicon-generator', title: 'Favicon Generator', description: 'Generate favicons from images', icon: '⭐', category: 'Developer', page: 'tools/favicon-generator.html' },
+  { id: 'contrast-checker', title: 'Contrast Checker', description: 'Check color contrast ratio', icon: '🎨', category: 'Developer', page: 'tools/contrast-checker.html' },
+  
+  // QR Code Tools
+  { id: 'qr-generator', title: 'QR Code Generator', description: 'Generate QR codes for text or URL', icon: '📱', category: 'QR Code', page: 'tools/qr-generator.html' },
+  
+  // Other Tools
+  { id: 'password-generator', title: 'Password Generator', description: 'Generate secure passwords', icon: '🔑', category: 'Other', page: 'tools/password-generator.html' },
+  { id: 'date-converter', title: 'Date Converter', description: 'Convert date formats', icon: '📅', category: 'Other', page: 'tools/date-converter.html' },
+  { id: 'random-number', title: 'Random Number Generator', description: 'Generate random numbers', icon: '🎲', category: 'Other', page: 'tools/random-number.html' },
+  { id: 'number-base-converter', title: 'Number Base Converter', description: 'Convert between number bases', icon: '🔢', category: 'Other', page: 'tools/number-base-converter.html' },
+  { id: 'percentage-calculator', title: 'Percentage Calculator', description: 'Calculate percentages', icon: '📊', category: 'Other', page: 'tools/percentage-calculator.html' },
+  { id: 'tip-calculator', title: 'Tip Calculator', description: 'Calculate tips', icon: '💰', category: 'Other', page: 'tools/tip-calculator.html' },
+  { id: 'age-calculator', title: 'Age Calculator', description: 'Calculate age from birthdate', icon: '🎂', category: 'Other', page: 'tools/age-calculator.html' },
+  { id: 'bmi-calculator', title: 'BMI Calculator', description: 'Calculate Body Mass Index', icon: '⚖️', category: 'Other', page: 'tools/bmi-calculator.html' },
+  { id: 'timezone-converter', title: 'Timezone Converter', description: 'Convert between timezones', icon: '🌐', category: 'Other', page: 'tools/timezone-converter.html' },
+  { id: 'stopwatch', title: 'Stopwatch', description: 'Digital stopwatch timer', icon: '⏱️', category: 'Other', page: 'tools/stopwatch.html' },
+  { id: 'countdown-timer', title: 'Countdown Timer', description: 'Countdown timer', icon: '⏲️', category: 'Other', page: 'tools/countdown-timer.html' },
+  { id: 'rar-to-zip', title: 'RAR to ZIP', description: 'Convert RAR archive files to ZIP format', icon: '📦', category: 'Other', page: 'tools/rar-to-zip.html' },
+  { id: 'pst-to-est', title: 'PST to EST', description: 'Convert Pacific Standard Time to Eastern Standard Time', icon: '🕐', category: 'Other', page: 'tools/pst-to-est.html' },
+  { id: 'cst-to-est', title: 'CST to EST', description: 'Convert Central Standard Time to Eastern Standard Time', icon: '🕐', category: 'Other', page: 'tools/cst-to-est.html' },
+  { id: 'archive-converter', title: 'Archive Converter', description: 'Convert between archive formats', icon: '📦', category: 'Other', page: 'tools/archive-converter.html' },
+  { id: 'lbs-to-kg', title: 'Lbs to Kg', description: 'Convert pounds to kilograms', icon: '⚖️', category: 'Other', page: 'tools/lbs-to-kg.html' },
+  { id: 'kg-to-lbs', title: 'Kg to Lbs', description: 'Convert kilograms to pounds', icon: '⚖️', category: 'Other', page: 'tools/kg-to-lbs.html' },
+  { id: 'feet-to-meters', title: 'Feet to Meters', description: 'Convert feet to meters', icon: '📏', category: 'Other', page: 'tools/feet-to-meters.html' },
+  { id: 'unit-converter', title: 'Unit Converter', description: 'Convert between various units', icon: '🔄', category: 'Other', page: 'tools/unit-converter.html' },
+  { id: 'currency-converter', title: 'Currency Converter', description: 'Convert between different currencies with real-time exchange rates', icon: '💱', category: 'Other', page: 'tools/currency-converter.html' },
+  { id: 'gis-converter', title: 'GIS/CAD Converter', description: 'Convert GIS and CAD formats', icon: '🗺️', category: 'Other', page: 'tools/gis-converter.html' },
+  { id: 'epub-to-mobi', title: 'EPUB to MOBI', description: 'Convert EPUB ebook files to MOBI format for Kindle', icon: '📖', category: 'Other', page: 'tools/epub-to-mobi.html' },
+  { id: 'salary-calculator', title: 'Salary Calculator', description: 'Calculate weekly, monthly, and yearly salary from hourly rate', icon: '💰', category: 'Other', page: 'tools/salary-calculator.html' },
+  { id: 'length-converter', title: 'Length Converter', description: 'Convert between length units', icon: '📏', category: 'Other', page: 'tools/length-converter.html' },
+  { id: 'temperature-converter', title: 'Temperature Converter', description: 'Convert between Celsius, Fahrenheit, and Kelvin', icon: '🌡️', category: 'Other', page: 'tools/temperature-converter.html' }
 ];
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     renderTools();
     setupSearch();
+    setupCategoryFilter();
 });
 
 function renderTools(filteredTools = tools) {
     const grid = document.getElementById('toolsGrid');
+    if (!grid) return;
+    
     grid.innerHTML = '';
+    
+    if (filteredTools.length === 0) {
+        grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary); grid-column: 1 / -1;">No tools found matching your search.</p>';
+        return;
+    }
     
     filteredTools.forEach(tool => {
         const card = document.createElement('a');
@@ -295,13 +175,71 @@ function renderTools(filteredTools = tools) {
 
 function setupSearch() {
     const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+    
     searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
+        const query = e.target.value.toLowerCase().trim();
         const filtered = tools.filter(tool => 
             tool.title.toLowerCase().includes(query) ||
             tool.description.toLowerCase().includes(query) ||
             tool.category.toLowerCase().includes(query)
         );
         renderTools(filtered);
+        updateCategoryButtons();
     });
+}
+
+function setupCategoryFilter() {
+    const categories = Array.from(new Set(tools.map(t => t.category))).sort();
+    const categoryContainer = document.getElementById('categoryFilter');
+    if (!categoryContainer) return;
+    
+    // Create "All" button
+    const allBtn = document.createElement('button');
+    allBtn.className = 'category-btn active';
+    allBtn.textContent = 'All';
+    allBtn.onclick = () => {
+        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+        allBtn.classList.add('active');
+        filterByCategory(null);
+    };
+    categoryContainer.appendChild(allBtn);
+    
+    // Create category buttons
+    categories.forEach(category => {
+        const btn = document.createElement('button');
+        btn.className = 'category-btn';
+        btn.textContent = category;
+        btn.onclick = () => {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterByCategory(category);
+        };
+        categoryContainer.appendChild(btn);
+    });
+}
+
+function filterByCategory(category) {
+    const searchInput = document.getElementById('searchInput');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    
+    let filtered = tools;
+    
+    if (category) {
+        filtered = filtered.filter(tool => tool.category === category);
+    }
+    
+    if (query) {
+        filtered = filtered.filter(tool => 
+            tool.title.toLowerCase().includes(query) ||
+            tool.description.toLowerCase().includes(query) ||
+            tool.category.toLowerCase().includes(query)
+        );
+    }
+    
+    renderTools(filtered);
+}
+
+function updateCategoryButtons() {
+    // This can be used to update category button states based on filtered results
 }

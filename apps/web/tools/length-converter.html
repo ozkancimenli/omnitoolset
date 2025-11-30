@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Length Converter - Convert Length Units | OmniToolset</title>
+    <meta name="description" content="Convert between length units (meters, feet, inches, etc.). Free, online, no registration required.">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="../index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="../blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="../categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="../all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>📏 Length Converter</h2>
+            <p>Convert between different length units.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: end; margin-bottom: 2rem;">
+                <div class="input-group">
+                    <label for="fromValue">From:</label>
+                    <input type="number" id="fromValue" value="1" step="0.01" style="width: 100%;">
+                </div>
+                <div style="text-align: center; padding-bottom: 1.5rem;">
+                    <button class="btn" onclick="swapUnits()" style="padding: 0.5rem 1rem;">⇄</button>
+                </div>
+                <div class="input-group">
+                    <label for="toValue">To:</label>
+                    <input type="number" id="toValue" value="1" step="0.01" readonly style="width: 100%; background: var(--bg-color);">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group">
+                    <label for="fromUnit">From Unit:</label>
+                    <select id="fromUnit" style="width: 100%;">
+                        <option value="meter">Meter (m)</option>
+                        <option value="kilometer">Kilometer (km)</option>
+                        <option value="centimeter">Centimeter (cm)</option>
+                        <option value="millimeter">Millimeter (mm)</option>
+                        <option value="mile">Mile (mi)</option>
+                        <option value="yard">Yard (yd)</option>
+                        <option value="foot" selected>Foot (ft)</option>
+                        <option value="inch">Inch (in)</option>
+                        <option value="nautical-mile">Nautical Mile (nmi)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="toUnit">To Unit:</label>
+                    <select id="toUnit" style="width: 100%;">
+                        <option value="meter" selected>Meter (m)</option>
+                        <option value="kilometer">Kilometer (km)</option>
+                        <option value="centimeter">Centimeter (cm)</option>
+                        <option value="millimeter">Millimeter (mm)</option>
+                        <option value="mile">Mile (mi)</option>
+                        <option value="yard">Yard (yd)</option>
+                        <option value="foot">Foot (ft)</option>
+                        <option value="inch">Inch (in)</option>
+                        <option value="nautical-mile">Nautical Mile (nmi)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn" onclick="convertLength()" style="width: 100%; margin: 1rem 0;">Convert</button>
+
+            <button class="btn" onclick="clearAll()" style="width: 100%; margin-top: 1rem; background: var(--bg-hover);">Clear</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        // Conversion factors to meters
+        const toMeters = {
+            meter: 1,
+            kilometer: 1000,
+            centimeter: 0.01,
+            millimeter: 0.001,
+            mile: 1609.344,
+            yard: 0.9144,
+            foot: 0.3048,
+            inch: 0.0254,
+            'nautical-mile': 1852
+        };
+
+        function convertLength() {
+            const fromValue = parseFloat(document.getElementById('fromValue').value);
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+
+            if (isNaN(fromValue)) {
+                document.getElementById('toValue').value = '';
+                return;
+            }
+
+            // Convert to meters first, then to target unit
+            const meters = fromValue * toMeters[fromUnit];
+            const result = meters / toMeters[toUnit];
+
+            document.getElementById('toValue').value = result.toFixed(6).replace(/\.?0+$/, '');
+        }
+
+        function swapUnits() {
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            const fromValue = document.getElementById('fromValue').value;
+            const toValue = document.getElementById('toValue').value;
+
+            document.getElementById('fromUnit').value = toUnit;
+            document.getElementById('toUnit').value = fromUnit;
+            document.getElementById('fromValue').value = toValue;
+            
+            convertLength();
+        }
+
+        function clearAll() {
+            document.getElementById('fromValue').value = '1';
+            document.getElementById('toValue').value = '1';
+            convertLength();
+        }
+
+        // Auto-convert on input change
+        document.getElementById('fromValue').addEventListener('input', convertLength);
+        document.getElementById('fromUnit').addEventListener('change', convertLength);
+        document.getElementById('toUnit').addEventListener('change', convertLength);
+
+        // Initialize
+        convertLength();
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

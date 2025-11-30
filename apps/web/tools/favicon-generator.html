@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favicon Generator - Generate Favicons from Images | OmniToolset</title>
+    <meta name="description" content="Generate favicons from images. Free, online, no registration required.">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="../index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="../blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="../categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="../all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>⭐ Favicon Generator</h2>
+            <p>Generate favicons from images in multiple sizes (16x16, 32x32, etc.).</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="input-group">
+                <label for="imageInput">Select Image:</label>
+                <input type="file" id="imageInput" accept="image/*" style="width: 100%;">
+            </div>
+
+            <div id="previewArea" style="display: none; margin: 2rem 0; text-align: center;">
+                <div style="margin-bottom: 1rem;">
+                    <strong>Image Preview:</strong>
+                </div>
+                <img id="imagePreview" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid var(--border-color);">
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="size16" checked style="margin-right: 0.5rem;">
+                        16x16
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="size32" checked style="margin-right: 0.5rem;">
+                        32x32
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="size48" checked style="margin-right: 0.5rem;">
+                        48x48
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="size64" style="margin-right: 0.5rem;">
+                        64x64
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn" onclick="generateFavicons()" style="width: 100%; margin: 1rem 0;">Generate Favicons</button>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Generated Favicons:</h3>
+                <div id="faviconList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;"></div>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('previewArea').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function generateFavicons() {
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+            
+            document.getElementById('errorArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+
+            if (!file) {
+                document.getElementById('errorText').textContent = 'Please select an image file';
+                document.getElementById('errorArea').style.display = 'block';
+                return;
+            }
+
+            const sizes = [];
+            if (document.getElementById('size16').checked) sizes.push(16);
+            if (document.getElementById('size32').checked) sizes.push(32);
+            if (document.getElementById('size48').checked) sizes.push(48);
+            if (document.getElementById('size64').checked) sizes.push(64);
+
+            if (sizes.length === 0) {
+                document.getElementById('errorText').textContent = 'Please select at least one size';
+                document.getElementById('errorArea').style.display = 'block';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const faviconList = document.getElementById('faviconList');
+                    faviconList.innerHTML = '';
+
+                    sizes.forEach(size => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = size;
+                        canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Draw image resized to canvas
+                        ctx.drawImage(img, 0, 0, size, size);
+                        
+                        const faviconDiv = document.createElement('div');
+                        faviconDiv.style.padding = '1rem';
+                        faviconDiv.style.background = 'var(--bg-color)';
+                        faviconDiv.style.borderRadius = '8px';
+                        faviconDiv.style.textAlign = 'center';
+                        
+                        const preview = document.createElement('img');
+                        preview.src = canvas.toDataURL('image/png');
+                        preview.style.width = '64px';
+                        preview.style.height = '64px';
+                        preview.style.border = '1px solid var(--border-color)';
+                        preview.style.borderRadius = '4px';
+                        
+                        const sizeLabel = document.createElement('div');
+                        sizeLabel.textContent = `${size}x${size}`;
+                        sizeLabel.style.marginTop = '0.5rem';
+                        sizeLabel.style.fontWeight = '600';
+                        
+                        const downloadBtn = document.createElement('button');
+                        downloadBtn.className = 'btn';
+                        downloadBtn.textContent = 'Download';
+                        downloadBtn.style.width = '100%';
+                        downloadBtn.style.marginTop = '0.5rem';
+                        downloadBtn.onclick = function() {
+                            canvas.toBlob(function(blob) {
+                                const url = URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = `favicon-${size}x${size}.png`;
+                                link.click();
+                                URL.revokeObjectURL(url);
+                            });
+                        };
+                        
+                        faviconDiv.appendChild(preview);
+                        faviconDiv.appendChild(sizeLabel);
+                        faviconDiv.appendChild(downloadBtn);
+                        faviconList.appendChild(faviconDiv);
+                    });
+
+                    document.getElementById('resultArea').style.display = 'block';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - All Tool Categories | OmniToolset</title>
+    <meta name="description" content="Browse tools by category: PDF, Image, Text, Developer, Media, QR Code, and more. Find the right tool for your needs.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossorigin="anonymous"></script>
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+            <nav style="margin-top: 1rem;">
+                <a href="index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <a href="index.html" class="back-button">← Back to Home</a>
+        <div class="hero-section" style="margin: 2rem 0;">
+            <h2>📂 Categories</h2>
+            <p>Browse tools by category to find exactly what you need.</p>
+        </div>
+
+        <!-- AdSense Ad (Top) -->
+        <div style="margin: 2rem 0; text-align: center;">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8640955536193345" data-ad-slot="8640955536193345" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <div class="tools-grid" id="categoriesGrid">
+            <!-- Categories will be loaded here -->
+        </div>
+
+        <!-- AdSense Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center;">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8640955536193345" data-ad-slot="8640955536193345" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 OmniToolset. All rights reserved.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                100% Free • No Registration • No Watermarks • Unlimited Use
+            </p>
+            <p style="margin-top: 1rem; font-size: 0.8rem;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+        </div>
+    </footer>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('categoriesGrid');
+            if (!grid || typeof tools === 'undefined') return;
+
+            const categories = Array.from(new Set(tools.map(t => t.category))).sort();
+            const categoryInfo = {
+                'PDF': { icon: '📄', description: 'PDF conversion, merging, splitting, and editing tools' },
+                'Image': { icon: '🖼️', description: 'Image resizing, compression, format conversion' },
+                'Text': { icon: '📝', description: 'Text manipulation, encoding, formatting tools' },
+                'Developer': { icon: '💻', description: 'Code formatting, validators, developer utilities' },
+                'Media': { icon: '🎬', description: 'Video and audio conversion tools' },
+                'QR Code': { icon: '📱', description: 'QR code generation' },
+                'Other': { icon: '🔧', description: 'Calculators, converters, and utility tools' }
+            };
+
+            grid.innerHTML = categories.map(cat => {
+                const info = categoryInfo[cat] || { icon: '📦', description: `${cat} tools` };
+                const count = tools.filter(t => t.category === cat).length;
+                return `
+                    <a href="all-tools.html?category=${encodeURIComponent(cat)}" class="tool-card">
+                        <span class="tool-icon">${info.icon}</span>
+                        <h3>${cat}</h3>
+                        <p>${info.description}</p>
+                        <span class="tool-category">${count} tools</span>
+                    </a>
+                `;
+            }).join('');
+        });
+    </script>
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+</body>
+</html>
+

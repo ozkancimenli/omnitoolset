@@ -2,14 +2,5 @@
   "name": "omnitoolset",
   "version": "1.0.0",
   "private": true,
-  "description": "OmniToolset workspace",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "dev": "npm run build -w @omni/pdf-engine && npm run dev -w @omni/web",
-    "build": "npm run build -w @omni/pdf-engine && npm run build -w @omni/web",
-    "lint": "npm run lint -ws"
-  }
+  "description": "OmniToolset - Free Online Tools Collection"
 }

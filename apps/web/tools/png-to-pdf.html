@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNG to PDF - Convert PNG Images to PDF | OmniToolset</title>
+    <meta name="description" content="Convert PNG images to PDF format. Free, online, no registration required.">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="../index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="../blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="../categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="../all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>📄 PNG to PDF</h2>
+            <p>Convert PNG images to PDF format. Upload multiple PNG files to create a single PDF.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🖼️</div>
+                <p>Drag and drop PNG images here or click to select</p>
+                <input type="file" id="fileInput" accept="image/png" multiple style="display: none;">
+            </div>
+
+            <div id="fileList" class="result-area" style="display: none; margin-top: 1rem;">
+                <h3>Selected Images</h3>
+                <div id="filesContainer" style="margin-top: 1rem;"></div>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin-top: 1rem;" disabled>Convert to PDF</button>
+
+            <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
+                <h3>Conversion Complete!</h3>
+                <p id="resultInfo"></p>
+                <button class="btn" onclick="downloadPDF()" style="width: 100%;">Download PDF</button>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        let selectedFiles = [];
+        let pdfBlob = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const filesContainer = document.getElementById('filesContainer');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultArea = document.getElementById('resultArea');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type === 'image/png');
+            if (files.length > 0) {
+                handleFiles(files);
+            } else {
+                alert('Please select valid PNG files!');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files).filter(f => f.type === 'image/png');
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        });
+
+        function handleFiles(files) {
+            selectedFiles = [...selectedFiles, ...files];
+            renderFileList();
+        }
+
+        function renderFileList() {
+            filesContainer.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.justifyContent = 'space-between';
+                div.style.alignItems = 'center';
+                div.style.padding = '0.75rem';
+                div.style.marginBottom = '0.5rem';
+                div.style.background = 'var(--bg-color)';
+                div.style.borderRadius = '8px';
+                div.style.border = '1px solid var(--border-color)';
+                
+                const info = document.createElement('span');
+                info.textContent = `${index + 1}. ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = '✕';
+                removeBtn.style.background = 'var(--error)';
+                removeBtn.style.border = 'none';
+                removeBtn.style.color = 'white';
+                removeBtn.style.borderRadius = '4px';
+                removeBtn.style.width = '30px';
+                removeBtn.style.height = '30px';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.onclick = () => {
+                    selectedFiles.splice(index, 1);
+                    renderFileList();
+                };
+                
+                div.appendChild(info);
+                div.appendChild(removeBtn);
+                filesContainer.appendChild(div);
+            });
+            
+            fileList.style.display = selectedFiles.length > 0 ? 'block' : 'none';
+            convertBtn.disabled = selectedFiles.length === 0;
+            resultArea.style.display = 'none';
+        }
+
+        async function convertToPDF() {
+            if (selectedFiles.length === 0) {
+                alert('Please select at least one PNG file!');
+                return;
+            }
+
+            convertBtn.disabled = true;
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    progressFill.style.width = `${((i + 1) / selectedFiles.length) * 100}%`;
+                    
+                    const file = selectedFiles[i];
+                    const img = await loadImage(file);
+                    
+                    if (i > 0) {
+                        pdf.addPage();
+                    }
+                    
+                    const imgWidth = pdf.internal.pageSize.getWidth();
+                    const imgHeight = (img.height * imgWidth) / img.width;
+                    pdf.addImage(img, 'PNG', 0, 0, imgWidth, imgHeight);
+                }
+
+                pdfBlob = pdf.output('blob');
+                
+                document.getElementById('resultInfo').textContent = 
+                    `${selectedFiles.length} image(s) converted to PDF.`;
+                
+                progressFill.style.width = '100%';
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    resultArea.style.display = 'block';
+                    convertBtn.disabled = false;
+                }, 500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during conversion: ' + error.message);
+                convertBtn.disabled = false;
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function loadImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function downloadPDF() {
+            if (!pdfBlob) return;
+            
+            const url = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'converted.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>
+

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to YAML - Convert JSON to YAML | OmniToolset</title>
+    <meta name="description" content="Convert JSON to YAML format. Free, online, no registration required.">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="../index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="../blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="../categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="../all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>📝 JSON to YAML</h2>
+            <p>Convert JSON to YAML format.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="input-group">
+                <label for="inputText">JSON:</label>
+                <textarea id="inputText" rows="12" placeholder='Enter JSON...&#10;&#10;Example:&#10;{&#10;  "name": "John",&#10;  "age": 30,&#10;  "city": "New York"&#10;}' style="font-family: monospace;"></textarea>
+            </div>
+
+            <button class="btn" onclick="convertToYAML()" style="width: 100%; margin: 1rem 0;">Convert to YAML</button>
+
+            <div class="input-group">
+                <label for="outputText">YAML Output:</label>
+                <textarea id="outputText" rows="12" readonly placeholder="YAML will appear here..." style="font-family: monospace;"></textarea>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
+
+            <button class="btn" onclick="copyToClipboard()" style="width: 100%; margin-bottom: 1rem;">Copy to Clipboard</button>
+            <button class="btn" onclick="clearAll()" style="width: 100%; background: var(--bg-hover);">Clear All</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function jsonToYAML(obj, indent = 0) {
+            const spaces = '  '.repeat(indent);
+            let yaml = '';
+
+            if (Array.isArray(obj)) {
+                obj.forEach(item => {
+                    if (typeof item === 'object' && item !== null) {
+                        yaml += spaces + '- ' + jsonToYAML(item, indent + 1).trim() + '\n';
+                    } else {
+                        yaml += spaces + '- ' + formatValue(item) + '\n';
+                    }
+                });
+            } else if (typeof obj === 'object' && obj !== null) {
+                const keys = Object.keys(obj);
+                keys.forEach((key, index) => {
+                    const value = obj[key];
+                    if (typeof value === 'object' && value !== null) {
+                        yaml += spaces + key + ':\n';
+                        yaml += jsonToYAML(value, indent + 1);
+                    } else {
+                        yaml += spaces + key + ': ' + formatValue(value) + '\n';
+                    }
+                });
+            } else {
+                yaml += formatValue(obj);
+            }
+
+            return yaml;
+        }
+
+        function formatValue(value) {
+            if (value === null) return 'null';
+            if (typeof value === 'string') {
+                if (value.includes('\n') || value.includes(':') || value.includes('|') || value.includes('&')) {
+                    return '|-\n' + value.split('\n').map(line => '  ' + line).join('\n');
+                }
+                return value;
+            }
+            if (typeof value === 'number') return String(value);
+            if (typeof value === 'boolean') return value ? 'true' : 'false';
+            return String(value);
+        }
+
+        function convertToYAML() {
+            const input = document.getElementById('inputText').value;
+            
+            document.getElementById('errorArea').style.display = 'none';
+
+            if (!input.trim()) {
+                document.getElementById('outputText').value = '';
+                return;
+            }
+
+            try {
+                const json = JSON.parse(input);
+                const yaml = jsonToYAML(json);
+                document.getElementById('outputText').value = yaml.trim();
+            } catch (e) {
+                document.getElementById('errorText').textContent = e.message;
+                document.getElementById('errorArea').style.display = 'block';
+            }
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('outputText');
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            document.getElementById('errorArea').style.display = 'none';
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

@@ -2,40 +2,8 @@
   "name": "@omni/web",
   "version": "1.0.0",
   "private": true,
-  "description": "OmniToolset Next.js application",
+  "description": "OmniToolset - Static HTML/JS/CSS Application",
   "scripts": {
-    "predev": "npm run build --prefix ../../packages/pdf-engine",
-    "dev": "next dev",
-    "prebuild": "npm run build --prefix ../../packages/pdf-engine",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "generate-blog": "tsx scripts/generate-blog.ts"
-  },
-  "dependencies": {
-    "@omni/pdf-engine": "0.1.0",
-    "@vercel/speed-insights": "^1.2.0",
-    "gray-matter": "^4.0.3",
-    "jspdf": "^3.0.3",
-    "jszip": "^3.10.1",
-    "mammoth": "^1.11.0",
-    "next": "^16.0.3",
-    "pdf-lib": "^1.17.1",
-    "pdfjs-dist": "^5.4.394",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "remark": "^15.0.1",
-    "remark-html": "^16.0.1",
-    "xlsx": "^0.18.5"
-  },
-  "devDependencies": {
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.2.5",
-    "@types/react-dom": "^19.2.3",
-    "autoprefixer": "^10.4.0",
-    "postcss": "^8.4.0",
-    "tailwindcss": "^3.4.0",
-    "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
+    "serve": "python3 -m http.server 8000"
   }
 }

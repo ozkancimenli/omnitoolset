@@ -2,7 +2,8 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://omnitoolset.com/sitemap.xml
+Sitemap: https://www.omnitoolset.com/sitemap.xml
 
-# Crawl-delay (opsiyonel, gerekirse ayarlayın)
-# Crawl-delay: 1
+# Disallow (if needed)
+# Disallow: /admin/
+# Disallow: /private/

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentage Calculator - Calculate Percentages | OmniToolset</title>
+    <meta name="description" content="Calculate percentages. Free, online, no registration required.">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="../index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="../blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="../categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="../all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>📊 Percentage Calculator</h2>
+            <p>Calculate percentages, percentage increase/decrease, and percentage of a number.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                <div class="input-group">
+                    <label for="value1">Value 1:</label>
+                    <input type="number" id="value1" placeholder="Enter first value" step="any" style="width: 100%;">
+                </div>
+                <div class="input-group">
+                    <label for="value2">Value 2:</label>
+                    <input type="number" id="value2" placeholder="Enter second value" step="any" style="width: 100%;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <button class="btn" onclick="calculatePercentage()" style="font-size: 0.9rem;">What is X% of Y?</button>
+                <button class="btn" onclick="calculatePercentageOf()" style="font-size: 0.9rem;">X is what % of Y?</button>
+                <button class="btn" onclick="calculateIncrease()" style="font-size: 0.9rem;">% Increase</button>
+                <button class="btn" onclick="calculateDecrease()" style="font-size: 0.9rem;">% Decrease</button>
+            </div>
+
+            <div class="result-area">
+                <h3 style="margin-bottom: 1rem;">Result:</h3>
+                <div id="resultText" style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); padding: 1rem; background: var(--bg-color); border-radius: 8px; text-align: center;">
+                    Enter values and select calculation type
+                </div>
+            </div>
+
+            <button class="btn" onclick="clearAll()" style="width: 100%; margin-top: 1rem; background: var(--bg-hover);">Clear All</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function getValues() {
+            const v1 = parseFloat(document.getElementById('value1').value);
+            const v2 = parseFloat(document.getElementById('value2').value);
+            return { v1, v2 };
+        }
+
+        function calculatePercentage() {
+            const { v1, v2 } = getValues();
+            if (isNaN(v1) || isNaN(v2)) {
+                alert('Please enter valid numbers');
+                return;
+            }
+            const result = (v1 / 100) * v2;
+            document.getElementById('resultText').textContent = `${v1}% of ${v2} = ${result.toFixed(2)}`;
+        }
+
+        function calculatePercentageOf() {
+            const { v1, v2 } = getValues();
+            if (isNaN(v1) || isNaN(v2) || v2 === 0) {
+                alert('Please enter valid numbers (Value 2 cannot be 0)');
+                return;
+            }
+            const result = (v1 / v2) * 100;
+            document.getElementById('resultText').textContent = `${v1} is ${result.toFixed(2)}% of ${v2}`;
+        }
+
+        function calculateIncrease() {
+            const { v1, v2 } = getValues();
+            if (isNaN(v1) || isNaN(v2) || v2 === 0) {
+                alert('Please enter valid numbers (Value 2 cannot be 0)');
+                return;
+            }
+            const result = ((v1 - v2) / v2) * 100;
+            document.getElementById('resultText').textContent = `Increase from ${v2} to ${v1} = ${result.toFixed(2)}%`;
+        }
+
+        function calculateDecrease() {
+            const { v1, v2 } = getValues();
+            if (isNaN(v1) || isNaN(v2) || v2 === 0) {
+                alert('Please enter valid numbers (Value 2 cannot be 0)');
+                return;
+            }
+            const result = ((v2 - v1) / v2) * 100;
+            document.getElementById('resultText').textContent = `Decrease from ${v2} to ${v1} = ${result.toFixed(2)}%`;
+        }
+
+        function clearAll() {
+            document.getElementById('value1').value = '';
+            document.getElementById('value2').value = '';
+            document.getElementById('resultText').textContent = 'Enter values and select calculation type';
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 to Image - Convert Base64 to Image | OmniToolset</title>
+    <meta name="description" content="Convert Base64 string to image. Free, online, no registration required.">
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="../index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="../blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="../categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="../all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="../index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>🖼️ Base64 to Image</h2>
+            <p>Convert Base64 string to image.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="input-group">
+                <label for="inputText">Base64 String or Data URL:</label>
+                <textarea id="inputText" rows="8" placeholder="Enter Base64 string or data URL...&#10;&#10;Example:&#10;data:image/png;base64,iVBORw0KGgoAAAANS..." style="font-family: monospace; font-size: 0.9rem;"></textarea>
+            </div>
+
+            <button class="btn" onclick="convertToImage()" style="width: 100%; margin: 1rem 0;">Convert to Image</button>
+
+            <div id="imageArea" style="display: none; margin: 2rem 0; text-align: center;">
+                <div style="margin-bottom: 1rem;">
+                    <strong>Converted Image:</strong>
+                </div>
+                <img id="imageOutput" style="max-width: 100%; max-height: 400px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="margin-top: 1rem;">
+                    <button class="btn" onclick="downloadImage()" style="margin-right: 0.5rem;">Download Image</button>
+                    <button class="btn" onclick="copyImage()" style="background: var(--bg-hover);">Copy Image</button>
+                </div>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
+
+            <button class="btn" onclick="clearAll()" style="width: 100%; margin-top: 1rem; background: var(--bg-hover);">Clear All</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        let currentImageData = null;
+
+        function convertToImage() {
+            const input = document.getElementById('inputText').value.trim();
+            
+            document.getElementById('imageArea').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+
+            if (!input) {
+                document.getElementById('errorText').textContent = 'Please enter a Base64 string';
+                document.getElementById('errorArea').style.display = 'block';
+                return;
+            }
+
+            try {
+                let dataURL = input;
+                
+                // If it's not a data URL, add the prefix
+                if (!dataURL.startsWith('data:')) {
+                    // Try to detect image type from Base64 or default to png
+                    dataURL = 'data:image/png;base64,' + dataURL;
+                }
+
+                // Validate Base64
+                const img = new Image();
+                img.onload = function() {
+                    document.getElementById('imageOutput').src = dataURL;
+                    currentImageData = dataURL;
+                    document.getElementById('imageArea').style.display = 'block';
+                };
+                img.onerror = function() {
+                    document.getElementById('errorText').textContent = 'Invalid Base64 string or image format';
+                    document.getElementById('errorArea').style.display = 'block';
+                };
+                img.src = dataURL;
+            } catch (e) {
+                document.getElementById('errorText').textContent = e.message;
+                document.getElementById('errorArea').style.display = 'block';
+            }
+        }
+
+        function downloadImage() {
+            if (!currentImageData) {
+                alert('Please convert a Base64 string first');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = 'image.png';
+            link.href = currentImageData;
+            link.click();
+        }
+
+        function copyImage() {
+            if (!currentImageData) {
+                alert('Please convert a Base64 string first');
+                return;
+            }
+
+            fetch(currentImageData)
+                .then(res => res.blob())
+                .then(blob => {
+                    navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': blob })
+                    ]).then(() => {
+                        alert('Image copied to clipboard!');
+                    }).catch(() => {
+                        alert('Failed to copy image. Please download it instead.');
+                    });
+                });
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('imageArea').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+            currentImageData = null;
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>
