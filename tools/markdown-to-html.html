@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown to HTML - Convert Markdown to HTML | OmniToolset</title>
+    <meta name="description" content="Convert Markdown text to HTML. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>📝 Markdown to HTML</h2>
+            <p>Convert Markdown text to HTML format.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="input-group">
+                <label for="inputText">Markdown text:</label>
+                <textarea id="inputText" rows="12" placeholder='Enter Markdown text...\n\nExample:\n# Heading\n**Bold** and *italic*\n- List item 1\n- List item 2'></textarea>
+            </div>
+
+            <button class="btn" onclick="convertToHTML()" style="width: 100%; margin: 1rem 0;">Convert to HTML</button>
+
+            <div class="input-group">
+                <label for="outputText">HTML result:</label>
+                <textarea id="outputText" rows="12" readonly placeholder="HTML will appear here..."></textarea>
+            </div>
+
+            <div style="margin-bottom: 1rem; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                <strong>Preview:</strong>
+                <div id="preview" style="margin-top: 1rem; padding: 1rem; background: white; color: black; border-radius: 8px; min-height: 50px;"></div>
+            </div>
+
+            <button class="btn" onclick="copyToClipboard()" style="width: 100%; margin-bottom: 1rem;">Copy HTML</button>
+            <button class="btn" onclick="clearAll()" style="width: 100%; background: var(--bg-hover);">Clear All</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function markdownToHTML(markdown) {
+            let html = markdown;
+
+            // Headers
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+            // Bold
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+            // Italic
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2">$1</a>');
+
+            // Images
+            html = html.replace(/!\[([^\]]*)\]\(([^\)]+)\)/g, '<img src="$2" alt="$1">');
+
+            // Code blocks
+            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+            // Lists
+            html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
+            html = html.replace(/^- (.*$)/gim, '<li>$1</li>');
+            html = html.replace(/^\+ (.*$)/gim, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+            // Ordered lists
+            html = html.replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/s, '<ol>$1</ol>');
+
+            // Paragraphs
+            html = html.split('\n\n').map(para => {
+                if (!para.trim().startsWith('<') && para.trim()) {
+                    return '<p>' + para.trim() + '</p>';
+                }
+                return para;
+            }).join('\n');
+
+            // Line breaks
+            html = html.replace(/\n/g, '<br>');
+
+            return html;
+        }
+
+        function convertToHTML() {
+            const input = document.getElementById('inputText').value;
+            const html = markdownToHTML(input);
+            
+            document.getElementById('outputText').value = html;
+            document.getElementById('preview').innerHTML = html;
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('outputText');
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            document.getElementById('preview').innerHTML = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('inputText');
+            input.addEventListener('input', convertToHTML);
+        });
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

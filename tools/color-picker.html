@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker - Pick Colors and Convert Hex/RGB | OmniToolset</title>
+    <meta name="description" content="Pick colors and convert between Hex, RGB, HSL formats. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>🎨 Color Picker</h2>
+            <p>Pick colors and convert between Hex, RGB, HSL formats.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="display: grid; gap: 2rem;">
+                <div>
+                    <div class="input-group">
+                        <label for="colorPicker">Pick a Color:</label>
+                        <input type="color" id="colorPicker" value="#3b82f6" style="width: 100%; height: 60px; cursor: pointer;">
+                    </div>
+                </div>
+
+                <div style="padding: 2rem; background: var(--bg-color); border-radius: 12px; text-align: center;">
+                    <div id="colorPreview" style="width: 200px; height: 200px; margin: 0 auto; border-radius: 12px; border: 3px solid var(--border-color); box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                </div>
+
+                <div style="display: grid; gap: 1rem;">
+                    <div style="padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                        <strong>Hex:</strong>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <input type="text" id="hexValue" readonly style="flex: 1; font-family: monospace; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                            <button class="btn" onclick="copyColor('hex')" style="min-width: 80px;">Copy</button>
+                        </div>
+                    </div>
+
+                    <div style="padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                        <strong>RGB:</strong>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <input type="text" id="rgbValue" readonly style="flex: 1; font-family: monospace; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                            <button class="btn" onclick="copyColor('rgb')" style="min-width: 80px;">Copy</button>
+                        </div>
+                    </div>
+
+                    <div style="padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                        <strong>HSL:</strong>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <input type="text" id="hslValue" readonly style="flex: 1; font-family: monospace; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                            <button class="btn" onclick="copyColor('hsl')" style="min-width: 80px;">Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Or Enter Color Value:</h3>
+                    <div class="input-group">
+                        <label for="colorInput">Hex, RGB, or HSL:</label>
+                        <input type="text" id="colorInput" placeholder="#3b82f6 or rgb(59, 130, 246) or hsl(217, 91%, 60%)" style="width: 100%;">
+                    </div>
+                    <button class="btn" onclick="parseColor()" style="width: 100%; margin-top: 1rem;">Parse Color</button>
+                </div>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                l: Math.round(l * 100)
+            };
+        }
+
+        function updateColor(hex) {
+            const rgb = hexToRgb(hex);
+            if (!rgb) return;
+
+            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+
+            document.getElementById('colorPreview').style.backgroundColor = hex;
+            document.getElementById('hexValue').value = hex.toUpperCase();
+            document.getElementById('rgbValue').value = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+            document.getElementById('hslValue').value = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+        }
+
+        document.getElementById('colorPicker').addEventListener('input', function() {
+            updateColor(this.value);
+        });
+
+        function parseColor() {
+            const input = document.getElementById('colorInput').value.trim();
+            if (!input) return;
+
+            // Try to parse different formats
+            if (input.startsWith('#')) {
+                if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(input)) {
+                    let hex = input;
+                    if (hex.length === 4) {
+                        hex = '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+                    }
+                    document.getElementById('colorPicker').value = hex;
+                    updateColor(hex);
+                }
+            } else if (input.startsWith('rgb')) {
+                const match = input.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                if (match) {
+                    const r = parseInt(match[1]);
+                    const g = parseInt(match[2]);
+                    const b = parseInt(match[3]);
+                    const hex = '#' + [r, g, b].map(x => {
+                        const hex = x.toString(16);
+                        return hex.length === 1 ? '0' + hex : hex;
+                    }).join('');
+                    document.getElementById('colorPicker').value = hex;
+                    updateColor(hex);
+                }
+            } else if (input.startsWith('hsl')) {
+                const match = input.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+                if (match) {
+                    // Convert HSL to RGB (simplified)
+                    alert('HSL to RGB conversion is complex. Please use Hex or RGB format.');
+                }
+            }
+        }
+
+        function copyColor(format) {
+            let value;
+            if (format === 'hex') {
+                value = document.getElementById('hexValue').value;
+            } else if (format === 'rgb') {
+                value = document.getElementById('rgbValue').value;
+            } else if (format === 'hsl') {
+                value = document.getElementById('hslValue').value;
+            }
+            
+            navigator.clipboard.writeText(value).then(() => {
+                alert('Copied to clipboard!');
+            }).catch(() => {
+                const input = document.getElementById(format + 'Value');
+                input.select();
+                document.execCommand('copy');
+                alert('Copied to clipboard!');
+            });
+        }
+
+        // Initialize
+        updateColor('#3b82f6');
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>
+

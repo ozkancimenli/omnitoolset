@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tip Calculator - Calculate Tips | OmniToolset</title>
+    <meta name="description" content="Calculate tips and total bill amount. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>💰 Tip Calculator</h2>
+            <p>Calculate tip amount and total bill including tip.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="input-group">
+                <label for="billAmount">Bill Amount:</label>
+                <input type="number" id="billAmount" placeholder="Enter bill amount" step="0.01" min="0" style="width: 100%;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                <button class="btn" onclick="setTipPercent(10)" style="font-size: 0.9rem;">10%</button>
+                <button class="btn" onclick="setTipPercent(15)" style="font-size: 0.9rem;">15%</button>
+                <button class="btn" onclick="setTipPercent(18)" style="font-size: 0.9rem;">18%</button>
+                <button class="btn" onclick="setTipPercent(20)" style="font-size: 0.9rem;">20%</button>
+                <button class="btn" onclick="setTipPercent(25)" style="font-size: 0.9rem;">25%</button>
+            </div>
+
+            <div class="input-group">
+                <label for="tipPercent">Tip Percentage:</label>
+                <input type="number" id="tipPercent" value="15" min="0" max="100" step="0.1" style="width: 100%;">
+            </div>
+
+            <div class="input-group">
+                <label for="peopleCount">Split between (number of people):</label>
+                <input type="number" id="peopleCount" value="1" min="1" step="1" style="width: 100%;">
+            </div>
+
+            <button class="btn" onclick="calculateTip()" style="width: 100%; margin: 1rem 0;">Calculate Tip</button>
+
+            <div class="result-area">
+                <h3 style="margin-bottom: 1rem;">Calculation Results:</h3>
+                <div style="display: grid; gap: 1rem;">
+                    <div style="padding: 1.5rem; background: var(--bg-color); border-radius: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Tip Amount:</span>
+                            <strong style="font-size: 1.2rem; color: var(--primary-color);" id="tipAmount">$0.00</strong>
+                        </div>
+                    </div>
+                    <div style="padding: 1.5rem; background: var(--bg-color); border-radius: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Total Bill:</span>
+                            <strong style="font-size: 1.2rem; color: var(--primary-color);" id="totalBill">$0.00</strong>
+                        </div>
+                    </div>
+                    <div style="padding: 1.5rem; background: var(--bg-color); border-radius: 12px;" id="perPersonDiv" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Per Person:</span>
+                            <strong style="font-size: 1.2rem; color: var(--primary-color);" id="perPerson">$0.00</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="clearAll()" style="width: 100%; margin-top: 1rem; background: var(--bg-hover);">Clear All</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function setTipPercent(percent) {
+            document.getElementById('tipPercent').value = percent;
+            calculateTip();
+        }
+
+        function calculateTip() {
+            const billAmount = parseFloat(document.getElementById('billAmount').value) || 0;
+            const tipPercent = parseFloat(document.getElementById('tipPercent').value) || 0;
+            const peopleCount = parseInt(document.getElementById('peopleCount').value) || 1;
+
+            if (billAmount <= 0) {
+                alert('Please enter a valid bill amount');
+                return;
+            }
+
+            const tipAmount = (billAmount * tipPercent) / 100;
+            const totalBill = billAmount + tipAmount;
+            const perPerson = totalBill / peopleCount;
+
+            document.getElementById('tipAmount').textContent = '$' + tipAmount.toFixed(2);
+            document.getElementById('totalBill').textContent = '$' + totalBill.toFixed(2);
+
+            if (peopleCount > 1) {
+                document.getElementById('perPersonDiv').style.display = 'block';
+                document.getElementById('perPerson').textContent = '$' + perPerson.toFixed(2);
+            } else {
+                document.getElementById('perPersonDiv').style.display = 'none';
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('billAmount').value = '';
+            document.getElementById('tipPercent').value = 15;
+            document.getElementById('peopleCount').value = 1;
+            document.getElementById('tipAmount').textContent = '$0.00';
+            document.getElementById('totalBill').textContent = '$0.00';
+            document.getElementById('perPersonDiv').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = ['billAmount', 'tipPercent', 'peopleCount'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', calculateTip);
+            });
+        });
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

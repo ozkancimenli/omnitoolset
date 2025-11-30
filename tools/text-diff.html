@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Diff - Compare Two Texts | OmniToolset</title>
+    <meta name="description" content="Compare two texts and find differences. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>🔍 Text Diff</h2>
+            <p>Compare two texts and highlight the differences.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group">
+                    <label for="text1">Text 1:</label>
+                    <textarea id="text1" rows="12" placeholder="Enter first text..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="text2">Text 2:</label>
+                    <textarea id="text2" rows="12" placeholder="Enter second text..."></textarea>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="ignoreWhitespace" style="margin-right: 0.5rem;">
+                        Ignore Whitespace
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="caseSensitive" checked style="margin-right: 0.5rem;">
+                        Case Sensitive
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn" onclick="compareTexts()" style="width: 100%; margin: 1rem 0;">Compare Texts</button>
+
+            <div id="resultArea" style="display: none;">
+                <h3 style="margin-bottom: 1rem;">Differences:</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">
+                        <strong style="color: var(--error);">Removed (Text 1 only):</strong>
+                        <div id="removed" style="margin-top: 0.5rem; padding: 1rem; background: var(--bg-color); border-radius: 4px; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(34, 197, 94, 0.1); border-radius: 8px;">
+                        <strong style="color: #22c55e;">Added (Text 2 only):</strong>
+                        <div id="added" style="margin-top: 0.5rem; padding: 1rem; background: var(--bg-color); border-radius: 4px; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                    <strong>Statistics:</strong>
+                    <div id="stats" style="margin-top: 0.5rem;"></div>
+                </div>
+            </div>
+
+            <div id="noDiffArea" style="display: none; margin-top: 1rem; padding: 2rem; background: rgba(34, 197, 94, 0.1); border: 2px solid #22c55e; border-radius: 8px; text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">✓</div>
+                <strong style="color: #22c55e; font-size: 1.2rem;">Texts are identical!</strong>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function compareTexts() {
+            let text1 = document.getElementById('text1').value;
+            let text2 = document.getElementById('text2').value;
+            const ignoreWhitespace = document.getElementById('ignoreWhitespace').checked;
+            const caseSensitive = document.getElementById('caseSensitive').checked;
+
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('noDiffArea').style.display = 'none';
+
+            if (ignoreWhitespace) {
+                text1 = text1.replace(/\s+/g, ' ').trim();
+                text2 = text2.replace(/\s+/g, ' ').trim();
+            }
+
+            if (!caseSensitive) {
+                text1 = text1.toLowerCase();
+                text2 = text2.toLowerCase();
+            }
+
+            if (text1 === text2) {
+                document.getElementById('noDiffArea').style.display = 'block';
+                return;
+            }
+
+            // Simple diff algorithm
+            const lines1 = text1.split('\n');
+            const lines2 = text2.split('\n');
+            
+            const removed = [];
+            const added = [];
+            
+            const maxLen = Math.max(lines1.length, lines2.length);
+            
+            for (let i = 0; i < maxLen; i++) {
+                if (i >= lines1.length) {
+                    added.push(lines2[i]);
+                } else if (i >= lines2.length) {
+                    removed.push(lines1[i]);
+                } else if (lines1[i] !== lines2[i]) {
+                    removed.push(lines1[i]);
+                    added.push(lines2[i]);
+                }
+            }
+
+            document.getElementById('removed').textContent = removed.length > 0 ? removed.join('\n') : '(none)';
+            document.getElementById('added').textContent = added.length > 0 ? added.join('\n') : '(none)';
+
+            const original1 = document.getElementById('text1').value;
+            const original2 = document.getElementById('text2').value;
+            const chars1 = original1.length;
+            const chars2 = original2.length;
+            const words1 = original1.split(/\s+/).filter(w => w).length;
+            const words2 = original2.split(/\s+/).filter(w => w).length;
+
+            document.getElementById('stats').innerHTML = `
+                <div>Text 1: ${chars1} characters, ${words1} words, ${lines1.length} lines</div>
+                <div>Text 2: ${chars2} characters, ${words2} words, ${lines2.length} lines</div>
+                <div>Different lines: ${removed.length}</div>
+                <div>Character difference: ${Math.abs(chars1 - chars2)}</div>
+            `;
+
+            document.getElementById('resultArea').style.display = 'block';
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF from Images - Create PDF from Multiple Images | OmniToolset</title>
+    <meta name="description" content="Create PDF from multiple images. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>🖼️ PDF from Images</h2>
+            <p>Create a PDF file from multiple images.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="input-group">
+                <label for="imageInput">Select Images:</label>
+                <input type="file" id="imageInput" accept="image/*" multiple style="width: 100%;">
+            </div>
+
+            <div id="imagePreview" style="display: none; margin: 2rem 0;">
+                <h3 style="margin-bottom: 1rem;">Selected Images:</h3>
+                <div id="imageList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="pageSize">Page Size:</label>
+                <select id="pageSize" style="width: 100%;">
+                    <option value="A4" selected>A4 (210 x 297 mm)</option>
+                    <option value="Letter">Letter (8.5 x 11 in)</option>
+                    <option value="Legal">Legal (8.5 x 14 in)</option>
+                    <option value="fit">Fit to Image</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="orientation">Orientation:</label>
+                <select id="orientation" style="width: 100%;">
+                    <option value="portrait" selected>Portrait</option>
+                    <option value="landscape">Landscape</option>
+                </select>
+            </div>
+
+            <button class="btn" id="createBtn" onclick="createPDF()" style="width: 100%; margin: 1rem 0;" disabled>Create PDF</button>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem; padding: 2rem; background: var(--bg-color); border-radius: 12px; text-align: center;">
+                <h3>PDF Created Successfully!</h3>
+                <p id="resultInfo"></p>
+                <button class="btn" onclick="downloadPDF()" style="width: 100%; margin-top: 1rem;">Download PDF</button>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script>
+        let selectedImages = [];
+        let pdfBlob = null;
+
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                selectedImages = files;
+                renderImagePreview();
+                document.getElementById('createBtn').disabled = false;
+            }
+        });
+
+        function renderImagePreview() {
+            const imageList = document.getElementById('imageList');
+            imageList.innerHTML = '';
+            
+            selectedImages.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.style.position = 'relative';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '100%';
+                    img.style.height = '150px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '8px';
+                    img.style.border = '1px solid var(--border-color)';
+                    
+                    const label = document.createElement('div');
+                    label.textContent = `${index + 1}. ${file.name}`;
+                    label.style.fontSize = '0.8rem';
+                    label.style.marginTop = '0.5rem';
+                    label.style.textAlign = 'center';
+                    label.style.color = 'var(--text-secondary)';
+                    
+                    div.appendChild(img);
+                    div.appendChild(label);
+                    imageList.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            document.getElementById('imagePreview').style.display = 'block';
+        }
+
+        async function createPDF() {
+            if (selectedImages.length === 0) return;
+
+            document.getElementById('errorArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('createBtn').disabled = true;
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+
+            try {
+                const pdf = await PDFLib.PDFDocument.create();
+                const pageSize = document.getElementById('pageSize').value;
+                const orientation = document.getElementById('orientation').value;
+
+                const sizes = {
+                    A4: orientation === 'portrait' ? [595, 842] : [842, 595],
+                    Letter: orientation === 'portrait' ? [612, 792] : [792, 612],
+                    Legal: orientation === 'portrait' ? [612, 1008] : [1008, 612]
+                };
+
+                for (let i = 0; i < selectedImages.length; i++) {
+                    document.getElementById('progressFill').style.width = `${((i + 1) / selectedImages.length) * 100}%`;
+
+                    const file = selectedImages[i];
+                    const imageBytes = await file.arrayBuffer();
+                    
+                    let image;
+                    if (file.type === 'image/png') {
+                        image = await pdf.embedPng(imageBytes);
+                    } else if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+                        image = await pdf.embedJpg(imageBytes);
+                    } else {
+                        // Try to embed as PNG
+                        image = await pdf.embedPng(imageBytes);
+                    }
+
+                    let page;
+                    if (pageSize === 'fit') {
+                        const [width, height] = [image.width, image.height];
+                        page = pdf.addPage([width, height]);
+                        page.drawImage(image, {
+                            x: 0,
+                            y: 0,
+                            width: width,
+                            height: height,
+                        });
+                    } else {
+                        const [pageWidth, pageHeight] = sizes[pageSize];
+                        page = pdf.addPage([pageWidth, pageHeight]);
+                        
+                        // Scale image to fit page while maintaining aspect ratio
+                        const imageWidth = image.width;
+                        const imageHeight = image.height;
+                        const scaleX = pageWidth / imageWidth;
+                        const scaleY = pageHeight / imageHeight;
+                        const scale = Math.min(scaleX, scaleY);
+                        
+                        const scaledWidth = imageWidth * scale;
+                        const scaledHeight = imageHeight * scale;
+                        const x = (pageWidth - scaledWidth) / 2;
+                        const y = (pageHeight - scaledHeight) / 2;
+                        
+                        page.drawImage(image, {
+                            x: x,
+                            y: y,
+                            width: scaledWidth,
+                            height: scaledHeight,
+                        });
+                    }
+                }
+
+                pdfBlob = await pdf.save();
+                
+                document.getElementById('resultInfo').textContent = 
+                    `PDF created with ${selectedImages.length} image(s).`;
+                
+                setTimeout(() => {
+                    document.getElementById('progressBar').style.display = 'none';
+                    document.getElementById('resultArea').style.display = 'block';
+                    document.getElementById('createBtn').disabled = false;
+                }, 500);
+
+            } catch (e) {
+                document.getElementById('errorText').textContent = e.message;
+                document.getElementById('errorArea').style.display = 'block';
+                document.getElementById('progressBar').style.display = 'none';
+                document.getElementById('createBtn').disabled = false;
+            }
+        }
+
+        function downloadPDF() {
+            if (!pdfBlob) return;
+            
+            const url = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'images.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

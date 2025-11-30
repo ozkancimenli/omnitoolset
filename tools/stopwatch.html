@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch - Digital Stopwatch Timer | OmniToolset</title>
+    <meta name="description" content="Digital stopwatch timer. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>⏱️ Stopwatch</h2>
+            <p>Digital stopwatch timer with lap time functionality.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="text-align: center; padding: 3rem; background: var(--bg-color); border-radius: 16px; margin: 2rem 0;">
+                <div style="font-size: 4rem; font-weight: 700; color: var(--primary-color); font-family: monospace; margin-bottom: 2rem;" id="display">
+                    00:00:00.00
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn" id="startBtn" onclick="startStopwatch()" style="min-width: 120px;">Start</button>
+                    <button class="btn" id="pauseBtn" onclick="pauseStopwatch()" style="min-width: 120px; display: none;">Pause</button>
+                    <button class="btn" onclick="lapStopwatch()" id="lapBtn" style="min-width: 120px; background: var(--bg-hover);">Lap</button>
+                    <button class="btn" onclick="resetStopwatch()" style="min-width: 120px; background: var(--bg-hover);">Reset</button>
+                </div>
+            </div>
+
+            <div class="result-area" id="lapsArea" style="display: none;">
+                <h3 style="margin-bottom: 1rem;">Lap Times:</h3>
+                <div id="lapsList" style="max-height: 300px; overflow-y: auto;"></div>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        let startTime = null;
+        let elapsedTime = 0;
+        let intervalId = null;
+        let lapCount = 0;
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            const milliseconds = Math.floor((ms % 1000) / 10);
+
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            const now = Date.now();
+            const currentElapsed = elapsedTime + (startTime ? now - startTime : 0);
+            document.getElementById('display').textContent = formatTime(currentElapsed);
+        }
+
+        function startStopwatch() {
+            if (!startTime) {
+                startTime = Date.now();
+                intervalId = setInterval(updateDisplay, 10);
+                document.getElementById('startBtn').style.display = 'none';
+                document.getElementById('pauseBtn').style.display = 'inline-block';
+            }
+        }
+
+        function pauseStopwatch() {
+            if (startTime) {
+                elapsedTime += Date.now() - startTime;
+                startTime = null;
+                clearInterval(intervalId);
+                document.getElementById('startBtn').style.display = 'inline-block';
+                document.getElementById('pauseBtn').style.display = 'none';
+            }
+        }
+
+        function lapStopwatch() {
+            if (startTime || elapsedTime > 0) {
+                lapCount++;
+                const now = Date.now();
+                const currentElapsed = elapsedTime + (startTime ? now - startTime : 0);
+                const lapTime = formatTime(currentElapsed);
+
+                const lapsList = document.getElementById('lapsList');
+                const lapDiv = document.createElement('div');
+                lapDiv.style.padding = '0.75rem';
+                lapDiv.style.marginBottom = '0.5rem';
+                lapDiv.style.background = 'var(--bg-color)';
+                lapDiv.style.borderRadius = '8px';
+                lapDiv.textContent = `Lap ${lapCount}: ${lapTime}`;
+                lapsList.insertBefore(lapDiv, lapsList.firstChild);
+
+                document.getElementById('lapsArea').style.display = 'block';
+            }
+        }
+
+        function resetStopwatch() {
+            pauseStopwatch();
+            elapsedTime = 0;
+            startTime = null;
+            lapCount = 0;
+            document.getElementById('display').textContent = '00:00:00.00';
+            document.getElementById('lapsList').innerHTML = '';
+            document.getElementById('lapsArea').style.display = 'none';
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('pauseBtn').style.display = 'none';
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator - Calculate Body Mass Index | OmniToolset</title>
+    <meta name="description" content="Calculate Body Mass Index (BMI). Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>⚖️ BMI Calculator</h2>
+            <p>Calculate your Body Mass Index (BMI) to assess your weight status.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group">
+                    <label for="unitSystem">Unit System:</label>
+                    <select id="unitSystem" style="width: 100%;">
+                        <option value="metric">Metric (kg, cm)</option>
+                        <option value="imperial">Imperial (lbs, inches)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group" id="weightGroup">
+                    <label for="weight">Weight (kg):</label>
+                    <input type="number" id="weight" placeholder="Enter weight" step="0.1" style="width: 100%;">
+                </div>
+                <div class="input-group" id="heightGroup">
+                    <label for="height">Height (cm):</label>
+                    <input type="number" id="height" placeholder="Enter height" step="0.1" style="width: 100%;">
+                </div>
+            </div>
+
+            <button class="btn" onclick="calculateBMI()" style="width: 100%; margin: 1rem 0;">Calculate BMI</button>
+
+            <div class="result-area">
+                <h3 style="margin-bottom: 1rem;">BMI Result:</h3>
+                <div style="text-align: center; padding: 2rem; background: var(--bg-color); border-radius: 12px;">
+                    <div style="font-size: 3rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1rem;" id="bmiValue">-</div>
+                    <div style="font-size: 1.2rem; margin-bottom: 1rem;" id="bmiCategory">-</div>
+                    <div style="color: var(--text-secondary);" id="bmiRange">-</div>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                    <h4 style="margin-bottom: 1rem;">BMI Categories:</h4>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <div>Underweight: BMI &lt; 18.5</div>
+                        <div>Normal weight: BMI 18.5 - 24.9</div>
+                        <div>Overweight: BMI 25 - 29.9</div>
+                        <div>Obesity: BMI ≥ 30</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="clearAll()" style="width: 100%; margin-top: 1rem; background: var(--bg-hover);">Clear All</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function updateUnitLabels() {
+            const unitSystem = document.getElementById('unitSystem').value;
+            const weightLabel = document.getElementById('weightGroup').querySelector('label');
+            const heightLabel = document.getElementById('heightGroup').querySelector('label');
+
+            if (unitSystem === 'metric') {
+                weightLabel.textContent = 'Weight (kg):';
+                heightLabel.textContent = 'Height (cm):';
+            } else {
+                weightLabel.textContent = 'Weight (lbs):';
+                heightLabel.textContent = 'Height (inches):';
+            }
+        }
+
+        function calculateBMI() {
+            const unitSystem = document.getElementById('unitSystem').value;
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+
+            if (!weight || !height || weight <= 0 || height <= 0) {
+                alert('Please enter valid weight and height values');
+                return;
+            }
+
+            let bmi;
+            if (unitSystem === 'metric') {
+                // BMI = weight (kg) / height (m)²
+                bmi = weight / Math.pow(height / 100, 2);
+            } else {
+                // BMI = (weight (lbs) / height (inches)²) × 703
+                bmi = (weight / Math.pow(height, 2)) * 703;
+            }
+
+            bmi = Math.round(bmi * 10) / 10;
+
+            let category = '';
+            let color = '';
+
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                color = '#3b82f6';
+            } else if (bmi < 25) {
+                category = 'Normal weight';
+                color = '#10b981';
+            } else if (bmi < 30) {
+                category = 'Overweight';
+                color = '#f59e0b';
+            } else {
+                category = 'Obesity';
+                color = '#ef4444';
+            }
+
+            document.getElementById('bmiValue').textContent = bmi;
+            document.getElementById('bmiValue').style.color = color;
+            document.getElementById('bmiCategory').textContent = category;
+            document.getElementById('bmiCategory').style.color = color;
+            document.getElementById('bmiRange').textContent = `BMI Range: ${bmi < 18.5 ? '< 18.5' : bmi < 25 ? '18.5 - 24.9' : bmi < 30 ? '25 - 29.9' : '≥ 30'}`;
+        }
+
+        function clearAll() {
+            document.getElementById('weight').value = '';
+            document.getElementById('height').value = '';
+            document.getElementById('bmiValue').textContent = '-';
+            document.getElementById('bmiCategory').textContent = '-';
+            document.getElementById('bmiRange').textContent = '-';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('unitSystem').addEventListener('change', updateUnitLabels);
+            updateUnitLabels();
+        });
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

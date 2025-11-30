@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regex Tester - Test Regular Expressions | OmniToolset</title>
+    <meta name="description" content="Test regular expressions with live matching. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>🔍 Regex Tester</h2>
+            <p>Test your regular expressions with live matching and highlighting.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="input-group">
+                <label for="regexInput">Regular Expression:</label>
+                <input type="text" id="regexInput" placeholder="Enter regex pattern (e.g., /hello/gi)" style="font-family: monospace;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="globalFlag" checked style="margin-right: 0.5rem;">
+                        Global (g)
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="caseInsensitiveFlag" style="margin-right: 0.5rem;">
+                        Case Insensitive (i)
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="multilineFlag" style="margin-right: 0.5rem;">
+                        Multiline (m)
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="testText">Test Text:</label>
+                <textarea id="testText" rows="10" placeholder="Enter text to test against the regex..."></textarea>
+            </div>
+
+            <button class="btn" onclick="testRegex()" style="width: 100%; margin: 1rem 0;">Test Regex</button>
+
+            <div class="result-area" id="resultArea" style="display: none;">
+                <h3 style="margin-bottom: 1rem;">Results:</h3>
+                <div id="matchCount" style="margin-bottom: 1rem; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                    <strong>Matches: <span id="matchCountNum">0</span></strong>
+                </div>
+                <div class="input-group">
+                    <label for="matchesOutput">Matches:</label>
+                    <textarea id="matchesOutput" rows="6" readonly placeholder="Matches will appear here..."></textarea>
+                </div>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
+
+            <button class="btn" onclick="clearAll()" style="width: 100%; margin-top: 1rem; background: var(--bg-hover);">Clear All</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function testRegex() {
+            const regexInput = document.getElementById('regexInput').value;
+            const testText = document.getElementById('testText').value;
+            const globalFlag = document.getElementById('globalFlag').checked;
+            const caseInsensitiveFlag = document.getElementById('caseInsensitiveFlag').checked;
+            const multilineFlag = document.getElementById('multilineFlag').checked;
+
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+
+            if (!regexInput.trim()) {
+                document.getElementById('errorText').textContent = 'Please enter a regular expression';
+                document.getElementById('errorArea').style.display = 'block';
+                return;
+            }
+
+            try {
+                let flags = '';
+                if (globalFlag) flags += 'g';
+                if (caseInsensitiveFlag) flags += 'i';
+                if (multilineFlag) flags += 'm';
+
+                // Remove leading/trailing slashes if present
+                let pattern = regexInput.trim();
+                if (pattern.startsWith('/') && pattern.endsWith('/')) {
+                    pattern = pattern.slice(1, -1);
+                }
+
+                const regex = new RegExp(pattern, flags);
+                const matches = testText.match(regex);
+
+                if (matches) {
+                    document.getElementById('matchCountNum').textContent = matches.length;
+                    document.getElementById('matchesOutput').value = matches.join('\n');
+                } else {
+                    document.getElementById('matchCountNum').textContent = '0';
+                    document.getElementById('matchesOutput').value = 'No matches found';
+                }
+
+                document.getElementById('resultArea').style.display = 'block';
+            } catch (e) {
+                document.getElementById('errorText').textContent = e.message;
+                document.getElementById('errorArea').style.display = 'block';
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('regexInput').value = '';
+            document.getElementById('testText').value = '';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

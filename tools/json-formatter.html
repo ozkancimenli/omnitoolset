@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Formatla & Doğrula - OmniToolset</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+    <style>
+        .json-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+    </style>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>📋 JSON Formatla & Doğrula</h2>
+            <p>JSON kodunu düzenleyin, formatlayın ve doğrulayın.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <button class="btn" onclick="formatJSON()">Formatla</button>
+                <button class="btn" onclick="minifyJSON()">Minify (Sıkıştır)</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <button class="btn" onclick="validateJSON()">Doğrula</button>
+                <button class="btn" onclick="copyJSON()">Kopyala</button>
+            </div>
+
+            <div class="input-group">
+                <label for="jsonInput">JSON Kodu:</label>
+                <textarea id="jsonInput" rows="15" class="json-editor" placeholder='{"name": "example", "value": 123}'></textarea>
+            </div>
+
+            <div id="validationResult"></div>
+
+            <div class="input-group">
+                <label for="indentSize">Girinti Boyutu:</label>
+                <select id="indentSize">
+                    <option value="2" selected>2 boşluk</option>
+                    <option value="4">4 boşluk</option>
+                    <option value="tab">Tab</option>
+                </select>
+            </div>
+
+            <div class="result-area" id="statsArea" style="display: none;">
+                <h3>İstatistikler</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <div>
+                        <strong>Toplam Karakter:</strong> <span id="totalChars">0</span>
+                    </div>
+                    <div>
+                        <strong>Satır Sayısı:</strong> <span id="lineCount">0</span>
+                    </div>
+                    <div>
+                        <strong>Anahtarlar:</strong> <span id="keyCount">0</span>
+                    </div>
+                    <div>
+                        <strong>Derinlik:</strong> <span id="depth">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        const jsonInput = document.getElementById('jsonInput');
+        const validationResult = document.getElementById('validationResult');
+        const statsArea = document.getElementById('statsArea');
+
+        jsonInput.addEventListener('input', () => {
+            validateJSON();
+            updateStats();
+        });
+
+        function formatJSON() {
+            try {
+                const input = jsonInput.value.trim();
+                if (!input) {
+                    showError('Lütfen JSON kodu girin!');
+                    return;
+                }
+
+                const parsed = JSON.parse(input);
+                const indentSize = document.getElementById('indentSize').value;
+                const indent = indentSize === 'tab' ? '\t' : ' '.repeat(parseInt(indentSize));
+                const formatted = JSON.stringify(parsed, null, indent);
+                
+                jsonInput.value = formatted;
+                showSuccess('JSON başarıyla formatlandı!');
+                updateStats();
+            } catch (error) {
+                showError('Geçersiz JSON: ' + error.message);
+            }
+        }
+
+        function minifyJSON() {
+            try {
+                const input = jsonInput.value.trim();
+                if (!input) {
+                    showError('Lütfen JSON kodu girin!');
+                    return;
+                }
+
+                const parsed = JSON.parse(input);
+                const minified = JSON.stringify(parsed);
+                
+                jsonInput.value = minified;
+                showSuccess('JSON başarıyla sıkıştırıldı!');
+                updateStats();
+            } catch (error) {
+                showError('Geçersiz JSON: ' + error.message);
+            }
+        }
+
+        function validateJSON() {
+            const input = jsonInput.value.trim();
+            
+            if (!input) {
+                validationResult.innerHTML = '';
+                statsArea.style.display = 'none';
+                return;
+            }
+
+            try {
+                JSON.parse(input);
+                showSuccess('✓ Geçerli JSON!');
+                statsArea.style.display = 'block';
+            } catch (error) {
+                showError('✗ Geçersiz JSON: ' + error.message);
+                statsArea.style.display = 'none';
+            }
+        }
+
+        function copyJSON() {
+            jsonInput.select();
+            document.execCommand('copy');
+            showSuccess('JSON kopyalandı!');
+        }
+
+        function showError(message) {
+            validationResult.innerHTML = `<div class="error-message">${message}</div>`;
+        }
+
+        function showSuccess(message) {
+            validationResult.innerHTML = `<div class="success-message">${message}</div>`;
+        }
+
+        function updateStats() {
+            const input = jsonInput.value;
+            
+            if (!input.trim()) {
+                statsArea.style.display = 'none';
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(input);
+                
+                document.getElementById('totalChars').textContent = input.length;
+                document.getElementById('lineCount').textContent = input.split('\n').length;
+                
+                const keys = countKeys(parsed);
+                document.getElementById('keyCount').textContent = keys;
+                
+                const depth = getDepth(parsed);
+                document.getElementById('depth').textContent = depth;
+                
+            } catch (error) {
+                // Stats will be hidden on error
+            }
+        }
+
+        function countKeys(obj) {
+            if (typeof obj !== 'object' || obj === null) return 0;
+            let count = Object.keys(obj).length;
+            for (const key in obj) {
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    count += countKeys(obj[key]);
+                }
+            }
+            return count;
+        }
+
+        function getDepth(obj) {
+            if (typeof obj !== 'object' || obj === null) return 0;
+            let maxDepth = 0;
+            for (const key in obj) {
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    const depth = getDepth(obj[key]) + 1;
+                    maxDepth = Math.max(maxDepth, depth);
+                }
+            }
+            return maxDepth;
+        }
+
+        // Auto-validate on load
+        window.addEventListener('load', () => {
+            validateJSON();
+        });
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

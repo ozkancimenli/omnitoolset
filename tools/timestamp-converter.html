@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp Converter - Convert Unix Timestamp | OmniToolset</title>
+    <meta name="description" content="Convert Unix timestamp to date and vice versa. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>⏰ Timestamp Converter</h2>
+            <p>Convert Unix timestamp to human-readable date and vice versa.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="display: grid; gap: 2rem;">
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Timestamp to Date</h3>
+                    <div class="input-group">
+                        <label for="timestampInput">Unix Timestamp (seconds or milliseconds):</label>
+                        <input type="text" id="timestampInput" placeholder="Enter timestamp (e.g., 1609459200)" style="width: 100%;">
+                    </div>
+                    <button class="btn" onclick="timestampToDate()" style="width: 100%; margin: 1rem 0;">Convert to Date</button>
+                    <div id="dateResult" style="display: none; padding: 1rem; background: var(--bg-color); border-radius: 8px; margin-top: 1rem;">
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div><strong>Local Date:</strong> <span id="localDate" style="font-family: monospace; color: var(--primary-color);"></span></div>
+                            <div><strong>UTC Date:</strong> <span id="utcDate" style="font-family: monospace; color: var(--primary-color);"></span></div>
+                            <div><strong>ISO 8601:</strong> <span id="isoDate" style="font-family: monospace; color: var(--primary-color);"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Date to Timestamp</h3>
+                    <div class="input-group">
+                        <label for="dateInput">Date:</label>
+                        <input type="datetime-local" id="dateInput" style="width: 100%;">
+                    </div>
+                    <button class="btn" onclick="dateToTimestamp()" style="width: 100%; margin: 1rem 0;">Convert to Timestamp</button>
+                    <div id="timestampResult" style="display: none; padding: 1rem; background: var(--bg-color); border-radius: 8px; margin-top: 1rem;">
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div><strong>Unix Timestamp (seconds):</strong> <span id="timestampSeconds" style="font-family: monospace; color: var(--primary-color);"></span></div>
+                            <div><strong>Unix Timestamp (milliseconds):</strong> <span id="timestampMillis" style="font-family: monospace; color: var(--primary-color);"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Current Timestamp</h3>
+                    <button class="btn" onclick="getCurrentTimestamp()" style="width: 100%; margin: 1rem 0;">Get Current Timestamp</button>
+                    <div id="currentResult" style="display: none; padding: 1rem; background: var(--bg-color); border-radius: 8px; margin-top: 1rem;">
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div><strong>Current Date:</strong> <span id="currentDate" style="font-family: monospace; color: var(--primary-color);"></span></div>
+                            <div><strong>Unix Timestamp (seconds):</strong> <span id="currentSeconds" style="font-family: monospace; color: var(--primary-color);"></span></div>
+                            <div><strong>Unix Timestamp (milliseconds):</strong> <span id="currentMillis" style="font-family: monospace; color: var(--primary-color);"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
+
+            <button class="btn" onclick="clearAll()" style="width: 100%; margin-top: 1rem; background: var(--bg-hover);">Clear All</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function timestampToDate() {
+            const timestamp = document.getElementById('timestampInput').value.trim();
+            
+            document.getElementById('dateResult').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+
+            if (!timestamp) {
+                document.getElementById('errorText').textContent = 'Please enter a timestamp';
+                document.getElementById('errorArea').style.display = 'block';
+                return;
+            }
+
+            try {
+                let ts = parseFloat(timestamp);
+                
+                // If timestamp is in seconds (less than year 2001 in milliseconds), convert to milliseconds
+                if (ts < 10000000000) {
+                    ts = ts * 1000;
+                }
+
+                const date = new Date(ts);
+                
+                if (isNaN(date.getTime())) {
+                    throw new Error('Invalid timestamp');
+                }
+
+                document.getElementById('localDate').textContent = date.toLocaleString();
+                document.getElementById('utcDate').textContent = date.toUTCString();
+                document.getElementById('isoDate').textContent = date.toISOString();
+                document.getElementById('dateResult').style.display = 'block';
+            } catch (e) {
+                document.getElementById('errorText').textContent = e.message;
+                document.getElementById('errorArea').style.display = 'block';
+            }
+        }
+
+        function dateToTimestamp() {
+            const dateInput = document.getElementById('dateInput').value;
+            
+            document.getElementById('timestampResult').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+
+            if (!dateInput) {
+                document.getElementById('errorText').textContent = 'Please select a date';
+                document.getElementById('errorArea').style.display = 'block';
+                return;
+            }
+
+            try {
+                const date = new Date(dateInput);
+                const timestampSeconds = Math.floor(date.getTime() / 1000);
+                const timestampMillis = date.getTime();
+
+                document.getElementById('timestampSeconds').textContent = timestampSeconds;
+                document.getElementById('timestampMillis').textContent = timestampMillis;
+                document.getElementById('timestampResult').style.display = 'block';
+            } catch (e) {
+                document.getElementById('errorText').textContent = e.message;
+                document.getElementById('errorArea').style.display = 'block';
+            }
+        }
+
+        function getCurrentTimestamp() {
+            const now = new Date();
+            const timestampSeconds = Math.floor(now.getTime() / 1000);
+            const timestampMillis = now.getTime();
+
+            document.getElementById('currentDate').textContent = now.toLocaleString();
+            document.getElementById('currentSeconds').textContent = timestampSeconds;
+            document.getElementById('currentMillis').textContent = timestampMillis;
+            document.getElementById('currentResult').style.display = 'block';
+        }
+
+        function clearAll() {
+            document.getElementById('timestampInput').value = '';
+            document.getElementById('dateInput').value = '';
+            document.getElementById('dateResult').style.display = 'none';
+            document.getElementById('timestampResult').style.display = 'none';
+            document.getElementById('currentResult').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

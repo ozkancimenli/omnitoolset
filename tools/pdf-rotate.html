@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotate PDF - Rotate PDF Pages | OmniToolset</title>
+    <meta name="description" content="Rotate PDF pages 90, 180, or 270 degrees. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>🔄 Rotate PDF</h2>
+            <p>Rotate PDF pages 90, 180, or 270 degrees.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="input-group">
+                <label for="pdfInput">Select PDF File:</label>
+                <input type="file" id="pdfInput" accept=".pdf" style="width: 100%;">
+            </div>
+
+            <div id="fileInfo" style="display: none; margin: 1rem 0; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                <div><strong>File:</strong> <span id="fileName"></span></div>
+                <div style="margin-top: 0.5rem;"><strong>Pages:</strong> <span id="pageCount"></span></div>
+            </div>
+
+            <div class="input-group">
+                <label>Rotation Options:</label>
+                <div style="margin-top: 0.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <input type="radio" name="rotation" value="all" checked>
+                        <span>Rotate all pages</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="radio" name="rotation" value="specific">
+                        <span>Rotate specific pages (e.g., 1,3,5-8)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group" id="pageInput" style="display: none;">
+                <label for="pageNumbers">Page Numbers:</label>
+                <input type="text" id="pageNumbers" placeholder="1,3,5-8" style="width: 100%;">
+            </div>
+
+            <div class="input-group">
+                <label for="angle">Rotation Angle:</label>
+                <select id="angle" style="width: 100%;">
+                    <option value="90">90° (Clockwise)</option>
+                    <option value="180">180°</option>
+                    <option value="270">270° (Counter-clockwise)</option>
+                </select>
+            </div>
+
+            <button class="btn" id="rotateBtn" onclick="rotatePDF()" style="width: 100%; margin: 1rem 0;" disabled>Rotate PDF</button>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem; padding: 2rem; background: var(--bg-color); border-radius: 12px; text-align: center;">
+                <h3>Rotation Complete!</h3>
+                <button class="btn" onclick="downloadRotated()" style="width: 100%; margin-top: 1rem;">Download Rotated PDF</button>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script>
+        let pdfData = null;
+        let rotatedPdfBlob = null;
+        let totalPages = 0;
+
+        document.getElementById('pdfInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file && file.type === 'application/pdf') {
+                pdfData = file;
+                document.getElementById('fileName').textContent = file.name;
+                
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+                    totalPages = pdf.getPageCount();
+                    document.getElementById('pageCount').textContent = totalPages;
+                    document.getElementById('fileInfo').style.display = 'block';
+                    document.getElementById('rotateBtn').disabled = false;
+                } catch (e) {
+                    alert('Failed to load PDF file');
+                }
+            }
+        });
+
+        document.querySelectorAll('input[name="rotation"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('pageInput').style.display = this.value === 'specific' ? 'block' : 'none';
+            });
+        });
+
+        function parsePageRange(rangeStr, maxPages) {
+            const pages = new Set();
+            const parts = rangeStr.split(',');
+            
+            for (const part of parts) {
+                const trimmed = part.trim();
+                if (trimmed.includes('-')) {
+                    const [start, end] = trimmed.split('-').map(n => parseInt(n.trim()));
+                    if (start && end && start <= end && start >= 1 && end <= maxPages) {
+                        for (let i = start; i <= end; i++) {
+                            pages.add(i - 1);
+                        }
+                    }
+                } else {
+                    const page = parseInt(trimmed);
+                    if (page && page >= 1 && page <= maxPages) {
+                        pages.add(page - 1);
+                    }
+                }
+            }
+            
+            return Array.from(pages);
+        }
+
+        async function rotatePDF() {
+            if (!pdfData) return;
+
+            document.getElementById('errorArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('rotateBtn').disabled = true;
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+
+            try {
+                const arrayBuffer = await pdfData.arrayBuffer();
+                const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+                
+                document.getElementById('progressFill').style.width = '50%';
+
+                const rotationType = document.querySelector('input[name="rotation"]:checked').value;
+                const angle = parseInt(document.getElementById('angle').value);
+                const pagesToRotate = rotationType === 'all' 
+                    ? Array.from({ length: totalPages }, (_, i) => i)
+                    : parsePageRange(document.getElementById('pageNumbers').value, totalPages);
+
+                if (rotationType === 'specific' && pagesToRotate.length === 0) {
+                    throw new Error('Invalid page numbers');
+                }
+
+                const pages = pdf.getPages();
+                pagesToRotate.forEach(pageIndex => {
+                    if (pages[pageIndex]) {
+                        pages[pageIndex].setRotation(pages[pageIndex].getRotation().angle + angle);
+                    }
+                });
+
+                document.getElementById('progressFill').style.width = '90%';
+
+                rotatedPdfBlob = await pdf.save();
+                
+                document.getElementById('progressFill').style.width = '100%';
+                setTimeout(() => {
+                    document.getElementById('progressBar').style.display = 'none';
+                    document.getElementById('resultArea').style.display = 'block';
+                    document.getElementById('rotateBtn').disabled = false;
+                }, 500);
+
+            } catch (e) {
+                document.getElementById('errorText').textContent = e.message;
+                document.getElementById('errorArea').style.display = 'block';
+                document.getElementById('progressBar').style.display = 'none';
+                document.getElementById('rotateBtn').disabled = false;
+            }
+        }
+
+        function downloadRotated() {
+            if (!rotatedPdfBlob) return;
+            
+            const url = URL.createObjectURL(new Blob([rotatedPdfBlob], { type: 'application/pdf' }));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = pdfData.name.replace('.pdf', '') + '_rotated.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

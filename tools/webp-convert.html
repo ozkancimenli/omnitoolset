@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEBP Dönüştürücü - OmniToolset</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>🖼️ WEBP Dönüştürücü</h2>
+            <p>WEBP formatını JPG/PNG'ye veya JPG/PNG'yi WEBP'ye dönüştürün.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🖼️</div>
+                <p>Resim dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <input type="file" id="fileInput" accept="image/webp,image/jpeg,image/jpg,image/png" style="display: none;">
+            </div>
+
+            <div id="fileInfo" class="result-area" style="display: none;">
+                <h3>Seçilen Dosya</h3>
+                <p id="fileName"></p>
+                <p id="fileType"></p>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <img id="previewImage" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid var(--border-color);">
+                </div>
+            </div>
+
+            <div class="input-group" id="convertOptions" style="display: none;">
+                <label for="outputFormat">Dönüştür:</label>
+                <select id="outputFormat">
+                    <option value="webp">WEBP'ye Dönüştür</option>
+                    <option value="jpeg">JPG'e Dönüştür</option>
+                    <option value="png">PNG'ye Dönüştür</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="qualityInput" style="display: none;">
+                <label for="quality">Kalite: <span id="qualityValue">90</span>%</label>
+                <input type="range" id="quality" min="10" max="100" value="90" oninput="updateQuality()">
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertImage()" style="width: 100%; margin-top: 1rem;" disabled>Dönüştür</button>
+
+            <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
+                <h3>Dönüştürme Tamamlandı!</h3>
+                <div style="text-align: center; margin: 1rem 0;">
+                    <img id="resultImage" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid var(--border-color);">
+                </div>
+                <p id="resultInfo" style="text-align: center; color: var(--text-secondary);"></p>
+                <button class="btn" onclick="downloadImage()" style="width: 100%;">Dönüştürülmüş Resmi İndir</button>
+            </div>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        let originalFile = null;
+        let convertedImageBlob = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const convertOptions = document.getElementById('convertOptions');
+        const qualityInput = document.getElementById('qualityInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultArea = document.getElementById('resultArea');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleFile(file);
+            } else {
+                alert('Lütfen geçerli bir resim dosyası seçin!');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        document.getElementById('outputFormat').addEventListener('change', function() {
+            qualityInput.style.display = (this.value === 'webp' || this.value === 'jpeg') ? 'block' : 'none';
+        });
+
+        function updateQuality() {
+            document.getElementById('qualityValue').textContent = document.getElementById('quality').value;
+        }
+
+        function handleFile(file) {
+            originalFile = file;
+            
+            let fileTypeName = 'Bilinmeyen';
+            if (file.type === 'image/webp') fileTypeName = 'WEBP';
+            else if (file.type === 'image/jpeg') fileTypeName = 'JPG';
+            else if (file.type === 'image/png') fileTypeName = 'PNG';
+            
+            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
+            document.getElementById('fileType').textContent = `Format: ${fileTypeName}`;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('previewImage').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            fileInfo.style.display = 'block';
+            convertOptions.style.display = 'block';
+            
+            // Set default conversion
+            const outputFormat = document.getElementById('outputFormat');
+            if (file.type === 'image/webp') {
+                outputFormat.value = 'jpeg';
+                qualityInput.style.display = 'block';
+            } else {
+                outputFormat.value = 'webp';
+                qualityInput.style.display = 'block';
+            }
+            
+            convertBtn.disabled = false;
+            resultArea.style.display = 'none';
+        }
+
+        function convertImage() {
+            if (!originalFile) return;
+
+            convertBtn.disabled = true;
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            const outputFormat = document.getElementById('outputFormat').value;
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                progressFill.style.width = '50%';
+                
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+
+                    progressFill.style.width = '80%';
+
+                    let mimeType = 'image/webp';
+                    if (outputFormat === 'jpeg') mimeType = 'image/jpeg';
+                    if (outputFormat === 'png') mimeType = 'image/png';
+                    
+                    let quality = (outputFormat === 'webp' || outputFormat === 'jpeg') 
+                        ? parseInt(document.getElementById('quality').value) / 100 
+                        : 1.0;
+
+                    canvas.toBlob((blob) => {
+                        convertedImageBlob = blob;
+                        const url = URL.createObjectURL(blob);
+                        document.getElementById('resultImage').src = url;
+                        document.getElementById('resultInfo').textContent = 
+                            `Dosya boyutu: ${(blob.size / 1024).toFixed(2)} KB`;
+                        
+                        progressFill.style.width = '100%';
+                        setTimeout(() => {
+                            progressBar.style.display = 'none';
+                            resultArea.style.display = 'block';
+                            convertBtn.disabled = false;
+                        }, 500);
+                    }, mimeType, quality);
+                };
+                img.src = e.target.result;
+            };
+
+            reader.readAsDataURL(originalFile);
+        }
+
+        function downloadImage() {
+            if (!convertedImageBlob) return;
+            
+            const outputFormat = document.getElementById('outputFormat').value;
+            let extension = 'webp';
+            if (outputFormat === 'jpeg') extension = 'jpg';
+            if (outputFormat === 'png') extension = 'png';
+            
+            const url = URL.createObjectURL(convertedImageBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = originalFile.name.replace(/\.[^/.]+$/, '') + '.' + extension;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

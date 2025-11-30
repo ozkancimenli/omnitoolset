@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cron Expression Generator - Generate Cron Expressions | OmniToolset</title>
+    <meta name="description" content="Generate cron expressions. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>⏰ Cron Expression Generator</h2>
+            <p>Generate cron expressions for scheduling tasks.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+                <div class="input-group">
+                    <label for="preset">Preset:</label>
+                    <select id="preset" style="width: 100%;">
+                        <option value="custom">Custom</option>
+                        <option value="every-minute">Every Minute</option>
+                        <option value="every-hour">Every Hour</option>
+                        <option value="every-day">Every Day (Midnight)</option>
+                        <option value="every-week">Every Week (Sunday Midnight)</option>
+                        <option value="every-month">Every Month (1st at Midnight)</option>
+                        <option value="workdays">Every Workday (Mon-Fri at 9 AM)</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <div class="input-group">
+                        <label for="minute">Minute (0-59):</label>
+                        <input type="text" id="minute" value="*" placeholder="*" style="width: 100%;">
+                    </div>
+                    <div class="input-group">
+                        <label for="hour">Hour (0-23):</label>
+                        <input type="text" id="hour" value="*" placeholder="*" style="width: 100%;">
+                    </div>
+                    <div class="input-group">
+                        <label for="day">Day of Month (1-31):</label>
+                        <input type="text" id="day" value="*" placeholder="*" style="width: 100%;">
+                    </div>
+                    <div class="input-group">
+                        <label for="month">Month (1-12):</label>
+                        <input type="text" id="month" value="*" placeholder="*" style="width: 100%;">
+                    </div>
+                    <div class="input-group">
+                        <label for="weekday">Day of Week (0-7, 0/7=Sun):</label>
+                        <input type="text" id="weekday" value="*" placeholder="*" style="width: 100%;">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="generateCron()" style="width: 100%; margin: 1rem 0;">Generate Cron Expression</button>
+
+            <div class="input-group">
+                <label for="outputText">Cron Expression:</label>
+                <input type="text" id="outputText" readonly placeholder="Cron expression will appear here..." style="width: 100%; font-family: monospace; font-size: 1.2rem; padding: 1rem; text-align: center;">
+            </div>
+
+            <div id="descriptionArea" style="margin-top: 1rem; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                <strong>Description:</strong>
+                <div id="description" style="margin-top: 0.5rem; color: var(--text-secondary);"></div>
+            </div>
+
+            <button class="btn" onclick="copyToClipboard()" style="width: 100%; margin-top: 1rem;">Copy to Clipboard</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        const presets = {
+            'every-minute': { minute: '*', hour: '*', day: '*', month: '*', weekday: '*' },
+            'every-hour': { minute: '0', hour: '*', day: '*', month: '*', weekday: '*' },
+            'every-day': { minute: '0', hour: '0', day: '*', month: '*', weekday: '*' },
+            'every-week': { minute: '0', hour: '0', day: '*', month: '*', weekday: '0' },
+            'every-month': { minute: '0', hour: '0', day: '1', month: '*', weekday: '*' },
+            'workdays': { minute: '0', hour: '9', day: '*', month: '*', weekday: '1-5' }
+        };
+
+        document.getElementById('preset').addEventListener('change', function() {
+            const preset = presets[this.value];
+            if (preset) {
+                document.getElementById('minute').value = preset.minute;
+                document.getElementById('hour').value = preset.hour;
+                document.getElementById('day').value = preset.day;
+                document.getElementById('month').value = preset.month;
+                document.getElementById('weekday').value = preset.weekday;
+                generateCron();
+            }
+        });
+
+        function generateCron() {
+            const minute = document.getElementById('minute').value || '*';
+            const hour = document.getElementById('hour').value || '*';
+            const day = document.getElementById('day').value || '*';
+            const month = document.getElementById('month').value || '*';
+            const weekday = document.getElementById('weekday').value || '*';
+
+            const cron = `${minute} ${hour} ${day} ${month} ${weekday}`;
+            document.getElementById('outputText').value = cron;
+
+            // Generate description
+            let desc = '';
+            if (minute === '*' && hour === '*' && day === '*' && month === '*' && weekday === '*') {
+                desc = 'Runs every minute';
+            } else if (minute !== '*' && hour === '*' && day === '*' && month === '*' && weekday === '*') {
+                desc = `Runs every hour at minute ${minute}`;
+            } else if (minute === '0' && hour === '0' && day === '*' && month === '*' && weekday === '*') {
+                desc = 'Runs every day at midnight';
+            } else if (minute === '0' && hour === '0' && day === '*' && month === '*' && weekday === '0') {
+                desc = 'Runs every Sunday at midnight';
+            } else if (minute === '0' && hour === '9' && day === '*' && month === '*' && weekday === '1-5') {
+                desc = 'Runs every workday (Monday-Friday) at 9:00 AM';
+            } else {
+                desc = `Runs at ${hour}:${minute} on day ${day} of month ${month}, day of week ${weekday}`;
+            }
+            document.getElementById('description').textContent = desc;
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('outputText');
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+
+        // Auto-generate on input change
+        ['minute', 'hour', 'day', 'month', 'weekday'].forEach(id => {
+            document.getElementById(id).addEventListener('input', generateCron);
+        });
+
+        generateCron();
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>

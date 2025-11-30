@@ -1,9 +1,16 @@
 {
+  "version": 2,
   "builds": [
-    { "src": "apps/web/next.config.js", "use": "@vercel/next" }
+    {
+      "src": "**/*",
+      "use": "@vercel/static"
+    }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "apps/web/$1" }
-  ],
-  "buildCommand": "npm install && npm run build"
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
 }
+

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timezone Converter - Convert Between Timezones | OmniToolset</title>
+    <meta name="description" content="Convert between different timezones. Free, online, no registration required.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>
+
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🛠️ OmniToolset</h1>
+
+            <nav style="margin-top: 1rem;">
+                <a href="/index.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Home</a>
+                <a href="/blog.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Blog</a>
+                <a href="/categories.html" style="margin-right: 1rem; color: var(--text); text-decoration: none;">Categories</a>
+                <a href="/all-tools.html" style="color: var(--text); text-decoration: none;">All Tools</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script async="async" data-cfasync="false" src="//pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js"></script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>🌐 Timezone Converter</h2>
+            <p>Convert date and time between different timezones.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-slot="8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            
+            <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+                <div class="input-group">
+                    <label for="dateInput">Date:</label>
+                    <input type="date" id="dateInput" style="width: 100%;">
+                </div>
+                <div class="input-group">
+                    <label for="timeInput">Time:</label>
+                    <input type="time" id="timeInput" style="width: 100%;">
+                </div>
+                <div class="input-group">
+                    <label for="fromTimezone">From Timezone:</label>
+                    <select id="fromTimezone" style="width: 100%;">
+                        <option value="UTC">UTC</option>
+                        <option value="America/New_York">America/New_York (EST/EDT)</option>
+                        <option value="America/Chicago">America/Chicago (CST/CDT)</option>
+                        <option value="America/Denver">America/Denver (MST/MDT)</option>
+                        <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
+                        <option value="Europe/London">Europe/London (GMT/BST)</option>
+                        <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
+                        <option value="Europe/Berlin">Europe/Berlin (CET/CEST)</option>
+                        <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                        <option value="Asia/Shanghai">Asia/Shanghai (CST)</option>
+                        <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                        <option value="Australia/Sydney">Australia/Sydney (AEST/AEDT)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="toTimezone">To Timezone:</label>
+                    <select id="toTimezone" style="width: 100%;">
+                        <option value="UTC">UTC</option>
+                        <option value="America/New_York">America/New_York (EST/EDT)</option>
+                        <option value="America/Chicago">America/Chicago (CST/CDT)</option>
+                        <option value="America/Denver">America/Denver (MST/MDT)</option>
+                        <option value="America/Los_Angeles" selected>America/Los_Angeles (PST/PDT)</option>
+                        <option value="Europe/London">Europe/London (GMT/BST)</option>
+                        <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
+                        <option value="Europe/Berlin">Europe/Berlin (CET/CEST)</option>
+                        <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                        <option value="Asia/Shanghai">Asia/Shanghai (CST)</option>
+                        <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                        <option value="Australia/Sydney">Australia/Sydney (AEST/AEDT)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn" onclick="convertTimezone()" style="width: 100%; margin: 1rem 0;">Convert Timezone</button>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem; padding: 2rem; background: var(--bg-color); border-radius: 12px; text-align: center;">
+                <div style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Converted Time:</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color); font-family: monospace;" id="convertedTime"></div>
+                <div style="font-size: 1rem; color: var(--text-secondary); margin-top: 0.5rem;" id="convertedDate"></div>
+            </div>
+
+            <button class="btn" onclick="useCurrentTime()" style="width: 100%; margin-top: 1rem; background: var(--bg-hover);">Use Current Time</button>
+        </div>
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-slot="8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+    </main>
+
+    <script>
+        function convertTimezone() {
+            const dateInput = document.getElementById('dateInput').value;
+            const timeInput = document.getElementById('timeInput').value;
+            const fromTimezone = document.getElementById('fromTimezone').value;
+            const toTimezone = document.getElementById('toTimezone').value;
+
+            if (!dateInput || !timeInput) {
+                alert('Please select both date and time');
+                return;
+            }
+
+            try {
+                // Create date string in ISO format
+                const dateTimeString = `${dateInput}T${timeInput}`;
+                
+                // Create date object (assumes local time, we'll convert manually)
+                const localDate = new Date(dateTimeString);
+                
+                // Get timezone offsets
+                const fromOffset = getTimezoneOffset(fromTimezone, localDate);
+                const toOffset = getTimezoneOffset(toTimezone, localDate);
+                
+                // Calculate difference
+                const offsetDiff = (toOffset - fromOffset) * 60000; // Convert to milliseconds
+                const convertedDate = new Date(localDate.getTime() + offsetDiff);
+                
+                // Format output
+                const timeStr = convertedDate.toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    timeZone: toTimezone
+                });
+                
+                const dateStr = convertedDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    timeZone: toTimezone
+                });
+
+                document.getElementById('convertedTime').textContent = timeStr;
+                document.getElementById('convertedDate').textContent = dateStr;
+                document.getElementById('resultArea').style.display = 'block';
+            } catch (e) {
+                alert('Error converting timezone: ' + e.message);
+            }
+        }
+
+        function getTimezoneOffset(timezone, date) {
+            const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+            const tzDate = new Date(date.toLocaleString('en-US', { timeZone: timezone }));
+            return (tzDate - utcDate) / 60000; // Return offset in minutes
+        }
+
+        function useCurrentTime() {
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().split(' ')[0].substring(0, 5);
+            
+            document.getElementById('dateInput').value = dateStr;
+            document.getElementById('timeInput').value = timeStr;
+            
+            // Try to detect user's timezone
+            try {
+                const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                const timezoneSelect = document.getElementById('fromTimezone');
+                for (let i = 0; i < timezoneSelect.options.length; i++) {
+                    if (timezoneSelect.options[i].value === userTimezone) {
+                        timezoneSelect.value = userTimezone;
+                        break;
+                    }
+                }
+            } catch (e) {
+                // Ignore if timezone detection fails
+            }
+            
+            convertTimezone();
+        }
+
+        // Auto-convert on change
+        document.getElementById('dateInput').addEventListener('change', convertTimezone);
+        document.getElementById('timeInput').addEventListener('change', convertTimezone);
+        document.getElementById('fromTimezone').addEventListener('change', convertTimezone);
+        document.getElementById('toTimezone').addEventListener('change', convertTimezone);
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+</body>
+</html>
