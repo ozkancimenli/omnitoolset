@@ -115,6 +115,8 @@ const tools = [
   { id: 'ip-address-lookup', title: 'IP Address Lookup', description: 'Lookup IP address information, location, and ISP details', icon: '🌐', category: 'Developer', page: 'tools/ip-address-lookup.html' },
   { id: 'user-agent-parser', title: 'User Agent Parser', description: 'Parse and analyze user agent strings', icon: '🔍', category: 'Developer', page: 'tools/user-agent-parser.html' },
   { id: 'http-status-checker', title: 'HTTP Status Checker', description: 'Check HTTP status codes and response headers', icon: '🔌', category: 'Developer', page: 'tools/http-status-checker.html' },
+  { id: 'dns-lookup', title: 'DNS Lookup', description: 'Query DNS records (A, AAAA, MX, CNAME, TXT) for any domain', icon: '🌐', category: 'Developer', page: 'tools/dns-lookup.html' },
+  { id: 'port-checker', title: 'Port Checker', description: 'Check if a port is open or closed on a remote server', icon: '🔌', category: 'Developer', page: 'tools/port-checker.html' },
   
   // GIS Tools
   { id: 'coordinate-converter', title: 'Coordinate Converter', description: 'Convert GPS coordinates between WGS84, UTM, MGRS formats', icon: '🗺️', category: 'GIS', page: 'tools/coordinate-converter.html' },
@@ -126,6 +128,12 @@ const tools = [
   { id: 'electrical-calculator', title: 'Electrical Calculator', description: 'Calculate electrical values using Ohm\'s law and power formulas', icon: '⚡', category: 'Engineering', page: 'tools/electrical-calculator.html' },
   { id: 'rebar-calculator', title: 'Rebar Calculator', description: 'Calculate rebar weight, length, and quantity for construction', icon: '🏗️', category: 'Engineering', page: 'tools/rebar-calculator.html' },
   { id: 'beam-calculator', title: 'Beam Calculator', description: 'Calculate beam bending moment, deflection, and stress', icon: '📐', category: 'Engineering', page: 'tools/beam-calculator.html' },
+  { id: 'wire-size-calculator', title: 'Wire Size Calculator', description: 'Calculate appropriate wire size for electrical circuits', icon: '⚡', category: 'Engineering', page: 'tools/wire-size-calculator.html' },
+  { id: 'voltage-drop-calculator', title: 'Voltage Drop Calculator', description: 'Calculate voltage drop in electrical circuits', icon: '⚡', category: 'Engineering', page: 'tools/voltage-drop-calculator.html' },
+  { id: 'pump-calculator', title: 'Pump Calculator', description: 'Calculate pump flow rate, head, and power requirements', icon: '🔧', category: 'Engineering', page: 'tools/pump-calculator.html' },
+  { id: 'gear-ratio-calculator', title: 'Gear Ratio Calculator', description: 'Calculate gear ratios, output speed, and torque', icon: '⚙️', category: 'Engineering', page: 'tools/gear-ratio-calculator.html' },
+  { id: 'molar-mass-calculator', title: 'Molar Mass Calculator', description: 'Calculate the molar mass of chemical compounds', icon: '🧪', category: 'Engineering', page: 'tools/molar-mass-calculator.html' },
+  { id: 'solution-calculator', title: 'Solution Calculator', description: 'Calculate solution concentrations, molarity, and dilution ratios', icon: '🧪', category: 'Engineering', page: 'tools/solution-calculator.html' },
   
   // QR Code Tools
   { id: 'qr-generator', title: 'QR Code Generator', description: 'Generate QR codes for text or URL', icon: '📱', category: 'QR Code', page: 'tools/qr-generator.html' },
@@ -158,7 +166,9 @@ const tools = [
   { id: 'length-converter', title: 'Length Converter', description: 'Convert between length units', icon: '📏', category: 'Other', page: 'tools/length-converter.html' },
   { id: 'temperature-converter', title: 'Temperature Converter', description: 'Convert between Celsius, Fahrenheit, and Kelvin', icon: '🌡️', category: 'Other', page: 'tools/temperature-converter.html' },
   { id: 'barcode-generator', title: 'Barcode Generator', description: 'Generate barcodes (EAN-13, Code 128) for products and labels', icon: '📊', category: 'Other', page: 'tools/barcode-generator.html' },
-  { id: 'invoice-generator', title: 'Invoice Generator', description: 'Generate professional invoices for businesses and freelancers', icon: '🧾', category: 'Other', page: 'tools/invoice-generator.html' }
+  { id: 'invoice-generator', title: 'Invoice Generator', description: 'Generate professional invoices for businesses and freelancers', icon: '🧾', category: 'Other', page: 'tools/invoice-generator.html' },
+  { id: 'credit-card-validator', title: 'Credit Card Validator', description: 'Validate credit card numbers and identify card type', icon: '💳', category: 'Other', page: 'tools/credit-card-validator.html' },
+  { id: 'iban-validator', title: 'IBAN Validator', description: 'Validate International Bank Account Numbers (IBAN)', icon: '🏦', category: 'Other', page: 'tools/iban-validator.html' }
 ];
 
 // Initialize app
