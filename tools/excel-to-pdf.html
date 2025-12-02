@@ -8,7 +8,69 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
-     crossorigin="anonymous"></script>
+     crossorigin="anonymous"></script>    
+    <!-- Suppress Adsterra SSL errors in console -->
+    <script>
+        (function() {
+            // Store original console methods
+            const originalError = console.error;
+            const originalWarn = console.warn;
+            const originalLog = console.log;
+            
+            // Filter function for Adsterra errors
+            function shouldSuppress(message) {
+                if (typeof message !== 'string') return false;
+                return message.includes('effectivegatecpm.com') && 
+                       (message.includes('ERR_SSL_PROTOCOL_ERROR') || 
+                        message.includes('net::ERR_SSL') ||
+                        message.includes('Failed to load resource'));
+            }
+            
+            // Override console.error
+            console.error = function(...args) {
+                const message = args.join(' ');
+                if (shouldSuppress(message)) {
+                    return; // Suppress Adsterra SSL errors
+                }
+                originalError.apply(console, args);
+            };
+            
+            // Override console.warn
+            console.warn = function(...args) {
+                const message = args.join(' ');
+                if (shouldSuppress(message)) {
+                    return;
+                }
+                originalWarn.apply(console, args);
+            };
+            
+            // Override console.log (some browsers log network errors here)
+            console.log = function(...args) {
+                const message = args.join(' ');
+                if (shouldSuppress(message)) {
+                    return;
+                }
+                originalLog.apply(console, args);
+            };
+            
+            // Suppress uncaught errors from Adsterra scripts
+            window.addEventListener('error', function(e) {
+                if (e.filename && e.filename.includes('effectivegatecpm.com')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, true);
+            
+            // Suppress unhandled promise rejections from Adsterra
+            window.addEventListener('unhandledrejection', function(e) {
+                if (e.reason && typeof e.reason === 'string' && e.reason.includes('effectivegatecpm.com')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        })();
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
