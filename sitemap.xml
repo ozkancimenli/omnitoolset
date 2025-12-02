@@ -1001,4 +1001,52 @@
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
+    <url>
+        <loc>https://www.omnitoolset.com/tools/area-calculator.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/tools/bearing-calculator.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/tools/steel-weight-calculator.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/tools/circuit-calculator.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/tools/torque-calculator.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/tools/ph-calculator.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/tools/isbn-validator.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/tools/receipt-generator.html</loc>
+        <lastmod>2025-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
 </urlset>

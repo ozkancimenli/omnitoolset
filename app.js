@@ -121,6 +121,8 @@ const tools = [
   // GIS Tools
   { id: 'coordinate-converter', title: 'Coordinate Converter', description: 'Convert GPS coordinates between WGS84, UTM, MGRS formats', icon: '🗺️', category: 'GIS', page: 'tools/coordinate-converter.html' },
   { id: 'distance-calculator', title: 'Distance Calculator', description: 'Calculate distance between GPS coordinates using Haversine formula', icon: '📏', category: 'GIS', page: 'tools/distance-calculator.html' },
+  { id: 'area-calculator', title: 'Area Calculator', description: 'Calculate area of polygons from GPS coordinates', icon: '📐', category: 'GIS', page: 'tools/area-calculator.html' },
+  { id: 'bearing-calculator', title: 'Bearing Calculator', description: 'Calculate bearing (azimuth) between two GPS coordinates', icon: '🧭', category: 'GIS', page: 'tools/bearing-calculator.html' },
   
   // Engineering Tools
   { id: 'engineering-unit-converter', title: 'Engineering Unit Converter', description: 'Convert engineering units: pressure, force, torque, power', icon: '⚙️', category: 'Engineering', page: 'tools/engineering-unit-converter.html' },
@@ -130,10 +132,14 @@ const tools = [
   { id: 'beam-calculator', title: 'Beam Calculator', description: 'Calculate beam bending moment, deflection, and stress', icon: '📐', category: 'Engineering', page: 'tools/beam-calculator.html' },
   { id: 'wire-size-calculator', title: 'Wire Size Calculator', description: 'Calculate appropriate wire size for electrical circuits', icon: '⚡', category: 'Engineering', page: 'tools/wire-size-calculator.html' },
   { id: 'voltage-drop-calculator', title: 'Voltage Drop Calculator', description: 'Calculate voltage drop in electrical circuits', icon: '⚡', category: 'Engineering', page: 'tools/voltage-drop-calculator.html' },
+  { id: 'steel-weight-calculator', title: 'Steel Weight Calculator', description: 'Calculate weight of steel bars, plates, and beams', icon: '🏗️', category: 'Engineering', page: 'tools/steel-weight-calculator.html' },
+  { id: 'circuit-calculator', title: 'Circuit Calculator', description: 'Calculate resistance, current, and voltage in series and parallel circuits', icon: '⚡', category: 'Engineering', page: 'tools/circuit-calculator.html' },
+  { id: 'torque-calculator', title: 'Torque Calculator', description: 'Calculate torque from force and distance', icon: '⚙️', category: 'Engineering', page: 'tools/torque-calculator.html' },
   { id: 'pump-calculator', title: 'Pump Calculator', description: 'Calculate pump flow rate, head, and power requirements', icon: '🔧', category: 'Engineering', page: 'tools/pump-calculator.html' },
   { id: 'gear-ratio-calculator', title: 'Gear Ratio Calculator', description: 'Calculate gear ratios, output speed, and torque', icon: '⚙️', category: 'Engineering', page: 'tools/gear-ratio-calculator.html' },
   { id: 'molar-mass-calculator', title: 'Molar Mass Calculator', description: 'Calculate the molar mass of chemical compounds', icon: '🧪', category: 'Engineering', page: 'tools/molar-mass-calculator.html' },
   { id: 'solution-calculator', title: 'Solution Calculator', description: 'Calculate solution concentrations, molarity, and dilution ratios', icon: '🧪', category: 'Engineering', page: 'tools/solution-calculator.html' },
+  { id: 'ph-calculator', title: 'pH Calculator', description: 'Calculate pH from hydrogen ion concentration (H+)', icon: '🧪', category: 'Engineering', page: 'tools/ph-calculator.html' },
   
   // QR Code Tools
   { id: 'qr-generator', title: 'QR Code Generator', description: 'Generate QR codes for text or URL', icon: '📱', category: 'QR Code', page: 'tools/qr-generator.html' },
@@ -168,7 +174,9 @@ const tools = [
   { id: 'barcode-generator', title: 'Barcode Generator', description: 'Generate barcodes (EAN-13, Code 128) for products and labels', icon: '📊', category: 'Other', page: 'tools/barcode-generator.html' },
   { id: 'invoice-generator', title: 'Invoice Generator', description: 'Generate professional invoices for businesses and freelancers', icon: '🧾', category: 'Other', page: 'tools/invoice-generator.html' },
   { id: 'credit-card-validator', title: 'Credit Card Validator', description: 'Validate credit card numbers and identify card type', icon: '💳', category: 'Other', page: 'tools/credit-card-validator.html' },
-  { id: 'iban-validator', title: 'IBAN Validator', description: 'Validate International Bank Account Numbers (IBAN)', icon: '🏦', category: 'Other', page: 'tools/iban-validator.html' }
+  { id: 'iban-validator', title: 'IBAN Validator', description: 'Validate International Bank Account Numbers (IBAN)', icon: '🏦', category: 'Other', page: 'tools/iban-validator.html' },
+  { id: 'isbn-validator', title: 'ISBN Validator', description: 'Validate International Standard Book Numbers (ISBN)', icon: '📚', category: 'Other', page: 'tools/isbn-validator.html' },
+  { id: 'receipt-generator', title: 'Receipt Generator', description: 'Create professional receipts quickly and easily', icon: '🧾', category: 'Other', page: 'tools/receipt-generator.html' }
 ];
 
 // Initialize app
