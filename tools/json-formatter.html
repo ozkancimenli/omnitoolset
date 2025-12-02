@@ -9,66 +9,96 @@
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
      crossorigin="anonymous"></script>    
-    <!-- Suppress Adsterra SSL errors in console -->
+        <!-- Suppress Adsterra SSL errors in console -->
     <script>
         (function() {
             // Store original console methods
             const originalError = console.error;
             const originalWarn = console.warn;
             const originalLog = console.log;
+            const originalInfo = console.info;
+            const originalDebug = console.debug;
             
-            // Filter function for Adsterra errors
+            // Filter function for Adsterra errors - more aggressive
             function shouldSuppress(message) {
-                if (typeof message !== 'string') return false;
-                return message.includes('effectivegatecpm.com') && 
-                       (message.includes('ERR_SSL_PROTOCOL_ERROR') || 
-                        message.includes('net::ERR_SSL') ||
-                        message.includes('Failed to load resource'));
+                if (typeof message !== 'string') {
+                    // Check all arguments
+                    const allArgs = Array.from(arguments).join(' ');
+                    message = allArgs;
+                }
+                const msg = message.toLowerCase();
+                return (msg.includes('effectivegatecpm.com') || 
+                        msg.includes('pl28055668') ||
+                        msg.includes('pl28055637') ||
+                        msg.includes('pl28059282')) && 
+                       (msg.includes('err_ssl_protocol_error') || 
+                        msg.includes('net::err_ssl') ||
+                        msg.includes('failed to load resource') ||
+                        msg.includes('ssl') ||
+                        msg.includes('protocol_error'));
             }
             
-            // Override console.error
-            console.error = function(...args) {
-                const message = args.join(' ');
-                if (shouldSuppress(message)) {
-                    return; // Suppress Adsterra SSL errors
-                }
-                originalError.apply(console, args);
-            };
-            
-            // Override console.warn
-            console.warn = function(...args) {
-                const message = args.join(' ');
-                if (shouldSuppress(message)) {
-                    return;
-                }
-                originalWarn.apply(console, args);
-            };
-            
-            // Override console.log (some browsers log network errors here)
-            console.log = function(...args) {
-                const message = args.join(' ');
-                if (shouldSuppress(message)) {
-                    return;
-                }
-                originalLog.apply(console, args);
-            };
+            // Override all console methods
+            ['error', 'warn', 'log', 'info', 'debug'].forEach(method => {
+                const original = console[method];
+                console[method] = function(...args) {
+                    const message = args.map(arg => {
+                        if (typeof arg === 'string') return arg;
+                        if (arg && arg.toString) return arg.toString();
+                        return JSON.stringify(arg);
+                    }).join(' ');
+                    
+                    if (shouldSuppress(message)) {
+                        return; // Suppress Adsterra SSL errors
+                    }
+                    original.apply(console, args);
+                };
+            });
             
             // Suppress uncaught errors from Adsterra scripts
             window.addEventListener('error', function(e) {
-                if (e.filename && e.filename.includes('effectivegatecpm.com')) {
+                const filename = e.filename || e.source || '';
+                const message = e.message || '';
+                if (filename.includes('effectivegatecpm.com') || 
+                    filename.includes('pl28055668') ||
+                    filename.includes('pl28055637') ||
+                    filename.includes('pl28059282') ||
+                    message.includes('effectivegatecpm.com') ||
+                    message.includes('ERR_SSL')) {
                     e.preventDefault();
                     e.stopPropagation();
+                    e.stopImmediatePropagation();
                     return false;
                 }
             }, true);
             
             // Suppress unhandled promise rejections from Adsterra
             window.addEventListener('unhandledrejection', function(e) {
-                if (e.reason && typeof e.reason === 'string' && e.reason.includes('effectivegatecpm.com')) {
+                const reason = e.reason ? (typeof e.reason === 'string' ? e.reason : e.reason.toString()) : '';
+                if (reason.includes('effectivegatecpm.com') || 
+                    reason.includes('ERR_SSL') ||
+                    reason.includes('pl28055668') ||
+                    reason.includes('pl28055637') ||
+                    reason.includes('pl28059282')) {
                     e.preventDefault();
                     return false;
                 }
             });
+            
+            // Intercept network errors at the fetch/XMLHttpRequest level
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                const url = args[0];
+                if (typeof url === 'string' && url.includes('effectivegatecpm.com')) {
+                    return Promise.reject(new Error('Blocked')).catch(() => {});
+                }
+                return originalFetch.apply(this, args).catch(err => {
+                    if (err.message && err.message.includes('effectivegatecpm.com')) {
+                        return Promise.reject();
+                    }
+                    throw err;
+                });
+            };
         })();
     </script>
     <style>
