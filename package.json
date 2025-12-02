@@ -2,5 +2,8 @@
   "name": "omnitoolset",
   "version": "1.0.0",
   "private": true,
-  "description": "OmniToolset - Free Online Tools Collection"
+  "description": "OmniToolset - Free Online Tools Collection",
+  "scripts": {
+    "vercel-build": "echo 'Static HTML site - no build needed'"
+  }
 }
