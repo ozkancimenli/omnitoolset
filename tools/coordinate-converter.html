@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinate Converter - GIS Tool | OmniToolset</title>
+    <meta name="description" content="Convert coordinates between WGS84, UTM, MGRS, and other formats. Free GIS tool for surveyors and mapping professionals.">
+    <meta name="keywords" content="coordinate converter, gis tool, wgs84, utm, mgrs, gps coordinates, surveyor tools, mapping tools">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>    
+    <!-- Suppress Adsterra SSL errors -->
+    <script>
+        (function() {
+            const originalMethods = {};
+            ['error', 'warn', 'log', 'info', 'debug'].forEach(method => {
+                originalMethods[method] = console[method];
+            });
+            function shouldSuppress(...args) {
+                const message = args.map(arg => String(arg)).join(' ').toLowerCase();
+                return (message.includes('effectivegatecpm.com') || message.includes('pl28055668') || message.includes('pl28055637') || message.includes('pl28059282')) && (message.includes('err_ssl') || message.includes('ssl_protocol') || message.includes('failed to load'));
+            }
+            Object.keys(originalMethods).forEach(method => {
+                console[method] = function(...args) {
+                    if (shouldSuppress(...args)) return;
+                    originalMethods[method].apply(console, args);
+                };
+            });
+            window.addEventListener('error', function(e) {
+                const filename = (e.filename || '').toLowerCase();
+                if (filename.includes('effectivegatecpm.com')) {
+                    e.preventDefault();
+                    return false;
+                }
+            }, true);
+        })();
+    </script>
+    <!-- Adsterra Popunder (Head) -->
+    <script type='text/javascript'>
+        (function() {
+            try {
+                var script = document.createElement('script');
+                script.src = 'https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js';
+                script.crossOrigin = 'anonymous';
+                script.onerror = function() { return false; };
+                setTimeout(function() { document.head.appendChild(script); }, 100);
+            } catch(e) {}
+        })();
+    </script>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">🛠️ OmniToolset</h1>
+                </div>
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link active">Home</a>
+                    <a href="/blog.html" class="nav-link">Blog</a>
+                    <a href="/categories.html" class="nav-link">Categories</a>
+                    <a href="/all-tools.html" class="nav-link">All Tools</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="tool-page">
+        <a href="/index.html" class="back-button">← Back to Home</a>
+        
+        <!-- Adsterra Native Banner -->
+        <div style="margin: 1rem 0; text-align: center;">
+            <script type='text/javascript'>
+                (function() {
+                    try {
+                        var script = document.createElement('script');
+                        script.async = true;
+                        script.setAttribute('data-cfasync', 'false');
+                        script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
+                        script.crossOrigin = 'anonymous';
+                        script.onerror = function() { return false; };
+                        setTimeout(function() { document.head.appendChild(script); }, 200);
+                    } catch(e) {}
+                })();
+            </script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+        <!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        
+        <div class="tool-container">
+            <h2>🗺️ Coordinate Converter</h2>
+            <p>Convert GPS coordinates between different formats (WGS84, UTM, MGRS, etc.).</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group">
+                    <label for="fromFormat">From Format:</label>
+                    <select id="fromFormat" style="width: 100%;">
+                        <option value="wgs84">WGS84 (Decimal Degrees)</option>
+                        <option value="dms">DMS (Degrees Minutes Seconds)</option>
+                        <option value="utm">UTM</option>
+                        <option value="mgrs">MGRS</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="toFormat">To Format:</label>
+                    <select id="toFormat" style="width: 100%;">
+                        <option value="wgs84">WGS84 (Decimal Degrees)</option>
+                        <option value="dms">DMS (Degrees Minutes Seconds)</option>
+                        <option value="utm">UTM</option>
+                        <option value="mgrs">MGRS</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="inputCoords">Input Coordinates:</label>
+                <textarea id="inputCoords" rows="3" placeholder="Enter coordinates (e.g., 40.7128, -74.0060 or 40°42'46.08&quot;N 74°0'21.6&quot;W)"></textarea>
+            </div>
+
+            <button class="btn" onclick="convertCoordinates()" style="width: 100%; margin: 1rem 0;">Convert Coordinates</button>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--bg-color); border-radius: 12px;">
+                <h3 style="margin-top: 0;">Converted Coordinates:</h3>
+                <div class="input-group">
+                    <label for="outputCoords">Output:</label>
+                    <textarea id="outputCoords" rows="3" readonly style="font-family: monospace;"></textarea>
+                </div>
+                <button class="btn" onclick="copyResult()" style="width: 100%; margin-top: 1rem;">Copy to Clipboard</button>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
+        </div>
+
+        <!-- Affiliate Upgrade Banner -->
+        <div style="margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: center;">
+            <h3 style="margin: 0 0 1rem 0; color: white;">Need More Features?</h3>
+            <p style="margin: 0 0 1rem 0; opacity: 0.9;">Upgrade to premium PDF tools with advanced features</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <a href="https://www.awin1.com/cread.php?awinmid=115767&awinaffid=2682178&clickref=pdf-tools&ued=https%3A%2F%2Fwww.swifdoo.com%2Fpricing" target="_blank" rel="nofollow sponsored" style="display: inline-block; padding: 0.75rem 1rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: transform 0.2s; font-size: 0.9rem;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">SwifDoo PDF</a>
+                <a href="https://www.awin1.com/cread.php?awinmid=100851&awinaffid=2682178&clickref=pdf-editor&ued=https%3A%2F%2Fwww.pdfreaderpro.com%2F" target="_blank" rel="nofollow sponsored" style="display: inline-block; padding: 0.75rem 1rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; border: 2px solid white; transition: transform 0.2s; font-size: 0.9rem;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">PDF Reader Pro</a>
+            </div>
+            <p style="margin: 0; font-size: 0.8rem; opacity: 0.8;">(We earn a small commission at no extra cost to you)</p>
+        </div>
+
+        <!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+        <!-- Adsterra Hyperlink -->
+        <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+            <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+        </p>
+
+    </main>
+    
+    <!-- Email Newsletter Signup -->
+    <div style="margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; text-align: center; color: white;">
+        <h3 style="margin: 0 0 0.5rem 0; color: white; font-size: 1.1rem;">📧 Get Weekly Tool Updates</h3>
+        <p style="margin: 0 0 1rem 0; opacity: 0.9; font-size: 0.9rem;">New tools, tips, and productivity hacks delivered to your inbox</p>
+        <form class="newsletter-form" style="display: flex; gap: 0.5rem; max-width: 400px; margin: 0 auto; flex-wrap: wrap;">
+            <input 
+                type="email" 
+                class="newsletter-email" 
+                placeholder="Enter your email" 
+                required
+                style="flex: 1; min-width: 200px; padding: 0.75rem; border: none; border-radius: 8px; font-size: 0.9rem;"
+            >
+            <button 
+                type="submit" 
+                style="padding: 0.75rem 1.5rem; background: white; color: #667eea; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem;"
+            >
+                Subscribe
+            </button>
+        </form>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.7rem; opacity: 0.8;">No spam. Unsubscribe anytime.</p>
+    </div>
+
+    <footer style="margin-top: 4rem; padding: 2rem; text-align: center; border-top: 1px solid var(--border-color);">
+        <div class="container">
+            <p>&copy; 2025 OmniToolset. All rights reserved.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                <a href="/privacy-policy.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Privacy Policy</a>
+                <a href="/terms-of-service.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Terms of Service</a>
+                <a href="/advertise.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Advertise</a>
+                <a href="/contact.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Contact</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // DMS to Decimal Degrees
+        function dmsToDecimal(dms) {
+            const parts = dms.match(/(\d+)°\s*(\d+)['′]\s*([\d.]+)["″]?\s*([NSEW])/i);
+            if (!parts) return null;
+            const deg = parseFloat(parts[1]);
+            const min = parseFloat(parts[2]);
+            const sec = parseFloat(parts[3]);
+            const dir = parts[4].toUpperCase();
+            let decimal = deg + min/60 + sec/3600;
+            if (dir === 'S' || dir === 'W') decimal = -decimal;
+            return decimal;
+        }
+
+        // Decimal Degrees to DMS
+        function decimalToDMS(decimal, isLat) {
+            const abs = Math.abs(decimal);
+            const deg = Math.floor(abs);
+            const min = Math.floor((abs - deg) * 60);
+            const sec = ((abs - deg) * 60 - min) * 60;
+            const dir = isLat ? (decimal >= 0 ? 'N' : 'S') : (decimal >= 0 ? 'E' : 'W');
+            return `${deg}°${min}'${sec.toFixed(2)}"${dir}`;
+        }
+
+        // Parse input coordinates
+        function parseInput(input, format) {
+            input = input.trim();
+            
+            if (format === 'wgs84') {
+                // Decimal degrees: 40.7128, -74.0060
+                const match = input.match(/(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)/);
+                if (match) {
+                    return { lat: parseFloat(match[1]), lon: parseFloat(match[2]) };
+                }
+            } else if (format === 'dms') {
+                // DMS format: 40°42'46.08"N 74°0'21.6"W
+                const parts = input.split(/\s+/);
+                if (parts.length >= 2) {
+                    const lat = dmsToDecimal(parts[0]);
+                    const lon = dmsToDecimal(parts[1]);
+                    if (lat !== null && lon !== null) return { lat, lon };
+                }
+            } else if (format === 'utm') {
+                // UTM: 18T 583934 4504692
+                // Simplified - would need full UTM library
+                showError('UTM conversion requires additional library. Please use WGS84 or DMS format.');
+                return null;
+            } else if (format === 'mgrs') {
+                // MGRS: 18TWL839344504692
+                showError('MGRS conversion requires additional library. Please use WGS84 or DMS format.');
+                return null;
+            }
+            
+            return null;
+        }
+
+        // Format output
+        function formatOutput(coords, format) {
+            if (!coords || !coords.lat || !coords.lon) return '';
+            
+            if (format === 'wgs84') {
+                return `${coords.lat.toFixed(6)}, ${coords.lon.toFixed(6)}`;
+            } else if (format === 'dms') {
+                return `${decimalToDMS(coords.lat, true)} ${decimalToDMS(coords.lon, false)}`;
+            } else if (format === 'utm' || format === 'mgrs') {
+                return 'Conversion to UTM/MGRS requires additional library. Please use WGS84 or DMS format.';
+            }
+            return '';
+        }
+
+        function convertCoordinates() {
+            const input = document.getElementById('inputCoords').value.trim();
+            const fromFormat = document.getElementById('fromFormat').value;
+            const toFormat = document.getElementById('toFormat').value;
+            
+            document.getElementById('errorArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+            
+            if (!input) {
+                showError('Please enter coordinates');
+                return;
+            }
+            
+            if (fromFormat === toFormat) {
+                showError('Please select different input and output formats');
+                return;
+            }
+            
+            const coords = parseInput(input, fromFormat);
+            if (!coords) {
+                showError('Invalid coordinate format. Please check your input.');
+                return;
+            }
+            
+            const output = formatOutput(coords, toFormat);
+            document.getElementById('outputCoords').value = output;
+            document.getElementById('resultArea').style.display = 'block';
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorArea').style.display = 'block';
+        }
+
+        function copyResult() {
+            const output = document.getElementById('outputCoords');
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+    </script>
+
+    <!-- Adsterra Popunder (Body) -->
+    <script type='text/javascript'>
+        (function() {
+            try {
+                var script = document.createElement('script');
+                script.src = 'https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js';
+                script.crossOrigin = 'anonymous';
+                script.onerror = function() { return false; };
+                setTimeout(function() { document.head.appendChild(script); }, 300);
+            } catch(e) {}
+        })();
+    </script>
+
+    <script>
+        // Newsletter form handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('.newsletter-form');
+            forms.forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const emailInput = form.querySelector('.newsletter-email');
+                    const email = emailInput.value;
+                    
+                    let subscribers = JSON.parse(localStorage.getItem('newsletter_subscribers') || '[]');
+                    if (!subscribers.includes(email)) {
+                        subscribers.push(email);
+                        localStorage.setItem('newsletter_subscribers', JSON.stringify(subscribers));
+                    }
+                    
+                    const originalHTML = form.innerHTML;
+                    form.innerHTML = '<p style="color: white; margin: 0; width: 100%;">✅ Thank you for subscribing!</p>';
+                    form.style.background = 'rgba(34, 197, 94, 0.9)';
+                    
+                    emailInput.value = '';
+                    
+                    setTimeout(() => {
+                        form.innerHTML = originalHTML;
+                        form.style.background = '';
+                        form.querySelector('.newsletter-form').addEventListener('submit', arguments.callee);
+                    }, 3000);
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

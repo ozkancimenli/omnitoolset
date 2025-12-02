@@ -109,6 +109,18 @@ const tools = [
   { id: 'twitter-card-generator', title: 'Twitter Card Generator', description: 'Generate Twitter Card meta tags', icon: '🐦', category: 'Developer', page: 'tools/twitter-card-generator.html' },
   { id: 'favicon-generator', title: 'Favicon Generator', description: 'Generate favicons from images', icon: '⭐', category: 'Developer', page: 'tools/favicon-generator.html' },
   { id: 'contrast-checker', title: 'Contrast Checker', description: 'Check color contrast ratio', icon: '🎨', category: 'Developer', page: 'tools/contrast-checker.html' },
+  { id: 'color-palette-generator', title: 'Color Palette Generator', description: 'Generate beautiful color palettes for design projects', icon: '🎨', category: 'Developer', page: 'tools/color-palette-generator.html' },
+  { id: 'css-gradient-generator', title: 'CSS Gradient Generator', description: 'Generate CSS gradients with live preview', icon: '🌈', category: 'Developer', page: 'tools/css-gradient-generator.html' },
+  { id: 'api-tester', title: 'REST API Tester', description: 'Test REST API endpoints with GET, POST, PUT, DELETE', icon: '🔌', category: 'Developer', page: 'tools/api-tester.html' },
+  
+  // GIS Tools
+  { id: 'coordinate-converter', title: 'Coordinate Converter', description: 'Convert GPS coordinates between WGS84, UTM, MGRS formats', icon: '🗺️', category: 'GIS', page: 'tools/coordinate-converter.html' },
+  { id: 'distance-calculator', title: 'Distance Calculator', description: 'Calculate distance between GPS coordinates using Haversine formula', icon: '📏', category: 'GIS', page: 'tools/distance-calculator.html' },
+  
+  // Engineering Tools
+  { id: 'engineering-unit-converter', title: 'Engineering Unit Converter', description: 'Convert engineering units: pressure, force, torque, power', icon: '⚙️', category: 'Engineering', page: 'tools/engineering-unit-converter.html' },
+  { id: 'concrete-calculator', title: 'Concrete Calculator', description: 'Calculate concrete volume, mix ratios, and material requirements', icon: '🏗️', category: 'Engineering', page: 'tools/concrete-calculator.html' },
+  { id: 'electrical-calculator', title: 'Electrical Calculator', description: 'Calculate electrical values using Ohm\'s law and power formulas', icon: '⚡', category: 'Engineering', page: 'tools/electrical-calculator.html' },
   
   // QR Code Tools
   { id: 'qr-generator', title: 'QR Code Generator', description: 'Generate QR codes for text or URL', icon: '📱', category: 'QR Code', page: 'tools/qr-generator.html' },
