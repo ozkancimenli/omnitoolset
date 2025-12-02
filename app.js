@@ -142,11 +142,17 @@ const tools = [
   { id: 'gear-ratio-calculator', title: 'Gear Ratio Calculator', description: 'Calculate gear ratios, output speed, and torque', icon: '⚙️', category: 'Engineering', page: 'tools/gear-ratio-calculator.html' },
   { id: 'belt-length-calculator', title: 'Belt Length Calculator', description: 'Calculate the required belt length for two pulleys', icon: '🔧', category: 'Engineering', page: 'tools/belt-length-calculator.html' },
   { id: 'spring-calculator', title: 'Spring Calculator', description: 'Calculate spring force, deflection, and spring constant', icon: '🪀', category: 'Engineering', page: 'tools/spring-calculator.html' },
+  { id: 'heat-transfer-calculator', title: 'Heat Transfer Calculator', description: 'Calculate heat transfer, thermal conductivity, and heat flux', icon: '🔥', category: 'Engineering', page: 'tools/heat-transfer-calculator.html' },
+  { id: 'vibration-calculator', title: 'Vibration Calculator', description: 'Calculate vibration frequency, amplitude, and velocity', icon: '📳', category: 'Engineering', page: 'tools/vibration-calculator.html' },
+  { id: 'chain-length-calculator', title: 'Chain Length Calculator', description: 'Calculate the required chain length for two sprockets', icon: '⛓️', category: 'Engineering', page: 'tools/chain-length-calculator.html' },
+  { id: 'thread-calculator', title: 'Thread Calculator', description: 'Calculate thread dimensions, pitch, and tolerances', icon: '🔩', category: 'Engineering', page: 'tools/thread-calculator.html' },
   { id: 'molar-mass-calculator', title: 'Molar Mass Calculator', description: 'Calculate the molar mass of chemical compounds', icon: '🧪', category: 'Engineering', page: 'tools/molar-mass-calculator.html' },
   { id: 'solution-calculator', title: 'Solution Calculator', description: 'Calculate solution concentrations, molarity, and dilution ratios', icon: '🧪', category: 'Engineering', page: 'tools/solution-calculator.html' },
   { id: 'ph-calculator', title: 'pH Calculator', description: 'Calculate pH from hydrogen ion concentration (H+)', icon: '🧪', category: 'Engineering', page: 'tools/ph-calculator.html' },
   { id: 'gas-law-calculator', title: 'Gas Law Calculator', description: 'Calculate pressure, volume, temperature using ideal gas law (PV = nRT)', icon: '🧪', category: 'Engineering', page: 'tools/gas-law-calculator.html' },
   { id: 'concentration-calculator', title: 'Concentration Calculator', description: 'Calculate solution concentrations, ppm, ppb, and dilution factors', icon: '🧪', category: 'Engineering', page: 'tools/concentration-calculator.html' },
+  { id: 'stoichiometry-calculator', title: 'Stoichiometry Calculator', description: 'Calculate reactant and product quantities in chemical reactions', icon: '🧪', category: 'Engineering', page: 'tools/stoichiometry-calculator.html' },
+  { id: 'chemical-equation-balancer', title: 'Chemical Equation Balancer', description: 'Balance chemical equations and calculate coefficients', icon: '⚗️', category: 'Engineering', page: 'tools/chemical-equation-balancer.html' },
   
   // QR Code Tools
   { id: 'qr-generator', title: 'QR Code Generator', description: 'Generate QR codes for text or URL', icon: '📱', category: 'QR Code', page: 'tools/qr-generator.html' },
@@ -186,7 +192,9 @@ const tools = [
   { id: 'receipt-generator', title: 'Receipt Generator', description: 'Create professional receipts quickly and easily', icon: '🧾', category: 'Other', page: 'tools/receipt-generator.html' },
   { id: 'certificate-generator', title: 'Certificate Generator', description: 'Create professional certificates for awards, achievements, and completion', icon: '🏆', category: 'Other', page: 'tools/certificate-generator.html' },
   { id: 'business-card-generator', title: 'Business Card Generator', description: 'Create professional business cards quickly and easily', icon: '💼', category: 'Other', page: 'tools/business-card-generator.html' },
-  { id: 'label-generator', title: 'Label Generator', description: 'Create professional labels for products, packages, and shipping', icon: '🏷️', category: 'Other', page: 'tools/label-generator.html' }
+  { id: 'label-generator', title: 'Label Generator', description: 'Create professional labels for products, packages, and shipping', icon: '🏷️', category: 'Other', page: 'tools/label-generator.html' },
+  { id: 'coupon-generator', title: 'Coupon Generator', description: 'Create professional discount coupons and promotional codes', icon: '🎫', category: 'Other', page: 'tools/coupon-generator.html' },
+  { id: 'voucher-generator', title: 'Voucher Generator', description: 'Create professional gift vouchers and certificates', icon: '🎁', category: 'Other', page: 'tools/voucher-generator.html' }
 ];
 
 // Initialize app
