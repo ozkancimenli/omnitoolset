@@ -132,14 +132,21 @@ const tools = [
   { id: 'beam-calculator', title: 'Beam Calculator', description: 'Calculate beam bending moment, deflection, and stress', icon: '📐', category: 'Engineering', page: 'tools/beam-calculator.html' },
   { id: 'wire-size-calculator', title: 'Wire Size Calculator', description: 'Calculate appropriate wire size for electrical circuits', icon: '⚡', category: 'Engineering', page: 'tools/wire-size-calculator.html' },
   { id: 'voltage-drop-calculator', title: 'Voltage Drop Calculator', description: 'Calculate voltage drop in electrical circuits', icon: '⚡', category: 'Engineering', page: 'tools/voltage-drop-calculator.html' },
+  { id: 'power-factor-calculator', title: 'Power Factor Calculator', description: 'Calculate power factor from real power and apparent power', icon: '⚡', category: 'Engineering', page: 'tools/power-factor-calculator.html' },
+  { id: 'led-resistor-calculator', title: 'LED Resistor Calculator', description: 'Calculate the appropriate resistor value for LED circuits', icon: '💡', category: 'Engineering', page: 'tools/led-resistor-calculator.html' },
+  { id: 'battery-life-calculator', title: 'Battery Life Calculator', description: 'Calculate how long a battery will last based on capacity and current draw', icon: '🔋', category: 'Engineering', page: 'tools/battery-life-calculator.html' },
   { id: 'steel-weight-calculator', title: 'Steel Weight Calculator', description: 'Calculate weight of steel bars, plates, and beams', icon: '🏗️', category: 'Engineering', page: 'tools/steel-weight-calculator.html' },
   { id: 'circuit-calculator', title: 'Circuit Calculator', description: 'Calculate resistance, current, and voltage in series and parallel circuits', icon: '⚡', category: 'Engineering', page: 'tools/circuit-calculator.html' },
   { id: 'torque-calculator', title: 'Torque Calculator', description: 'Calculate torque from force and distance', icon: '⚙️', category: 'Engineering', page: 'tools/torque-calculator.html' },
   { id: 'pump-calculator', title: 'Pump Calculator', description: 'Calculate pump flow rate, head, and power requirements', icon: '🔧', category: 'Engineering', page: 'tools/pump-calculator.html' },
   { id: 'gear-ratio-calculator', title: 'Gear Ratio Calculator', description: 'Calculate gear ratios, output speed, and torque', icon: '⚙️', category: 'Engineering', page: 'tools/gear-ratio-calculator.html' },
+  { id: 'belt-length-calculator', title: 'Belt Length Calculator', description: 'Calculate the required belt length for two pulleys', icon: '🔧', category: 'Engineering', page: 'tools/belt-length-calculator.html' },
+  { id: 'spring-calculator', title: 'Spring Calculator', description: 'Calculate spring force, deflection, and spring constant', icon: ' spring', category: 'Engineering', page: 'tools/spring-calculator.html' },
   { id: 'molar-mass-calculator', title: 'Molar Mass Calculator', description: 'Calculate the molar mass of chemical compounds', icon: '🧪', category: 'Engineering', page: 'tools/molar-mass-calculator.html' },
   { id: 'solution-calculator', title: 'Solution Calculator', description: 'Calculate solution concentrations, molarity, and dilution ratios', icon: '🧪', category: 'Engineering', page: 'tools/solution-calculator.html' },
   { id: 'ph-calculator', title: 'pH Calculator', description: 'Calculate pH from hydrogen ion concentration (H+)', icon: '🧪', category: 'Engineering', page: 'tools/ph-calculator.html' },
+  { id: 'gas-law-calculator', title: 'Gas Law Calculator', description: 'Calculate pressure, volume, temperature using ideal gas law (PV = nRT)', icon: '🧪', category: 'Engineering', page: 'tools/gas-law-calculator.html' },
+  { id: 'concentration-calculator', title: 'Concentration Calculator', description: 'Calculate solution concentrations, ppm, ppb, and dilution factors', icon: '🧪', category: 'Engineering', page: 'tools/concentration-calculator.html' },
   
   // QR Code Tools
   { id: 'qr-generator', title: 'QR Code Generator', description: 'Generate QR codes for text or URL', icon: '📱', category: 'QR Code', page: 'tools/qr-generator.html' },
@@ -176,7 +183,10 @@ const tools = [
   { id: 'credit-card-validator', title: 'Credit Card Validator', description: 'Validate credit card numbers and identify card type', icon: '💳', category: 'Other', page: 'tools/credit-card-validator.html' },
   { id: 'iban-validator', title: 'IBAN Validator', description: 'Validate International Bank Account Numbers (IBAN)', icon: '🏦', category: 'Other', page: 'tools/iban-validator.html' },
   { id: 'isbn-validator', title: 'ISBN Validator', description: 'Validate International Standard Book Numbers (ISBN)', icon: '📚', category: 'Other', page: 'tools/isbn-validator.html' },
-  { id: 'receipt-generator', title: 'Receipt Generator', description: 'Create professional receipts quickly and easily', icon: '🧾', category: 'Other', page: 'tools/receipt-generator.html' }
+  { id: 'receipt-generator', title: 'Receipt Generator', description: 'Create professional receipts quickly and easily', icon: '🧾', category: 'Other', page: 'tools/receipt-generator.html' },
+  { id: 'certificate-generator', title: 'Certificate Generator', description: 'Create professional certificates for awards, achievements, and completion', icon: '🏆', category: 'Other', page: 'tools/certificate-generator.html' },
+  { id: 'business-card-generator', title: 'Business Card Generator', description: 'Create professional business cards quickly and easily', icon: '💼', category: 'Other', page: 'tools/business-card-generator.html' },
+  { id: 'label-generator', title: 'Label Generator', description: 'Create professional labels for products, packages, and shipping', icon: '🏷️', category: 'Other', page: 'tools/label-generator.html' }
 ];
 
 // Initialize app
