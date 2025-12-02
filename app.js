@@ -81,6 +81,8 @@ const tools = [
   { id: 'json-validator', title: 'JSON Validator', description: 'Validate JSON syntax and format JSON code beautifully', icon: '📋', category: 'Developer', page: 'tools/json-validator.html' },
   { id: 'xml-validator', title: 'XML Validator', description: 'Validate XML syntax and format XML code', icon: '📄', category: 'Developer', page: 'tools/xml-validator.html' },
   { id: 'yaml-validator', title: 'YAML Validator', description: 'Validate YAML syntax and format YAML code', icon: '📝', category: 'Developer', page: 'tools/yaml-validator.html' },
+  { id: 'git-command-generator', title: 'Git Command Generator', description: 'Generate Git commands for common operations and workflows', icon: '🔀', category: 'Developer', page: 'tools/git-command-generator.html' },
+  { id: 'code-beautifier', title: 'Code Beautifier', description: 'Beautify and format code in HTML, CSS, JavaScript, and more', icon: '✨', category: 'Developer', page: 'tools/code-beautifier.html' },
   { id: 'jwt-decoder', title: 'JWT Decoder', description: 'Decode and view JWT tokens', icon: '🔐', category: 'Developer', page: 'tools/jwt-decoder.html' },
   { id: 'uuid-generator', title: 'UUID Generator', description: 'Generate UUIDs', icon: '🆔', category: 'Developer', page: 'tools/uuid-generator.html' },
   { id: 'hash-generator', title: 'Hash Generator', description: 'Generate SHA1, SHA256, SHA512 hashes', icon: '🔐', category: 'Developer', page: 'tools/hash-generator.html' },
@@ -126,6 +128,8 @@ const tools = [
   { id: 'distance-calculator', title: 'Distance Calculator', description: 'Calculate distance between GPS coordinates using Haversine formula', icon: '📏', category: 'GIS', page: 'tools/distance-calculator.html' },
   { id: 'area-calculator', title: 'Area Calculator', description: 'Calculate area of polygons from GPS coordinates', icon: '📐', category: 'GIS', page: 'tools/area-calculator.html' },
   { id: 'bearing-calculator', title: 'Bearing Calculator', description: 'Calculate bearing (azimuth) between two GPS coordinates', icon: '🧭', category: 'GIS', page: 'tools/bearing-calculator.html' },
+  { id: 'geocoding-tool', title: 'Geocoding Tool', description: 'Convert addresses to GPS coordinates (latitude and longitude)', icon: '📍', category: 'GIS', page: 'tools/geocoding-tool.html' },
+  { id: 'reverse-geocoding', title: 'Reverse Geocoding', description: 'Convert GPS coordinates to human-readable addresses', icon: '📍', category: 'GIS', page: 'tools/reverse-geocoding.html' },
   
   // Engineering Tools
   { id: 'engineering-unit-converter', title: 'Engineering Unit Converter', description: 'Convert engineering units: pressure, force, torque, power', icon: '⚙️', category: 'Engineering', page: 'tools/engineering-unit-converter.html' },
@@ -155,6 +159,11 @@ const tools = [
   { id: 'floor-area-calculator', title: 'Floor Area Calculator', description: 'Calculate floor area for rectangular, circular, and irregular shapes', icon: '🏗️', category: 'Engineering', page: 'tools/floor-area-calculator.html' },
   { id: 'roof-pitch-calculator', title: 'Roof Pitch Calculator', description: 'Calculate roof pitch, angle, and slope from rise and run', icon: '🏠', category: 'Engineering', page: 'tools/roof-pitch-calculator.html' },
   { id: 'stair-calculator', title: 'Stair Calculator', description: 'Calculate stair dimensions, rise, run, and number of steps', icon: '🪜', category: 'Engineering', page: 'tools/stair-calculator.html' },
+  { id: 'material-strength-calculator', title: 'Material Strength Calculator', description: 'Calculate stress, strain, and material strength properties', icon: '⚙️', category: 'Engineering', page: 'tools/material-strength-calculator.html' },
+  { id: 'efficiency-calculator', title: 'Efficiency Calculator', description: 'Calculate efficiency percentage from input and output values', icon: '⚡', category: 'Engineering', page: 'tools/efficiency-calculator.html' },
+  { id: 'stress-strain-calculator', title: 'Stress Strain Calculator', description: 'Calculate stress, strain, and Young\'s modulus', icon: '📐', category: 'Engineering', page: 'tools/stress-strain-calculator.html' },
+  { id: 'foundation-calculator', title: 'Foundation Calculator', description: 'Calculate foundation dimensions, volume, and material requirements', icon: '🏗️', category: 'Engineering', page: 'tools/foundation-calculator.html' },
+  { id: 'material-cost-estimator', title: 'Material Cost Estimator', description: 'Estimate costs for construction materials', icon: '💰', category: 'Engineering', page: 'tools/material-cost-estimator.html' },
   { id: 'molar-mass-calculator', title: 'Molar Mass Calculator', description: 'Calculate the molar mass of chemical compounds', icon: '🧪', category: 'Engineering', page: 'tools/molar-mass-calculator.html' },
   { id: 'solution-calculator', title: 'Solution Calculator', description: 'Calculate solution concentrations, molarity, and dilution ratios', icon: '🧪', category: 'Engineering', page: 'tools/solution-calculator.html' },
   { id: 'ph-calculator', title: 'pH Calculator', description: 'Calculate pH from hydrogen ion concentration (H+)', icon: '🧪', category: 'Engineering', page: 'tools/ph-calculator.html' },
@@ -204,7 +213,8 @@ const tools = [
   { id: 'label-generator', title: 'Label Generator', description: 'Create professional labels for products, packages, and shipping', icon: '🏷️', category: 'Other', page: 'tools/label-generator.html' },
   { id: 'coupon-generator', title: 'Coupon Generator', description: 'Create professional discount coupons and promotional codes', icon: '🎫', category: 'Other', page: 'tools/coupon-generator.html' },
   { id: 'voucher-generator', title: 'Voucher Generator', description: 'Create professional gift vouchers and certificates', icon: '🎁', category: 'Other', page: 'tools/voucher-generator.html' },
-  { id: 'ean-barcode-validator', title: 'EAN Barcode Validator', description: 'Validate EAN-13 and EAN-8 barcode numbers using check digit algorithm', icon: '📊', category: 'Other', page: 'tools/ean-barcode-validator.html' }
+  { id: 'ean-barcode-validator', title: 'EAN Barcode Validator', description: 'Validate EAN-13 and EAN-8 barcode numbers using check digit algorithm', icon: '📊', category: 'Other', page: 'tools/ean-barcode-validator.html' },
+  { id: 'id-card-generator', title: 'ID Card Generator', description: 'Create professional ID cards quickly and easily', icon: '🪪', category: 'Other', page: 'tools/id-card-generator.html' }
 ];
 
 // Initialize app
