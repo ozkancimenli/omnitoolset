@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Böl - OmniToolset</title>
+    <title>PDF Split - OmniToolset</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -33,7 +33,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -56,49 +56,49 @@
             </script>
         </div>
         <div class="tool-container">
-            <h2>✂️ PDF Böl</h2>
-            <p>PDF dosyanızı sayfalara göre bölün.</p>
+            <h2>✂️ PDF Split</h2>
+            <p>Split your PDF file by pages.</p>
 
             <!-- AdSense Banner Ad (Middle) - Removed duplicate slot ID to prevent 400 errors -->
 
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📄</div>
-                <p>PDF dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <p>Drag and drop your PDF file here or click to select</p>
                 <input type="file" id="fileInput" accept=".pdf" style="display: none;">
             </div>
 
             <div id="fileInfo" class="result-area" style="display: none;">
-                <h3>Seçilen Dosya</h3>
+                <h3>Selected File</h3>
                 <p id="fileName"></p>
                 <p id="pageCount"></p>
             </div>
 
             <div class="input-group" id="splitOptions" style="display: none;">
-                <label>Bölme Yöntemi:</label>
+                <label>Split Method:</label>
                 <div style="margin-top: 0.5rem;">
                     <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <input type="radio" name="splitMethod" value="all" checked>
-                        <span>Tüm sayfaları ayrı dosyalara böl</span>
+                        <span>Split all pages into separate files</span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <input type="radio" name="splitMethod" value="range">
-                        <span>Belirli sayfa aralığı</span>
+                        <span>Specific page range</span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 0.5rem;">
                         <input type="radio" name="splitMethod" value="custom">
-                        <span>Özel sayfa numaraları (örn: 1,3,5-8)</span>
+                        <span>Custom page numbers (e.g., 1,3,5-8)</span>
                     </label>
                 </div>
             </div>
 
             <div class="input-group" id="rangeInput" style="display: none;">
-                <label for="pageRange">Sayfa Aralığı (örn: 1-5):</label>
+                <label for="pageRange">Page Range (e.g., 1-5):</label>
                 <input type="text" id="pageRange" placeholder="1-5">
             </div>
 
             <div class="input-group" id="customInput" style="display: none;">
-                <label for="customPages">Sayfa Numaraları:</label>
+                <label for="customPages">Page Numbers:</label>
                 <input type="text" id="customPages" placeholder="1,3,5-8,10">
             </div>
 
@@ -106,12 +106,12 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="splitBtn" onclick="splitPDF()" style="width: 100%; margin-top: 1rem;" disabled>PDF'i Böl</button>
+            <button class="btn" id="splitBtn" onclick="splitPDF()" style="width: 100%; margin-top: 1rem;" disabled>Split PDF</button>
 
             <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
-                <h3>Bölme Tamamlandı!</h3>
+                <h3>Split Complete!</h3>
                 <p id="resultInfo"></p>
-                <button class="btn" onclick="downloadAll()" style="width: 100%;">Tümünü ZIP Olarak İndir</button>
+                <button class="btn" onclick="downloadAll()" style="width: 100%;">Download All as ZIP</button>
             </div>
         </div>
         <!-- AdSense Banner Ad (Bottom) - Removed duplicate slot ID to prevent 400 errors -->
@@ -155,7 +155,7 @@
             if (file && file.type === 'application/pdf') {
                 handleFile(file);
             } else {
-                alert('Lütfen geçerli bir PDF dosyası seçin!');
+                alert('Please select a valid PDF file!');
             }
         });
 
@@ -175,13 +175,13 @@
 
         async function handleFile(file) {
             pdfData = file;
-            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
+            document.getElementById('fileName').textContent = `File: ${file.name}`;
             
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
             totalPages = pdf.getPageCount();
             
-            document.getElementById('pageCount').textContent = `Toplam Sayfa: ${totalPages}`;
+            document.getElementById('pageCount').textContent = `Total Pages: ${totalPages}`;
             fileInfo.style.display = 'block';
             splitOptions.style.display = 'block';
             splitBtn.disabled = false;
@@ -232,14 +232,14 @@
                 } else if (method === 'range') {
                     const range = document.getElementById('pageRange').value.trim();
                     if (!range) {
-                        alert('Lütfen sayfa aralığı girin!');
+                        alert('Please enter a page range!');
                         splitBtn.disabled = false;
                         progressBar.style.display = 'none';
                         return;
                     }
                     const pages = parsePageRange(range, totalPages);
                     if (pages.length === 0) {
-                        alert('Geçersiz sayfa aralığı!');
+                        alert('Invalid page range!');
                         splitBtn.disabled = false;
                         progressBar.style.display = 'none';
                         return;
@@ -248,14 +248,14 @@
                 } else if (method === 'custom') {
                     const custom = document.getElementById('customPages').value.trim();
                     if (!custom) {
-                        alert('Lütfen sayfa numaraları girin!');
+                        alert('Please enter page numbers!');
                         splitBtn.disabled = false;
                         progressBar.style.display = 'none';
                         return;
                     }
                     const pages = parsePageRange(custom, totalPages);
                     if (pages.length === 0) {
-                        alert('Geçersiz sayfa numaraları!');
+                        alert('Invalid page numbers!');
                         splitBtn.disabled = false;
                         progressBar.style.display = 'none';
                         return;
@@ -278,7 +278,7 @@
                 }
 
                 document.getElementById('resultInfo').textContent = 
-                    `${splitPdfs.length} dosya oluşturuldu.`;
+                    `${splitPdfs.length} file(s) created.`;
                 
                 progressFill.style.width = '100%';
                 setTimeout(() => {
@@ -289,7 +289,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Bölme sırasında bir hata oluştu: ' + error.message);
+                alert('An error occurred while splitting: ' + error.message);
                 splitBtn.disabled = false;
                 progressBar.style.display = 'none';
             }
@@ -303,7 +303,7 @@
             
             for (let i = 0; i < splitPdfs.length; i++) {
                 const pdf = splitPdfs[i];
-                zip.file(`${baseName}_sayfa_${pdf.pageNum}.pdf`, pdf.bytes);
+                zip.file(`${baseName}_page_${pdf.pageNum}.pdf`, pdf.bytes);
             }
 
             const blob = await zip.generateAsync({ type: 'blob' });

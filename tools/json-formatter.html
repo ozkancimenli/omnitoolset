@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Formatla & Doğrula - OmniToolset</title>
+    <title>JSON Formatter & Validator - OmniToolset</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -55,7 +55,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -96,7 +96,7 @@
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                 <button class="btn" onclick="formatJSON()">Formatla</button>
-                <button class="btn" onclick="minifyJSON()">Minify (Sıkıştır)</button>
+                <button class="btn" onclick="minifyJSON()">Minify (Compress)</button>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
@@ -171,7 +171,7 @@
             try {
                 const input = jsonInput.value.trim();
                 if (!input) {
-                    showError('Lütfen JSON kodu girin!');
+                    showError('Please enter JSON code!');
                     return;
                 }
 
@@ -181,10 +181,10 @@
                 const formatted = JSON.stringify(parsed, null, indent);
                 
                 jsonInput.value = formatted;
-                showSuccess('JSON başarıyla formatlandı!');
+                showSuccess('JSON formatted successfully!');
                 updateStats();
             } catch (error) {
-                showError('Geçersiz JSON: ' + error.message);
+                showError('Invalid JSON: ' + error.message);
             }
         }
 
@@ -192,7 +192,7 @@
             try {
                 const input = jsonInput.value.trim();
                 if (!input) {
-                    showError('Lütfen JSON kodu girin!');
+                    showError('Please enter JSON code!');
                     return;
                 }
 
@@ -200,10 +200,10 @@
                 const minified = JSON.stringify(parsed);
                 
                 jsonInput.value = minified;
-                showSuccess('JSON başarıyla sıkıştırıldı!');
+                showSuccess('JSON minified successfully!');
                 updateStats();
             } catch (error) {
-                showError('Geçersiz JSON: ' + error.message);
+                showError('Invalid JSON: ' + error.message);
             }
         }
 
@@ -218,10 +218,10 @@
 
             try {
                 JSON.parse(input);
-                showSuccess('✓ Geçerli JSON!');
+                showSuccess('✓ Valid JSON!');
                 statsArea.style.display = 'block';
             } catch (error) {
-                showError('✗ Geçersiz JSON: ' + error.message);
+                showError('✗ Invalid JSON: ' + error.message);
                 statsArea.style.display = 'none';
             }
         }

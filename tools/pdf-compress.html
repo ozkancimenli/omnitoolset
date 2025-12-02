@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Sıkıştır - OmniToolset</title>
+    <title>PDF Compress - OmniToolset</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -33,7 +33,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -56,8 +56,8 @@
             </script>
         </div>
         <div class="tool-container">
-            <h2>🗜️ PDF Sıkıştır</h2>
-            <p>PDF dosya boyutunu küçültün.</p>
+            <h2>🗜️ PDF Compress</h2>
+            <p>Reduce PDF file size.</p>
 
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center;">
@@ -74,21 +74,21 @@
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📄</div>
-                <p>PDF dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <p>Drag and drop your PDF file here or click to select</p>
                 <input type="file" id="fileInput" accept=".pdf" style="display: none;">
             </div>
 
             <div class="input-group">
-                <label for="compressionLevel">Sıkıştırma Seviyesi:</label>
+                <label for="compressionLevel">Compression Level:</label>
                 <select id="compressionLevel">
-                    <option value="low">Düşük (Daha iyi kalite, daha büyük dosya)</option>
-                    <option value="medium" selected>Orta (Dengeli)</option>
-                    <option value="high">Yüksek (Daha küçük dosya, biraz kalite kaybı)</option>
+                    <option value="low">Low (Better quality, larger file)</option>
+                    <option value="medium" selected>Medium (Balanced)</option>
+                    <option value="high">High (Smaller file, some quality loss)</option>
                 </select>
             </div>
 
             <div id="fileInfo" class="result-area" style="display: none;">
-                <h3>Orijinal Dosya</h3>
+                <h3>Original File</h3>
                 <p id="fileName"></p>
                 <p id="fileSize"></p>
             </div>
@@ -97,22 +97,22 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="compressBtn" onclick="compressPDF()" style="width: 100%; margin-top: 1rem;" disabled>PDF'i Sıkıştır</button>
+            <button class="btn" id="compressBtn" onclick="compressPDF()" style="width: 100%; margin-top: 1rem;" disabled>Compress PDF</button>
 
             <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
-                <h3>Sıkıştırma Tamamlandı!</h3>
+                <h3>Compression Complete!</h3>
                 <p id="resultInfo"></p>
                 <div id="comparison" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
                     <div style="text-align: center; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
-                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-secondary);">Orijinal</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-secondary);">Original</div>
                         <div id="originalSize" style="font-size: 1.2rem; margin-top: 0.5rem;"></div>
                     </div>
                     <div style="text-align: center; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
-                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">Sıkıştırılmış</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">Compressed</div>
                         <div id="compressedSize" style="font-size: 1.2rem; margin-top: 0.5rem;"></div>
                     </div>
                 </div>
-                <button class="btn" onclick="downloadCompressed()" style="width: 100%;">Sıkıştırılmış PDF'i İndir</button>
+                <button class="btn" onclick="downloadCompressed()" style="width: 100%;">Download Compressed PDF</button>
             </div>
         </div>
         <!-- AdSense Banner Ad (Bottom) -->
@@ -162,7 +162,7 @@
             if (file && file.type === 'application/pdf') {
                 handleFile(file);
             } else {
-                alert('Lütfen geçerli bir PDF dosyası seçin!');
+                alert('Please select a valid PDF file!');
             }
         });
 
@@ -176,8 +176,8 @@
         function handleFile(file) {
             pdfData = file;
             originalSize = file.size;
-            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
-            document.getElementById('fileSize').textContent = `Boyut: ${formatFileSize(file.size)}`;
+            document.getElementById('fileName').textContent = `File: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Size: ${formatFileSize(file.size)}`;
             fileInfo.style.display = 'block';
             compressBtn.disabled = false;
             resultArea.style.display = 'none';
@@ -224,7 +224,7 @@
                 document.getElementById('originalSize').textContent = formatFileSize(originalSize);
                 document.getElementById('compressedSize').textContent = formatFileSize(compressedSize);
                 document.getElementById('resultInfo').textContent = 
-                    `Dosya boyutu %${reduction} azaltıldı.`;
+                    `File size reduced by ${reduction}%.`;
                 
                 progressFill.style.width = '100%';
                 setTimeout(() => {
@@ -235,7 +235,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Sıkıştırma sırasında bir hata oluştu: ' + error.message);
+                alert('An error occurred while compressing: ' + error.message);
                 compressBtn.disabled = false;
                 progressBar.style.display = 'none';
             }

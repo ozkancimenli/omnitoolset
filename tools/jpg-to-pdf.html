@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JPG'den PDF'e - OmniToolset</title>
+    <title>JPG to PDF - OmniToolset</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -33,7 +33,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -56,8 +56,8 @@
             </script>
         </div>
         <div class="tool-container">
-            <h2>📄 JPG'den PDF'e</h2>
-            <p>JPG resimlerinizi PDF formatına dönüştürün.</p>
+            <h2>📄 JPG to PDF</h2>
+            <p>Convert your JPG images to PDF format.</p>
 
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center;">
@@ -74,30 +74,30 @@
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">🖼️</div>
-                <p>JPG dosyalarınızı buraya sürükleyin veya tıklayarak seçin</p>
+                <p>Drag and drop your JPG files here or click to select</p>
                 <input type="file" id="fileInput" accept="image/jpeg,image/jpg" multiple style="display: none;">
             </div>
 
             <div class="input-group">
-                <label for="pageSize">Sayfa Boyutu:</label>
+                <label for="pageSize">Page Size:</label>
                 <select id="pageSize">
                     <option value="a4">A4</option>
                     <option value="letter">Letter</option>
                     <option value="legal">Legal</option>
-                    <option value="fit">Resme Uygun</option>
+                    <option value="fit">Fit to Image</option>
                 </select>
             </div>
 
             <div class="input-group">
-                <label for="orientation">Yönlendirme:</label>
+                <label for="orientation">Orientation:</label>
                 <select id="orientation">
-                    <option value="portrait">Dikey</option>
-                    <option value="landscape">Yatay</option>
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
                 </select>
             </div>
 
             <div id="fileList" class="result-area" style="display: none; margin-top: 1rem;">
-                <h3>Seçilen Dosyalar</h3>
+                <h3>Selected Files</h3>
                 <div id="filesContainer"></div>
             </div>
 
@@ -105,11 +105,11 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin-top: 1rem;" disabled>PDF'e Dönüştür</button>
+            <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin-top: 1rem;" disabled>PDF'e Convert</button>
 
             <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
-                <h3>Dönüştürme Tamamlandı!</h3>
-                <button class="btn" onclick="downloadPDF()" style="width: 100%;">PDF Dosyasını İndir</button>
+                <h3>Conversion Complete!</h3>
+                <button class="btn" onclick="downloadPDF()" style="width: 100%;">Download PDF File</button>
             </div>
         </div>
         <!-- AdSense Banner Ad (Bottom) -->
@@ -161,7 +161,7 @@
             if (files.length > 0) {
                 handleFiles(files);
             } else {
-                alert('Lütfen geçerli JPG dosyaları seçin!');
+                alert('Please select a valid JPG dosyaları file!');
             }
         });
 
@@ -276,7 +276,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Dönüştürme sırasında bir hata oluştu: ' + error.message);
+                alert('Convertme An error occurred: ' + error.message);
                 convertBtn.disabled = false;
                 progressBar.style.display = 'none';
             }

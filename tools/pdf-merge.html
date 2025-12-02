@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Primary Meta Tags -->
-    <title>PDF Birleştir - Ücretsiz Online PDF Birleştirme Aracı | OmniToolset</title>
-    <meta name="title" content="PDF Birleştir - Ücretsiz Online PDF Birleştirme Aracı">
-    <meta name="description" content="Birden fazla PDF dosyasını tek bir dosyada ücretsiz olarak birleştirin. Hızlı, güvenli ve tamamen online. Dosyalarınız sunucuya gönderilmez, işlem tarayıcınızda yapılır.">
-    <meta name="keywords" content="pdf birleştir, pdf merge, pdf birleştirme, birden fazla pdf birleştir, ücretsiz pdf birleştirici, online pdf birleştir">
+    <title>PDF Merge - Free Online PDF Merger Tool | OmniToolset</title>
+    <meta name="title" content="PDF Merge - Free Online PDF Merger Tool">
+    <meta name="description" content="Merge multiple PDF files into one file for free. Fast, secure and completely online. Your files are not sent to the server, processing is done in your browser.">
+    <meta name="keywords" content="pdf merge, merge pdf, combine pdf, merge multiple pdf, free pdf merger, online pdf merge">
     <meta name="robots" content="index, follow">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://omnitoolset.com/tools/pdf-merge.html">
-    <meta property="og:title" content="PDF Birleştir - Ücretsiz Online PDF Birleştirme Aracı">
-    <meta property="og:description" content="Birden fazla PDF dosyasını tek bir dosyada ücretsiz olarak birleştirin. Hızlı, güvenli ve tamamen online.">
+    <meta property="og:title" content="PDF Merge - Free Online PDF Merger Tool">
+    <meta property="og:description" content="Merge multiple PDF files into one file for free. Fast, secure and completely online.">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://omnitoolset.com/tools/pdf-merge.html">
-    <meta property="twitter:title" content="PDF Birleştir - Ücretsiz Online PDF Birleştirme Aracı">
-    <meta property="twitter:description" content="Birden fazla PDF dosyasını tek bir dosyada ücretsiz olarak birleştirin. Hızlı, güvenli ve tamamen online.">
+    <meta property="twitter:title" content="PDF Merge - Free Online PDF Merger Tool">
+    <meta property="twitter:description" content="Merge multiple PDF files into one file for free. Fast, secure and completely online.">
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://omnitoolset.com/tools/pdf-merge.html">
@@ -31,15 +31,15 @@
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "PDF Birleştir",
-      "description": "Birden fazla PDF dosyasını tek bir dosyada ücretsiz olarak birleştirin",
+      "name": "PDF Merge",
+      "description": "Merge multiple PDF files into one file for free",
       "url": "https://omnitoolset.com/tools/pdf-merge.html",
       "applicationCategory": "UtilityApplication",
       "operatingSystem": "Any",
       "offers": {
         "@type": "Offer",
         "price": "0",
-        "priceCurrency": "TRY"
+        "priceCurrency": "USD"
       }
     }
     </script>
@@ -73,7 +73,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -96,8 +96,8 @@
             </script>
         </div>
         <div class="tool-container">
-            <h2>📄 PDF Birleştir</h2>
-            <p>Birden fazla PDF dosyasını tek bir dosyada birleştirin.</p>
+            <h2>📄 PDF Merge</h2>
+            <p>Merge multiple PDF files into one file.</p>
 
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center;">
@@ -114,12 +114,12 @@
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📄</div>
-                <p>PDF dosyalarınızı buraya sürükleyin veya tıklayarak seçin</p>
+                <p>Drag and drop your PDF files here or click to select</p>
                 <input type="file" id="fileInput" accept=".pdf" multiple style="display: none;">
             </div>
 
             <div id="fileList" class="result-area" style="display: none; margin-top: 1rem;">
-                <h3>Seçilen Dosyalar (Sıralamayı değiştirmek için sürükleyin)</h3>
+                <h3>Selected Files (Drag to reorder)</h3>
                 <div id="filesContainer" style="margin-top: 1rem;"></div>
             </div>
 
@@ -127,12 +127,12 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="mergeBtn" onclick="mergePDFs()" style="width: 100%; margin-top: 1rem;" disabled>PDF'leri Birleştir</button>
+            <button class="btn" id="mergeBtn" onclick="mergePDFs()" style="width: 100%; margin-top: 1rem;" disabled>Merge PDFs</button>
 
             <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
-                <h3>Birleştirme Tamamlandı!</h3>
+                <h3>Merge Complete!</h3>
                 <p id="resultInfo"></p>
-                <button class="btn" onclick="downloadMerged()" style="width: 100%;">Birleştirilmiş PDF'i İndir</button>
+                <button class="btn" onclick="downloadMerged()" style="width: 100%;">Download Merged PDF</button>
             </div>
         </div>
         <!-- AdSense Banner Ad (Bottom) -->
@@ -182,7 +182,7 @@
             if (files.length > 0) {
                 handleFiles(files);
             } else {
-                alert('Lütfen geçerli PDF dosyaları seçin!');
+                alert('Please select valid PDF files!');
             }
         });
 
@@ -269,7 +269,7 @@
 
         async function mergePDFs() {
             if (selectedFiles.length < 2) {
-                alert('En az 2 PDF dosyası seçmelisiniz!');
+                alert('Please select at least 2 PDF files!');
                 return;
             }
 
@@ -298,7 +298,7 @@
                 mergedPdfBlob = await mergedPdf.save();
                 
                 document.getElementById('resultInfo').textContent = 
-                    `${selectedFiles.length} dosya birleştirildi, toplam ${totalPages} sayfa.`;
+                    `${selectedFiles.length} file(s) merged, total ${totalPages} page(s).`;
                 
                 progressFill.style.width = '100%';
                 setTimeout(() => {
@@ -309,7 +309,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Birleştirme sırasında bir hata oluştu: ' + error.message);
+                alert('An error occurred while merging: ' + error.message);
                 mergeBtn.disabled = false;
                 progressBar.style.display = 'none';
             }

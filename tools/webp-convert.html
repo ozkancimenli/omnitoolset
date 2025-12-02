@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WEBP Dönüştürücü - OmniToolset</title>
+    <title>WebP Converter - OmniToolset</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -32,7 +32,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -55,7 +55,7 @@
             </script>
         </div>
         <div class="tool-container">
-            <h2>🖼️ WEBP Dönüştürücü</h2>
+            <h2>🖼️ WEBP Convertücü</h2>
             <p>WEBP formatını JPG/PNG'ye veya JPG/PNG'yi WEBP'ye dönüştürün.</p>
 
             <!-- AdSense Banner Ad (Middle) -->
@@ -73,12 +73,12 @@
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">🖼️</div>
-                <p>Resim dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <p>Drag and drop your image file here or click to select</p>
                 <input type="file" id="fileInput" accept="image/webp,image/jpeg,image/jpg,image/png" style="display: none;">
             </div>
 
             <div id="fileInfo" class="result-area" style="display: none;">
-                <h3>Seçilen Dosya</h3>
+                <h3>Selected File</h3>
                 <p id="fileName"></p>
                 <p id="fileType"></p>
                 <div style="text-align: center; margin-top: 1rem;">
@@ -87,16 +87,16 @@
             </div>
 
             <div class="input-group" id="convertOptions" style="display: none;">
-                <label for="outputFormat">Dönüştür:</label>
+                <label for="outputFormat">Convert:</label>
                 <select id="outputFormat">
-                    <option value="webp">WEBP'ye Dönüştür</option>
-                    <option value="jpeg">JPG'e Dönüştür</option>
-                    <option value="png">PNG'ye Dönüştür</option>
+                    <option value="webp">WEBP'ye Convert</option>
+                    <option value="jpeg">JPG'e Convert</option>
+                    <option value="png">PNG'ye Convert</option>
                 </select>
             </div>
 
             <div class="input-group" id="qualityInput" style="display: none;">
-                <label for="quality">Kalite: <span id="qualityValue">90</span>%</label>
+                <label for="quality">Quality: <span id="qualityValue">90</span>%</label>
                 <input type="range" id="quality" min="10" max="100" value="90" oninput="updateQuality()">
             </div>
 
@@ -104,15 +104,15 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="convertBtn" onclick="convertImage()" style="width: 100%; margin-top: 1rem;" disabled>Dönüştür</button>
+            <button class="btn" id="convertBtn" onclick="convertImage()" style="width: 100%; margin-top: 1rem;" disabled>Convert</button>
 
             <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
-                <h3>Dönüştürme Tamamlandı!</h3>
+                <h3>Conversion Complete!</h3>
                 <div style="text-align: center; margin: 1rem 0;">
                     <img id="resultImage" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid var(--border-color);">
                 </div>
                 <p id="resultInfo" style="text-align: center; color: var(--text-secondary);"></p>
-                <button class="btn" onclick="downloadImage()" style="width: 100%;">Dönüştürülmüş Resmi İndir</button>
+                <button class="btn" onclick="downloadImage()" style="width: 100%;">Convertülmüş Resmi Download</button>
             </div>
         </div>
         <!-- AdSense Banner Ad (Bottom) -->
@@ -163,7 +163,7 @@
             if (file && file.type.startsWith('image/')) {
                 handleFile(file);
             } else {
-                alert('Lütfen geçerli bir resim dosyası seçin!');
+                alert('Please select a valid bir resim dosyası file!');
             }
         });
 
@@ -190,7 +190,7 @@
             else if (file.type === 'image/jpeg') fileTypeName = 'JPG';
             else if (file.type === 'image/png') fileTypeName = 'PNG';
             
-            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
+            document.getElementById('fileName').textContent = `File: ${file.name}`;
             document.getElementById('fileType').textContent = `Format: ${fileTypeName}`;
             
             const reader = new FileReader();

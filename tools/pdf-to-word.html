@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF'den Word'e - OmniToolset</title>
+    <title>PDF to Word - OmniToolset</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -33,7 +33,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -56,8 +56,8 @@
             </script>
         </div>
         <div class="tool-container">
-            <h2>📝 PDF'den Word'e</h2>
-            <p>PDF dosyanızı Word (.docx) formatına dönüştürün.</p>
+            <h2>📝 PDF to Word</h2>
+            <p>Convert your PDF file to Word (.docx) format.</p>
 
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center;">
@@ -74,12 +74,12 @@
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📄</div>
-                <p>PDF dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <p>Drag and drop your PDF file here or click to select</p>
                 <input type="file" id="fileInput" accept=".pdf" style="display: none;">
             </div>
 
             <div id="fileInfo" class="result-area" style="display: none;">
-                <h3>Seçilen Dosya</h3>
+                <h3>Selected File</h3>
                 <p id="fileName"></p>
                 <p id="fileSize"></p>
             </div>
@@ -88,15 +88,15 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="convertBtn" onclick="convertPDF()" style="width: 100%; margin-top: 1rem;" disabled>Word'e Dönüştür</button>
+            <button class="btn" id="convertBtn" onclick="convertPDF()" style="width: 100%; margin-top: 1rem;" disabled>Convert to Word</button>
 
             <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
-                <h3>Dönüştürme Tamamlandı!</h3>
+                <h3>Conversion Complete!</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    Not: Tarayıcı sınırlamaları nedeniyle HTML formatında kaydedildi. 
-                    Word'de açabilir veya "Farklı Kaydet" ile .docx olarak kaydedebilirsiniz.
+                    Note: Saved in HTML format due to browser limitations. 
+                    You can open it in Word or save it as .docx using "Save As".
                 </p>
-                <button class="btn" onclick="downloadWord()" style="width: 100%;">Word Dosyasını İndir (.doc)</button>
+                <button class="btn" onclick="downloadWord()" style="width: 100%;">Download Word File (.doc)</button>
             </div>
         </div>
         <!-- AdSense Banner Ad (Bottom) -->
@@ -145,7 +145,7 @@
             if (file && file.type === 'application/pdf') {
                 handleFile(file);
             } else {
-                alert('Lütfen geçerli bir PDF dosyası seçin!');
+                alert('Please select a valid PDF file!');
             }
         });
 
@@ -158,8 +158,8 @@
 
         function handleFile(file) {
             pdfData = file;
-            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
-            document.getElementById('fileSize').textContent = `Boyut: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            document.getElementById('fileName').textContent = `File: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
             fileInfo.style.display = 'block';
             convertBtn.disabled = false;
             resultArea.style.display = 'none';
@@ -223,7 +223,7 @@ ${fullText.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('')
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Dönüştürme sırasında bir hata oluştu: ' + error.message);
+                alert('An error occurred while converting: ' + error.message);
                 convertBtn.disabled = false;
                 progressBar.style.display = 'none';
             }

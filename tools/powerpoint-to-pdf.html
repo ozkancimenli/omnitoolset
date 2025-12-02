@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PowerPoint'den PDF'e - OmniToolset</title>
+    <title>PowerPoint to PDF - OmniToolset</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -33,7 +33,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -56,8 +56,8 @@
             </script>
         </div>
         <div class="tool-container">
-            <h2>📽️ PowerPoint'den PDF'e</h2>
-            <p>PowerPoint (.pptx) dosyanızı PDF formatına dönüştürün.</p>
+            <h2>📽️ PowerPoint to PDF</h2>
+            <p>Convert your PowerPoint (.pptx) file to PDF format.</p>
 
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center;">
@@ -74,12 +74,12 @@
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📄</div>
-                <p>PowerPoint dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <p>Drag and drop your PowerPoint file here or click to select</p>
                 <input type="file" id="fileInput" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" style="display: none;">
             </div>
 
             <div id="fileInfo" class="result-area" style="display: none;">
-                <h3>Seçilen Dosya</h3>
+                <h3>Selected File</h3>
                 <p id="fileName"></p>
                 <p id="fileSize"></p>
             </div>
@@ -88,12 +88,12 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin-top: 1rem;" disabled>PDF'e Dönüştür</button>
+            <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin-top: 1rem;" disabled>Convert to PDF</button>
 
             <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
-                <h3>Dönüştürme Tamamlandı!</h3>
+                <h3>Conversion Complete!</h3>
                 <p id="resultInfo"></p>
-                <button class="btn" onclick="downloadPDF()" style="width: 100%;">PDF Dosyasını İndir</button>
+                <button class="btn" onclick="downloadPDF()" style="width: 100%;">Download PDF File</button>
             </div>
         </div>
         <!-- AdSense Banner Ad (Bottom) -->
@@ -142,7 +142,7 @@
             if (file && (file.name.endsWith('.pptx') || file.type.includes('presentationml'))) {
                 handleFile(file);
             } else {
-                alert('Lütfen geçerli bir PowerPoint (.pptx) dosyası seçin!');
+                alert('Please select a valid bir PowerPoint (.pptx) dosyası file!');
             }
         });
 
@@ -155,8 +155,8 @@
 
         function handleFile(file) {
             pptFile = file;
-            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
-            document.getElementById('fileSize').textContent = `Boyut: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            document.getElementById('fileName').textContent = `File: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
             fileInfo.style.display = 'block';
             convertBtn.disabled = false;
             resultArea.style.display = 'none';
@@ -182,10 +182,10 @@
                 progressFill.style.width = '50%';
                 
                 pdf.setFontSize(16);
-                pdf.text('PowerPoint Dönüştürme', 105, 50, { align: 'center' });
+                pdf.text('PowerPoint Convertme', 105, 50, { align: 'center' });
                 
                 pdf.setFontSize(12);
-                pdf.text('Dosya: ' + pptFile.name, 105, 70, { align: 'center' });
+                pdf.text('File: ' + pptFile.name, 105, 70, { align: 'center' });
                 pdf.text('Not: PowerPoint dosyaları karmaşık yapıya sahiptir.', 105, 90, { align: 'center' });
                 pdf.text('Tam dönüştürme için backend servisi gereklidir.', 105, 100, { align: 'center' });
                 pdf.text('Bu basit bir örnek PDF dosyasıdır.', 105, 110, { align: 'center' });
@@ -205,7 +205,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Dönüştürme sırasında bir hata oluştu: ' + error.message);
+                alert('Convertme An error occurred: ' + error.message);
                 convertBtn.disabled = false;
                 progressBar.style.display = 'none';
             }

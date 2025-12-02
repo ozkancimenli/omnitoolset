@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF'den JPG'e - OmniToolset</title>
+    <title>PDF to JPG - OmniToolset</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -33,7 +33,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -56,8 +56,8 @@
             </script>
         </div>
         <div class="tool-container">
-            <h2>🖼️ PDF'den JPG'e</h2>
-            <p>PDF sayfalarınızı JPG resim formatına dönüştürün.</p>
+            <h2>🖼️ PDF to JPG</h2>
+            <p>Convert your PDF pages to JPG image format.</p>
 
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center;">
@@ -74,24 +74,24 @@
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📄</div>
-                <p>PDF dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <p>Drag and drop your PDF file here or click to select</p>
                 <input type="file" id="fileInput" accept=".pdf" style="display: none;">
             </div>
 
             <div class="input-group">
-                <label for="quality">JPG Kalitesi:</label>
+                <label for="quality">JPG Quality:</label>
                 <input type="range" id="quality" min="0.1" max="1" step="0.1" value="0.9">
                 <span id="qualityValue">90%</span>
             </div>
 
             <div class="input-group">
-                <label for="scale">Ölçek:</label>
+                <label for="scale">Scale:</label>
                 <input type="range" id="scale" min="1" max="3" step="0.5" value="2">
                 <span id="scaleValue">2x</span>
             </div>
 
             <div id="fileInfo" class="result-area" style="display: none;">
-                <h3>Seçilen Dosya</h3>
+                <h3>Selected File</h3>
                 <p id="fileName"></p>
                 <p id="pageCount"></p>
             </div>
@@ -100,12 +100,12 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="convertBtn" onclick="convertPDF()" style="width: 100%; margin-top: 1rem;" disabled>JPG'e Dönüştür</button>
+            <button class="btn" id="convertBtn" onclick="convertPDF()" style="width: 100%; margin-top: 1rem;" disabled>JPG'e Convert</button>
 
             <div id="resultArea" style="display: none; margin-top: 2rem;">
-                <h3>Dönüştürülen Sayfalar</h3>
+                <h3>Convertülen Sayfalar</h3>
                 <div id="imagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;"></div>
-                <button class="btn" onclick="downloadAll()" style="width: 100%; margin-top: 1rem;">Tümünü ZIP Olarak İndir</button>
+                <button class="btn" onclick="downloadAll()" style="width: 100%; margin-top: 1rem;">Tümünü ZIP Olarak Download</button>
             </div>
         </div>
         <!-- AdSense Banner Ad (Bottom) -->
@@ -158,7 +158,7 @@
             if (file && file.type === 'application/pdf') {
                 handleFile(file);
             } else {
-                alert('Lütfen geçerli bir PDF dosyası seçin!');
+                alert('Please select a valid bir PDF dosyası file!');
             }
         });
 
@@ -179,11 +179,11 @@
 
         async function handleFile(file) {
             pdfData = file;
-            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
+            document.getElementById('fileName').textContent = `File: ${file.name}`;
             
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            document.getElementById('pageCount').textContent = `Sayfa Sayısı: ${pdf.numPages}`;
+            document.getElementById('pageCount').textContent = `Page Count: ${pdf.numPages}`;
             
             fileInfo.style.display = 'block';
             convertBtn.disabled = false;
@@ -251,7 +251,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Dönüştürme sırasında bir hata oluştu: ' + error.message);
+                alert('Convertme An error occurred: ' + error.message);
                 convertBtn.disabled = false;
                 progressBar.style.display = 'none';
             }

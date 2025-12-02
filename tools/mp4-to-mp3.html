@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MP4'den MP3'e - OmniToolset</title>
+    <title>MP4 to MP3 - OmniToolset</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -32,7 +32,7 @@
     </header>
 
     <main class="tool-page">
-        <a href="/index.html" class="back-button">← Ana Sayfaya Dön</a>
+        <a href="/index.html" class="back-button">← Back to Home</a>
         
         
         
@@ -56,7 +56,7 @@
         </div>
         <div class="tool-container">
             <h2>🎵 MP4'den MP3'e</h2>
-            <p>Video dosyasından ses çıkarın ve MP3 formatına dönüştürün.</p>
+            <p>Video dosyasından ses çıkarın ve MP3 format.</p>
 
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center;">
@@ -88,7 +88,7 @@
             </div>
 
             <div id="fileInfo" class="result-area" style="display: none;">
-                <h3>Seçilen Dosya</h3>
+                <h3>Selected File</h3>
                 <p id="fileName"></p>
                 <p id="fileSize"></p>
                 <video id="previewVideo" controls style="width: 100%; max-height: 400px; margin-top: 1rem; border-radius: 8px;"></video>
@@ -98,13 +98,13 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="convertBtn" onclick="convertToMP3()" style="width: 100%; margin-top: 1rem;" disabled>MP3'e Dönüştür</button>
+            <button class="btn" id="convertBtn" onclick="convertToMP3()" style="width: 100%; margin-top: 1rem;" disabled>MP3'e Convert</button>
 
             <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
-                <h3>Dönüştürme Tamamlandı!</h3>
+                <h3>Conversion Complete!</h3>
                 <p id="resultInfo"></p>
                 <audio id="previewAudio" controls style="width: 100%; margin: 1rem 0;"></audio>
-                <button class="btn" onclick="downloadMP3()" style="width: 100%;">MP3 Dosyasını İndir</button>
+                <button class="btn" onclick="downloadMP3()" style="width: 100%;">MP3 Dosyasını Download</button>
             </div>
         </div>
         <!-- AdSense Banner Ad (Bottom) -->
@@ -153,7 +153,7 @@
             if (file && file.type.startsWith('video/')) {
                 handleFile(file);
             } else {
-                alert('Lütfen geçerli bir video dosyası seçin!');
+                alert('Please select a valid bir video dosyası file!');
             }
         });
 
@@ -166,8 +166,8 @@
 
         function handleFile(file) {
             videoFile = file;
-            document.getElementById('fileName').textContent = `Dosya: ${file.name}`;
-            document.getElementById('fileSize').textContent = `Boyut: ${formatFileSize(file.size)}`;
+            document.getElementById('fileName').textContent = `File: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Size: ${formatFileSize(file.size)}`;
             
             const url = URL.createObjectURL(file);
             document.getElementById('previewVideo').src = url;
@@ -256,7 +256,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Dönüştürme sırasında bir hata oluştu. Tarayıcı desteği sınırlı olabilir. Alternatif olarak FFmpeg kullanabilirsiniz.');
+                alert('Convertme An error occurred. Tarayıcı desteği sınırlı olabilir. Alternatif olarak FFmpeg kullanabilirsiniz.');
                 convertBtn.disabled = false;
                 progressBar.style.display = 'none';
             }
