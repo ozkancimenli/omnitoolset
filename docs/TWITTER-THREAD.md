@@ -59,6 +59,8 @@ All 120+ tools: https://www.omnitoolset.com
 No registration. No watermarks. 100% free.
 
 Save this thread! 🔖
+
+#WebDev #ProductivityTools #FreeTools #PDFTools #DeveloperTools #OnlineTools #WebTools #ProductivityHacks #FreeResources #Tools
 ```
 
 ---
@@ -111,6 +113,8 @@ https://www.omnitoolset.com
 What tools do you need most?
 
 RT if you find this useful! 🔄
+
+#SideProject #BuildInPublic #WebDev #FreeTools #ProductivityTools #DeveloperTools #OnlineTools #WebTools #Startup #IndieHacker
 ```
 
 ---
@@ -159,6 +163,8 @@ Save $46+/month with free alternatives:
 https://www.omnitoolset.com
 
 RT to save someone money! 💰
+
+#FreeTools #ProductivityTools #SaveMoney #WebDev #PDFTools #DeveloperTools #OnlineTools #FreeAlternatives #ProductivityHacks #Tools
 ```
 
 ---

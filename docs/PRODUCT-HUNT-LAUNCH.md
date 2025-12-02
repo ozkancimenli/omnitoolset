@@ -50,12 +50,20 @@ I believe everyone should have access to quality tools without barriers. No sign
 Try it now: https://www.omnitoolset.com
 ```
 
-### Topics/Tags:
-- `Tools`
-- `Productivity`
-- `Developer Tools`
-- `Free`
-- `Web App`
+### Topics/Tags (5 seç):
+- `Tools` ⭐ (mutlaka seç)
+- `Productivity` ⭐ (mutlaka seç)
+- `Developer Tools` ⭐ (mutlaka seç)
+- `Free` ⭐ (mutlaka seç)
+- `Web App` ⭐ (mutlaka seç)
+
+**Alternatif Tags (eğer yukarıdakiler yoksa):**
+- `Software`
+- `Utilities`
+- `SaaS`
+- `Open Source`
+- `Design Tools`
+- `Business Tools`
 
 ### Gallery Images (Hazırla):
 1. **Hero Image** - Ana sayfa screenshot

@@ -2,6 +2,8 @@
 
 ## Post 1: r/InternetIsBeautiful
 
+**Flair/Tags:** `Tools` veya `Free Resources`
+
 **Title:**
 ```
 I built 120+ free online tools (PDF, image, text, developer tools) - no registration, no watermarks, unlimited use
@@ -29,6 +31,8 @@ Feedback welcome! What tools would you like to see added?
 ---
 
 ## Post 2: r/SideProject
+
+**Flair/Tags:** `Show HN` veya `Side Project`
 
 **Title:**
 ```
@@ -67,6 +71,8 @@ Would love your feedback! What's missing?
 ---
 
 ## Post 3: r/UsefulWebsites
+
+**Flair/Tags:** `Tools` veya `Free Tools`
 
 **Title:**
 ```
@@ -108,6 +114,8 @@ Link: https://www.omnitoolset.com
 
 ## Post 4: r/webdev
 
+**Flair/Tags:** `Showoff Saturday` veya `Tools`
+
 **Title:**
 ```
 Built 120+ Free Developer Tools - All Client-Side, No Backend
@@ -146,6 +154,8 @@ What tools would you find most useful?
 ---
 
 ## Post 5: r/productivity
+
+**Flair/Tags:** `Tools` veya `Resources`
 
 **Title:**
 ```
