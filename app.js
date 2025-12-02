@@ -78,6 +78,9 @@ const tools = [
   
   // Developer Tools
   { id: 'json-formatter', title: 'JSON Formatter & Validator', description: 'Format, validate and beautify JSON code', icon: '📋', category: 'Developer', page: 'tools/json-formatter.html' },
+  { id: 'json-validator', title: 'JSON Validator', description: 'Validate JSON syntax and format JSON code beautifully', icon: '📋', category: 'Developer', page: 'tools/json-validator.html' },
+  { id: 'xml-validator', title: 'XML Validator', description: 'Validate XML syntax and format XML code', icon: '📄', category: 'Developer', page: 'tools/xml-validator.html' },
+  { id: 'yaml-validator', title: 'YAML Validator', description: 'Validate YAML syntax and format YAML code', icon: '📝', category: 'Developer', page: 'tools/yaml-validator.html' },
   { id: 'jwt-decoder', title: 'JWT Decoder', description: 'Decode and view JWT tokens', icon: '🔐', category: 'Developer', page: 'tools/jwt-decoder.html' },
   { id: 'uuid-generator', title: 'UUID Generator', description: 'Generate UUIDs', icon: '🆔', category: 'Developer', page: 'tools/uuid-generator.html' },
   { id: 'hash-generator', title: 'Hash Generator', description: 'Generate SHA1, SHA256, SHA512 hashes', icon: '🔐', category: 'Developer', page: 'tools/hash-generator.html' },
@@ -146,6 +149,12 @@ const tools = [
   { id: 'vibration-calculator', title: 'Vibration Calculator', description: 'Calculate vibration frequency, amplitude, and velocity', icon: '📳', category: 'Engineering', page: 'tools/vibration-calculator.html' },
   { id: 'chain-length-calculator', title: 'Chain Length Calculator', description: 'Calculate the required chain length for two sprockets', icon: '⛓️', category: 'Engineering', page: 'tools/chain-length-calculator.html' },
   { id: 'thread-calculator', title: 'Thread Calculator', description: 'Calculate thread dimensions, pitch, and tolerances', icon: '🔩', category: 'Engineering', page: 'tools/thread-calculator.html' },
+  { id: 'bearing-life-calculator', title: 'Bearing Life Calculator', description: 'Calculate bearing life (L10) in hours based on load and speed', icon: '🔧', category: 'Engineering', page: 'tools/bearing-life-calculator.html' },
+  { id: 'transformer-calculator', title: 'Transformer Calculator', description: 'Calculate transformer turns ratio, voltage, and current transformation', icon: '⚡', category: 'Engineering', page: 'tools/transformer-calculator.html' },
+  { id: 'motor-current-calculator', title: 'Motor Current Calculator', description: 'Calculate motor current from power, voltage, and efficiency', icon: '⚡', category: 'Engineering', page: 'tools/motor-current-calculator.html' },
+  { id: 'floor-area-calculator', title: 'Floor Area Calculator', description: 'Calculate floor area for rectangular, circular, and irregular shapes', icon: '🏗️', category: 'Engineering', page: 'tools/floor-area-calculator.html' },
+  { id: 'roof-pitch-calculator', title: 'Roof Pitch Calculator', description: 'Calculate roof pitch, angle, and slope from rise and run', icon: '🏠', category: 'Engineering', page: 'tools/roof-pitch-calculator.html' },
+  { id: 'stair-calculator', title: 'Stair Calculator', description: 'Calculate stair dimensions, rise, run, and number of steps', icon: '🪜', category: 'Engineering', page: 'tools/stair-calculator.html' },
   { id: 'molar-mass-calculator', title: 'Molar Mass Calculator', description: 'Calculate the molar mass of chemical compounds', icon: '🧪', category: 'Engineering', page: 'tools/molar-mass-calculator.html' },
   { id: 'solution-calculator', title: 'Solution Calculator', description: 'Calculate solution concentrations, molarity, and dilution ratios', icon: '🧪', category: 'Engineering', page: 'tools/solution-calculator.html' },
   { id: 'ph-calculator', title: 'pH Calculator', description: 'Calculate pH from hydrogen ion concentration (H+)', icon: '🧪', category: 'Engineering', page: 'tools/ph-calculator.html' },
@@ -194,7 +203,8 @@ const tools = [
   { id: 'business-card-generator', title: 'Business Card Generator', description: 'Create professional business cards quickly and easily', icon: '💼', category: 'Other', page: 'tools/business-card-generator.html' },
   { id: 'label-generator', title: 'Label Generator', description: 'Create professional labels for products, packages, and shipping', icon: '🏷️', category: 'Other', page: 'tools/label-generator.html' },
   { id: 'coupon-generator', title: 'Coupon Generator', description: 'Create professional discount coupons and promotional codes', icon: '🎫', category: 'Other', page: 'tools/coupon-generator.html' },
-  { id: 'voucher-generator', title: 'Voucher Generator', description: 'Create professional gift vouchers and certificates', icon: '🎁', category: 'Other', page: 'tools/voucher-generator.html' }
+  { id: 'voucher-generator', title: 'Voucher Generator', description: 'Create professional gift vouchers and certificates', icon: '🎁', category: 'Other', page: 'tools/voucher-generator.html' },
+  { id: 'ean-barcode-validator', title: 'EAN Barcode Validator', description: 'Validate EAN-13 and EAN-8 barcode numbers using check digit algorithm', icon: '📊', category: 'Other', page: 'tools/ean-barcode-validator.html' }
 ];
 
 // Initialize app
