@@ -141,7 +141,7 @@ const tools = [
   { id: 'pump-calculator', title: 'Pump Calculator', description: 'Calculate pump flow rate, head, and power requirements', icon: '🔧', category: 'Engineering', page: 'tools/pump-calculator.html' },
   { id: 'gear-ratio-calculator', title: 'Gear Ratio Calculator', description: 'Calculate gear ratios, output speed, and torque', icon: '⚙️', category: 'Engineering', page: 'tools/gear-ratio-calculator.html' },
   { id: 'belt-length-calculator', title: 'Belt Length Calculator', description: 'Calculate the required belt length for two pulleys', icon: '🔧', category: 'Engineering', page: 'tools/belt-length-calculator.html' },
-  { id: 'spring-calculator', title: 'Spring Calculator', description: 'Calculate spring force, deflection, and spring constant', icon: ' spring', category: 'Engineering', page: 'tools/spring-calculator.html' },
+  { id: 'spring-calculator', title: 'Spring Calculator', description: 'Calculate spring force, deflection, and spring constant', icon: '🪀', category: 'Engineering', page: 'tools/spring-calculator.html' },
   { id: 'molar-mass-calculator', title: 'Molar Mass Calculator', description: 'Calculate the molar mass of chemical compounds', icon: '🧪', category: 'Engineering', page: 'tools/molar-mass-calculator.html' },
   { id: 'solution-calculator', title: 'Solution Calculator', description: 'Calculate solution concentrations, molarity, and dilution ratios', icon: '🧪', category: 'Engineering', page: 'tools/solution-calculator.html' },
   { id: 'ph-calculator', title: 'pH Calculator', description: 'Calculate pH from hydrogen ion concentration (H+)', icon: '🧪', category: 'Engineering', page: 'tools/ph-calculator.html' },
