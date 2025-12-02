@@ -112,6 +112,9 @@ const tools = [
   { id: 'color-palette-generator', title: 'Color Palette Generator', description: 'Generate beautiful color palettes for design projects', icon: '🎨', category: 'Developer', page: 'tools/color-palette-generator.html' },
   { id: 'css-gradient-generator', title: 'CSS Gradient Generator', description: 'Generate CSS gradients with live preview', icon: '🌈', category: 'Developer', page: 'tools/css-gradient-generator.html' },
   { id: 'api-tester', title: 'REST API Tester', description: 'Test REST API endpoints with GET, POST, PUT, DELETE', icon: '🔌', category: 'Developer', page: 'tools/api-tester.html' },
+  { id: 'ip-address-lookup', title: 'IP Address Lookup', description: 'Lookup IP address information, location, and ISP details', icon: '🌐', category: 'Developer', page: 'tools/ip-address-lookup.html' },
+  { id: 'user-agent-parser', title: 'User Agent Parser', description: 'Parse and analyze user agent strings', icon: '🔍', category: 'Developer', page: 'tools/user-agent-parser.html' },
+  { id: 'http-status-checker', title: 'HTTP Status Checker', description: 'Check HTTP status codes and response headers', icon: '🔌', category: 'Developer', page: 'tools/http-status-checker.html' },
   
   // GIS Tools
   { id: 'coordinate-converter', title: 'Coordinate Converter', description: 'Convert GPS coordinates between WGS84, UTM, MGRS formats', icon: '🗺️', category: 'GIS', page: 'tools/coordinate-converter.html' },
@@ -121,9 +124,12 @@ const tools = [
   { id: 'engineering-unit-converter', title: 'Engineering Unit Converter', description: 'Convert engineering units: pressure, force, torque, power', icon: '⚙️', category: 'Engineering', page: 'tools/engineering-unit-converter.html' },
   { id: 'concrete-calculator', title: 'Concrete Calculator', description: 'Calculate concrete volume, mix ratios, and material requirements', icon: '🏗️', category: 'Engineering', page: 'tools/concrete-calculator.html' },
   { id: 'electrical-calculator', title: 'Electrical Calculator', description: 'Calculate electrical values using Ohm\'s law and power formulas', icon: '⚡', category: 'Engineering', page: 'tools/electrical-calculator.html' },
+  { id: 'rebar-calculator', title: 'Rebar Calculator', description: 'Calculate rebar weight, length, and quantity for construction', icon: '🏗️', category: 'Engineering', page: 'tools/rebar-calculator.html' },
+  { id: 'beam-calculator', title: 'Beam Calculator', description: 'Calculate beam bending moment, deflection, and stress', icon: '📐', category: 'Engineering', page: 'tools/beam-calculator.html' },
   
   // QR Code Tools
   { id: 'qr-generator', title: 'QR Code Generator', description: 'Generate QR codes for text or URL', icon: '📱', category: 'QR Code', page: 'tools/qr-generator.html' },
+  { id: 'qr-code-reader', title: 'QR Code Reader', description: 'Decode QR codes from uploaded images', icon: '📱', category: 'QR Code', page: 'tools/qr-code-reader.html' },
   
   // Other Tools
   { id: 'password-generator', title: 'Password Generator', description: 'Generate secure passwords', icon: '🔑', category: 'Other', page: 'tools/password-generator.html' },
@@ -150,7 +156,9 @@ const tools = [
   { id: 'epub-to-mobi', title: 'EPUB to MOBI', description: 'Convert EPUB ebook files to MOBI format for Kindle', icon: '📖', category: 'Other', page: 'tools/epub-to-mobi.html' },
   { id: 'salary-calculator', title: 'Salary Calculator', description: 'Calculate weekly, monthly, and yearly salary from hourly rate', icon: '💰', category: 'Other', page: 'tools/salary-calculator.html' },
   { id: 'length-converter', title: 'Length Converter', description: 'Convert between length units', icon: '📏', category: 'Other', page: 'tools/length-converter.html' },
-  { id: 'temperature-converter', title: 'Temperature Converter', description: 'Convert between Celsius, Fahrenheit, and Kelvin', icon: '🌡️', category: 'Other', page: 'tools/temperature-converter.html' }
+  { id: 'temperature-converter', title: 'Temperature Converter', description: 'Convert between Celsius, Fahrenheit, and Kelvin', icon: '🌡️', category: 'Other', page: 'tools/temperature-converter.html' },
+  { id: 'barcode-generator', title: 'Barcode Generator', description: 'Generate barcodes (EAN-13, Code 128) for products and labels', icon: '📊', category: 'Other', page: 'tools/barcode-generator.html' },
+  { id: 'invoice-generator', title: 'Invoice Generator', description: 'Generate professional invoices for businesses and freelancers', icon: '🧾', category: 'Other', page: 'tools/invoice-generator.html' }
 ];
 
 // Initialize app
