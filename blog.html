@@ -149,7 +149,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Adsterra Popunder (Head) -->
-    <script type='text/javascript' src='//pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
+    <script type='text/javascript'>
+        (function() {
+            try {
+                var script = document.createElement('script');
+                script.src = 'https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js';
+                script.crossOrigin = 'anonymous';
+                script.onerror = function() { return false; };
+                script.onload = function() {};
+                setTimeout(function() {
+                    document.head.appendChild(script);
+                }, 100);
+            } catch(e) {}
+        })();
+    </script>
 </head>
 <body>
     <header class="main-header">
@@ -171,9 +184,25 @@
     <main class="container">
         <a href="index.html" class="back-button">← Back to Home</a>
         
-        <div class="hero-section" style="margin: 2rem 0;">
-            <h2>📝 Blog & Guides</h2>
-            <p>Learn how to use our free online tools with step-by-step guides and expert tips.</p>
+        <!-- Blog Hero Section -->
+        <div class="blog-hero">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">📝 Blog & Guides</h2>
+            <p style="font-size: 1.2rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">Learn how to use our free online tools with step-by-step guides, expert tips, and tutorials.</p>
+        </div>
+
+        <!-- Blog Search -->
+        <div class="blog-search">
+            <input type="text" id="blogSearch" placeholder="Search blog posts..." autocomplete="off">
+        </div>
+
+        <!-- Blog Categories -->
+        <div class="blog-categories" id="blogCategories">
+            <button class="blog-category-btn active" data-category="all">All Posts</button>
+            <button class="blog-category-btn" data-category="PDF">PDF</button>
+            <button class="blog-category-btn" data-category="Image">Image</button>
+            <button class="blog-category-btn" data-category="Developer">Developer</button>
+            <button class="blog-category-btn" data-category="Student">Student</button>
+            <button class="blog-category-btn" data-category="Tips">Tips</button>
         </div>
 
         <!-- AdSense Banner Ad (Top) -->
@@ -181,7 +210,6 @@
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-8640955536193345"
-                 data-ad-slot="8640955536193345"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
             <script>
@@ -230,7 +258,8 @@
                 excerpt: 'Learn how to combine multiple PDF files into one document. Step-by-step guide with screenshots.',
                 date: '2024-11-30',
                 category: 'PDF',
-                icon: '📄'
+                icon: '📄',
+                readTime: '5 min read'
             },
             {
                 slug: 'how-to-convert-pdf-to-word',
@@ -238,7 +267,8 @@
                 excerpt: 'Convert PDF files to Word format easily. No software needed, works in your browser.',
                 date: '2024-11-30',
                 category: 'PDF',
-                icon: '📝'
+                icon: '📝',
+                readTime: '4 min read'
             },
             {
                 slug: 'how-to-compress-pdf-files',
@@ -246,7 +276,8 @@
                 excerpt: 'Reduce PDF file size without losing quality. Quick and easy compression guide.',
                 date: '2024-11-30',
                 category: 'PDF',
-                icon: '🗜️'
+                icon: '🗜️',
+                readTime: '3 min read'
             },
             {
                 slug: 'best-free-pdf-tools-online',
@@ -254,7 +285,8 @@
                 excerpt: 'Discover the best free PDF tools available online. Compare features and find the right tool for you.',
                 date: '2024-11-30',
                 category: 'PDF',
-                icon: '⭐'
+                icon: '⭐',
+                readTime: '8 min read'
             },
             {
                 slug: 'how-to-split-pdf-files',
@@ -262,7 +294,8 @@
                 excerpt: 'Split large PDF files into smaller documents. Extract specific pages easily.',
                 date: '2024-11-30',
                 category: 'PDF',
-                icon: '✂️'
+                icon: '✂️',
+                readTime: '4 min read'
             },
             {
                 slug: 'how-to-resize-images-online',
@@ -270,30 +303,142 @@
                 excerpt: 'Resize images without losing quality. Support for JPG, PNG, WEBP formats.',
                 date: '2024-11-30',
                 category: 'Image',
-                icon: '📏'
+                icon: '📏',
+                readTime: '5 min read'
+            },
+            {
+                slug: 'top-10-student-tools-2024',
+                title: 'Top 10 Free Student Tools Every Student Needs',
+                excerpt: 'Essential free tools for students: calculators, converters, and productivity tools to boost your studies.',
+                date: '2024-12-01',
+                category: 'Student',
+                icon: '🎓',
+                readTime: '6 min read'
+            },
+            {
+                slug: 'developer-tools-guide',
+                title: 'Essential Developer Tools for Web Development',
+                excerpt: 'Must-have free developer tools: JSON formatters, code validators, API testers, and more.',
+                date: '2024-12-02',
+                category: 'Developer',
+                icon: '💻',
+                readTime: '7 min read'
+            },
+            {
+                slug: 'math-calculator-tips',
+                title: 'How to Use Math Calculators Effectively',
+                excerpt: 'Master our math calculators: quadratic equations, derivatives, integrals, and more advanced calculations.',
+                date: '2024-12-03',
+                category: 'Student',
+                icon: '🧮',
+                readTime: '5 min read'
+            },
+            {
+                slug: 'productivity-tips-2024',
+                title: '10 Productivity Tips Using Free Online Tools',
+                excerpt: 'Boost your productivity with these free online tools. Work smarter, not harder.',
+                date: '2024-12-04',
+                category: 'Tips',
+                icon: '⚡',
+                readTime: '6 min read'
             }
         ];
+
+        let currentCategory = 'all';
+        let searchQuery = '';
 
         // Render blog posts
         function renderBlogPosts() {
             const grid = document.getElementById('blogGrid');
             if (!grid) return;
 
-            grid.innerHTML = blogPosts.map(post => `
-                <a href="blog/${post.slug}.html" class="tool-card">
-                    <div class="tool-icon">${post.icon}</div>
-                    <h3>${post.title}</h3>
-                    <p>${post.excerpt}</p>
-                    <div class="tool-category">${post.category} • ${post.date}</div>
+            let filtered = blogPosts;
+
+            // Filter by category
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(post => post.category === currentCategory);
+            }
+
+            // Filter by search query
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                filtered = filtered.filter(post => 
+                    post.title.toLowerCase().includes(query) ||
+                    post.excerpt.toLowerCase().includes(query) ||
+                    post.category.toLowerCase().includes(query)
+                );
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">No posts found</p>
+                        <p>Try adjusting your search or category filter</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map((post, index) => `
+                <a href="blog/${post.slug}.html" class="blog-post-card" style="animation-delay: ${index * 0.1}s">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">${post.icon}</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">${post.title}</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">${post.excerpt}</p>
+                    <div class="blog-post-meta">
+                        <span class="blog-post-tag">${post.category}</span>
+                        <span class="blog-post-date">📅 ${new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        <span>⏱️ ${post.readTime}</span>
+                    </div>
                 </a>
             `).join('');
         }
 
-        document.addEventListener('DOMContentLoaded', renderBlogPosts);
+        // Setup category filter
+        function setupCategoryFilter() {
+            const buttons = document.querySelectorAll('.blog-category-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategory = btn.dataset.category;
+                    renderBlogPosts();
+                });
+            });
+        }
+
+        // Setup search
+        function setupSearch() {
+            const searchInput = document.getElementById('blogSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    searchQuery = e.target.value.trim();
+                    renderBlogPosts();
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBlogPosts();
+            setupCategoryFilter();
+            setupSearch();
+        });
     </script>
     
     <!-- Adsterra Popunder (Body) -->
-    <script type='text/javascript' src='//pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+    <script type='text/javascript'>
+        (function() {
+            try {
+                var script = document.createElement('script');
+                script.src = 'https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js';
+                script.crossOrigin = 'anonymous';
+                script.onerror = function() { return false; };
+                script.onload = function() {};
+                setTimeout(function() {
+                    document.body.appendChild(script);
+                }, 300);
+            } catch(e) {}
+        })();
+    </script>
 </body>
 </html>
 
