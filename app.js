@@ -233,7 +233,17 @@ const tools = [
   { id: 'fraction-calculator', title: 'Fraction Calculator', description: 'Add, subtract, multiply, and divide fractions with step-by-step solutions', icon: '🔢', category: 'Student', page: 'tools/fraction-calculator.html' },
   { id: 'gpa-calculator', title: 'GPA Calculator', description: 'Calculate your GPA from course grades and credit hours', icon: '🎓', category: 'Student', page: 'tools/gpa-calculator.html' },
   { id: 'compound-interest-calculator', title: 'Compound Interest Calculator', description: 'Calculate compound interest with detailed breakdown and formula', icon: '💰', category: 'Student', page: 'tools/compound-interest-calculator.html' },
-  { id: 'word-counter', title: 'Word Counter', description: 'Count words, characters, sentences, paragraphs, and reading time', icon: '📝', category: 'Student', page: 'tools/word-counter.html' }
+  { id: 'word-counter', title: 'Word Counter', description: 'Count words, characters, sentences, paragraphs, and reading time', icon: '📝', category: 'Student', page: 'tools/word-counter.html' },
+  { id: 'linear-equation-solver', title: 'Linear Equation Solver', description: 'Solve linear equations (ax + b = c) with step-by-step solutions', icon: '📐', category: 'Student', page: 'tools/linear-equation-solver.html' },
+  { id: 'trigonometry-calculator', title: 'Trigonometry Calculator', description: 'Calculate sin, cos, tan, and inverse trigonometric functions', icon: '📐', category: 'Student', page: 'tools/trigonometry-calculator.html' },
+  { id: 'logarithm-calculator', title: 'Logarithm Calculator', description: 'Calculate logarithms (log base 10, natural log, custom base) with step-by-step solutions', icon: '📊', category: 'Student', page: 'tools/logarithm-calculator.html' },
+  { id: 'rectangle-calculator', title: 'Rectangle Calculator', description: 'Calculate rectangle area, perimeter, and diagonal from length and width', icon: '▭', category: 'Student', page: 'tools/rectangle-calculator.html' },
+  { id: 'parallelogram-calculator', title: 'Parallelogram Calculator', description: 'Calculate parallelogram area and perimeter from base, height, and sides', icon: '▱', category: 'Student', page: 'tools/parallelogram-calculator.html' },
+  { id: 'trapezoid-calculator', title: 'Trapezoid Calculator', description: 'Calculate trapezoid area and perimeter from bases, height, and sides', icon: '🔷', category: 'Student', page: 'tools/trapezoid-calculator.html' },
+  { id: 'simple-interest-calculator', title: 'Simple Interest Calculator', description: 'Calculate simple interest with detailed breakdown and formula explanation', icon: '💰', category: 'Student', page: 'tools/simple-interest-calculator.html' },
+  { id: 'loan-calculator', title: 'Loan Calculator', description: 'Calculate monthly loan payments, total interest, and amortization schedule', icon: '💳', category: 'Student', page: 'tools/loan-calculator.html' },
+  { id: 'roman-numeral-converter', title: 'Roman Numeral Converter', description: 'Convert between Roman numerals (I, V, X, L, C, D, M) and Arabic numbers', icon: '🔢', category: 'Student', page: 'tools/roman-numeral-converter.html' },
+  { id: 'prime-number-checker', title: 'Prime Number Checker', description: 'Check if a number is prime and find its prime factors', icon: '🔢', category: 'Student', page: 'tools/prime-number-checker.html' }
 ];
 
 // Initialize app
