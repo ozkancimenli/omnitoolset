@@ -260,7 +260,14 @@ const tools = [
   { id: 'scientific-notation-converter', title: 'Scientific Notation Converter', description: 'Convert numbers to and from scientific notation (e.g., 1.23 × 10⁴)', icon: '🔬', category: 'Student', page: 'tools/scientific-notation-converter.html' },
   { id: 'angle-converter', title: 'Angle Converter', description: 'Convert angles between degrees, radians, and gradians', icon: '📐', category: 'Student', page: 'tools/angle-converter.html' },
   { id: 'time-duration-calculator', title: 'Time Duration Calculator', description: 'Calculate the duration between two dates and times', icon: '⏰', category: 'Student', page: 'tools/time-duration-calculator.html' },
-  { id: 'discount-calculator', title: 'Discount Calculator', description: 'Calculate discount amount and final price after discount', icon: '💰', category: 'Student', page: 'tools/discount-calculator.html' }
+  { id: 'discount-calculator', title: 'Discount Calculator', description: 'Calculate discount amount and final price after discount', icon: '💰', category: 'Student', page: 'tools/discount-calculator.html' },
+  // Developer & Design Tools
+  { id: 'hex-color-picker', title: 'Hex Color Picker', description: 'Pick colors and get hex, RGB, and HSL color codes', icon: '🎨', category: 'Developer', page: 'tools/hex-color-picker.html' },
+  { id: 'color-blindness-simulator', title: 'Color Blindness Simulator', description: 'Simulate different types of color blindness to test your designs', icon: '🎨', category: 'Developer', page: 'tools/color-blindness-simulator.html' },
+  { id: 'qr-code-scanner', title: 'QR Code Scanner', description: 'Upload an image and scan QR codes from it', icon: '📱', category: 'Utility', page: 'tools/qr-code-scanner.html' },
+  { id: 'password-strength-checker', title: 'Password Strength Checker', description: 'Check the strength and security of your passwords', icon: '🔐', category: 'Developer', page: 'tools/password-strength-checker.html' },
+  { id: 'url-encoder-decoder', title: 'URL Encoder/Decoder', description: 'Encode and decode URL strings with percent encoding', icon: '🔗', category: 'Developer', page: 'tools/url-encoder-decoder.html' },
+  { id: 'html-encoder-decoder', title: 'HTML Encoder/Decoder', description: 'Encode and decode HTML entities (&amp;, &lt;, &gt;, etc.)', icon: '🔤', category: 'Developer', page: 'tools/html-encoder-decoder.html' }
 ];
 
 // Initialize app
