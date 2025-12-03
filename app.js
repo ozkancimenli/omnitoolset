@@ -300,10 +300,67 @@ const tools = [
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    // Update tool count dynamically
+    const toolCountElements = document.querySelectorAll('#toolCount, #statTools');
+    const totalTools = tools.length;
+    toolCountElements.forEach(el => {
+        if (el) el.textContent = totalTools + '+';
+    });
+    
     renderTools();
     setupSearch();
     setupCategoryFilter();
+    setupFavorites();
+    setupRecentTools();
+    renderQuickAccess();
 });
+
+function renderQuickAccess() {
+    const recentTools = getRecentTools();
+    const favoriteTools = getFavoriteTools();
+    
+    const recentSection = document.getElementById('recentToolsSection');
+    const favoriteSection = document.getElementById('favoriteToolsSection');
+    const quickAccess = document.getElementById('quickAccess');
+    
+    if (recentTools.length > 0 || favoriteTools.length > 0) {
+        quickAccess.style.display = 'block';
+    }
+    
+    if (recentTools.length > 0) {
+        recentSection.style.display = 'block';
+        const recentGrid = document.getElementById('recentTools');
+        recentGrid.innerHTML = '';
+        recentTools.slice(0, 6).forEach(tool => {
+            const card = document.createElement('a');
+            card.href = tool.page;
+            card.className = 'tool-card';
+            card.innerHTML = `
+                <span class="tool-icon">${tool.icon}</span>
+                <h3 class="tool-title">${tool.title}</h3>
+                <span class="tool-category">${tool.category}</span>
+            `;
+            recentGrid.appendChild(card);
+        });
+    }
+    
+    if (favoriteTools.length > 0) {
+        favoriteSection.style.display = 'block';
+        const favoriteGrid = document.getElementById('favoriteTools');
+        favoriteGrid.innerHTML = '';
+        favoriteTools.slice(0, 6).forEach(tool => {
+            const card = document.createElement('a');
+            card.href = tool.page;
+            card.className = 'tool-card';
+            card.innerHTML = `
+                <span class="tool-icon">${tool.icon}</span>
+                <h3 class="tool-title">${tool.title}</h3>
+                <span class="tool-category">${tool.category}</span>
+            `;
+            favoriteGrid.appendChild(card);
+        });
+    }
+}
 
 function renderTools(filteredTools = tools) {
     const grid = document.getElementById('toolsGrid');
@@ -320,7 +377,10 @@ function renderTools(filteredTools = tools) {
         const card = document.createElement('a');
         card.href = tool.page;
         card.className = 'tool-card';
+        const favorites = JSON.parse(localStorage.getItem('omnitoolset_favorites') || '[]');
+        const isFavorite = favorites.includes(tool.id);
         card.innerHTML = `
+            <button class="favorite-btn" data-tool-id="${tool.id}" style="position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 2rem; height: 2rem; cursor: pointer; font-size: 1.2rem; z-index: 10; transition: all 0.2s;" title="Add to favorites">${isFavorite ? '★' : '☆'}</button>
             <span class="tool-icon">${tool.icon}</span>
             <h3 class="tool-title">${tool.title}</h3>
             <p class="tool-description">${tool.description}</p>
@@ -328,6 +388,7 @@ function renderTools(filteredTools = tools) {
         `;
         grid.appendChild(card);
     });
+    updateFavoriteButtons();
 }
 
 function setupSearch() {
@@ -399,4 +460,76 @@ function filterByCategory(category) {
 
 function updateCategoryButtons() {
     // This can be used to update category button states based on filtered results
+}
+
+function setupFavorites() {
+    // Load favorites from localStorage
+    const favorites = JSON.parse(localStorage.getItem('omnitoolset_favorites') || '[]');
+    
+    // Add favorite button to each tool card
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('favorite-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const toolId = e.target.dataset.toolId;
+            toggleFavorite(toolId);
+        }
+    });
+}
+
+function toggleFavorite(toolId) {
+    let favorites = JSON.parse(localStorage.getItem('omnitoolset_favorites') || '[]');
+    const index = favorites.indexOf(toolId);
+    
+    if (index > -1) {
+        favorites.splice(index, 1);
+    } else {
+        favorites.push(toolId);
+    }
+    
+    localStorage.setItem('omnitoolset_favorites', JSON.stringify(favorites));
+    updateFavoriteButtons();
+    renderQuickAccess(); // Update quick access section
+}
+
+function updateFavoriteButtons() {
+    const favorites = JSON.parse(localStorage.getItem('omnitoolset_favorites') || '[]');
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        const toolId = btn.dataset.toolId;
+        if (favorites.includes(toolId)) {
+            btn.textContent = '★';
+            btn.style.color = '#ffd700';
+        } else {
+            btn.textContent = '☆';
+            btn.style.color = '#ccc';
+        }
+    });
+}
+
+function setupRecentTools() {
+    // Track tool visits
+    document.addEventListener('click', (e) => {
+        const toolCard = e.target.closest('.tool-card');
+        if (toolCard && toolCard.href) {
+            const toolId = toolCard.href.split('/').pop().replace('.html', '');
+            const tool = tools.find(t => t.page.includes(toolId));
+            if (tool) {
+                let recent = JSON.parse(localStorage.getItem('omnitoolset_recent') || '[]');
+                recent = recent.filter(id => id !== tool.id);
+                recent.unshift(tool.id);
+                recent = recent.slice(0, 10); // Keep only last 10
+                localStorage.setItem('omnitoolset_recent', JSON.stringify(recent));
+            }
+        }
+    });
+}
+
+function getRecentTools() {
+    const recentIds = JSON.parse(localStorage.getItem('omnitoolset_recent') || '[]');
+    return recentIds.map(id => tools.find(t => t.id === id)).filter(Boolean);
+}
+
+function getFavoriteTools() {
+    const favoriteIds = JSON.parse(localStorage.getItem('omnitoolset_favorites') || '[]');
+    return favoriteIds.map(id => tools.find(t => t.id === id)).filter(Boolean);
 }
