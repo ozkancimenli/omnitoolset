@@ -274,7 +274,18 @@ const tools = [
   { id: 'random-password-generator', title: 'Random Password Generator', description: 'Generate secure random passwords with customizable options', icon: '🔐', category: 'Utility', page: 'tools/random-password-generator.html' },
   { id: 'lorem-ipsum-generator', title: 'Lorem Ipsum Generator', description: 'Generate Lorem Ipsum placeholder text for your designs', icon: '📄', category: 'Utility', page: 'tools/lorem-ipsum-generator.html' },
   { id: 'text-to-speech', title: 'Text to Speech', description: 'Convert text to speech using browser\'s built-in speech synthesis', icon: '🔊', category: 'Utility', page: 'tools/text-to-speech.html' },
-  { id: 'case-converter', title: 'Case Converter', description: 'Convert text between different cases: uppercase, lowercase, title case, sentence case, etc.', icon: '🔤', category: 'Text', page: 'tools/case-converter.html' }
+  { id: 'case-converter', title: 'Case Converter', description: 'Convert text between different cases: uppercase, lowercase, title case, sentence case, etc.', icon: '🔤', category: 'Text', page: 'tools/case-converter.html' },
+  // Advanced Student Tools
+  { id: 'graph-plotter', title: 'Graph Plotter', description: 'Plot mathematical functions and visualize graphs interactively', icon: '📈', category: 'Student', page: 'tools/graph-plotter.html' },
+  { id: 'derivative-calculator', title: 'Derivative Calculator', description: 'Calculate derivatives of functions with step-by-step solutions', icon: '📐', category: 'Student', page: 'tools/derivative-calculator.html' },
+  { id: 'integral-calculator', title: 'Integral Calculator', description: 'Calculate definite and indefinite integrals with step-by-step solutions', icon: '📐', category: 'Student', page: 'tools/integral-calculator.html' },
+  { id: 'physics-momentum-calculator', title: 'Momentum Calculator', description: 'Calculate momentum using p = mv formula with detailed explanations', icon: '⚡', category: 'Student', page: 'tools/physics-momentum-calculator.html' },
+  { id: 'physics-power-calculator', title: 'Power Calculator', description: 'Calculate power using P = W/t formula with detailed explanations', icon: '⚡', category: 'Student', page: 'tools/physics-power-calculator.html' },
+  { id: 'chemistry-balance-equation', title: 'Chemical Equation Balancer', description: 'Balance chemical equations with step-by-step solutions', icon: '⚗️', category: 'Student', page: 'tools/chemistry-balance-equation.html' },
+  { id: 'chemistry-molarity-calculator', title: 'Molarity Calculator', description: 'Calculate molarity using M = n/V formula with detailed explanations', icon: '🧪', category: 'Student', page: 'tools/chemistry-molarity-calculator.html' },
+  { id: 'geometry-3d-volume', title: '3D Volume Calculator', description: 'Calculate volume of various 3D shapes with formulas', icon: '📦', category: 'Student', page: 'tools/geometry-3d-volume.html' },
+  { id: 'mortgage-calculator', title: 'Mortgage Calculator', description: 'Calculate monthly mortgage payments and view amortization schedule', icon: '🏠', category: 'Student', page: 'tools/mortgage-calculator.html' },
+  { id: 'text-analyzer', title: 'Text Analyzer', description: 'Analyze text for word frequency, readability score, and basic statistics', icon: '📊', category: 'Student', page: 'tools/text-analyzer.html' }
 ];
 
 // Initialize app
