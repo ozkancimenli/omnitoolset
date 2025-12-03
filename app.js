@@ -285,7 +285,17 @@ const tools = [
   { id: 'chemistry-molarity-calculator', title: 'Molarity Calculator', description: 'Calculate molarity using M = n/V formula with detailed explanations', icon: '🧪', category: 'Student', page: 'tools/chemistry-molarity-calculator.html' },
   { id: 'geometry-3d-volume', title: '3D Volume Calculator', description: 'Calculate volume of various 3D shapes with formulas', icon: '📦', category: 'Student', page: 'tools/geometry-3d-volume.html' },
   { id: 'mortgage-calculator', title: 'Mortgage Calculator', description: 'Calculate monthly mortgage payments and view amortization schedule', icon: '🏠', category: 'Student', page: 'tools/mortgage-calculator.html' },
-  { id: 'text-analyzer', title: 'Text Analyzer', description: 'Analyze text for word frequency, readability score, and basic statistics', icon: '📊', category: 'Student', page: 'tools/text-analyzer.html' }
+  { id: 'text-analyzer', title: 'Text Analyzer', description: 'Analyze text for word frequency, readability score, and basic statistics', icon: '📊', category: 'Student', page: 'tools/text-analyzer.html' },
+  { id: 'normal-distribution-calculator', title: 'Normal Distribution Calculator', description: 'Calculate probabilities and z-scores using normal distribution', icon: '📊', category: 'Student', page: 'tools/normal-distribution-calculator.html' },
+  { id: 'correlation-calculator', title: 'Correlation Calculator', description: 'Calculate Pearson correlation coefficient between two data sets', icon: '📊', category: 'Student', page: 'tools/correlation-calculator.html' },
+  { id: 'vector-calculator', title: 'Vector Calculator', description: 'Perform vector operations: addition, subtraction, dot product, cross product, magnitude', icon: '➡️', category: 'Student', page: 'tools/vector-calculator.html' },
+  { id: 'matrix-determinant', title: 'Matrix Determinant Calculator', description: 'Calculate determinant of 2×2 and 3×3 matrices with step-by-step solutions', icon: '🔢', category: 'Student', page: 'tools/matrix-determinant.html' },
+  { id: 'probability-calculator', title: 'Probability Calculator', description: 'Calculate probabilities for independent and dependent events', icon: '🎲', category: 'Student', page: 'tools/probability-calculator.html' },
+  { id: 'physics-wavelength-calculator', title: 'Wavelength Calculator', description: 'Calculate wavelength using λ = v/f formula with detailed explanations', icon: '🌊', category: 'Student', page: 'tools/physics-wavelength-calculator.html' },
+  { id: 'physics-ohms-law', title: 'Ohm\'s Law Calculator', description: 'Calculate voltage, current, and resistance using V = IR formula', icon: '⚡', category: 'Student', page: 'tools/physics-ohms-law.html' },
+  { id: 'chemistry-ph-calculator', title: 'pH Calculator', description: 'Calculate pH using pH = -log[H⁺] formula with detailed explanations', icon: '🧪', category: 'Student', page: 'tools/chemistry-ph-calculator.html' },
+  { id: 'bmi-calculator-advanced', title: 'Advanced BMI Calculator', description: 'Calculate BMI with detailed health analysis and recommendations', icon: '⚖️', category: 'Health', page: 'tools/bmi-calculator-advanced.html' },
+  { id: 'calorie-calculator', title: 'Calorie Calculator', description: 'Calculate your daily calorie needs using BMR and activity level', icon: '🔥', category: 'Health', page: 'tools/calorie-calculator.html' }
 ];
 
 // Initialize app
