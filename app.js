@@ -224,7 +224,16 @@ const tools = [
   { id: 'coupon-generator', title: 'Coupon Generator', description: 'Create professional discount coupons and promotional codes', icon: '🎫', category: 'Other', page: 'tools/coupon-generator.html' },
   { id: 'voucher-generator', title: 'Voucher Generator', description: 'Create professional gift vouchers and certificates', icon: '🎁', category: 'Other', page: 'tools/voucher-generator.html' },
   { id: 'ean-barcode-validator', title: 'EAN Barcode Validator', description: 'Validate EAN-13 and EAN-8 barcode numbers using check digit algorithm', icon: '📊', category: 'Other', page: 'tools/ean-barcode-validator.html' },
-  { id: 'id-card-generator', title: 'ID Card Generator', description: 'Create professional ID cards quickly and easily', icon: '🪪', category: 'Other', page: 'tools/id-card-generator.html' }
+  { id: 'id-card-generator', title: 'ID Card Generator', description: 'Create professional ID cards quickly and easily', icon: '🪪', category: 'Other', page: 'tools/id-card-generator.html' },
+  // Student Tools
+  { id: 'quadratic-equation-solver', title: 'Quadratic Equation Solver', description: 'Solve quadratic equations step by step with detailed solutions', icon: '📐', category: 'Student', page: 'tools/quadratic-equation-solver.html' },
+  { id: 'triangle-calculator', title: 'Triangle Calculator', description: 'Calculate triangle area, perimeter, angles, and sides', icon: '🔺', category: 'Student', page: 'tools/triangle-calculator.html' },
+  { id: 'circle-calculator', title: 'Circle Calculator', description: 'Calculate circle area, circumference, diameter, and radius', icon: '⭕', category: 'Student', page: 'tools/circle-calculator.html' },
+  { id: 'statistics-calculator', title: 'Statistics Calculator', description: 'Calculate mean, median, mode, standard deviation, and more', icon: '📊', category: 'Student', page: 'tools/statistics-calculator.html' },
+  { id: 'fraction-calculator', title: 'Fraction Calculator', description: 'Add, subtract, multiply, and divide fractions with step-by-step solutions', icon: '🔢', category: 'Student', page: 'tools/fraction-calculator.html' },
+  { id: 'gpa-calculator', title: 'GPA Calculator', description: 'Calculate your GPA from course grades and credit hours', icon: '🎓', category: 'Student', page: 'tools/gpa-calculator.html' },
+  { id: 'compound-interest-calculator', title: 'Compound Interest Calculator', description: 'Calculate compound interest with detailed breakdown and formula', icon: '💰', category: 'Student', page: 'tools/compound-interest-calculator.html' },
+  { id: 'word-counter', title: 'Word Counter', description: 'Count words, characters, sentences, paragraphs, and reading time', icon: '📝', category: 'Student', page: 'tools/word-counter.html' }
 ];
 
 // Initialize app
