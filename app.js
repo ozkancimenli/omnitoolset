@@ -295,7 +295,16 @@ const tools = [
   { id: 'physics-ohms-law', title: 'Ohm\'s Law Calculator', description: 'Calculate voltage, current, and resistance using V = IR formula', icon: '⚡', category: 'Student', page: 'tools/physics-ohms-law.html' },
   { id: 'chemistry-ph-calculator', title: 'pH Calculator', description: 'Calculate pH using pH = -log[H⁺] formula with detailed explanations', icon: '🧪', category: 'Student', page: 'tools/chemistry-ph-calculator.html' },
   { id: 'bmi-calculator-advanced', title: 'Advanced BMI Calculator', description: 'Calculate BMI with detailed health analysis and recommendations', icon: '⚖️', category: 'Health', page: 'tools/bmi-calculator-advanced.html' },
-  { id: 'calorie-calculator', title: 'Calorie Calculator', description: 'Calculate your daily calorie needs using BMR and activity level', icon: '🔥', category: 'Health', page: 'tools/calorie-calculator.html' }
+  { id: 'calorie-calculator', title: 'Calorie Calculator', description: 'Calculate your daily calorie needs using BMR and activity level', icon: '🔥', category: 'Health', page: 'tools/calorie-calculator.html' },
+  { id: 'body-fat-calculator', title: 'Body Fat Calculator', description: 'Calculate body fat percentage using BMI, age, and gender', icon: '⚖️', category: 'Health', page: 'tools/body-fat-calculator.html' },
+  { id: 'ideal-weight-calculator', title: 'Ideal Weight Calculator', description: 'Calculate ideal body weight based on height and gender', icon: '⚖️', category: 'Health', page: 'tools/ideal-weight-calculator.html' },
+  { id: 'investment-calculator', title: 'Investment Calculator', description: 'Calculate investment returns with compound interest', icon: '💰', category: 'Finance', page: 'tools/investment-calculator.html' },
+  { id: 'retirement-calculator', title: 'Retirement Calculator', description: 'Calculate how much you need to save for retirement', icon: '💰', category: 'Finance', page: 'tools/retirement-calculator.html' },
+  { id: 'recipe-scaler', title: 'Recipe Scaler', description: 'Scale recipe ingredients to serve more or fewer people', icon: '🍳', category: 'Lifestyle', page: 'tools/recipe-scaler.html' },
+  { id: 'cooking-timer', title: 'Cooking Timer', description: 'Set multiple timers for different cooking tasks', icon: '⏱️', category: 'Lifestyle', page: 'tools/cooking-timer.html' },
+  { id: 'unit-converter-comprehensive', title: 'Comprehensive Unit Converter', description: 'Convert between all types of units: length, weight, volume, temperature, area, speed, energy, and more', icon: '🔄', category: 'Utility', page: 'tools/unit-converter-comprehensive.html' },
+  { id: 'time-zone-converter', title: 'Time Zone Converter', description: 'Convert time between different time zones worldwide', icon: '🌍', category: 'Utility', page: 'tools/time-zone-converter.html' },
+  { id: 'date-calculator', title: 'Date Calculator', description: 'Calculate days between dates, add or subtract days from a date', icon: '📅', category: 'Utility', page: 'tools/date-calculator.html' }
 ];
 
 // Initialize app
