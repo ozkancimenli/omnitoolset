@@ -243,7 +243,17 @@ const tools = [
   { id: 'simple-interest-calculator', title: 'Simple Interest Calculator', description: 'Calculate simple interest with detailed breakdown and formula explanation', icon: '💰', category: 'Student', page: 'tools/simple-interest-calculator.html' },
   { id: 'loan-calculator', title: 'Loan Calculator', description: 'Calculate monthly loan payments, total interest, and amortization schedule', icon: '💳', category: 'Student', page: 'tools/loan-calculator.html' },
   { id: 'roman-numeral-converter', title: 'Roman Numeral Converter', description: 'Convert between Roman numerals (I, V, X, L, C, D, M) and Arabic numbers', icon: '🔢', category: 'Student', page: 'tools/roman-numeral-converter.html' },
-  { id: 'prime-number-checker', title: 'Prime Number Checker', description: 'Check if a number is prime and find its prime factors', icon: '🔢', category: 'Student', page: 'tools/prime-number-checker.html' }
+  { id: 'prime-number-checker', title: 'Prime Number Checker', description: 'Check if a number is prime and find its prime factors', icon: '🔢', category: 'Student', page: 'tools/prime-number-checker.html' },
+  { id: 'physics-velocity-calculator', title: 'Velocity Calculator', description: 'Calculate velocity, distance, and time using physics formulas', icon: '⚡', category: 'Student', page: 'tools/physics-velocity-calculator.html' },
+  { id: 'physics-acceleration-calculator', title: 'Acceleration Calculator', description: 'Calculate acceleration using velocity and time', icon: '⚡', category: 'Student', page: 'tools/physics-acceleration-calculator.html' },
+  { id: 'physics-force-calculator', title: 'Force Calculator', description: 'Calculate force using mass and acceleration (F = ma)', icon: '⚡', category: 'Student', page: 'tools/physics-force-calculator.html' },
+  { id: 'physics-kinetic-energy', title: 'Kinetic Energy Calculator', description: 'Calculate kinetic energy from mass and velocity (KE = ½mv²)', icon: '⚡', category: 'Student', page: 'tools/physics-kinetic-energy.html' },
+  { id: 'physics-potential-energy', title: 'Potential Energy Calculator', description: 'Calculate gravitational potential energy from mass, height, and gravity (PE = mgh)', icon: '⚡', category: 'Student', page: 'tools/physics-potential-energy.html' },
+  { id: 'molecular-weight-calculator', title: 'Molecular Weight Calculator', description: 'Calculate molecular weight from chemical formula (e.g., H2O, CO2)', icon: '🧪', category: 'Student', page: 'tools/molecular-weight-calculator.html' },
+  { id: 'dilution-calculator', title: 'Dilution Calculator', description: 'Calculate dilution ratios using C1V1 = C2V2 formula', icon: '🧪', category: 'Student', page: 'tools/dilution-calculator.html' },
+  { id: 'anagram-generator', title: 'Anagram Generator', description: 'Generate all possible anagrams from a word or phrase', icon: '🔤', category: 'Student', page: 'tools/anagram-generator.html' },
+  { id: 'palindrome-checker', title: 'Palindrome Checker', description: 'Check if a word, phrase, or number is a palindrome', icon: '🔤', category: 'Student', page: 'tools/palindrome-checker.html' },
+  { id: 'rhyme-finder', title: 'Rhyme Finder', description: 'Find words that rhyme with your input word', icon: '🎵', category: 'Student', page: 'tools/rhyme-finder.html' }
 ];
 
 // Initialize app
