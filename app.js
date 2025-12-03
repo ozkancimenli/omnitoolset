@@ -253,7 +253,14 @@ const tools = [
   { id: 'dilution-calculator', title: 'Dilution Calculator', description: 'Calculate dilution ratios using C1V1 = C2V2 formula', icon: '🧪', category: 'Student', page: 'tools/dilution-calculator.html' },
   { id: 'anagram-generator', title: 'Anagram Generator', description: 'Generate all possible anagrams from a word or phrase', icon: '🔤', category: 'Student', page: 'tools/anagram-generator.html' },
   { id: 'palindrome-checker', title: 'Palindrome Checker', description: 'Check if a word, phrase, or number is a palindrome', icon: '🔤', category: 'Student', page: 'tools/palindrome-checker.html' },
-  { id: 'rhyme-finder', title: 'Rhyme Finder', description: 'Find words that rhyme with your input word', icon: '🎵', category: 'Student', page: 'tools/rhyme-finder.html' }
+  { id: 'rhyme-finder', title: 'Rhyme Finder', description: 'Find words that rhyme with your input word', icon: '🎵', category: 'Student', page: 'tools/rhyme-finder.html' },
+  { id: 'matrix-calculator', title: 'Matrix Calculator', description: 'Perform matrix operations: addition, subtraction, and multiplication', icon: '🔢', category: 'Student', page: 'tools/matrix-calculator.html' },
+  { id: 'permutation-combination', title: 'Permutation & Combination', description: 'Calculate permutations (nPr) and combinations (nCr) with formulas', icon: '🔢', category: 'Student', page: 'tools/permutation-combination.html' },
+  { id: 'binary-calculator', title: 'Binary Calculator', description: 'Convert between binary, decimal, hexadecimal, and octal number systems', icon: '🔢', category: 'Student', page: 'tools/binary-calculator.html' },
+  { id: 'scientific-notation-converter', title: 'Scientific Notation Converter', description: 'Convert numbers to and from scientific notation (e.g., 1.23 × 10⁴)', icon: '🔬', category: 'Student', page: 'tools/scientific-notation-converter.html' },
+  { id: 'angle-converter', title: 'Angle Converter', description: 'Convert angles between degrees, radians, and gradians', icon: '📐', category: 'Student', page: 'tools/angle-converter.html' },
+  { id: 'time-duration-calculator', title: 'Time Duration Calculator', description: 'Calculate the duration between two dates and times', icon: '⏰', category: 'Student', page: 'tools/time-duration-calculator.html' },
+  { id: 'discount-calculator', title: 'Discount Calculator', description: 'Calculate discount amount and final price after discount', icon: '💰', category: 'Student', page: 'tools/discount-calculator.html' }
 ];
 
 // Initialize app
