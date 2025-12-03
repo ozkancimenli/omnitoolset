@@ -66,20 +66,26 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (toolMatch) {
         const toolSlug = toolMatch[1];
-        const toolId = toolSlug.replace(/-/g, '-');
         
-        // Find tool in database
-        if (typeof tools !== 'undefined') {
-            const currentTool = tools.find(t => 
-                t.page.includes(toolSlug) || 
-                t.id === toolId ||
-                t.id === toolSlug
-            );
-            
-            if (currentTool) {
-                renderRelatedTools(currentTool.id, currentTool.category);
+        // Wait for tools array to be available
+        function tryRender() {
+            if (typeof tools !== 'undefined' && tools.length > 0) {
+                const currentTool = tools.find(t => 
+                    t.page.includes(toolSlug) || 
+                    t.id === toolSlug ||
+                    t.id === toolSlug.replace(/-/g, '')
+                );
+                
+                if (currentTool) {
+                    renderRelatedTools(currentTool.id, currentTool.category);
+                }
+            } else {
+                // Retry after a short delay
+                setTimeout(tryRender, 100);
             }
         }
+        
+        tryRender();
     }
 });
 
