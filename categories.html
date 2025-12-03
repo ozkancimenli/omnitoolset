@@ -4,7 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categories - All Tool Categories | OmniToolset</title>
-    <meta name="description" content="Browse tools by category: PDF, Image, Text, Developer, Media, QR Code, and more. Find the right tool for your needs.">
+    <meta name="description" content="Browse 270+ free online tools by category: PDF, Image, Text, Developer, Student, Engineering, GIS, Health, Finance, and more. Find the right tool for your needs.">
+    <meta name="keywords" content="tool categories, pdf tools, image tools, developer tools, student tools, engineering tools, free tools by category">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.omnitoolset.com/categories.html">
+    <meta property="og:title" content="Tool Categories - OmniToolset">
+    <meta property="og:description" content="Browse 270+ free online tools by category. PDF, Image, Developer, Student tools and more.">
+    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Tool Categories - OmniToolset">
+    <meta property="twitter:description" content="Browse 270+ free online tools by category.">
+    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://www.omnitoolset.com/categories.html">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Tool Categories - OmniToolset",
+      "description": "Browse 270+ free online tools organized by category",
+      "url": "https://www.omnitoolset.com/categories.html"
+    }
+    </script>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -140,9 +168,9 @@
     </header>
     <main class="container">
         <a href="index.html" class="back-button">← Back to Home</a>
-        <div class="hero-section" style="margin: 2rem 0;">
-            <h2>📂 Categories</h2>
-            <p>Browse tools by category to find exactly what you need.</p>
+        <div class="hero-section" style="margin: 2rem 0; text-align: center;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">📂 Tool Categories</h2>
+            <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto;">Browse 270+ free online tools organized by category. Find exactly what you need quickly and easily.</p>
         </div>
 
         <!-- AdSense Ad (Top) -->
@@ -180,13 +208,19 @@
 
             const categories = Array.from(new Set(tools.map(t => t.category))).sort();
             const categoryInfo = {
-                'PDF': { icon: '📄', description: 'PDF conversion, merging, splitting, and editing tools' },
-                'Image': { icon: '🖼️', description: 'Image resizing, compression, format conversion' },
-                'Text': { icon: '📝', description: 'Text manipulation, encoding, formatting tools' },
-                'Developer': { icon: '💻', description: 'Code formatting, validators, developer utilities' },
+                'PDF': { icon: '📄', description: 'PDF conversion, merging, splitting, compression, and editing tools. Process PDF files instantly in your browser.' },
+                'Image': { icon: '🖼️', description: 'Image resizing, compression, format conversion, and enhancement tools. Support for JPG, PNG, WEBP, and more.' },
+                'Text': { icon: '📝', description: 'Text manipulation, encoding, formatting, and analysis tools. Case conversion, encoding, and more.' },
+                'Developer': { icon: '💻', description: 'Code formatting, validators, API testers, and developer utilities. JSON, XML, YAML, and more.' },
+                'Student': { icon: '🎓', description: 'Math calculators, physics tools, chemistry calculators, and study aids. Step-by-step solutions included.' },
+                'Engineering': { icon: '🔧', description: 'Engineering calculations, unit converters, and specialized tools for engineers and professionals.' },
+                'GIS': { icon: '🗺️', description: 'Geographic information systems tools. Coordinate conversion, distance calculation, and mapping utilities.' },
+                'Health': { icon: '⚖️', description: 'Health calculators including BMI, body fat, ideal weight, and calorie calculators.' },
+                'Finance': { icon: '💰', description: 'Financial calculators for investments, loans, retirement planning, and more.' },
+                'Lifestyle': { icon: '🍳', description: 'Everyday life tools including recipe scalers, cooking timers, and more.' },
+                'Utility': { icon: '🔄', description: 'General utility tools including unit converters, time zone converters, date calculators, and more.' },
                 'Media': { icon: '🎬', description: 'Video and audio conversion tools' },
-                'QR Code': { icon: '📱', description: 'QR code generation' },
-                'Other': { icon: '🔧', description: 'Calculators, converters, and utility tools' }
+                'QR Code': { icon: '📱', description: 'QR code generation and scanning tools' }
             };
 
             grid.innerHTML = categories.map(cat => {

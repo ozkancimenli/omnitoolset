@@ -308,6 +308,66 @@ const tools = [
 ];
 
 // Initialize app
+// Popular tools (based on category and usage)
+function getPopularTools() {
+    // Popular tools by category
+    const popularByCategory = {
+        'PDF': ['pdf-merge', 'pdf-split', 'pdf-compress', 'pdf-to-word'],
+        'Image': ['image-resize', 'image-compress', 'image-converter'],
+        'Developer': ['json-formatter', 'html-encoder-decoder', 'regex-tester'],
+        'Student': ['quadratic-equation-solver', 'gpa-calculator', 'word-counter'],
+        'Utility': ['qr-generator', 'password-generator', 'unit-converter']
+    };
+    
+    let popular = [];
+    Object.values(popularByCategory).forEach(toolIds => {
+        toolIds.forEach(id => {
+            const tool = tools.find(t => t.id === id || t.page.includes(id));
+            if (tool && !popular.some(p => p.id === tool.id)) {
+                popular.push(tool);
+            }
+        });
+    });
+    
+    // If not enough, add random tools
+    if (popular.length < 12) {
+        const remaining = tools.filter(t => !popular.some(p => p.id === t.id));
+        popular = [...popular, ...remaining.slice(0, 12 - popular.length)];
+    }
+    
+    return popular.slice(0, 12);
+}
+
+function renderPopularTools() {
+    const section = document.getElementById('popularToolsSection');
+    const grid = document.getElementById('popularTools');
+    
+    if (!section || !grid) return;
+    
+    const popular = getPopularTools();
+    if (popular.length === 0) return;
+    
+    section.style.display = 'block';
+    grid.innerHTML = '';
+    
+    popular.forEach(tool => {
+        const card = document.createElement('a');
+        card.href = tool.page;
+        card.className = 'tool-card';
+        const favorites = JSON.parse(localStorage.getItem('omnitoolset_favorites') || '[]');
+        const isFavorite = favorites.includes(tool.id);
+        card.innerHTML = `
+            <button class="favorite-btn" data-tool-id="${tool.id}" style="position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 2rem; height: 2rem; cursor: pointer; font-size: 1.2rem; z-index: 10; transition: all 0.2s;" title="Add to favorites">${isFavorite ? '★' : '☆'}</button>
+            <span class="tool-icon">${tool.icon}</span>
+            <h3 class="tool-title">${tool.title}</h3>
+            <p class="tool-description">${tool.description}</p>
+            <span class="tool-category">${tool.category}</span>
+        `;
+        grid.appendChild(card);
+    });
+    updateFavoriteButtons();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Update tool count dynamically
     const toolCountElements = document.querySelectorAll('#toolCount, #statTools');
@@ -322,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFavorites();
     setupRecentTools();
     renderQuickAccess();
+    renderPopularTools();
 });
 
 function renderQuickAccess() {
