@@ -470,27 +470,47 @@
             <!-- Tools will be dynamically loaded -->
         </div>
 
-        <!-- AdSense Banner Ad (Middle) -->
-        <div style="margin: 2rem 0; text-align: center;">
+        <!-- AdSense Banner Ad (Middle) - Lazy load after scroll -->
+        <div style="margin: 2rem 0; text-align: center; min-height: 100px;" id="ad-middle">
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-8640955536193345"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
             <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
+                // Lazy load middle ad when visible
+                const observerMiddle = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            observerMiddle.disconnect();
+                        }
+                    });
+                }, { rootMargin: '50px' });
+                const adMiddle = document.getElementById('ad-middle');
+                if (adMiddle) observerMiddle.observe(adMiddle);
             </script>
         </div>
 
-        <!-- AdSense Banner Ad (Bottom) -->
-        <div style="margin: 2rem 0; text-align: center;">
+        <!-- AdSense Banner Ad (Bottom) - Lazy load -->
+        <div style="margin: 3rem 0; text-align: center; min-height: 100px;" id="ad-bottom">
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-8640955536193345"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
             <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
+                // Lazy load bottom ad when visible
+                const observerBottom = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            observerBottom.disconnect();
+                        }
+                    });
+                }, { rootMargin: '100px' });
+                const adBottom = document.getElementById('ad-bottom');
+                if (adBottom) observerBottom.observe(adBottom);
             </script>
         </div>
     </main>
@@ -514,7 +534,7 @@
         </div>
     </footer>
 
-    <script src="app.js"></script>
+    <script src="app.js" defer></script>
     <script>
         // Update tool count dynamically
         document.addEventListener('DOMContentLoaded', () => {
