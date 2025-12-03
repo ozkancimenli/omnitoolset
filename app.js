@@ -267,7 +267,14 @@ const tools = [
   { id: 'qr-code-scanner', title: 'QR Code Scanner', description: 'Upload an image and scan QR codes from it', icon: '📱', category: 'Utility', page: 'tools/qr-code-scanner.html' },
   { id: 'password-strength-checker', title: 'Password Strength Checker', description: 'Check the strength and security of your passwords', icon: '🔐', category: 'Developer', page: 'tools/password-strength-checker.html' },
   { id: 'url-encoder-decoder', title: 'URL Encoder/Decoder', description: 'Encode and decode URL strings with percent encoding', icon: '🔗', category: 'Developer', page: 'tools/url-encoder-decoder.html' },
-  { id: 'html-encoder-decoder', title: 'HTML Encoder/Decoder', description: 'Encode and decode HTML entities (&amp;, &lt;, &gt;, etc.)', icon: '🔤', category: 'Developer', page: 'tools/html-encoder-decoder.html' }
+  { id: 'html-encoder-decoder', title: 'HTML Encoder/Decoder', description: 'Encode and decode HTML entities (&amp;, &lt;, &gt;, etc.)', icon: '🔤', category: 'Developer', page: 'tools/html-encoder-decoder.html' },
+  { id: 'text-diff-checker', title: 'Text Diff Checker', description: 'Compare two texts and highlight the differences', icon: '📝', category: 'Developer', page: 'tools/text-diff-checker.html' },
+  { id: 'markdown-preview', title: 'Markdown Preview', description: 'Write Markdown and see the HTML preview in real-time', icon: '📝', category: 'Developer', page: 'tools/markdown-preview.html' },
+  { id: 'random-number-generator', title: 'Random Number Generator', description: 'Generate random numbers between a minimum and maximum value', icon: '🎲', category: 'Utility', page: 'tools/random-number-generator.html' },
+  { id: 'random-password-generator', title: 'Random Password Generator', description: 'Generate secure random passwords with customizable options', icon: '🔐', category: 'Utility', page: 'tools/random-password-generator.html' },
+  { id: 'lorem-ipsum-generator', title: 'Lorem Ipsum Generator', description: 'Generate Lorem Ipsum placeholder text for your designs', icon: '📄', category: 'Utility', page: 'tools/lorem-ipsum-generator.html' },
+  { id: 'text-to-speech', title: 'Text to Speech', description: 'Convert text to speech using browser\'s built-in speech synthesis', icon: '🔊', category: 'Utility', page: 'tools/text-to-speech.html' },
+  { id: 'case-converter', title: 'Case Converter', description: 'Convert text between different cases: uppercase, lowercase, title case, sentence case, etc.', icon: '🔤', category: 'Text', page: 'tools/case-converter.html' }
 ];
 
 // Initialize app
