@@ -1,5 +1,5 @@
 // Google Analytics 4 Configuration
-// Replace G-XXXXXXXXXX with your actual GA4 Measurement ID
+// GA4 Measurement ID: G-1WF6SNHNXN
 
 (function() {
     // Only load analytics in production
