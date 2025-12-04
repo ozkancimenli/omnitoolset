@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.omnitoolset.com/tools/archive-converter.html">
+
+
     <title>Archive Converter - Convert Between Archive Formats | OmniToolset</title>
     <meta name="description" content="Convert between archive formats. Free, online, no registration required.">
+        <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.omnitoolset.com/tools/archive-converter.html">
+    <meta property="og:title" content="Archive Converter - Convert Between Archive Formats | OmniToolset">
+    <meta property="og:description" content="Convert between archive formats. Free, online, no registration required.">
+    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Archive Converter - Convert Between Archive Formats | OmniToolset">
+    <meta property="og:site_name" content="OmniToolset">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.omnitoolset.com/tools/archive-converter.html">
+    <meta property="twitter:title" content="Archive Converter - Convert Between Archive Formats | OmniToolset">
+    <meta property="twitter:description" content="Convert between archive formats. Free, online, no registration required.">
+    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="twitter:image:alt" content="Archive Converter - Convert Between Archive Formats | OmniToolset">
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -217,32 +239,59 @@
             </div>
 
             
-            <div style="padding: 2rem; background: rgba(59, 130, 246, 0.1); border: 2px solid var(--primary-color); border-radius: 12px; text-align: center; margin: 2rem 0;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
-                <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Server-Side Processing Required</h3>
-                <p style="color: var(--text-secondary); line-height: 1.6;">
-                    Archive conversion requires server-side processing and specialized libraries. 
-                    This feature is not available in the browser version.
+            <div style="padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary-color); border-radius: 12px; margin: 2rem 0;">
+                <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                    <strong>Note:</strong> Currently supports ZIP format only. RAR, 7Z, TAR, and other formats require server-side processing.
                 </p>
-                <p style="color: var(--text-secondary); margin-top: 1rem; line-height: 1.6;">
-                    For archive conversion, please use desktop applications like:
-                </p>
-                <ul style="text-align: left; display: inline-block; margin-top: 1rem; color: var(--text-secondary);">
-                    <li>7-Zip (Windows/Linux/Mac)</li>
-                    <li>WinRAR (Windows)</li>
-                    <li>The Unarchiver (Mac)</li>
-                    <li>PeaZip (Cross-platform)</li>
-                </ul>
             </div>
 
             <div class="input-group">
-                <label for="fileInput">Select Archive File:</label>
-                <input type="file" id="fileInput" accept=".zip,.rar,.7z,.tar,.gz,.bz2" style="width: 100%;" disabled>
+                <label for="fileInput">Select ZIP Archive File:</label>
+                <input type="file" id="fileInput" accept=".zip" style="width: 100%;">
             </div>
 
-            <button class="btn" style="width: 100%; margin: 1rem 0; opacity: 0.5; cursor: not-allowed;" disabled>Convert Archive</button>
+            <div class="input-group">
+                <label for="outputFormat">Output Format:</label>
+                <select id="outputFormat" style="width: 100%;">
+                    <option value="zip">ZIP</option>
+                </select>
+            </div>
+
+            <div id="fileInfo" style="display: none; margin: 1rem 0; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                <p><strong>File:</strong> <span id="fileName"></span></p>
+                <p><strong>Size:</strong> <span id="fileSize"></span></p>
+                <p><strong>Files in archive:</strong> <span id="fileCount"></span></p>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none; width: 100%; height: 8px; background: var(--bg-color); border-radius: 4px; margin: 1rem 0; overflow: hidden;">
+                <div class="progress-fill" id="progressFill" style="height: 100%; background: var(--primary-color); width: 0%; transition: width 0.3s;"></div>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertArchive()" style="width: 100%; margin: 1rem 0;" disabled>Convert Archive</button>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--bg-color); border-radius: 12px;">
+                <h3 style="margin-top: 0;">Conversion Complete!</h3>
+                <p id="resultInfo"></p>
+                <button class="btn" onclick="downloadArchive()" style="width: 100%; margin-top: 1rem;">Download Converted Archive</button>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
         </div>
-        <!-- AdSense Banner Ad (Bottom) -->
+                
+        <!-- Affiliate Upgrade Banner -->
+        <div style="margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: center;">
+            <h3 style="margin: 0 0 1rem 0; color: white;">Need More Features?</h3>
+            <p style="margin: 0 0 1rem 0; opacity: 0.9;">Upgrade to premium PDF tools with advanced features</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <a href="https://www.awin1.com/cread.php?awinmid=115767&awinaffid=2682178&clickref=pdf-tools&ued=https%3A%2F%2Fwww.swifdoo.com%2Fpricing" target="_blank" rel="nofollow sponsored" style="display: inline-block; padding: 0.75rem 1rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; border: 2px solid white; transition: transform 0.2s; font-size: 0.9rem;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">SwifDoo PDF</a>
+                <a href="https://www.awin1.com/cread.php?awinmid=100851&awinaffid=2682178&clickref=pdf-editor&ued=https%3A%2F%2Fwww.pdfreaderpro.com%2F" target="_blank" rel="nofollow sponsored" style="display: inline-block; padding: 0.75rem 1rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; border: 2px solid white; transition: transform 0.2s; font-size: 0.9rem;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">PDF Reader Pro</a>
+            </div>
+            <p style="margin: 0; font-size: 0.8rem; opacity: 0.8;">(We earn a small commission at no extra cost to you)</p>
+        </div>
+
+<!-- AdSense Banner Ad (Bottom) -->
         <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
             <ins class="adsbygoogle"
                  style="display:block"
@@ -403,6 +452,124 @@
     <!-- App.js for tools data -->
     <script src="/app.js" defer></script>
 
+    <!-- JSZip library for ZIP handling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <script>
+        let zipFile = null;
+        let convertedZip = null;
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                document.getElementById('convertBtn').disabled = true;
+                document.getElementById('fileInfo').style.display = 'none';
+                return;
+            }
+
+            if (!file.name.toLowerCase().endsWith('.zip')) {
+                showError('Please select a ZIP file');
+                document.getElementById('convertBtn').disabled = true;
+                return;
+            }
+
+            zipFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            
+            // Load ZIP to get file count
+            JSZip.loadAsync(file).then(function(zip) {
+                const files = Object.keys(zip.files);
+                document.getElementById('fileCount').textContent = files.length;
+                document.getElementById('fileInfo').style.display = 'block';
+                document.getElementById('convertBtn').disabled = false;
+                document.getElementById('errorArea').style.display = 'none';
+            }).catch(function(err) {
+                showError('Invalid ZIP file: ' + err.message);
+                document.getElementById('convertBtn').disabled = true;
+            });
+        });
+
+        function convertArchive() {
+            if (!zipFile) {
+                showError('Please select a ZIP file');
+                return;
+            }
+
+            document.getElementById('convertBtn').disabled = true;
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('errorArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+
+            JSZip.loadAsync(zipFile).then(function(zip) {
+                document.getElementById('progressFill').style.width = '50%';
+                
+                // Create new ZIP (essentially re-packing)
+                const newZip = new JSZip();
+                const files = Object.keys(zip.files);
+                let processed = 0;
+
+                return Promise.all(files.map(function(filename) {
+                    const file = zip.files[filename];
+                    if (file.dir) {
+                        newZip.folder(filename);
+                        processed++;
+                        document.getElementById('progressFill').style.width = (50 + (processed / files.length) * 50) + '%';
+                        return Promise.resolve();
+                    } else {
+                        return file.async('uint8array').then(function(content) {
+                            newZip.file(filename, content);
+                            processed++;
+                            document.getElementById('progressFill').style.width = (50 + (processed / files.length) * 50) + '%';
+                        });
+                    }
+                })).then(function() {
+                    document.getElementById('progressFill').style.width = '100%';
+                    return newZip.generateAsync({type: 'blob'});
+                });
+            }).then(function(blob) {
+                convertedZip = blob;
+                document.getElementById('progressBar').style.display = 'none';
+                document.getElementById('resultInfo').textContent = `Archive converted successfully! Size: ${formatFileSize(blob.size)}`;
+                document.getElementById('resultArea').style.display = 'block';
+                document.getElementById('convertBtn').disabled = false;
+            }).catch(function(err) {
+                showError('Conversion failed: ' + err.message);
+                document.getElementById('progressBar').style.display = 'none';
+                document.getElementById('convertBtn').disabled = false;
+            });
+        }
+
+        function downloadArchive() {
+            if (!convertedZip) {
+                showError('No converted archive available');
+                return;
+            }
+
+            const url = URL.createObjectURL(convertedZip);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = zipFile.name.replace('.zip', '_converted.zip');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorArea').style.display = 'block';
+        }
+    </script>
     
     <!-- Analytics Script -->
     <script src="/js/analytics.js" defer></script>

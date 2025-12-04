@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.omnitoolset.com/tools/pdf-to-png.html">
+
+
     <title>PDF to PNG - OmniToolset</title>
     <meta name="description" content="Convert PDF pages to PNG format. Free, online, no registration required.">
+        <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.omnitoolset.com/tools/pdf-to-png.html">
+    <meta property="og:title" content="PDF to PNG - OmniToolset">
+    <meta property="og:description" content="Convert PDF pages to PNG format. Free, online, no registration required.">
+    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="PDF to PNG - OmniToolset">
+    <meta property="og:site_name" content="OmniToolset">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.omnitoolset.com/tools/pdf-to-png.html">
+    <meta property="twitter:title" content="PDF to PNG - OmniToolset">
+    <meta property="twitter:description" content="Convert PDF pages to PNG format. Free, online, no registration required.">
+    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="twitter:image:alt" content="PDF to PNG - OmniToolset">
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -218,18 +240,38 @@
 
             
             <div class="input-group">
-                <label for="inputText">Input:</label>
-                <textarea id="inputText" rows="10" placeholder="Enter your text here..."></textarea>
+                <label for="pdfInput">Select PDF File:</label>
+                <input type="file" id="pdfInput" accept=".pdf" style="width: 100%;">
             </div>
-
-            <button class="btn" onclick="processTool()" style="width: 100%; margin: 1rem 0;">Process</button>
 
             <div class="input-group">
-                <label for="outputText">Output:</label>
-                <textarea id="outputText" rows="10" readonly></textarea>
+                <label for="pageNumber">Page Number (leave empty for all pages):</label>
+                <input type="number" id="pageNumber" min="1" placeholder="e.g., 1" style="width: 100%;">
             </div>
 
-            <button class="btn" onclick="copyToClipboard()" style="width: 100%;">Copy to Clipboard</button>
+            <div class="input-group">
+                <label for="dpi">DPI (Resolution):</label>
+                <select id="dpi" style="width: 100%;">
+                    <option value="150">150 DPI (Standard)</option>
+                    <option value="300" selected>300 DPI (High Quality)</option>
+                    <option value="600">600 DPI (Very High Quality)</option>
+                </select>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertPDFToPNG()" style="width: 100%; margin: 1rem 0;" disabled>Convert to PNG</button>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem;">
+                <h3>Converted Images:</h3>
+                <div id="imageContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;"></div>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
         </div>
         
                 <!-- Affiliate Upgrade Banner -->
@@ -299,18 +341,110 @@
     </footer>
 </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        function processTool() {
-            const input = document.getElementById('inputText').value;
-            // Basic placeholder - implement specific logic per tool
-            document.getElementById('outputText').value = input;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        document.getElementById('pdfInput').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file && file.type === 'application/pdf') {
+                document.getElementById('convertBtn').disabled = false;
+            } else {
+                document.getElementById('convertBtn').disabled = true;
+            }
+        });
+
+        async function convertPDFToPNG() {
+            const fileInput = document.getElementById('pdfInput');
+            const file = fileInput.files[0];
+            const pageNumber = document.getElementById('pageNumber').value;
+            const dpi = parseInt(document.getElementById('dpi').value);
+            
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+            
+            if (!file) {
+                showError('Please select a PDF file');
+                return;
+            }
+
+            try {
+                document.getElementById('progressBar').style.display = 'block';
+                document.getElementById('progressFill').style.width = '10%';
+                document.getElementById('convertBtn').disabled = true;
+
+                const arrayBuffer = await file.arrayBuffer();
+                document.getElementById('progressFill').style.width = '30%';
+
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const totalPages = pdf.numPages;
+                const targetPage = pageNumber ? parseInt(pageNumber) : null;
+                
+                document.getElementById('progressFill').style.width = '50%';
+
+                const pagesToConvert = targetPage ? [targetPage - 1] : Array.from({ length: totalPages }, (_, i) => i);
+                const imageContainer = document.getElementById('imageContainer');
+                imageContainer.innerHTML = '';
+
+                for (let i = 0; i < pagesToConvert.length; i++) {
+                    const pageIndex = pagesToConvert[i];
+                    if (pageIndex < 0 || pageIndex >= totalPages) {
+                        showError(`Page ${pageIndex + 1} does not exist`);
+                        continue;
+                    }
+
+                    const page = await pdf.getPage(pageIndex + 1);
+                    const scale = dpi / 72;
+                    const viewport = page.getViewport({ scale });
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+
+                    const imgData = canvas.toDataURL('image/png');
+                    
+                    const imgDiv = document.createElement('div');
+                    imgDiv.style.cssText = 'text-align: center; padding: 1rem; background: var(--bg-color); border-radius: 8px;';
+                    imgDiv.innerHTML = `
+                        <img src="${imgData}" style="max-width: 100%; border-radius: 4px; margin-bottom: 0.5rem;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Page ${pageIndex + 1}</div>
+                        <button class="btn" onclick="downloadPNG(${pageIndex}, '${imgData}')" style="width: 100%; font-size: 0.9rem;">Download PNG</button>
+                    `;
+                    imageContainer.appendChild(imgDiv);
+
+                    document.getElementById('progressFill').style.width = `${50 + (i + 1) / pagesToConvert.length * 40}%`;
+                }
+
+                document.getElementById('progressFill').style.width = '100%';
+                document.getElementById('resultArea').style.display = 'block';
+                document.getElementById('convertBtn').disabled = false;
+                
+                setTimeout(() => {
+                    document.getElementById('progressBar').style.display = 'none';
+                }, 500);
+            } catch (e) {
+                showError('Failed to convert PDF: ' + e.message);
+                document.getElementById('convertBtn').disabled = false;
+                document.getElementById('progressBar').style.display = 'none';
+            }
         }
 
-        function copyToClipboard() {
-            const output = document.getElementById('outputText');
-            output.select();
-            document.execCommand('copy');
-            alert('Copied to clipboard!');
+        function downloadPNG(pageIndex, imgData) {
+            const link = document.createElement('a');
+            link.download = `page-${pageIndex + 1}.png`;
+            link.href = imgData;
+            link.click();
+        }
+
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorArea').style.display = 'block';
         }
     </script>
 

@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.omnitoolset.com/tools/image-to-pdf.html">
+
+
     <title>Image to PDF - OmniToolset</title>
     <meta name="description" content="Convert images to PDF format. Free, online, no registration required.">
+        <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.omnitoolset.com/tools/image-to-pdf.html">
+    <meta property="og:title" content="Image to PDF - OmniToolset">
+    <meta property="og:description" content="Convert images to PDF format. Free, online, no registration required.">
+    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Image to PDF - OmniToolset">
+    <meta property="og:site_name" content="OmniToolset">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.omnitoolset.com/tools/image-to-pdf.html">
+    <meta property="twitter:title" content="Image to PDF - OmniToolset">
+    <meta property="twitter:description" content="Convert images to PDF format. Free, online, no registration required.">
+    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="twitter:image:alt" content="Image to PDF - OmniToolset">
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -217,19 +239,51 @@
             </div>
 
             
-            <div class="input-group">
-                <label for="inputText">Input:</label>
-                <textarea id="inputText" rows="10" placeholder="Enter your text here..."></textarea>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🖼️</div>
+                <p>Drag and drop your image files here or click to select</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">You can select multiple images</p>
+                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
             </div>
 
-            <button class="btn" onclick="processTool()" style="width: 100%; margin: 1rem 0;">Process</button>
-
-            <div class="input-group">
-                <label for="outputText">Output:</label>
-                <textarea id="outputText" rows="10" readonly></textarea>
+            <div id="fileList" style="display: none; margin: 1rem 0; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                <h4>Selected Images:</h4>
+                <div id="fileNames" style="margin-top: 0.5rem;"></div>
             </div>
 
-            <button class="btn" onclick="copyToClipboard()" style="width: 100%;">Copy to Clipboard</button>
+            <div class="input-group">
+                <label for="pageSize">Page Size:</label>
+                <select id="pageSize" style="width: 100%;">
+                    <option value="a4">A4</option>
+                    <option value="letter">Letter</option>
+                    <option value="legal">Legal</option>
+                    <option value="fit">Fit to Image</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="orientation">Orientation:</label>
+                <select id="orientation" style="width: 100%;">
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
+                </select>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin: 1rem 0;" disabled>Convert to PDF</button>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem; padding: 2rem; background: var(--bg-color); border-radius: 12px; text-align: center;">
+                <h3>PDF Created Successfully!</h3>
+                <p id="resultInfo" style="color: var(--text-secondary); margin-top: 0.5rem;"></p>
+                <button class="btn" onclick="downloadPDF()" style="width: 100%; margin-top: 1rem;">Download PDF</button>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
         </div>
         
                 <!-- Affiliate Upgrade Banner -->
@@ -299,18 +353,170 @@
     </footer>
 </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        function processTool() {
-            const input = document.getElementById('inputText').value;
-            // Basic placeholder - implement specific logic per tool
-            document.getElementById('outputText').value = input;
+        let selectedFiles = [];
+        let pdfBlob = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const fileNames = document.getElementById('fileNames');
+        const convertBtn = document.getElementById('convertBtn');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        });
+
+        function handleFiles(files) {
+            selectedFiles = files;
+            fileNames.innerHTML = files.map((f, i) => `${i + 1}. ${f.name}`).join('<br>');
+            fileList.style.display = 'block';
+            convertBtn.disabled = false;
+            document.getElementById('resultArea').style.display = 'none';
         }
 
-        function copyToClipboard() {
-            const output = document.getElementById('outputText');
-            output.select();
-            document.execCommand('copy');
-            alert('Copied to clipboard!');
+        async function convertToPDF() {
+            if (selectedFiles.length === 0) {
+                showError('Please select at least one image');
+                return;
+            }
+
+            document.getElementById('errorArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+            convertBtn.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pageSize = document.getElementById('pageSize').value;
+                const orientation = document.getElementById('orientation').value;
+                
+                let pdf;
+                if (pageSize === 'fit') {
+                    pdf = new jsPDF({ orientation: orientation });
+                } else {
+                    const sizes = {
+                        a4: [210, 297],
+                        letter: [216, 279],
+                        legal: [216, 356]
+                    };
+                    pdf = new jsPDF({ 
+                        orientation: orientation,
+                        unit: 'mm',
+                        format: sizes[pageSize]
+                    });
+                }
+
+                document.getElementById('progressFill').style.width = '20%';
+
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    const reader = new FileReader();
+                    
+                    await new Promise((resolve, reject) => {
+                        reader.onload = async (e) => {
+                            try {
+                                const img = new Image();
+                                img.src = e.target.result;
+                                
+                                await new Promise((imgResolve) => {
+                                    img.onload = () => {
+                                        if (i > 0) pdf.addPage();
+                                        
+                                        if (pageSize === 'fit') {
+                                            const imgWidth = img.width;
+                                            const imgHeight = img.height;
+                                            const pdfWidth = pdf.internal.pageSize.getWidth();
+                                            const pdfHeight = pdf.internal.pageSize.getHeight();
+                                            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                                            const width = imgWidth * ratio;
+                                            const height = imgHeight * ratio;
+                                            const x = (pdfWidth - width) / 2;
+                                            const y = (pdfHeight - height) / 2;
+                                            pdf.addImage(img, 'PNG', x, y, width, height);
+                                        } else {
+                                            const pdfWidth = pdf.internal.pageSize.getWidth();
+                                            const pdfHeight = pdf.internal.pageSize.getHeight();
+                                            const imgWidth = img.width;
+                                            const imgHeight = img.height;
+                                            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                                            const width = imgWidth * ratio;
+                                            const height = imgHeight * ratio;
+                                            const x = (pdfWidth - width) / 2;
+                                            const y = (pdfHeight - height) / 2;
+                                            pdf.addImage(img, 'PNG', x, y, width, height);
+                                        }
+                                        
+                                        document.getElementById('progressFill').style.width = `${20 + (i + 1) / selectedFiles.length * 70}%`;
+                                        imgResolve();
+                                    } catch (err) {
+                                        reject(err);
+                                    }
+                                };
+                                
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                pdfBlob = pdf.output('blob');
+                document.getElementById('progressFill').style.width = '100%';
+                document.getElementById('resultInfo').textContent = `PDF created with ${selectedFiles.length} image(s)`;
+                document.getElementById('resultArea').style.display = 'block';
+                convertBtn.disabled = false;
+                
+                setTimeout(() => {
+                    document.getElementById('progressBar').style.display = 'none';
+                }, 500);
+            } catch (e) {
+                showError('Failed to create PDF: ' + e.message);
+                convertBtn.disabled = false;
+                document.getElementById('progressBar').style.display = 'none';
+            }
+        }
+
+        function downloadPDF() {
+            if (pdfBlob) {
+                const url = URL.createObjectURL(pdfBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'images.pdf';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorArea').style.display = 'block';
         }
     </script>
 

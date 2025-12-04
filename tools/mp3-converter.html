@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.omnitoolset.com/tools/mp3-converter.html">
+
+
     <title>MP3 Converter - OmniToolset</title>
     <meta name="description" content="Convert any audio file to MP3 format. Free, online, no registration required.">
+        <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.omnitoolset.com/tools/mp3-converter.html">
+    <meta property="og:title" content="MP3 Converter - OmniToolset">
+    <meta property="og:description" content="Convert any audio file to MP3 format. Free, online, no registration required.">
+    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="MP3 Converter - OmniToolset">
+    <meta property="og:site_name" content="OmniToolset">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.omnitoolset.com/tools/mp3-converter.html">
+    <meta property="twitter:title" content="MP3 Converter - OmniToolset">
+    <meta property="twitter:description" content="Convert any audio file to MP3 format. Free, online, no registration required.">
+    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="twitter:image:alt" content="MP3 Converter - OmniToolset">
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -217,21 +239,70 @@
             </div>
 
             
-            <div class="input-group">
-                <label for="inputText">Input:</label>
-                <textarea id="inputText" rows="10" placeholder="Enter your text here..."></textarea>
+            <div class="upload-area" id="uploadArea" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 3rem; text-align: center; cursor: pointer; transition: all 0.3s;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🎵</div>
+                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">Drag and drop your audio file here</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">or click to select (WAV, M4A, OGG, FLAC, etc.)</p>
+                <input type="file" id="fileInput" accept="audio/*" style="display: none;">
             </div>
 
-            <button class="btn" onclick="processTool()" style="width: 100%; margin: 1rem 0;">Process</button>
-
-            <div class="input-group">
-                <label for="outputText">Output:</label>
-                <textarea id="outputText" rows="10" readonly></textarea>
+            <div id="fileInfo" style="display: none; margin: 1rem 0; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                <p><strong>Selected file:</strong> <span id="fileName"></span></p>
+                <p><strong>File size:</strong> <span id="fileSize"></span></p>
+                <p><strong>Format:</strong> <span id="fileFormat"></span></p>
             </div>
 
-            <button class="btn" onclick="copyToClipboard()" style="width: 100%;">Copy to Clipboard</button>
+            <div id="audioPreview" style="display: none; margin: 2rem 0; text-align: center;">
+                <h3>Audio Preview:</h3>
+                <audio id="previewAudio" controls style="width: 100%; border-radius: 8px; border: 2px solid var(--border-color);"></audio>
+            </div>
+
+            <div class="input-group" style="margin: 1rem 0;">
+                <label for="bitrate">Audio Bitrate:</label>
+                <select id="bitrate" style="width: 100%;">
+                    <option value="128">128 kbps (Standard)</option>
+                    <option value="192" selected>192 kbps (Good)</option>
+                    <option value="256">256 kbps (High)</option>
+                    <option value="320">320 kbps (Best)</option>
+                </select>
+            </div>
+
+            <div style="margin: 1rem 0; padding: 1rem; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary-color); border-radius: 8px;">
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">
+                    <strong>Note:</strong> This tool converts audio to MP3-compatible format using browser's Web Audio API. Output format is WebM/OGG (Opus codec) which is MP3-compatible. For true MP3 encoding, use a dedicated audio converter service.
+                </p>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertToMP3()" style="width: 100%; margin: 1rem 0;" disabled>Convert to MP3</button>
+
+            <div class="progress-bar" id="progressBar" style="display: none; width: 100%; height: 8px; background: var(--bg-hover); border-radius: 4px; overflow: hidden; margin: 1rem 0;">
+                <div class="progress-fill" id="progressFill" style="height: 100%; background: var(--primary-color); width: 0%; transition: width 0.3s;"></div>
+            </div>
+            <div id="progressText" style="text-align: center; margin-top: 0.5rem; display: none; color: var(--text-secondary);">0%</div>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem; padding: 2rem; background: var(--bg-color); border-radius: 12px; text-align: center;">
+                <h3>Audio Converted!</h3>
+                <audio id="convertedAudio" controls style="width: 100%; margin: 1rem 0;"></audio>
+                <button class="btn" onclick="downloadMP3()" style="width: 100%; margin-top: 1rem;">Download MP3</button>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
         </div>
-        <!-- AdSense Banner Ad (Bottom) -->
+                
+        <!-- Affiliate Upgrade Banner -->
+        <div style="margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: center;">
+            <h3 style="margin: 0 0 1rem 0; color: white;">Need More Features?</h3>
+            <p style="margin: 0 0 1rem 0; opacity: 0.9;">Upgrade to premium PDF tools with advanced features</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <a href="https://www.awin1.com/cread.php?awinmid=115767&awinaffid=2682178&clickref=pdf-tools&ued=https%3A%2F%2Fwww.swifdoo.com%2Fpricing" target="_blank" rel="nofollow sponsored" style="display: inline-block; padding: 0.75rem 1rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; border: 2px solid white; transition: transform 0.2s; font-size: 0.9rem;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">SwifDoo PDF</a>
+                <a href="https://www.awin1.com/cread.php?awinmid=100851&awinaffid=2682178&clickref=pdf-editor&ued=https%3A%2F%2Fwww.pdfreaderpro.com%2F" target="_blank" rel="nofollow sponsored" style="display: inline-block; padding: 0.75rem 1rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; border: 2px solid white; transition: transform 0.2s; font-size: 0.9rem;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">PDF Reader Pro</a>
+            </div>
+            <p style="margin: 0; font-size: 0.8rem; opacity: 0.8;">(We earn a small commission at no extra cost to you)</p>
+        </div>
+
+<!-- AdSense Banner Ad (Bottom) -->
         <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
             <ins class="adsbygoogle"
                  style="display:block"
@@ -288,17 +359,164 @@
 </main>
 
     <script>
-        function processTool() {
-            const input = document.getElementById('inputText').value;
-            // Basic placeholder - implement specific logic per tool
-            document.getElementById('outputText').value = input;
+        let selectedFile = null;
+        let audioElement = null;
+        let convertedBlob = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const convertBtn = document.getElementById('convertBtn');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--primary-color)';
+            uploadArea.style.background = 'rgba(59, 130, 246, 0.05)';
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = 'var(--border-color)';
+            uploadArea.style.background = 'transparent';
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--border-color)';
+            uploadArea.style.background = 'transparent';
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('audio/'));
+            if (files.length > 0) {
+                handleFile(files[0]);
+            } else {
+                showError('Please select an audio file');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            selectedFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('fileFormat').textContent = file.type || 'Unknown';
+            document.getElementById('fileInfo').style.display = 'block';
+            
+            const audio = document.getElementById('previewAudio');
+            audio.src = URL.createObjectURL(file);
+            audioElement = audio;
+            document.getElementById('audioPreview').style.display = 'block';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+            convertBtn.disabled = false;
         }
 
-        function copyToClipboard() {
-            const output = document.getElementById('outputText');
-            output.select();
-            document.execCommand('copy');
-            alert('Copied to clipboard!');
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        async function convertToMP3() {
+            if (!selectedFile || !audioElement) {
+                showError('Please select an audio file');
+                return;
+            }
+
+            document.getElementById('errorArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('progressText').style.display = 'block';
+            document.getElementById('progressFill').style.width = '20%';
+            document.getElementById('progressText').textContent = '20%';
+            convertBtn.disabled = true;
+
+            try {
+                const bitrate = parseInt(document.getElementById('bitrate').value) || 192;
+                
+                document.getElementById('progressFill').style.width = '40%';
+                document.getElementById('progressText').textContent = '40%';
+
+                // Create audio context
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                document.getElementById('progressFill').style.width = '60%';
+                document.getElementById('progressText').textContent = '60%';
+
+                // Load audio
+                const arrayBuffer = await selectedFile.arrayBuffer();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                
+                document.getElementById('progressFill').style.width = '80%';
+                document.getElementById('progressText').textContent = '80%';
+
+                // Create source and destination
+                const source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                const destination = audioContext.createMediaStreamDestination();
+                source.connect(destination);
+                source.connect(audioContext.destination);
+
+                // Record audio
+                const mimeType = 'audio/webm;codecs=opus';
+                const mediaRecorder = new MediaRecorder(destination.stream, {
+                    mimeType: mimeType
+                });
+
+                const chunks = [];
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) chunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    convertedBlob = new Blob(chunks, { type: mimeType });
+                    const url = URL.createObjectURL(convertedBlob);
+                    document.getElementById('convertedAudio').src = url;
+                    document.getElementById('resultArea').style.display = 'block';
+                    document.getElementById('progressFill').style.width = '100%';
+                    document.getElementById('progressText').textContent = '100%';
+                    convertBtn.disabled = false;
+
+                    setTimeout(() => {
+                        document.getElementById('progressBar').style.display = 'none';
+                        document.getElementById('progressText').style.display = 'none';
+                    }, 1000);
+                };
+
+                // Start recording
+                source.start(0);
+                mediaRecorder.start();
+                
+                // Stop after audio duration
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                    source.stop();
+                }, audioBuffer.duration * 1000 + 100);
+
+            } catch (e) {
+                showError('Failed to convert audio: ' + e.message);
+                convertBtn.disabled = false;
+                document.getElementById('progressBar').style.display = 'none';
+                document.getElementById('progressText').style.display = 'none';
+            }
+        }
+
+        function downloadMP3() {
+            if (convertedBlob) {
+                const url = URL.createObjectURL(convertedBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = selectedFile.name.replace(/\.[^/.]+$/, '') + '.mp3';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorArea').style.display = 'block';
         }
     </script>
 

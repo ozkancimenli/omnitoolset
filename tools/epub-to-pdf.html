@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.omnitoolset.com/tools/epub-to-pdf.html">
+
+
     <title>EPUB to PDF - OmniToolset</title>
     <meta name="description" content="Convert EPUB ebook files to PDF format. Free, online, no registration required.">
+        <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.omnitoolset.com/tools/epub-to-pdf.html">
+    <meta property="og:title" content="EPUB to PDF - OmniToolset">
+    <meta property="og:description" content="Convert EPUB ebook files to PDF format. Free, online, no registration required.">
+    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="EPUB to PDF - OmniToolset">
+    <meta property="og:site_name" content="OmniToolset">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.omnitoolset.com/tools/epub-to-pdf.html">
+    <meta property="twitter:title" content="EPUB to PDF - OmniToolset">
+    <meta property="twitter:description" content="Convert EPUB ebook files to PDF format. Free, online, no registration required.">
+    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="twitter:image:alt" content="EPUB to PDF - OmniToolset">
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -217,19 +239,40 @@
             </div>
 
             
-            <div class="input-group">
-                <label for="inputText">Input:</label>
-                <textarea id="inputText" rows="10" placeholder="Enter your text here..."></textarea>
+            <div class="upload-area" id="uploadArea" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 3rem; text-align: center; cursor: pointer; transition: all 0.3s;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">Drag and drop your EPUB file here</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">or click to select (.epub files)</p>
+                <input type="file" id="fileInput" accept=".epub,application/epub+zip" style="display: none;">
             </div>
 
-            <button class="btn" onclick="processTool()" style="width: 100%; margin: 1rem 0;">Process</button>
-
-            <div class="input-group">
-                <label for="outputText">Output:</label>
-                <textarea id="outputText" rows="10" readonly></textarea>
+            <div id="fileInfo" style="display: none; margin: 1rem 0; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                <p><strong>Selected file:</strong> <span id="fileName"></span></p>
+                <p><strong>File size:</strong> <span id="fileSize"></span></p>
             </div>
 
-            <button class="btn" onclick="copyToClipboard()" style="width: 100%;">Copy to Clipboard</button>
+            <div style="margin: 1rem 0; padding: 1rem; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary-color); border-radius: 8px;">
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">
+                    <strong>Note:</strong> EPUB to PDF conversion extracts text content from EPUB files and converts it to PDF format. Complex formatting and images may not be fully preserved due to browser limitations.
+                </p>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertEPUBtoPDF()" style="width: 100%; margin: 1rem 0;" disabled>Convert EPUB to PDF</button>
+
+            <div class="progress-bar" id="progressBar" style="display: none; width: 100%; height: 8px; background: var(--bg-hover); border-radius: 4px; overflow: hidden; margin: 1rem 0;">
+                <div class="progress-fill" id="progressFill" style="height: 100%; background: var(--primary-color); width: 0%; transition: width 0.3s;"></div>
+            </div>
+            <div id="progressText" style="text-align: center; margin-top: 0.5rem; display: none; color: var(--text-secondary);">0%</div>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem; padding: 2rem; background: var(--bg-color); border-radius: 12px; text-align: center;">
+                <h3>Conversion Complete!</h3>
+                <p id="resultInfo" style="color: var(--text-secondary); margin-bottom: 1rem;"></p>
+                <button class="btn" onclick="downloadPDF()" style="width: 100%; margin-top: 1rem;">Download PDF</button>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
         </div>
         
                 <!-- Affiliate Upgrade Banner -->
@@ -299,18 +342,197 @@
     </footer>
 </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        function processTool() {
-            const input = document.getElementById('inputText').value;
-            // Basic placeholder - implement specific logic per tool
-            document.getElementById('outputText').value = input;
+        let epubFile = null;
+        let pdfBlob = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const convertBtn = document.getElementById('convertBtn');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--primary-color)';
+            uploadArea.style.background = 'rgba(59, 130, 246, 0.05)';
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = 'var(--border-color)';
+            uploadArea.style.background = 'transparent';
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--border-color)';
+            uploadArea.style.background = 'transparent';
+            const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.epub') || f.type === 'application/epub+zip');
+            if (files.length > 0) {
+                handleFile(files[0]);
+            } else {
+                showError('Please select a valid EPUB file');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            epubFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('fileInfo').style.display = 'block';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('errorArea').style.display = 'none';
+            convertBtn.disabled = false;
         }
 
-        function copyToClipboard() {
-            const output = document.getElementById('outputText');
-            output.select();
-            document.execCommand('copy');
-            alert('Copied to clipboard!');
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        async function convertEPUBtoPDF() {
+            if (!epubFile) {
+                showError('Please select an EPUB file');
+                return;
+            }
+
+            document.getElementById('errorArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('progressText').style.display = 'block';
+            document.getElementById('progressFill').style.width = '10%';
+            document.getElementById('progressText').textContent = '10%';
+            convertBtn.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                
+                document.getElementById('progressFill').style.width = '30%';
+                document.getElementById('progressText').textContent = '30%';
+
+                // Read EPUB file as ZIP
+                const arrayBuffer = await epubFile.arrayBuffer();
+                const zip = await JSZip.loadAsync(arrayBuffer);
+                
+                document.getElementById('progressFill').style.width = '50%';
+                document.getElementById('progressText').textContent = '50%';
+
+                // Find container.xml to get content.opf path
+                const containerXml = await zip.file('META-INF/container.xml').async('string');
+                const parser = new DOMParser();
+                const containerDoc = parser.parseFromString(containerXml, 'text/xml');
+                const rootfile = containerDoc.querySelector('rootfile');
+                const contentOpfPath = rootfile.getAttribute('full-path');
+                
+                document.getElementById('progressFill').style.width = '60%';
+                document.getElementById('progressText').textContent = '60%';
+
+                // Read content.opf to get manifest and spine
+                const contentOpf = await zip.file(contentOpfPath).async('string');
+                const contentDoc = parser.parseFromString(contentOpf, 'text/xml');
+                const basePath = contentOpfPath.substring(0, contentOpfPath.lastIndexOf('/') + 1);
+                
+                // Get all HTML files from manifest
+                const manifestItems = contentDoc.querySelectorAll('manifest item');
+                const htmlFiles = {};
+                manifestItems.forEach(item => {
+                    const id = item.getAttribute('id');
+                    const href = item.getAttribute('href');
+                    const mediaType = item.getAttribute('media-type');
+                    if (mediaType && (mediaType.includes('html') || mediaType.includes('xhtml'))) {
+                        htmlFiles[id] = basePath + href;
+                    }
+                });
+
+                // Get spine order
+                const spineItems = contentDoc.querySelectorAll('spine itemref');
+                const orderedFiles = [];
+                spineItems.forEach(item => {
+                    const idref = item.getAttribute('idref');
+                    if (htmlFiles[idref]) {
+                        orderedFiles.push(htmlFiles[idref]);
+                    }
+                });
+
+                document.getElementById('progressFill').style.width = '70%';
+                document.getElementById('progressText').textContent = '70%';
+
+                // Extract text from HTML files
+                let allText = '';
+                for (let i = 0; i < orderedFiles.length; i++) {
+                    try {
+                        const htmlContent = await zip.file(orderedFiles[i]).async('string');
+                        const htmlDoc = parser.parseFromString(htmlContent, 'text/html');
+                        const text = htmlDoc.body.innerText || htmlDoc.body.textContent || '';
+                        allText += text + '\n\n';
+                    } catch (e) {
+                        console.warn('Could not read file:', orderedFiles[i]);
+                    }
+                    
+                    const progress = 70 + ((i + 1) / orderedFiles.length) * 20;
+                    document.getElementById('progressFill').style.width = `${progress}%`;
+                    document.getElementById('progressText').textContent = `${Math.round(progress)}%`;
+                }
+
+                // Create PDF from text
+                const lines = pdf.splitTextToSize(allText, 180);
+                let y = 20;
+                const lineHeight = 7;
+                const pageHeight = pdf.internal.pageSize.height;
+
+                for (let i = 0; i < lines.length; i++) {
+                    if (y + lineHeight > pageHeight - 20) {
+                        pdf.addPage();
+                        y = 20;
+                    }
+                    pdf.text(lines[i], 20, y);
+                    y += lineHeight;
+                }
+
+                pdfBlob = pdf.output('blob');
+                
+                document.getElementById('progressFill').style.width = '100%';
+                document.getElementById('progressText').textContent = '100%';
+                document.getElementById('resultInfo').textContent = `PDF created with ${orderedFiles.length} chapters`;
+                document.getElementById('resultArea').style.display = 'block';
+                convertBtn.disabled = false;
+
+                setTimeout(() => {
+                    document.getElementById('progressBar').style.display = 'none';
+                    document.getElementById('progressText').style.display = 'none';
+                }, 1000);
+
+            } catch (e) {
+                showError('Failed to convert EPUB to PDF: ' + e.message);
+                convertBtn.disabled = false;
+                document.getElementById('progressBar').style.display = 'none';
+                document.getElementById('progressText').style.display = 'none';
+            }
+        }
+
+        function downloadPDF() {
+            if (pdfBlob) {
+                const url = URL.createObjectURL(pdfBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = epubFile.name.replace(/\.epub$/i, '') + '.pdf';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorArea').style.display = 'block';
         }
     </script>
 
