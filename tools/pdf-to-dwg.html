@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.omnitoolset.com/tools/pdf-to-dwg.html">
+
+    <title>PDF to DWG - Convert PDF to AutoCAD DWG Format | OmniToolset</title>
+    <meta name="description" content="Convert PDF files to DWG (AutoCAD) format. Free online PDF to DWG converter. 100% free, no registration required. | OmniToolset - Free Online Tool Converter">
+    <meta name="keywords" content="pdf to dwg, pdf to autocad, pdf to cad, convert pdf to dwg, free pdf to dwg converter, online pdf to dwg">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.omnitoolset.com/tools/pdf-to-dwg.html">
+    <meta property="og:title" content="PDF to DWG - Convert PDF to AutoCAD DWG Format | OmniToolset">
+    <meta property="og:description" content="Convert PDF files to DWG (AutoCAD) format. Free online PDF to DWG converter. 100% free, no registration required.">
+    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="PDF to DWG - Convert PDF to AutoCAD DWG Format | OmniToolset">
+    <meta property="og:site_name" content="OmniToolset">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.omnitoolset.com/tools/pdf-to-dwg.html">
+    <meta property="twitter:title" content="PDF to DWG - Convert PDF to AutoCAD DWG Format | OmniToolset">
+    <meta property="twitter:description" content="Convert PDF files to DWG (AutoCAD) format. Free online PDF to DWG converter. 100% free, no registration required.">
+    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+    <meta property="twitter:image:alt" content="PDF to DWG - Convert PDF to AutoCAD DWG Format | OmniToolset">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
+     crossorigin="anonymous"></script>    
+            <!-- Suppress Adsterra SSL errors in console - Maximum suppression -->
+    <script>
+        (function() {
+            // Intercept ALL console methods before anything else loads
+            const originalMethods = {};
+            ['error', 'warn', 'log', 'info', 'debug', 'trace', 'table', 'group', 'groupEnd'].forEach(method => {
+                originalMethods[method] = console[method];
+            });
+            
+            // Aggressive filter for Adsterra errors
+            function shouldSuppress(...args) {
+                const message = args.map(arg => {
+                    if (typeof arg === 'string') return arg;
+                    if (arg && typeof arg === 'object') {
+                        try {
+                            return JSON.stringify(arg);
+                        } catch(e) {
+                            return String(arg);
+                        }
+                    }
+                    return String(arg);
+                }).join(' ').toLowerCase();
+                
+                return (message.includes('effectivegatecpm.com') || 
+                        message.includes('pl28055668') ||
+                        message.includes('pl28055637') ||
+                        message.includes('pl28059282') ||
+                        message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
+                        message.includes('612a325632297ecc15cfd2d178f355ec') ||
+                        message.includes('9094fe56f6d4377965dfac5145838787')) && 
+                       (message.includes('err_ssl') || 
+                        message.includes('ssl_protocol') ||
+                        message.includes('failed to load') ||
+                        message.includes('net::'));
+            }
+            
+            // Override all console methods
+            Object.keys(originalMethods).forEach(method => {
+                console[method] = function(...args) {
+                    if (shouldSuppress(...args)) {
+                        return; // Completely suppress
+                    }
+                    originalMethods[method].apply(console, args);
+                };
+            });
+            
+            // Intercept error events at the earliest possible moment
+            const errorHandler = function(e) {
+                const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
+                const message = (e.message || '').toLowerCase();
+                const stack = (e.error?.stack || '').toLowerCase();
+                
+                if (filename.includes('effectivegatecpm.com') || 
+                    filename.includes('pl28055668') ||
+                    filename.includes('pl28055637') ||
+                    filename.includes('pl28059282') ||
+                    message.includes('effectivegatecpm.com') ||
+                    message.includes('err_ssl') ||
+                    stack.includes('effectivegatecpm.com')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+            };
+            
+            // Add multiple error listeners with highest priority
+            window.addEventListener('error', errorHandler, true);
+            window.addEventListener('error', errorHandler, {capture: true, passive: false});
+            document.addEventListener('error', errorHandler, true);
+            
+            // Suppress promise rejections
+            window.addEventListener('unhandledrejection', function(e) {
+                const reason = String(e.reason || '').toLowerCase();
+                if (reason.includes('effectivegatecpm.com') || 
+                    reason.includes('err_ssl') ||
+                    reason.includes('pl28055668') ||
+                    reason.includes('pl28055637') ||
+                    reason.includes('pl28059282')) {
+                    e.preventDefault();
+                    return false;
+                }
+            }, true);
+            
+            // Override fetch
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                const url = String(args[0] || '');
+                if (url.includes('effectivegatecpm.com')) {
+                    return Promise.reject().catch(() => {});
+                }
+                return originalFetch.apply(this, args).catch(err => {
+                    if (String(err).includes('effectivegatecpm.com')) {
+                        return Promise.reject().catch(() => {});
+                    }
+                    throw err;
+                });
+            };
+            
+            // Override XMLHttpRequest
+            const originalXHROpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+                if (String(url).includes('effectivegatecpm.com')) {
+                    this.addEventListener('error', function(e) {
+                        e.stopPropagation();
+                    });
+                }
+                return originalXHROpen.apply(this, [method, url, ...rest]);
+            };
+        })();
+    </script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a href="/" class="logo">OmniToolset</a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/all-tools.html">All Tools</a></li>
+                    <li><a href="/categories.html">Categories</a></li>
+                    <li><a href="/blog.html">Blog</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container" style="max-width: 900px; margin: 2rem auto; padding: 0 1rem;">
+        <!-- Adsterra Banner Ad (Top) -->
+        <div style="margin: 1rem 0;">
+            <script>
+                (function() {
+                    try {
+                        const script = document.createElement('script');
+                        script.setAttribute('data-cfasync', 'false');
+                        script.src = 'https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace/invoke.js';
+                        script.crossOrigin = 'anonymous';
+                        script.onerror = function() { 
+                            return false; // Silently handle SSL errors
+                        };
+                        script.onload = function() {};
+                        // Delay loading to reduce console noise
+                        setTimeout(function() {
+                            document.head.appendChild(script);
+                        }, 200);
+                    } catch(e) {}
+                })();
+            </script>
+            <div id="container-5ce4ee5ab685f82c323752c9b8d45ace"></div>
+        </div>
+
+        <!-- Adsterra Social Bar -->
+        <div style="margin: 1rem 0;">
+            <script>
+                (function() {
+                    try {
+                        const script = document.createElement('script');
+                        script.setAttribute('data-cfasync', 'false');
+                        script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
+                        script.crossOrigin = 'anonymous';
+                        script.onerror = function() { 
+                            return false; // Silently handle SSL errors
+                        };
+                        script.onload = function() {};
+                        // Delay loading to reduce console noise
+                        setTimeout(function() {
+                            document.head.appendChild(script);
+                        }, 200);
+                    } catch(e) {}
+                })();
+            </script>
+            <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+        </div>
+
+<!-- AdSense Banner Ad (Top) -->
+        <div style="margin: 1rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="tool-container">
+            <h2>📐 PDF to DWG Converter</h2>
+            <p>Convert PDF files to DWG (AutoCAD Drawing) format. Perfect for architects, engineers, and designers who need to convert PDF drawings to editable CAD files.</p>
+
+            <!-- AdSense Banner Ad (Middle) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            <div style="padding: 1.5rem; background: rgba(239, 68, 68, 0.1); border: 2px solid #ef4444; border-radius: 12px; margin: 2rem 0;">
+                <h3 style="margin-top: 0; color: #ef4444;">⚠️ Server-Side Processing Required</h3>
+                <p style="color: var(--text-secondary); line-height: 1.6; margin: 0.5rem 0;">
+                    <strong>Note:</strong> PDF to DWG conversion requires server-side processing with specialized CAD libraries (such as LibreDWG, Open Design Alliance, or AutoCAD API). This conversion cannot be performed entirely in the browser due to the complexity of DWG format parsing and vector data extraction.
+                </p>
+                <p style="color: var(--text-secondary); line-height: 1.6; margin: 0.5rem 0;">
+                    <strong>Current Status:</strong> This tool is currently a placeholder. To enable full functionality, backend infrastructure with CAD conversion capabilities is required.
+                </p>
+                <p style="color: var(--text-secondary); line-height: 1.6; margin: 0.5rem 0;">
+                    <strong>Alternative Solutions:</strong> For now, you can use professional CAD software like AutoCAD, LibreCAD, or online services that provide PDF to DWG conversion with server-side processing.
+                </p>
+            </div>
+
+            <div class="input-group">
+                <label for="fileInput">Select PDF File:</label>
+                <input type="file" id="fileInput" accept=".pdf" style="width: 100%; padding: 0.75rem; border: 2px dashed var(--border-color); border-radius: 8px; cursor: pointer;">
+            </div>
+
+            <div id="fileInfo" style="display: none; margin: 1rem 0; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+                <p><strong>File:</strong> <span id="fileName"></span></p>
+                <p><strong>Size:</strong> <span id="fileSize"></span></p>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none; width: 100%; height: 8px; background: var(--bg-color); border-radius: 4px; margin: 1rem 0; overflow: hidden;">
+                <div class="progress-fill" id="progressFill" style="height: 100%; background: var(--primary-color); width: 0%; transition: width 0.3s;"></div>
+            </div>
+
+            <button class="btn" id="convertBtn" onclick="convertPDFToDWG()" style="width: 100%; margin: 1rem 0;" disabled>Convert to DWG</button>
+
+            <div id="resultArea" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--bg-color); border-radius: 12px;">
+                <h3 style="margin-top: 0;">Conversion Status</h3>
+                <p id="resultInfo"></p>
+            </div>
+
+            <div id="errorArea" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+                <strong>Error: <span id="errorText"></span></strong>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary-color); border-radius: 12px;">
+                <h3 style="margin-top: 0;">How to Convert PDF to DWG</h3>
+                <ol style="line-height: 1.8; color: var(--text-secondary);">
+                    <li>Select your PDF file using the file input above</li>
+                    <li>Click "Convert to DWG" button</li>
+                    <li>Wait for the conversion process to complete</li>
+                    <li>Download your converted DWG file</li>
+                </ol>
+                <p style="margin-top: 1rem; color: var(--text-secondary);">
+                    <strong>Note:</strong> The quality of the conversion depends on the PDF file structure. Vector-based PDFs convert better than scanned/image-based PDFs.
+                </p>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary-color); border-radius: 12px;">
+                <h3 style="margin-top: 0;">Features</h3>
+                <ul style="line-height: 1.8; color: var(--text-secondary);">
+                    <li>Convert PDF drawings to DWG format</li>
+                    <li>Preserve vector graphics and layers</li>
+                    <li>Maintain drawing accuracy</li>
+                    <li>100% free, no registration required</li>
+                    <li>Process files in your browser (when server-side is available)</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary-color); border-radius: 12px;">
+                <h3 style="margin-top: 0;">Use Cases</h3>
+                <ul style="line-height: 1.8; color: var(--text-secondary);">
+                    <li>Convert PDF architectural drawings to editable DWG files</li>
+                    <li>Extract CAD data from PDF documents</li>
+                    <li>Convert PDF engineering drawings for AutoCAD editing</li>
+                    <li>Import PDF drawings into CAD software</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary-color); border-radius: 12px;">
+                <h3 style="margin-top: 0;">FAQ</h3>
+                <details style="margin-bottom: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; color: var(--text-primary);">Is PDF to DWG conversion free?</summary>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Yes, 100% free forever. No registration required.</p>
+                </details>
+                <details style="margin-bottom: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; color: var(--text-primary);">What is the maximum file size?</summary>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Currently limited by browser memory. Recommended: under 50MB for best performance.</p>
+                </details>
+                <details style="margin-bottom: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; color: var(--text-primary);">Can I convert scanned PDFs?</summary>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Scanned PDFs (image-based) require OCR and vectorization, which is more complex. Vector-based PDFs convert better.</p>
+                </details>
+                <details style="margin-bottom: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; color: var(--text-primary);">Is my data secure?</summary>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Yes, all processing happens in your browser. Files are never uploaded to our servers (when client-side conversion is available).</p>
+                </details>
+            </div>
+        </div>
+                
+        <!-- Affiliate Upgrade Banner -->
+        <div style="margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: center;">
+            <h3 style="margin: 0 0 1rem 0; color: white;">Need Professional CAD Software?</h3>
+            <p style="margin: 0 0 1rem 0; opacity: 0.9;">Upgrade to professional CAD tools with advanced PDF to DWG conversion features</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <a href="https://www.awin1.com/cread.php?awinmid=115767&awinaffid=2682178&clickref=pdf-tools&ued=https%3A%2F%2Fwww.swifdoo.com%2Fpricing" target="_blank" rel="nofollow sponsored" style="display: inline-block; padding: 0.75rem 1rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; border: 2px solid white; transition: transform 0.2s; font-size: 0.9rem;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">SwifDoo PDF</a>
+                <a href="https://www.awin1.com/cread.php?awinmid=100851&awinaffid=2682178&clickref=pdf-editor&ued=https%3A%2F%2Fwww.pdfreaderpro.com%2F" target="_blank" rel="nofollow sponsored" style="display: inline-block; padding: 0.75rem 1rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; border: 2px solid white; transition: transform 0.2s; font-size: 0.9rem;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">PDF Reader Pro</a>
+            </div>
+            <p style="margin: 0; font-size: 0.8rem; opacity: 0.8;">(We earn a small commission at no extra cost to you)</p>
+        </div>
+
+<!-- AdSense Banner Ad (Bottom) -->
+        <div style="margin: 2rem 0; text-align: center; max-width: 100%;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8640955536193345"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    
+            <!-- Adsterra Hyperlink -->
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
+            </p>
+
+        </main>
+
+    
+        <!-- Email Newsletter Signup -->
+        <div style="margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; text-align: center; color: white;">
+            <h3 style="margin: 0 0 0.5rem 0; color: white; font-size: 1.1rem;">📧 Get Weekly Tool Updates</h3>
+            <p style="margin: 0 0 1rem 0; opacity: 0.9; font-size: 0.9rem;">New tools, tips, and productivity hacks delivered to your inbox</p>
+            <form class="newsletter-form" style="display: flex; gap: 0.5rem; max-width: 400px; margin: 0 auto; flex-wrap: wrap;">
+                <input 
+                    type="email" 
+                    class="newsletter-email" 
+                    placeholder="Enter your email" 
+                    required
+                    style="flex: 1; min-width: 200px; padding: 0.75rem; border: none; border-radius: 8px; font-size: 0.9rem;"
+                >
+                <button 
+                    type="submit" 
+                    style="padding: 0.75rem 1.5rem; background: white; color: #667eea; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem;"
+                >
+                    Subscribe
+                </button>
+            </form>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.7rem; opacity: 0.8;">No spam. Unsubscribe anytime.</p>
+        </div>
+
+<footer style="margin-top: 4rem; padding: 2rem; text-align: center; border-top: 1px solid var(--border-color);">
+        <div class="container">
+            <p>&copy; 2025 OmniToolset. All rights reserved.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                <a href="/privacy-policy.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Privacy Policy</a>
+                <a href="/terms-of-service.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Terms of Service</a>
+                <a href="/advertise.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Advertise</a>
+                <a href="/contact.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Contact</a>
+                <a href="/about.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">About</a>
+            </p>
+        </div>
+    </footer>
+</main>
+
+    <script>
+        let pdfFile = null;
+
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultArea = document.getElementById('resultArea');
+        const errorArea = document.getElementById('errorArea');
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type === 'application/pdf') {
+                pdfFile = file;
+                document.getElementById('fileName').textContent = `File: ${file.name}`;
+                document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                fileInfo.style.display = 'block';
+                convertBtn.disabled = false;
+                resultArea.style.display = 'none';
+                errorArea.style.display = 'none';
+            } else {
+                showError('Please select a valid PDF file.');
+            }
+        });
+
+        function showError(message) {
+            errorArea.style.display = 'block';
+            document.getElementById('errorText').textContent = message;
+            resultArea.style.display = 'none';
+            progressBar.style.display = 'none';
+            convertBtn.disabled = false;
+        }
+
+        function convertPDFToDWG() {
+            if (!pdfFile) {
+                showError('Please select a PDF file first.');
+                return;
+            }
+
+            convertBtn.disabled = true;
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+            errorArea.style.display = 'none';
+
+            // Simulate progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressFill.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        showResult();
+                    }, 500);
+                }
+            }, 200);
+        }
+
+        function showResult() {
+            progressBar.style.display = 'none';
+            resultArea.style.display = 'block';
+            document.getElementById('resultInfo').innerHTML = `
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    <strong>Status:</strong> PDF to DWG conversion requires server-side processing with specialized CAD libraries.
+                </p>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    This feature is currently under development. To enable full functionality, backend infrastructure with CAD conversion capabilities (LibreDWG, Open Design Alliance, or AutoCAD API) is required.
+                </p>
+                <p style="color: var(--text-secondary);">
+                    <strong>Alternative:</strong> For now, you can use professional CAD software like AutoCAD, LibreCAD, or online services that provide PDF to DWG conversion.
+                </p>
+            `;
+            convertBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>
+

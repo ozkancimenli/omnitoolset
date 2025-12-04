@@ -7,6 +7,7 @@ const tools = [
   { id: 'pdf-to-word', title: 'PDF to Word', description: 'Convert PDF file to Word format', icon: '📝', category: 'PDF', page: 'tools/pdf-to-word.html' },
   { id: 'pdf-to-jpg', title: 'PDF to JPG', description: 'Convert PDF pages to JPG format', icon: '🖼️', category: 'PDF', page: 'tools/pdf-to-jpg.html' },
   { id: 'pdf-to-png', title: 'PDF to PNG', description: 'Convert PDF pages to PNG format', icon: '🖼️', category: 'PDF', page: 'tools/pdf-to-png.html' },
+  { id: 'pdf-to-dwg', title: 'PDF to DWG', description: 'Convert PDF to AutoCAD DWG format', icon: '📐', category: 'PDF', page: 'tools/pdf-to-dwg.html' },
   { id: 'jpg-to-pdf', title: 'JPG to PDF', description: 'Convert JPG images to PDF format', icon: '📄', category: 'PDF', page: 'tools/jpg-to-pdf.html' },
   { id: 'png-to-pdf', title: 'PNG to PDF', description: 'Convert PNG images to PDF format', icon: '📄', category: 'PDF', page: 'tools/png-to-pdf.html' },
   { id: 'word-to-pdf', title: 'Word to PDF', description: 'Convert Word file to PDF format', icon: '📝', category: 'PDF', page: 'tools/word-to-pdf.html' },
