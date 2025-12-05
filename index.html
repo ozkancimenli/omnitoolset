@@ -467,39 +467,27 @@
                 return originalXHROpen.apply(this, [method, url, ...rest]);
             };
             
-            // Block Adsterra script elements from being created
+            // Allow Adsterra scripts to load but suppress errors silently
+            // This allows smartlinks to work while hiding SSL errors
             const originalCreateElement = document.createElement;
             document.createElement = function(tagName, ...args) {
                 const element = originalCreateElement.call(this, tagName, ...args);
-                if (tagName.toLowerCase() === 'script' && element.src) {
-                    const src = element.src.toLowerCase();
-                    if (src.includes('effectivegatecpm.com') || 
-                        src.includes('pl28055668') ||
-                        src.includes('pl28055637') ||
-                        src.includes('pl28059282')) {
-                        // Prevent script from loading
-                        element.onerror = function() { return false; };
-                        element.onload = function() {};
-                        element.src = 'data:text/javascript;base64,'; // Empty script
-                    }
+                if (tagName.toLowerCase() === 'script') {
+                    // Silently handle Adsterra script errors (allow loading but suppress errors)
+                    const originalOnError = element.onerror;
+                    element.onerror = function(e) {
+                        const src = (element.src || '').toLowerCase();
+                        if (src.includes('effectivegatecpm.com') || 
+                            src.includes('pl28055668') ||
+                            src.includes('pl28055637') ||
+                            src.includes('pl28059282')) {
+                            // Suppress error silently - script can still try to load
+                            return false;
+                        }
+                        if (originalOnError) return originalOnError.call(this, e);
+                    };
                 }
                 return element;
-            };
-            
-            // Also intercept script.src assignments
-            const originalSetAttribute = Element.prototype.setAttribute;
-            Element.prototype.setAttribute = function(name, value) {
-                if (name.toLowerCase() === 'src' && typeof value === 'string') {
-                    const src = value.toLowerCase();
-                    if (src.includes('effectivegatecpm.com') || 
-                        src.includes('pl28055668') ||
-                        src.includes('pl28055637') ||
-                        src.includes('pl28059282')) {
-                        // Block the script
-                        return; // Don't set the src
-                    }
-                }
-                return originalSetAttribute.call(this, name, value);
             };
         })();
     </script>
