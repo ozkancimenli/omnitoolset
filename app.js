@@ -394,6 +394,11 @@ function renderQuickAccess() {
     const favoriteSection = document.getElementById('favoriteToolsSection');
     const quickAccess = document.getElementById('quickAccess');
     
+    // Check if elements exist (only on homepage)
+    if (!quickAccess || !recentSection || !favoriteSection) {
+        return; // Not on homepage, skip
+    }
+    
     if (recentTools.length > 0 || favoriteTools.length > 0) {
         quickAccess.style.display = 'block';
     }
@@ -401,7 +406,8 @@ function renderQuickAccess() {
     if (recentTools.length > 0) {
         recentSection.style.display = 'block';
         const recentGrid = document.getElementById('recentTools');
-        recentGrid.innerHTML = '';
+        if (recentGrid) {
+            recentGrid.innerHTML = '';
         recentTools.slice(0, 6).forEach(tool => {
             const card = document.createElement('a');
             card.href = tool.page;
@@ -418,18 +424,20 @@ function renderQuickAccess() {
     if (favoriteTools.length > 0) {
         favoriteSection.style.display = 'block';
         const favoriteGrid = document.getElementById('favoriteTools');
-        favoriteGrid.innerHTML = '';
-        favoriteTools.slice(0, 6).forEach(tool => {
-            const card = document.createElement('a');
-            card.href = tool.page;
-            card.className = 'tool-card';
-            card.innerHTML = `
-                <span class="tool-icon">${tool.icon}</span>
-                <h3 class="tool-title">${tool.title}</h3>
-                <span class="tool-category">${tool.category}</span>
-            `;
-            favoriteGrid.appendChild(card);
-        });
+        if (favoriteGrid) {
+            favoriteGrid.innerHTML = '';
+            favoriteTools.slice(0, 6).forEach(tool => {
+                const card = document.createElement('a');
+                card.href = tool.page;
+                card.className = 'tool-card';
+                card.innerHTML = `
+                    <span class="tool-icon">${tool.icon}</span>
+                    <h3 class="tool-title">${tool.title}</h3>
+                    <span class="tool-category">${tool.category}</span>
+                `;
+                favoriteGrid.appendChild(card);
+            });
+        }
     }
 }
 
