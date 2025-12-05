@@ -309,6 +309,120 @@
     }
     </script>
     
+    <!-- Suppress Adsterra SSL errors in console - Maximum suppression -->
+    <script>
+        (function() {
+            // Intercept ALL console methods before anything else loads
+            const originalMethods = {};
+            ['error', 'warn', 'log', 'info', 'debug', 'trace', 'table', 'group', 'groupEnd'].forEach(method => {
+                originalMethods[method] = console[method];
+            });
+            
+            // Aggressive filter for Adsterra errors
+            function shouldSuppress(...args) {
+                const message = args.map(arg => {
+                    if (typeof arg === 'string') return arg;
+                    if (arg && typeof arg === 'object') {
+                        try {
+                            return JSON.stringify(arg);
+                        } catch(e) {
+                            return String(arg);
+                        }
+                    }
+                    return String(arg);
+                }).join(' ').toLowerCase();
+                
+                return (message.includes('effectivegatecpm.com') || 
+                        message.includes('pl28055668') ||
+                        message.includes('pl28055637') ||
+                        message.includes('pl28059282') ||
+                        message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
+                        message.includes('612a325632297ecc15cfd2d178f355ec') ||
+                        message.includes('9094fe56f6d4377965dfac5145838787')) && 
+                       (message.includes('err_ssl') || 
+                        message.includes('ssl_protocol') ||
+                        message.includes('failed to load') ||
+                        message.includes('net::'));
+            }
+            
+            // Override all console methods
+            Object.keys(originalMethods).forEach(method => {
+                console[method] = function(...args) {
+                    if (shouldSuppress(...args)) {
+                        return; // Completely suppress
+                    }
+                    originalMethods[method].apply(console, args);
+                };
+            });
+            
+            // Intercept error events
+            const errorHandler = function(e) {
+                const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
+                const message = (e.message || '').toLowerCase();
+                if (filename.includes('effectivegatecpm.com') || 
+                    filename.includes('pl28055668') ||
+                    filename.includes('pl28055637') ||
+                    filename.includes('pl28059282') ||
+                    message.includes('effectivegatecpm.com') ||
+                    message.includes('err_ssl') ||
+                    message.includes('ssl_protocol')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            };
+            
+            window.addEventListener('error', errorHandler, true);
+            window.addEventListener('unhandledrejection', function(e) {
+                const reason = String(e.reason || '').toLowerCase();
+                if (reason.includes('effectivegatecpm.com') || 
+                    reason.includes('err_ssl') ||
+                    reason.includes('pl28055668') ||
+                    reason.includes('pl28055637') ||
+                    reason.includes('pl28059282')) {
+                    e.preventDefault();
+                    return false;
+                }
+            }, true);
+            
+            // Override fetch to block Adsterra requests
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                const url = String(args[0] || '');
+                if (url.includes('effectivegatecpm.com') || 
+                    url.includes('pl28055668') ||
+                    url.includes('pl28055637') ||
+                    url.includes('pl28059282')) {
+                    return new Promise(() => {}); // Never resolves
+                }
+                return originalFetch.apply(this, args).catch(err => {
+                    const errStr = String(err).toLowerCase();
+                    if (errStr.includes('effectivegatecpm.com') || 
+                        errStr.includes('err_ssl') ||
+                        errStr.includes('ssl_protocol')) {
+                        return new Promise(() => {}); // Silently ignore
+                    }
+                    throw err;
+                });
+            };
+            
+            // Override XMLHttpRequest
+            const originalXHROpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+                const urlStr = String(url).toLowerCase();
+                if (urlStr.includes('effectivegatecpm.com') || 
+                    urlStr.includes('pl28055668') ||
+                    urlStr.includes('pl28055637') ||
+                    urlStr.includes('pl28059282')) {
+                    this.abort = function() {};
+                    this.send = function() { return this; };
+                    return this;
+                }
+                return originalXHROpen.apply(this, [method, url, ...rest]);
+            };
+        })();
+    </script>
+    
     <!-- Adsterra Popunder (Head) -->
     <script type='text/javascript'>
         (function() {

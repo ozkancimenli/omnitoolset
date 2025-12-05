@@ -408,17 +408,18 @@ function renderQuickAccess() {
         const recentGrid = document.getElementById('recentTools');
         if (recentGrid) {
             recentGrid.innerHTML = '';
-        recentTools.slice(0, 6).forEach(tool => {
-            const card = document.createElement('a');
-            card.href = tool.page;
-            card.className = 'tool-card';
-            card.innerHTML = `
-                <span class="tool-icon">${tool.icon}</span>
-                <h3 class="tool-title">${tool.title}</h3>
-                <span class="tool-category">${tool.category}</span>
-            `;
-            recentGrid.appendChild(card);
-        });
+            recentTools.slice(0, 6).forEach(tool => {
+                const card = document.createElement('a');
+                card.href = tool.page;
+                card.className = 'tool-card';
+                card.innerHTML = `
+                    <span class="tool-icon">${tool.icon}</span>
+                    <h3 class="tool-title">${tool.title}</h3>
+                    <span class="tool-category">${tool.category}</span>
+                `;
+                recentGrid.appendChild(card);
+            });
+        }
     }
     
     if (favoriteTools.length > 0) {
@@ -612,3 +613,4 @@ function getFavoriteTools() {
     const favoriteIds = JSON.parse(localStorage.getItem('omnitoolset_favorites') || '[]');
     return favoriteIds.map(id => tools.find(t => t.id === id)).filter(Boolean);
 }
+
