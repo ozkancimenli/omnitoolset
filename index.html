@@ -95,18 +95,22 @@
                     return String(arg);
                 }).join(' ').toLowerCase();
                 
-                // Suppress any Adsterra-related errors (more aggressive)
-                return message.includes('effectivegatecpm.com') || 
-                       message.includes('pl28055668') ||
-                       message.includes('pl28055637') ||
-                       message.includes('pl28059282') ||
-                       message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
-                       message.includes('612a325632297ecc15cfd2d178f355ec') ||
-                       message.includes('9094fe56f6d4377965dfac5145838787') ||
-                       (message.includes('err_ssl') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
-                       (message.includes('ssl_protocol') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
-                       (message.includes('failed to load resource') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
-                       (message.includes('net::err_ssl') && (message.includes('effectivegatecpm') || message.includes('pl280556')));
+                // Suppress any Adsterra-related errors (most aggressive - suppress ALL Adsterra messages)
+                if (message.includes('effectivegatecpm.com') || 
+                    message.includes('pl28055668') ||
+                    message.includes('pl28055637') ||
+                    message.includes('pl28059282') ||
+                    message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
+                    message.includes('612a325632297ecc15cfd2d178f355ec') ||
+                    message.includes('9094fe56f6d4377965dfac5145838787')) {
+                    return true; // Suppress ALL Adsterra messages regardless of error type
+                }
+                // Also suppress SSL errors that might be Adsterra-related
+                if ((message.includes('err_ssl') || message.includes('ssl_protocol') || message.includes('failed to load resource') || message.includes('net::err_ssl')) &&
+                    (message.includes('effectivegatecpm') || message.includes('pl280556'))) {
+                    return true;
+                }
+                return false;
             }
             
             // Override all console methods
@@ -115,11 +119,15 @@
                     if (shouldSuppress(...args)) {
                         return; // Completely suppress
                     }
-                    // Also suppress manifest.json 401 errors and favicon 404 errors
+                    // Also suppress manifest.json 401 errors, favicon 404 errors, and Chrome extension errors
                     const message = args.map(arg => String(arg)).join(' ').toLowerCase();
                     if ((message.includes('manifest.json') && message.includes('401')) ||
                         (message.includes('favicon.ico') && message.includes('404')) ||
-                        (message.includes('favicon') && message.includes('failed to load'))) {
+                        (message.includes('favicon') && message.includes('failed to load')) ||
+                        message.includes('runtime.lasterror') ||
+                        message.includes('unchecked runtime') ||
+                        message.includes('message channel closed') ||
+                        message.includes('asynchronous response')) {
                         return; // Suppress these errors
                     }
                     originalMethods[method].apply(console, args);
@@ -341,18 +349,22 @@
                     return String(arg);
                 }).join(' ').toLowerCase();
                 
-                // Suppress any Adsterra-related errors (more aggressive)
-                return message.includes('effectivegatecpm.com') || 
-                       message.includes('pl28055668') ||
-                       message.includes('pl28055637') ||
-                       message.includes('pl28059282') ||
-                       message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
-                       message.includes('612a325632297ecc15cfd2d178f355ec') ||
-                       message.includes('9094fe56f6d4377965dfac5145838787') ||
-                       (message.includes('err_ssl') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
-                       (message.includes('ssl_protocol') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
-                       (message.includes('failed to load resource') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
-                       (message.includes('net::err_ssl') && (message.includes('effectivegatecpm') || message.includes('pl280556')));
+                // Suppress any Adsterra-related errors (most aggressive - suppress ALL Adsterra messages)
+                if (message.includes('effectivegatecpm.com') || 
+                    message.includes('pl28055668') ||
+                    message.includes('pl28055637') ||
+                    message.includes('pl28059282') ||
+                    message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
+                    message.includes('612a325632297ecc15cfd2d178f355ec') ||
+                    message.includes('9094fe56f6d4377965dfac5145838787')) {
+                    return true; // Suppress ALL Adsterra messages regardless of error type
+                }
+                // Also suppress SSL errors that might be Adsterra-related
+                if ((message.includes('err_ssl') || message.includes('ssl_protocol') || message.includes('failed to load resource') || message.includes('net::err_ssl')) &&
+                    (message.includes('effectivegatecpm') || message.includes('pl280556'))) {
+                    return true;
+                }
+                return false;
             }
             
             // Override all console methods
@@ -361,11 +373,15 @@
                     if (shouldSuppress(...args)) {
                         return; // Completely suppress
                     }
-                    // Also suppress manifest.json 401 errors and favicon 404 errors
+                    // Also suppress manifest.json 401 errors, favicon 404 errors, and Chrome extension errors
                     const message = args.map(arg => String(arg)).join(' ').toLowerCase();
                     if ((message.includes('manifest.json') && message.includes('401')) ||
                         (message.includes('favicon.ico') && message.includes('404')) ||
-                        (message.includes('favicon') && message.includes('failed to load'))) {
+                        (message.includes('favicon') && message.includes('failed to load')) ||
+                        message.includes('runtime.lasterror') ||
+                        message.includes('unchecked runtime') ||
+                        message.includes('message channel closed') ||
+                        message.includes('asynchronous response')) {
                         return; // Suppress these errors
                     }
                     originalMethods[method].apply(console, args);
