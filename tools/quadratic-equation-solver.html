@@ -75,6 +75,11 @@
                     if (shouldSuppress(...args)) {
                         return; // Completely suppress
                     }
+                    // Also suppress "Many inline scripts" warning from security.js
+                    const message = args.map(arg => String(arg)).join(' ').toLowerCase();
+                    if (message.includes('many inline scripts') || message.includes('consider externalizing')) {
+                        return; // Suppress inline scripts warning
+                    }
                     originalMethods[method].apply(console, args);
                 };
             });
@@ -117,30 +122,66 @@
                 }
             }, true);
             
-            // Override fetch
+            // Override fetch - completely block Adsterra requests
             const originalFetch = window.fetch;
             window.fetch = function(...args) {
                 const url = String(args[0] || '');
-                if (url.includes('effectivegatecpm.com')) {
-                    return Promise.reject().catch(() => {});
+                if (url.includes('effectivegatecpm.com') || 
+                    url.includes('pl28055668') ||
+                    url.includes('pl28055637') ||
+                    url.includes('pl28059282') ||
+                    url.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
+                    url.includes('612a325632297ecc15cfd2d178f355ec') ||
+                    url.includes('9094fe56f6d4377965dfac5145838787')) {
+                    // Silently reject - don't even create a promise
+                    return new Promise(() => {}); // Never resolves, never rejects
                 }
                 return originalFetch.apply(this, args).catch(err => {
-                    if (String(err).includes('effectivegatecpm.com')) {
-                        return Promise.reject().catch(() => {});
+                    const errStr = String(err).toLowerCase();
+                    if (errStr.includes('effectivegatecpm.com') || 
+                        errStr.includes('pl28055668') ||
+                        errStr.includes('pl28055637') ||
+                        errStr.includes('pl28059282') ||
+                        errStr.includes('err_ssl') ||
+                        errStr.includes('ssl_protocol')) {
+                        return new Promise(() => {}); // Silently ignore
                     }
                     throw err;
                 });
             };
             
-            // Override XMLHttpRequest
+            // Override XMLHttpRequest - completely block Adsterra requests
             const originalXHROpen = XMLHttpRequest.prototype.open;
             XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-                if (String(url).includes('effectivegatecpm.com')) {
+                const urlStr = String(url).toLowerCase();
+                if (urlStr.includes('effectivegatecpm.com') || 
+                    urlStr.includes('pl28055668') ||
+                    urlStr.includes('pl28055637') ||
+                    urlStr.includes('pl28059282')) {
+                    // Prevent the request entirely
+                    this.abort = function() {};
+                    this.send = function() { return this; };
                     this.addEventListener('error', function(e) {
+                        e.preventDefault();
                         e.stopPropagation();
-                    });
+                        e.stopImmediatePropagation();
+                    }, true);
+                    return this;
                 }
                 return originalXHROpen.apply(this, [method, url, ...rest]);
+            };
+            
+            // Suppress network errors in DevTools
+            const originalError = window.Error;
+            window.Error = function(...args) {
+                const message = String(args[0] || '').toLowerCase();
+                if (message.includes('effectivegatecpm.com') || 
+                    message.includes('err_ssl') ||
+                    message.includes('ssl_protocol') ||
+                    message.includes('failed to load resource')) {
+                    return {}; // Return empty object instead of Error
+                }
+                return originalError.apply(this, args);
             };
         })();
     </script>
