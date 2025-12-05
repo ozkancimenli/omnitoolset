@@ -363,9 +363,11 @@
                     filename.includes('pl28055668') ||
                     filename.includes('pl28055637') ||
                     filename.includes('pl28059282') ||
+                    filename.includes('9094fe56f6d4377965dfac5145838787') ||
                     message.includes('effectivegatecpm.com') ||
                     message.includes('err_ssl') ||
-                    message.includes('ssl_protocol')) {
+                    message.includes('ssl_protocol') ||
+                    (filename.includes('manifest.json') && message.includes('401'))) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
