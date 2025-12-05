@@ -474,32 +474,36 @@
             // Extract basic geometry from PDF pages
             // Note: This is a simplified conversion - real PDF to DWG requires vector extraction
             pdfPages.forEach((page, pageIndex) => {
+                const yOffset = pageIndex * 200; // More spacing between pages
+                
                 // Add a text entity for each page (placeholder)
                 lines.push('0');
                 lines.push('TEXT');
-                lines.push('8'); // Layer
-                lines.push('0');
-                lines.push('10'); // X coordinate
-                lines.push('0');
-                lines.push('20'); // Y coordinate
-                lines.push(`${pageIndex * 100}`);
-                lines.push('30'); // Z coordinate
-                lines.push('0');
-                lines.push('40'); // Text height
-                lines.push('10');
-                lines.push('1'); // Text value
-                lines.push(`Page ${pageIndex + 1} from PDF`);
-                lines.push('50'); // Rotation angle
-                lines.push('0');
+                lines.push('8'); // Layer code
+                lines.push('0'); // Layer name
+                lines.push('10'); // X coordinate code
+                lines.push('10'); // X coordinate value
+                lines.push('20'); // Y coordinate code
+                lines.push(`${yOffset + 50}`); // Y coordinate value
+                lines.push('30'); // Z coordinate code
+                lines.push('0'); // Z coordinate value
+                lines.push('40'); // Text height code
+                lines.push('10'); // Text height value
+                lines.push('1'); // Text value code
+                lines.push(`Page ${pageIndex + 1} from PDF: ${fileName || 'document'}`);
+                lines.push('50'); // Rotation angle code
+                lines.push('0'); // Rotation angle value (0 degrees)
             });
             
             // Add a rectangle frame for each page (simplified representation)
             pdfPages.forEach((page, pageIndex) => {
-                const yOffset = pageIndex * 100;
+                const yOffset = pageIndex * 200; // More spacing between pages
                 
-                // Rectangle as 4 lines
-                const width = 200;
-                const height = 100;
+                // Rectangle as 4 lines - scale based on PDF page dimensions
+                // Convert PDF points to DXF units (1 point = 1 unit, scaled)
+                const scale = 0.1; // Scale factor for PDF to DXF conversion
+                const width = (page.width || 612) * scale; // Default to letter size if not available
+                const height = (page.height || 792) * scale;
                 
                 // Line 1 (top)
                 lines.push('0');
@@ -629,9 +633,10 @@
                 // Create a DXF file (DXF is text-based and can be opened in AutoCAD as DWG)
                 // Note: For true binary DWG, server-side conversion is required
                 const blob = new Blob([dxfContent], { type: 'text/plain' });
+                const baseFileName = pdfFile.name.replace(/\.pdf$/i, '');
                 dwgData = {
                     blob: blob,
-                    fileName: pdfFile.name.replace('.pdf', '.dxf')
+                    fileName: `${baseFileName}.dxf`
                 };
                 
                 progressFill.style.width = '100%';
