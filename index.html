@@ -113,6 +113,11 @@
                     if (shouldSuppress(...args)) {
                         return; // Completely suppress
                     }
+                    // Also suppress manifest.json 401 errors (Vercel deployment issue)
+                    const message = args.map(arg => String(arg)).join(' ').toLowerCase();
+                    if (message.includes('manifest.json') && message.includes('401')) {
+                        return; // Suppress manifest 401 errors
+                    }
                     originalMethods[method].apply(console, args);
                 };
             });
@@ -350,6 +355,11 @@
                 console[method] = function(...args) {
                     if (shouldSuppress(...args)) {
                         return; // Completely suppress
+                    }
+                    // Also suppress manifest.json 401 errors (Vercel deployment issue)
+                    const message = args.map(arg => String(arg)).join(' ').toLowerCase();
+                    if (message.includes('manifest.json') && message.includes('401')) {
+                        return; // Suppress manifest 401 errors
                     }
                     originalMethods[method].apply(console, args);
                 };
