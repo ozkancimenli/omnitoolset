@@ -392,17 +392,26 @@
             const errorHandler = function(e) {
                 const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
                 const message = (e.message || '').toLowerCase();
+                // Suppress Adsterra errors
                 if (filename.includes('effectivegatecpm.com') || 
                     filename.includes('pl28055668') ||
                     filename.includes('pl28055637') ||
                     filename.includes('pl28059282') ||
                     filename.includes('9094fe56f6d4377965dfac5145838787') ||
                     message.includes('effectivegatecpm.com') ||
-                    message.includes('err_ssl') ||
-                    message.includes('ssl_protocol') ||
-                    (filename.includes('manifest.json') && message.includes('401')) ||
+                    (message.includes('err_ssl') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
+                    (message.includes('ssl_protocol') && (message.includes('effectivegatecpm') || message.includes('pl280556')))) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                // Suppress other known errors
+                if ((filename.includes('manifest.json') && message.includes('401')) ||
                     (filename.includes('favicon.ico') && message.includes('404')) ||
-                    (filename.includes('favicon') && message.includes('failed'))) {
+                    (filename.includes('favicon') && message.includes('failed')) ||
+                    message.includes('runtime.lasterror') ||
+                    message.includes('unchecked runtime') ||
+                    message.includes('message channel closed')) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
