@@ -248,9 +248,11 @@
                 </p>
             </div>
 
-            <div class="input-group">
-                <label for="fileInput">Select PDF File:</label>
-                <input type="file" id="fileInput" accept=".pdf" style="width: 100%; padding: 0.75rem; border: 2px dashed var(--border-color); border-radius: 8px; cursor: pointer;">
+            <div class="upload-area" id="uploadArea" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.3s; background: var(--bg-color);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 1.1rem; font-weight: 500;">Drag and drop your PDF file here</p>
+                <p style="margin: 0.5rem 0 0 0; color: var(--text-secondary); font-size: 0.9rem;">or click to select</p>
+                <input type="file" id="fileInput" accept=".pdf" style="display: none;">
             </div>
 
             <div id="fileInfo" style="display: none; margin: 1rem 0; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
@@ -381,6 +383,24 @@
             <p style="margin: 0.5rem 0 0 0; font-size: 0.7rem; opacity: 0.8;">No spam. Unsubscribe anytime.</p>
         </div>
 
+    <script>
+        // Newsletter form handler
+        document.querySelector('.newsletter-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('.newsletter-email').value;
+            if (email) {
+                // Show thank you message
+                const form = this;
+                const originalHTML = form.innerHTML;
+                form.innerHTML = '<p style="color: white; margin: 0; font-weight: 600;">✅ Thank you for subscribing!</p>';
+                setTimeout(() => {
+                    form.innerHTML = originalHTML;
+                    form.querySelector('.newsletter-email').value = '';
+                }, 3000);
+            }
+        });
+    </script>
+
 <footer style="margin-top: 4rem; padding: 2rem; text-align: center; border-top: 1px solid var(--border-color);">
         <div class="container">
             <p>&copy; 2025 OmniToolset. All rights reserved.</p>
@@ -402,6 +422,9 @@
         let pdfFile = null;
         let dwgData = null;
 
+        const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+        
+        const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
         const convertBtn = document.getElementById('convertBtn');
@@ -410,20 +433,59 @@
         const resultArea = document.getElementById('resultArea');
         const errorArea = document.getElementById('errorArea');
 
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file && file.type === 'application/pdf') {
-                pdfFile = file;
-                document.getElementById('fileName').textContent = `File: ${file.name}`;
-                document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
-                fileInfo.style.display = 'block';
-                convertBtn.disabled = false;
-                resultArea.style.display = 'none';
-                errorArea.style.display = 'none';
-            } else {
-                showError('Please select a valid PDF file.');
+        // Upload area click
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--primary-color)';
+            uploadArea.style.background = 'rgba(99, 102, 241, 0.1)';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = 'var(--border-color)';
+            uploadArea.style.background = 'var(--bg-color)';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--border-color)';
+            uploadArea.style.background = 'var(--bg-color)';
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                handleFile(file);
             }
         });
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            // Check file type
+            if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+                showError('Please select a valid PDF file.');
+                return;
+            }
+
+            // Check file size
+            if (file.size > MAX_FILE_SIZE) {
+                showError(`File is too large. Maximum size is 50MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB.`);
+                return;
+            }
+
+            pdfFile = file;
+            document.getElementById('fileName').textContent = `File: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            fileInfo.style.display = 'block';
+            convertBtn.disabled = false;
+            resultArea.style.display = 'none';
+            errorArea.style.display = 'none';
+        }
 
         function showError(message) {
             errorArea.style.display = 'block';
