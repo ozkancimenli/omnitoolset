@@ -38,8 +38,9 @@
     <link rel="canonical" href="https://www.omnitoolset.com/">
     
     <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/favicon.svg">
     
     <!-- Manifest for PWA (future) -->
     <link rel="manifest" href="/manifest.json">
@@ -113,10 +114,12 @@
                     if (shouldSuppress(...args)) {
                         return; // Completely suppress
                     }
-                    // Also suppress manifest.json 401 errors (Vercel deployment issue)
+                    // Also suppress manifest.json 401 errors and favicon 404 errors
                     const message = args.map(arg => String(arg)).join(' ').toLowerCase();
-                    if (message.includes('manifest.json') && message.includes('401')) {
-                        return; // Suppress manifest 401 errors
+                    if ((message.includes('manifest.json') && message.includes('401')) ||
+                        (message.includes('favicon.ico') && message.includes('404')) ||
+                        (message.includes('favicon') && message.includes('failed to load'))) {
+                        return; // Suppress these errors
                     }
                     originalMethods[method].apply(console, args);
                 };
@@ -356,10 +359,12 @@
                     if (shouldSuppress(...args)) {
                         return; // Completely suppress
                     }
-                    // Also suppress manifest.json 401 errors (Vercel deployment issue)
+                    // Also suppress manifest.json 401 errors and favicon 404 errors
                     const message = args.map(arg => String(arg)).join(' ').toLowerCase();
-                    if (message.includes('manifest.json') && message.includes('401')) {
-                        return; // Suppress manifest 401 errors
+                    if ((message.includes('manifest.json') && message.includes('401')) ||
+                        (message.includes('favicon.ico') && message.includes('404')) ||
+                        (message.includes('favicon') && message.includes('failed to load'))) {
+                        return; // Suppress these errors
                     }
                     originalMethods[method].apply(console, args);
                 };
@@ -377,7 +382,9 @@
                     message.includes('effectivegatecpm.com') ||
                     message.includes('err_ssl') ||
                     message.includes('ssl_protocol') ||
-                    (filename.includes('manifest.json') && message.includes('401'))) {
+                    (filename.includes('manifest.json') && message.includes('401')) ||
+                    (filename.includes('favicon.ico') && message.includes('404')) ||
+                    (filename.includes('favicon') && message.includes('failed'))) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
