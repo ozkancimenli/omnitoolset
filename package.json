@@ -4,6 +4,7 @@
   "private": true,
   "description": "OmniToolset - Free Online Tools Collection",
   "scripts": {
-    "vercel-build": "echo 'Static HTML site - no build needed'"
+    "vercel-build": "echo 'Static HTML site - no build needed'",
+    "deploy": "vercel --prod"
   }
 }
