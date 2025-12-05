@@ -95,17 +95,18 @@
                     return String(arg);
                 }).join(' ').toLowerCase();
                 
-                return (message.includes('effectivegatecpm.com') || 
-                        message.includes('pl28055668') ||
-                        message.includes('pl28055637') ||
-                        message.includes('pl28059282') ||
-                        message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
-                        message.includes('612a325632297ecc15cfd2d178f355ec') ||
-                        message.includes('9094fe56f6d4377965dfac5145838787')) && 
-                       (message.includes('err_ssl') || 
-                        message.includes('ssl_protocol') ||
-                        message.includes('failed to load') ||
-                        message.includes('net::'));
+                // Suppress any Adsterra-related errors (more aggressive)
+                return message.includes('effectivegatecpm.com') || 
+                       message.includes('pl28055668') ||
+                       message.includes('pl28055637') ||
+                       message.includes('pl28059282') ||
+                       message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
+                       message.includes('612a325632297ecc15cfd2d178f355ec') ||
+                       message.includes('9094fe56f6d4377965dfac5145838787') ||
+                       (message.includes('err_ssl') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
+                       (message.includes('ssl_protocol') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
+                       (message.includes('failed to load resource') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
+                       (message.includes('net::err_ssl') && (message.includes('effectivegatecpm') || message.includes('pl280556')));
             }
             
             // Override all console methods
@@ -340,17 +341,18 @@
                     return String(arg);
                 }).join(' ').toLowerCase();
                 
-                return (message.includes('effectivegatecpm.com') || 
-                        message.includes('pl28055668') ||
-                        message.includes('pl28055637') ||
-                        message.includes('pl28059282') ||
-                        message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
-                        message.includes('612a325632297ecc15cfd2d178f355ec') ||
-                        message.includes('9094fe56f6d4377965dfac5145838787')) && 
-                       (message.includes('err_ssl') || 
-                        message.includes('ssl_protocol') ||
-                        message.includes('failed to load') ||
-                        message.includes('net::'));
+                // Suppress any Adsterra-related errors (more aggressive)
+                return message.includes('effectivegatecpm.com') || 
+                       message.includes('pl28055668') ||
+                       message.includes('pl28055637') ||
+                       message.includes('pl28059282') ||
+                       message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
+                       message.includes('612a325632297ecc15cfd2d178f355ec') ||
+                       message.includes('9094fe56f6d4377965dfac5145838787') ||
+                       (message.includes('err_ssl') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
+                       (message.includes('ssl_protocol') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
+                       (message.includes('failed to load resource') && (message.includes('effectivegatecpm') || message.includes('pl280556'))) ||
+                       (message.includes('net::err_ssl') && (message.includes('effectivegatecpm') || message.includes('pl280556')));
             }
             
             // Override all console methods
