@@ -216,63 +216,9 @@
                 </script>
             </div>
 
-            <!-- Blog Posts Grid -->
-            <div class="blog-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0;">
-                <article class="blog-post-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease;">
-                    <a href="/blog/how-to-merge-pdf-files.html" style="text-decoration: none; color: inherit;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">How to Merge PDF Files</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Learn how to combine multiple PDF files into one document using our free online tool.</p>
-                        <span style="color: var(--primary-color); font-size: 0.9rem;">Read More →</span>
-                    </a>
-                </article>
-
-                <article class="blog-post-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease;">
-                    <a href="/blog/how-to-split-pdf-files.html" style="text-decoration: none; color: inherit;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">How to Split PDF Files</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Step-by-step guide to splitting PDF files by pages or bookmarks.</p>
-                        <span style="color: var(--primary-color); font-size: 0.9rem;">Read More →</span>
-                    </a>
-                </article>
-
-                <article class="blog-post-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease;">
-                    <a href="/blog/how-to-compress-pdf-files.html" style="text-decoration: none; color: inherit;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">How to Compress PDF Files</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Reduce PDF file size without losing quality using our compression tool.</p>
-                        <span style="color: var(--primary-color); font-size: 0.9rem;">Read More →</span>
-                    </a>
-                </article>
-
-                <article class="blog-post-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease;">
-                    <a href="/blog/how-to-convert-pdf-to-word.html" style="text-decoration: none; color: inherit;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">How to Convert PDF to Word</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Convert PDF documents to editable Word format easily.</p>
-                        <span style="color: var(--primary-color); font-size: 0.9rem;">Read More →</span>
-                    </a>
-                </article>
-
-                <article class="blog-post-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease;">
-                    <a href="/blog/how-to-convert-word-to-pdf.html" style="text-decoration: none; color: inherit;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">How to Convert Word to PDF</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Transform Word documents into PDF format in seconds.</p>
-                        <span style="color: var(--primary-color); font-size: 0.9rem;">Read More →</span>
-                    </a>
-                </article>
-
-                <article class="blog-post-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease;">
-                    <a href="/blog/how-to-resize-images-online.html" style="text-decoration: none; color: inherit;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">How to Resize Images Online</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Resize images to any dimension without losing quality.</p>
-                        <span style="color: var(--primary-color); font-size: 0.9rem;">Read More →</span>
-                    </a>
-                </article>
-
-                <article class="blog-post-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease;">
-                    <a href="/blog/best-free-pdf-tools-online.html" style="text-decoration: none; color: inherit;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">Best Free PDF Tools Online</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Discover the best free PDF tools available online.</p>
-                        <span style="color: var(--primary-color); font-size: 0.9rem;">Read More →</span>
-                    </a>
-                </article>
+            <!-- Blog Posts Grid - Will be populated by JavaScript -->
+            <div class="blog-grid" id="blogGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0;">
+                <!-- Blog posts will be loaded dynamically -->
             </div>
 
             <!-- AdSense Banner Ad (Middle) -->
@@ -304,6 +250,54 @@
 
     <!-- Adsterra Popunder (Body) -->
     <script data-cfasync="false" type='text/javascript' src='https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+    <script>
+        // Load blog posts dynamically
+        (function() {
+            const blogGrid = document.getElementById('blogGrid');
+            if (!blogGrid) return;
+
+            const blogPosts = [
+                { title: 'How to Merge PDF Files', url: '/blog/how-to-merge-pdf-files.html', desc: 'Learn how to combine multiple PDF files into one document using our free online tool.' },
+                { title: 'How to Split PDF Files', url: '/blog/how-to-split-pdf-files.html', desc: 'Step-by-step guide to splitting PDF files by pages or bookmarks.' },
+                { title: 'How to Compress PDF Files', url: '/blog/how-to-compress-pdf-files.html', desc: 'Reduce PDF file size without losing quality using our compression tool.' },
+                { title: 'How to Convert PDF to Word', url: '/blog/how-to-convert-pdf-to-word.html', desc: 'Convert PDF documents to editable Word format easily.' },
+                { title: 'How to Convert Word to PDF', url: '/blog/how-to-convert-word-to-pdf.html', desc: 'Transform Word documents into PDF format in seconds.' },
+                { title: 'How to Resize Images Online', url: '/blog/how-to-resize-images-online.html', desc: 'Resize images to any dimension without losing quality.' },
+                { title: 'Best Free PDF Tools Online', url: '/blog/best-free-pdf-tools-online.html', desc: 'Discover the best free PDF tools available online.' },
+                { title: 'How to Calculate BMI', url: '/blog/how-to-calculate-bmi.html', desc: 'Calculate your Body Mass Index (BMI) easily with our free calculator.' },
+                { title: 'How to Calculate GPA', url: '/blog/how-to-calculate-gpa.html', desc: 'Calculate your Grade Point Average (GPA) with our free calculator.' },
+                { title: 'How to Calculate Mortgage', url: '/blog/how-to-calculate-mortgage.html', desc: 'Calculate your monthly mortgage payments with our free calculator.' },
+                { title: 'How to Calculate Compound Interest', url: '/blog/how-to-calculate-compound-interest.html', desc: 'Calculate compound interest and see how your money grows over time.' },
+                { title: 'How to Calculate Loan Payments', url: '/blog/how-to-calculate-loan-payments.html', desc: 'Calculate your loan payments and see the total interest you\'ll pay.' },
+                { title: 'How to Convert Excel to PDF', url: '/blog/how-to-convert-excel-to-pdf.html', desc: 'Convert Excel spreadsheets to PDF format easily.' },
+                { title: 'How to Convert Images to PDF', url: '/blog/how-to-convert-images-to-pdf.html', desc: 'Convert multiple images into a single PDF document.' },
+                { title: 'How to Convert PowerPoint to PDF', url: '/blog/how-to-convert-powerpoint-to-pdf.html', desc: 'Convert PowerPoint presentations to PDF format.' },
+                { title: 'How to Convert Units', url: '/blog/how-to-convert-units.html', desc: 'Convert between different units of measurement easily.' },
+                { title: 'How to Convert Video to Audio', url: '/blog/how-to-convert-video-to-audio.html', desc: 'Extract audio from video files and convert to MP3 or other formats.' },
+                { title: 'How to Edit PDF Files Online', url: '/blog/how-to-edit-pdf-files-online.html', desc: 'Edit PDF files online without installing any software.' },
+                { title: 'How to Format JSON', url: '/blog/how-to-format-json.html', desc: 'Format and beautify JSON code for better readability.' },
+                { title: 'How to Generate QR Codes', url: '/blog/how-to-generate-qr-codes.html', desc: 'Generate QR codes for URLs, text, and more.' },
+                { title: 'How to Generate Strong Passwords', url: '/blog/how-to-generate-strong-passwords.html', desc: 'Generate secure, random passwords for your accounts.' },
+                { title: 'How to Compress Images Online', url: '/blog/how-to-compress-images-online.html', desc: 'Reduce image file size without losing quality.' },
+                { title: 'How to Resize Images', url: '/blog/how-to-resize-images.html', desc: 'Resize images to specific dimensions or percentages.' }
+            ];
+
+            blogPosts.forEach(post => {
+                const article = document.createElement('article');
+                article.className = 'blog-post-card';
+                article.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease;';
+                article.innerHTML = `
+                    <a href="${post.url}" style="text-decoration: none; color: inherit; display: block;">
+                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">${post.title}</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">${post.desc}</p>
+                        <span style="color: var(--primary-color); font-size: 0.9rem;">Read More →</span>
+                    </a>
+                `;
+                blogGrid.appendChild(article);
+            });
+        })();
+    </script>
 
     <script src="/app.js" defer></script>
 </body>
