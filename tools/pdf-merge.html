@@ -114,8 +114,9 @@
             });
             
             // Intercept error events at the earliest possible moment
+                        // Intercept error events at the earliest possible moment
             const errorHandler = function(e) {
-                const filename = (e.filename || e.source || e.target?.src || e.target?.href || '').toLowerCase();
+                const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
                 const message = (e.message || '').toLowerCase();
                 const stack = (e.error?.stack || '').toLowerCase();
                 const url = (e.target?.src || e.target?.href || e.filename || '').toLowerCase();
@@ -148,7 +149,7 @@
                 }
             };
             
-            // Add multiple error listeners with highest priority
+// Add multiple error listeners with highest priority
             window.addEventListener('error', errorHandler, true);
             window.addEventListener('error', errorHandler, {capture: true, passive: false});
             document.addEventListener('error', errorHandler, true);
@@ -206,7 +207,7 @@
             
             // Allow Adsterra requests - only suppress console errors, don't block requests
             // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
-        })();
+        }, true);
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 

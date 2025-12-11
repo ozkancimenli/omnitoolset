@@ -79,29 +79,34 @@
             });
             
             // Intercept error events at the earliest possible moment
+                        // Intercept error events at the earliest possible moment
             const errorHandler = function(e) {
                 const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
                 const message = (e.message || '').toLowerCase();
                 const stack = (e.error?.stack || '').toLowerCase();
+                const url = (e.target?.src || e.target?.href || e.filename || '').toLowerCase();
                 
+                // Suppress ALL Adsterra-related errors
                 if (filename.includes('effectivegatecpm.com') || 
                     filename.includes('pl28055668') ||
                     filename.includes('pl28055637') ||
                     filename.includes('pl28059282') ||
-                    message.includes('effectivegatecpm.com') ||
-                    message.includes('err_ssl') ||
-                    stack.includes('effectivegatecpm.com')
-                const url = (e.target?.src || e.target?.href || e.filename || '').toLowerCase();
-                if (url.includes('effectivegatecpm.com') ||
+                    url.includes('effectivegatecpm.com') ||
                     url.includes('pl28055668') ||
                     url.includes('pl28055637') ||
-                    url.includes('pl28059282')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                if (filename.includes('effectivegatecpm.com') ||
+                    url.includes('pl28059282') ||
+                    message.includes('effectivegatecpm.com') ||
+                    message.includes('pl28055668') ||
+                    message.includes('pl28055637') ||
+                    message.includes('pl28059282') ||
+                    message.includes('err_ssl') ||
+                    message.includes('ssl_protocol') ||
+                    message.includes('failed to load resource') ||
+                    message.includes('net::err_ssl') ||
+                    stack.includes('effectivegatecpm.com') ||
+                    stack.includes('pl28055668') ||
+                    stack.includes('pl28055637') ||
+                    stack.includes('pl28059282')) {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
@@ -109,7 +114,7 @@
                 }
             };
             
-            // Add multiple error listeners with highest priority
+// Add multiple error listeners with highest priority
             window.addEventListener('error', errorHandler, true);
             window.addEventListener('error', errorHandler, {capture: true, passive: false});
             document.addEventListener('error', errorHandler, true);
@@ -165,7 +170,7 @@
             };
         
             
-            // Suppress resource loading errors for Adsterra
+             for Adsterra
             window.addEventListener('error', function(e) {
                 const target = e.target || e.srcElement;
                 if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK' || target.tagName === 'IMG')) {
@@ -180,7 +185,7 @@
                         return false;
                     }
                 }
-            })();
+            }, true);
         })();
     </script>
 
