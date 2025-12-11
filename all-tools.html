@@ -143,5 +143,43 @@
             
             // Allow Adsterra requests - only suppress console errors, don't block requests
             // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
-            };
+        })();
+    </script>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">🛠️ OmniToolset</h1>
+                </div>
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link">Home</a>
+                    <a href="/blog.html" class="nav-link">Blog</a>
+                    <a href="/categories.html" class="nav-link">Categories</a>
+                    <a href="/all-tools.html" class="nav-link active">All Tools</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="tools-list-page">
+        <div class="container">
+            <h1>All Tools</h1>
+            <p>Browse our complete collection of 270+ free online tools.</p>
             
+            <div class="tools-grid" id="allToolsGrid">
+                <!-- Tools will be loaded by app.js -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 OmniToolset. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/app.js" defer></script>
+</body>
+</html>
