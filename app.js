@@ -465,6 +465,8 @@ function renderTools(filteredTools = tools) {
         const card = document.createElement('a');
         card.href = tool.page;
         card.className = 'tool-card';
+        // Force visibility with inline styles
+        card.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; color: #f1f5f9 !important; background: rgba(30, 41, 59, 0.8) !important;';
         const favorites = JSON.parse(localStorage.getItem('omnitoolset_favorites') || '[]');
         const isFavorite = favorites.includes(tool.id);
         card.innerHTML = `
