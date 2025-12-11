@@ -138,53 +138,14 @@
                 }
             }, true);
             
-            // Override fetch
-            const originalFetch = window.fetch;
-            window.fetch = function(...args) {
-                const url = String(args[0] || '');
-                if (url.includes('effectivegatecpm.com')) {
-                    return Promise.reject().catch(() => {});
-                }
-                return originalFetch.apply(this, args).catch(err => {
-                    if (String(err).includes('effectivegatecpm.com')) {
-                        return Promise.reject().catch(() => {});
-                    }
-                    throw err;
-                });
-            };
-            
-            // Override XMLHttpRequest
-            const originalXHROpen = XMLHttpRequest.prototype.open;
-            XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-                if (String(url).includes('effectivegatecpm.com')) {
-                    this.addEventListener('error', function(e) {
-                        e.stopPropagation();
-                    });
-                }
-                return originalXHROpen.apply(this, [method, url, ...rest]);
-            };
+            // Allow Adsterra requests - only suppress console errors, don't block requests
+            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
         })();
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
-    <!-- Adsterra Popunder (Head) -->
-    <script type='text/javascript'>
-        (function() {
-            try {
-                var script = document.createElement('script');
-                script.src = 'https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js';
-                script.crossOrigin = 'anonymous';
-                script.onerror = function() { 
-                    return false; // Silently handle SSL errors
-                };
-                script.onload = function() {};
-                // Delay loading to reduce console noise
-                setTimeout(function() {
-                    document.head.appendChild(script);
-                }, 100);
-            } catch(e) {}
-        })();
-    </script>
+    <!-- Adsterra Popunder (Head) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <script data-cfasync="false" type='text/javascript' src='https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
 
 </head>
 <body>
@@ -209,28 +170,10 @@
         
         
         
-        <!-- Adsterra Native Banner -->
+        <!-- Adsterra Native Banner - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
         <div style="margin: 1rem 0; text-align: center;">
-            <script type='text/javascript'>
-                (function() {
-                    try {
-                        var script = document.createElement('script');
-                        script.async = true;
-                        script.setAttribute('data-cfasync', 'false');
-                        script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
-                        script.crossOrigin = 'anonymous';
-                        script.onerror = function() { 
-                            return false; // Silently handle SSL errors
-                        };
-                        script.onload = function() {};
-                        // Delay loading to reduce console noise
-                        setTimeout(function() {
-                            document.head.appendChild(script);
-                        }, 200);
-                    } catch(e) {}
-                })();
-            </script>
             <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+            <script data-cfasync="false" type='text/javascript' src='https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js'></script>
         </div>
 
 
@@ -321,6 +264,39 @@
             </script>
         </div>
     
+            <!-- Oedro Recommended Products Banner (Tool Page) -->
+            <div style="margin: 2rem 0; padding: 1.5rem; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                <h4 style="margin-bottom: 1rem; color: var(--primary-color); font-size: 1rem;">🚗 Need Car Accessories?</h4>
+                <a href="https://www.awin1.com/cread.php?awinmid=28349&awinaffid=2682178&clickref=omnitoolset-pdf-tools&ued=https%3A%2F%2Fwww.oedro.com%2F" 
+                   target="_blank" 
+                   rel="nofollow sponsored">
+                    <img src="/Oedro Advertiser Directory 300x250.jpg" 
+                         alt="OEDRO Auto Parts" 
+                         style="max-width: 300px; width: 100%; height: auto; border-radius: 8px; margin: 0 auto; display: block;">
+                </a>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);">
+                    Premium auto parts • Free shipping • 30-day returns
+                </p>
+            </div>
+
+            <!-- Ravin Crossbows Recommended Products Banner (Tool Page) -->
+            <div style="margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                <h4 style="margin-bottom: 1rem; color: white; font-size: 1rem;">🏹 Premium Hunting Crossbows</h4>
+                <div style="font-size: 2.5rem; margin: 1rem 0;">🏹</div>
+                <p style="color: rgba(255,255,255,0.9); margin-bottom: 1rem; font-size: 0.9rem;">Apex Performance for Elite Hunters</p>
+                <a href="https://www.awin1.com/cread.php?awinmid=115809&awinaffid=2682178&clickref=omnitoolset-crossbows&ued=https%3A%2F%2Fravincrossbows.com%2F" 
+                   target="_blank" 
+                   rel="nofollow sponsored"
+                   style="display: inline-block; padding: 0.75rem 1.5rem; background: white; color: #1a1a1a; text-decoration: none; border-radius: 8px; font-weight: 600; transition: transform 0.2s;"
+                   onmouseover="this.style.transform='scale(1.05)'" 
+                   onmouseout="this.style.transform='scale(1)'">
+                    Shop Ravin Crossbows
+                </a>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                    5% commission • $1,000-$3,000+ products
+                </p>
+            </div>
+
             <!-- Adsterra Hyperlink -->
             <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
                 <a href="https://www.effectivegatecpm.com/mm191s15?key=6e97a3f80c904696c8f019e4b77d7bbd" target="_blank" rel="nofollow" style="color: var(--text-secondary); text-decoration: none;">Sponsored Link</a>
@@ -538,24 +514,8 @@
         }
     </script>
 
-    <!-- Adsterra Popunder (Body) -->
-    <script type='text/javascript'>
-        (function() {
-            try {
-                var script = document.createElement('script');
-                script.src = 'https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js';
-                script.crossOrigin = 'anonymous';
-                script.onerror = function() { 
-                    return false; // Silently handle SSL errors
-                };
-                script.onload = function() {};
-                // Delay loading to reduce console noise
-                setTimeout(function() {
-                    document.head.appendChild(script);
-                }, 300);
-            } catch(e) {}
-        })();
-    </script>
+    <!-- Adsterra Popunder (Body) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <script data-cfasync="false" type='text/javascript' src='https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
 
 
     <script>

@@ -119,30 +119,8 @@
                 }
             }, true);
             
-            // Override fetch
-            const originalFetch = window.fetch;
-            window.fetch = function(...args) {
-                const url = String(args[0] || '');
-                if (url.includes('effectivegatecpm.com')) {
-                    return Promise.reject().catch(() => {});
-                }
-                return originalFetch.apply(this, args).catch(err => {
-                    if (String(err).includes('effectivegatecpm.com')) {
-                        return Promise.reject().catch(() => {});
-                    }
-                    throw err;
-                });
-            };
-            
-            // Override XMLHttpRequest
-            const originalXHROpen = XMLHttpRequest.prototype.open;
-            XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-                if (String(url).includes('effectivegatecpm.com')) {
-                    this.addEventListener('error', function(e) {
-                        e.stopPropagation();
-                    });
-                }
-                return originalXHROpen.apply(this, [method, url, ...rest]);
+            // Allow Adsterra requests - only suppress console errors, don't block requests
+            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
             };
         })();
     </script>
@@ -153,21 +131,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Adsterra Popunder (Head) -->
-    <script type='text/javascript'>
-        (function() {
-            try {
-                var script = document.createElement('script');
-                script.src = 'https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js';
-                script.crossOrigin = 'anonymous';
-                script.onerror = function() { return false; };
-                script.onload = function() {};
-                setTimeout(function() {
-                    document.head.appendChild(script);
-                }, 100);
-            } catch(e) {}
-        })();
-    </script>
+    <!-- Adsterra Popunder (Head) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <script data-cfasync="false" type='text/javascript' src='https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
 </head>
 <body>
     <header class="main-header">
@@ -181,6 +146,7 @@
                     <a href="/blog.html" class="nav-link active">Blog</a>
                     <a href="/categories.html" class="nav-link">Categories</a>
                     <a href="/all-tools.html" class="nav-link">All Tools</a>
+                    <a href="/shop.html" class="nav-link">Shop</a>
                 </nav>
             </div>
         </div>
@@ -690,21 +656,8 @@
         });
     </script>
     
-    <!-- Adsterra Popunder (Body) -->
-    <script type='text/javascript'>
-        (function() {
-            try {
-                var script = document.createElement('script');
-                script.src = 'https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js';
-                script.crossOrigin = 'anonymous';
-                script.onerror = function() { return false; };
-                script.onload = function() {};
-                setTimeout(function() {
-                    document.body.appendChild(script);
-                }, 300);
-            } catch(e) {}
-        })();
-    </script>
+    <!-- Adsterra Popunder (Body) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <script data-cfasync="false" type='text/javascript' src='https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
 
     <!-- Performance Optimization -->
     <script src="/js/performance.js" defer></script>

@@ -116,52 +116,14 @@
                 }
             }, true);
             
-            // Override fetch
-            const originalFetch = window.fetch;
-            window.fetch = function(...args) {
-                const url = String(args[0] || '');
-                if (url.includes('effectivegatecpm.com')) {
-                    return Promise.reject().catch(() => {});
-                }
-                return originalFetch.apply(this, args).catch(err => {
-                    if (String(err).includes('effectivegatecpm.com')) {
-                        return Promise.reject().catch(() => {});
-                    }
-                    throw err;
-                });
-            };
-            
-            // Override XMLHttpRequest
-            const originalXHROpen = XMLHttpRequest.prototype.open;
-            XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-                if (String(url).includes('effectivegatecpm.com')) {
-                    this.addEventListener('error', function(e) {
-                        e.stopPropagation();
-                    });
-                }
-                return originalXHROpen.apply(this, [method, url, ...rest]);
+            // Allow Adsterra requests - only suppress console errors, don't block requests
+            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
             };
         })();
     </script>
 
-    <!-- Adsterra Popunder (Head) -->
-    <script type='text/javascript'>
-        (function() {
-            try {
-                var script = document.createElement('script');
-                script.src = 'https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js';
-                script.crossOrigin = 'anonymous';
-                script.onerror = function() { 
-                    return false; // Silently handle SSL errors
-                };
-                script.onload = function() {};
-                // Delay loading to reduce console noise
-                setTimeout(function() {
-                    document.head.appendChild(script);
-                }, 100);
-            } catch(e) {}
-        })();
-    </script>
+    <!-- Adsterra Popunder (Head) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <script data-cfasync="false" type='text/javascript' src='https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
 
 </head>
 <body>
@@ -186,28 +148,11 @@
         
         
         
-        <!-- Adsterra Native Banner -->
+        <!-- Adsterra Native Banner - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
         <div style="margin: 1rem 0; text-align: center;">
-            <script type='text/javascript'>
-                (function() {
-                    try {
-                        var script = document.createElement('script');
-                        script.async = true;
-                        script.setAttribute('data-cfasync', 'false');
-                        script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
-                        script.crossOrigin = 'anonymous';
-                        script.onerror = function() { 
-                            return false; // Silently handle SSL errors
-                        };
-                        script.onload = function() {};
-                        // Delay loading to reduce console noise
-                        setTimeout(function() {
-                            document.head.appendChild(script);
-                        }, 200);
-                    } catch(e) {}
-                })();
-            </script>
             <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+            <script data-cfasync="false" type='text/javascript' src='https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js'></script>
+        </div>
         </div>
 
 
@@ -412,24 +357,8 @@
         }
     </script>
 
-    <!-- Adsterra Popunder (Body) -->
-    <script type='text/javascript'>
-        (function() {
-            try {
-                var script = document.createElement('script');
-                script.src = 'https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js';
-                script.crossOrigin = 'anonymous';
-                script.onerror = function() { 
-                    return false; // Silently handle SSL errors
-                };
-                script.onload = function() {};
-                // Delay loading to reduce console noise
-                setTimeout(function() {
-                    document.head.appendChild(script);
-                }, 300);
-            } catch(e) {}
-        })();
-    </script>
+    <!-- Adsterra Popunder (Body) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <script data-cfasync="false" type='text/javascript' src='https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
 
 
     <script>

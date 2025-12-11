@@ -93,30 +93,8 @@
                 }
             }, true);
             
-            // Override fetch
-            const originalFetch = window.fetch;
-            window.fetch = function(...args) {
-                const url = String(args[0] || '');
-                if (url.includes('effectivegatecpm.com')) {
-                    return Promise.reject().catch(() => {});
-                }
-                return originalFetch.apply(this, args).catch(err => {
-                    if (String(err).includes('effectivegatecpm.com')) {
-                        return Promise.reject().catch(() => {});
-                    }
-                    throw err;
-                });
-            };
-            
-            // Override XMLHttpRequest
-            const originalXHROpen = XMLHttpRequest.prototype.open;
-            XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-                if (String(url).includes('effectivegatecpm.com')) {
-                    this.addEventListener('error', function(e) {
-                        e.stopPropagation();
-                    });
-                }
-                return originalXHROpen.apply(this, [method, url, ...rest]);
+            // Allow Adsterra requests - only suppress console errors, don't block requests
+            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
             };
         })();
     </script>
@@ -134,6 +112,7 @@
                     <a href="/blog.html" class="nav-link">Blog</a>
                     <a href="/categories.html" class="nav-link">Categories</a>
                     <a href="/all-tools.html" class="nav-link active">All Tools</a>
+                    <a href="/shop.html" class="nav-link">Shop</a>
                 </nav>
             </div>
         </div>

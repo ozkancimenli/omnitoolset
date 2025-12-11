@@ -1,0 +1,697 @@
+# Potentially Unnecessary Files
+
+Total: 691 files
+
+**Review before deleting!**
+
+- `PLACEHOLDER-TOOLS.md`
+- `tools/regex-tester.html`
+- `tools/api-tester.html`
+- `tools/temperature-converter.html`
+- `node_modules/styled-jsx/babel-test.js`
+- `node_modules/reusify/test.js`
+- `node_modules/@types/node/test.d.ts`
+- `node_modules/next/dist/experimental/testing/server/middleware-testing-utils.js`
+- `node_modules/next/dist/experimental/testing/server/middleware-testing-utils.d.ts`
+- `node_modules/next/dist/experimental/testing/server/config-testing-utils.js.map`
+- `node_modules/next/dist/experimental/testing/server/middleware-testing-utils.js.map`
+- `node_modules/next/dist/experimental/testing/server/config-testing-utils.js`
+- `node_modules/next/dist/experimental/testing/server/config-testing-utils.d.ts`
+- `node_modules/next/dist/trace/trace.test.js.map`
+- `node_modules/next/dist/trace/trace.test.js`
+- `node_modules/next/dist/trace/report/index.test.js`
+- `node_modules/next/dist/trace/report/index.test.js.map`
+- `node_modules/next/dist/esm/lib/recursive-copy.js.map`
+- `node_modules/next/dist/esm/lib/recursive-copy.js`
+- `node_modules/next/dist/esm/build/webpack/plugins/copy-file-plugin.js.map`
+- `node_modules/next/dist/esm/build/webpack/plugins/copy-file-plugin.js`
+- `node_modules/next/dist/esm/client/components/render-from-template-context.js`
+- `node_modules/next/dist/esm/client/components/render-from-template-context.js.map`
+- `node_modules/next/dist/compiled/react-dom/cjs/react-dom-test-utils.production.js`
+- `node_modules/next/dist/compiled/webpack/LibraryTemplatePlugin.js`
+- `node_modules/next/dist/compiled/webpack/FetchCompileWasmTemplatePlugin.js`
+- `node_modules/next/dist/compiled/webpack/WebWorkerTemplatePlugin.js`
+- `node_modules/next/dist/compiled/webpack/NodeTemplatePlugin.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/taggedTemplateLiteralLoose.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/classCheckPrivateStaticAccess.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/temporalUndefined.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/taggedTemplateLiteral.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/temporalRef.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/esm/taggedTemplateLiteralLoose.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/esm/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/esm/classCheckPrivateStaticAccess.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/esm/temporalUndefined.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/esm/taggedTemplateLiteral.js`
+- `node_modules/next/dist/compiled/@babel/runtime/helpers/esm/temporalRef.js`
+- `node_modules/next/dist/compiled/react-dom-experimental/unstable_testing.react-server.js`
+- `node_modules/next/dist/compiled/react-dom-experimental/cjs/react-dom-test-utils.production.js`
+- `node_modules/next/dist/compiled/react-dom-experimental/cjs/react-dom-unstable_testing.development.js`
+- `node_modules/next/dist/compiled/react-dom-experimental/cjs/react-dom-unstable_testing.production.js`
+- `node_modules/next/dist/cli/next-test.js.map`
+- `node_modules/next/dist/cli/next-test.d.ts`
+- `node_modules/next/dist/cli/next-test.js`
+- `node_modules/next/dist/next-devtools/dev-overlay/components/errors/error-overlay-toolbar/copy-error-button.d.ts`
+- `node_modules/next/dist/diagnostics/build-diagnostics.test.js.map`
+- `node_modules/next/dist/diagnostics/build-diagnostics.test.js`
+- `node_modules/next/dist/lib/recursive-copy.js.map`
+- `node_modules/next/dist/lib/recursive-copy.js`
+- `node_modules/next/dist/lib/recursive-copy.d.ts`
+- `node_modules/next/dist/telemetry/post-telemetry-payload.test.js.map`
+- `node_modules/next/dist/telemetry/post-telemetry-payload.test.js`
+- `node_modules/next/dist/telemetry/events/mcp-telemetry.test.js`
+- `node_modules/next/dist/telemetry/events/mcp-telemetry.test.js.map`
+- `node_modules/next/dist/build/webpack/plugins/copy-file-plugin.d.ts`
+- `node_modules/next/dist/build/webpack/plugins/copy-file-plugin.js.map`
+- `node_modules/next/dist/build/webpack/plugins/copy-file-plugin.js`
+- `node_modules/next/dist/client/components/render-from-template-context.d.ts`
+- `node_modules/next/dist/client/components/render-from-template-context.js`
+- `node_modules/next/dist/client/components/render-from-template-context.js.map`
+- `node_modules/@babel 2/runtime/helpers/taggedTemplateLiteralLoose.js`
+- `node_modules/@babel 2/runtime/helpers/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/@babel 2/runtime/helpers/classCheckPrivateStaticAccess.js`
+- `node_modules/@babel 2/runtime/helpers/temporalUndefined.js`
+- `node_modules/@babel 2/runtime/helpers/taggedTemplateLiteral.js`
+- `node_modules/@babel 2/runtime/helpers/temporalRef.js`
+- `node_modules/@babel 2/runtime/helpers/esm/taggedTemplateLiteralLoose.js`
+- `node_modules/@babel 2/runtime/helpers/esm/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/@babel 2/runtime/helpers/esm/classCheckPrivateStaticAccess.js`
+- `node_modules/@babel 2/runtime/helpers/esm/temporalUndefined.js`
+- `node_modules/@babel 2/runtime/helpers/esm/taggedTemplateLiteral.js`
+- `node_modules/@babel 2/runtime/helpers/esm/temporalRef.js`
+- `node_modules/mammoth 2/test/images.tests.js`
+- `node_modules/mammoth 2/test/test.js`
+- `node_modules/mammoth 2/test/transforms.tests.js`
+- `node_modules/mammoth 2/test/style-reader.tests.js`
+- `node_modules/mammoth 2/test/main.tests.js`
+- `node_modules/mammoth 2/test/zipfile.tests.js`
+- `node_modules/mammoth 2/test/testing.js`
+- `node_modules/mammoth 2/test/results.tests.js`
+- `node_modules/mammoth 2/test/unzip.tests.js`
+- `node_modules/mammoth 2/test/options-reader.tests.js`
+- `node_modules/mammoth 2/test/raw-text.tests.js`
+- `node_modules/mammoth 2/test/document-to-html.tests.js`
+- `node_modules/mammoth 2/test/mammoth.tests.js`
+- `node_modules/mammoth 2/test/writers/html-writer.tests.js`
+- `node_modules/mammoth 2/test/writers/markdown-writer.tests.js`
+- `node_modules/mammoth 2/test/html/simplify.tests.js`
+- `node_modules/mammoth 2/test/html/write.tests.js`
+- `node_modules/mammoth 2/test/xml/writer.tests.js`
+- `node_modules/mammoth 2/test/xml/reader.tests.js`
+- `node_modules/mammoth 2/test/styles/document-matchers.tests.js`
+- `node_modules/mammoth 2/test/styles/html-paths.tests.js`
+- `node_modules/mammoth 2/test/styles/parser/tokeniser.tests.js`
+- `node_modules/mammoth 2/test/docx/styles-reader.tests.js`
+- `node_modules/mammoth 2/test/docx/uris.tests.js`
+- `node_modules/mammoth 2/test/docx/body-reader.tests.js`
+- `node_modules/mammoth 2/test/docx/comments-reader.tests.js`
+- `node_modules/mammoth 2/test/docx/notes-reader.tests.js`
+- `node_modules/mammoth 2/test/docx/style-map.tests.js`
+- `node_modules/mammoth 2/test/docx/document-xml-reader.tests.js`
+- `node_modules/mammoth 2/test/docx/testing.js`
+- `node_modules/mammoth 2/test/docx/numbering-xml.tests.js`
+- `node_modules/mammoth 2/test/docx/content-types-reader.tests.js`
+- `node_modules/mammoth 2/test/docx/office-xml-reader.tests.js`
+- `node_modules/mammoth 2/test/docx/files.tests.js`
+- `node_modules/mammoth 2/test/docx/docx-reader.tests.js`
+- `node_modules/mammoth 2/test/docx/relationships-reader.tests.js`
+- `node_modules/mammoth 2/.github/pull_request_template.md`
+- `node_modules/mammoth 2/.github/ISSUE_TEMPLATE.md`
+- `node_modules/mammoth 2/.github/workflows/tests.yml`
+- `node_modules/autoprefixer/lib/old-selector.js`
+- `node_modules/autoprefixer/lib/old-value.js`
+- `node_modules/autoprefixer/lib/hacks/placeholder.js`
+- `node_modules/autoprefixer/lib/hacks/grid-template-areas.js`
+- `node_modules/autoprefixer/lib/hacks/placeholder-shown.js`
+- `node_modules/autoprefixer/lib/hacks/grid-template.js`
+- `node_modules/lop/test/StringSource.test.js`
+- `node_modules/lop/test/regex-tokeniser.test.js`
+- `node_modules/lop/test/results.test.js`
+- `node_modules/lop/test/lazy-iterators.test.js`
+- `node_modules/lop/test/lop.test.js`
+- `node_modules/lop/test/rules.test.js`
+- `node_modules/lop/test/TokenIterator.test.js`
+- `node_modules/lop/test/errors.test.js`
+- `node_modules/lop/test/Tokeniser.test.js`
+- `node_modules/lop/test/bottom-up.test.js`
+- `node_modules/lop/lib/testing.js`
+- `node_modules/html2canvas 3/dist/types/css/types/__tests__/color-tests.d.ts`
+- `node_modules/html2canvas 3/dist/types/css/types/__tests__/image-tests.d.ts`
+- `node_modules/html2canvas 3/dist/types/css/property-descriptors/__tests__/transform-tests.d.ts`
+- `node_modules/html2canvas 3/dist/types/css/property-descriptors/__tests__/background-tests.d.ts`
+- `node_modules/html2canvas 3/dist/types/css/syntax/__tests__/tokernizer-tests.d.ts`
+- `node_modules/html2canvas 3/dist/lib/css/types/__tests__/color-tests.js`
+- `node_modules/html2canvas 3/dist/lib/css/types/__tests__/image-tests.js.map`
+- `node_modules/html2canvas 3/dist/lib/css/types/__tests__/color-tests.js.map`
+- `node_modules/html2canvas 3/dist/lib/css/types/__tests__/image-tests.js`
+- `node_modules/html2canvas 3/dist/lib/css/property-descriptors/__tests__/background-tests.js`
+- `node_modules/html2canvas 3/dist/lib/css/property-descriptors/__tests__/transform-tests.js.map`
+- `node_modules/html2canvas 3/dist/lib/css/property-descriptors/__tests__/transform-tests.js`
+- `node_modules/html2canvas 3/dist/lib/css/property-descriptors/__tests__/background-tests.js.map`
+- `node_modules/html2canvas 3/dist/lib/css/syntax/__tests__/tokernizer-tests.js.map`
+- `node_modules/html2canvas 3/dist/lib/css/syntax/__tests__/tokernizer-tests.js`
+- `node_modules/html2canvas 2/dist/types/css/types/__tests__/color-tests.d.ts`
+- `node_modules/html2canvas 2/dist/types/css/types/__tests__/image-tests.d.ts`
+- `node_modules/html2canvas 2/dist/types/css/property-descriptors/__tests__/transform-tests.d.ts`
+- `node_modules/html2canvas 2/dist/types/css/property-descriptors/__tests__/background-tests.d.ts`
+- `node_modules/html2canvas 2/dist/types/css/syntax/__tests__/tokernizer-tests.d.ts`
+- `node_modules/html2canvas 2/dist/lib/css/types/__tests__/color-tests.js`
+- `node_modules/html2canvas 2/dist/lib/css/types/__tests__/image-tests.js.map`
+- `node_modules/html2canvas 2/dist/lib/css/types/__tests__/color-tests.js.map`
+- `node_modules/html2canvas 2/dist/lib/css/types/__tests__/image-tests.js`
+- `node_modules/html2canvas 2/dist/lib/css/property-descriptors/__tests__/background-tests.js`
+- `node_modules/html2canvas 2/dist/lib/css/property-descriptors/__tests__/transform-tests.js.map`
+- `node_modules/html2canvas 2/dist/lib/css/property-descriptors/__tests__/transform-tests.js`
+- `node_modules/html2canvas 2/dist/lib/css/property-descriptors/__tests__/background-tests.js.map`
+- `node_modules/html2canvas 2/dist/lib/css/syntax/__tests__/tokernizer-tests.js.map`
+- `node_modules/html2canvas 2/dist/lib/css/syntax/__tests__/tokernizer-tests.js`
+- `node_modules/next 2/dist/experimental/testing/server/middleware-testing-utils.js`
+- `node_modules/next 2/dist/experimental/testing/server/middleware-testing-utils.d.ts`
+- `node_modules/next 2/dist/experimental/testing/server/config-testing-utils.js.map`
+- `node_modules/next 2/dist/experimental/testing/server/middleware-testing-utils.js.map`
+- `node_modules/next 2/dist/experimental/testing/server/config-testing-utils.js`
+- `node_modules/next 2/dist/experimental/testing/server/config-testing-utils.d.ts`
+- `node_modules/next 2/dist/trace/trace.test.js.map`
+- `node_modules/next 2/dist/trace/trace.test.js`
+- `node_modules/next 2/dist/trace/report/index.test.js`
+- `node_modules/next 2/dist/trace/report/index.test.js.map`
+- `node_modules/next 2/dist/esm/lib/recursive-copy.js.map`
+- `node_modules/next 2/dist/esm/lib/recursive-copy.js`
+- `node_modules/next 2/dist/esm/build/webpack/plugins/copy-file-plugin.js.map`
+- `node_modules/next 2/dist/esm/build/webpack/plugins/copy-file-plugin.js`
+- `node_modules/next 2/dist/esm/client/components/render-from-template-context.js`
+- `node_modules/next 2/dist/esm/client/components/render-from-template-context.js.map`
+- `node_modules/next 2/dist/compiled/react-dom/cjs/react-dom-test-utils.production.js`
+- `node_modules/next 2/dist/compiled/webpack/LibraryTemplatePlugin.js`
+- `node_modules/next 2/dist/compiled/webpack/FetchCompileWasmTemplatePlugin.js`
+- `node_modules/next 2/dist/compiled/webpack/WebWorkerTemplatePlugin.js`
+- `node_modules/next 2/dist/compiled/webpack/NodeTemplatePlugin.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/taggedTemplateLiteralLoose.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/classCheckPrivateStaticAccess.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/temporalUndefined.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/taggedTemplateLiteral.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/temporalRef.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/esm/taggedTemplateLiteralLoose.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/esm/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/esm/classCheckPrivateStaticAccess.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/esm/temporalUndefined.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/esm/taggedTemplateLiteral.js`
+- `node_modules/next 2/dist/compiled/@babel/runtime/helpers/esm/temporalRef.js`
+- `node_modules/next 2/dist/compiled/react-dom-experimental/unstable_testing.react-server.js`
+- `node_modules/next 2/dist/compiled/react-dom-experimental/cjs/react-dom-test-utils.production.js`
+- `node_modules/next 2/dist/compiled/react-dom-experimental/cjs/react-dom-unstable_testing.development.js`
+- `node_modules/next 2/dist/compiled/react-dom-experimental/cjs/react-dom-unstable_testing.production.js`
+- `node_modules/next 2/dist/cli/next-test.js.map`
+- `node_modules/next 2/dist/cli/next-test.d.ts`
+- `node_modules/next 2/dist/cli/next-test.js`
+- `node_modules/next 2/dist/next-devtools/dev-overlay/components/errors/error-overlay-toolbar/copy-error-button.d.ts`
+- `node_modules/next 2/dist/diagnostics/build-diagnostics.test.js.map`
+- `node_modules/next 2/dist/diagnostics/build-diagnostics.test.js`
+- `node_modules/next 2/dist/lib/recursive-copy.js.map`
+- `node_modules/next 2/dist/lib/recursive-copy.js`
+- `node_modules/next 2/dist/lib/recursive-copy.d.ts`
+- `node_modules/next 2/dist/telemetry/post-telemetry-payload.test.js.map`
+- `node_modules/next 2/dist/telemetry/post-telemetry-payload.test.js`
+- `node_modules/next 2/dist/telemetry/events/mcp-telemetry.test.js`
+- `node_modules/next 2/dist/telemetry/events/mcp-telemetry.test.js.map`
+- `node_modules/next 2/dist/build/webpack/plugins/copy-file-plugin.d.ts`
+- `node_modules/next 2/dist/build/webpack/plugins/copy-file-plugin.js.map`
+- `node_modules/next 2/dist/build/webpack/plugins/copy-file-plugin.js`
+- `node_modules/next 2/dist/client/components/render-from-template-context.d.ts`
+- `node_modules/next 2/dist/client/components/render-from-template-context.js`
+- `node_modules/next 2/dist/client/components/render-from-template-context.js.map`
+- `node_modules/@babel 3/runtime/helpers/taggedTemplateLiteralLoose.js`
+- `node_modules/@babel 3/runtime/helpers/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/@babel 3/runtime/helpers/classCheckPrivateStaticAccess.js`
+- `node_modules/@babel 3/runtime/helpers/temporalUndefined.js`
+- `node_modules/@babel 3/runtime/helpers/taggedTemplateLiteral.js`
+- `node_modules/@babel 3/runtime/helpers/temporalRef.js`
+- `node_modules/@babel 3/runtime/helpers/esm/taggedTemplateLiteralLoose.js`
+- `node_modules/@babel 3/runtime/helpers/esm/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/@babel 3/runtime/helpers/esm/classCheckPrivateStaticAccess.js`
+- `node_modules/@babel 3/runtime/helpers/esm/temporalUndefined.js`
+- `node_modules/@babel 3/runtime/helpers/esm/taggedTemplateLiteral.js`
+- `node_modules/@babel 3/runtime/helpers/esm/temporalRef.js`
+- `node_modules/pdfjs-dist 2/standard_fonts/LiberationSans-Bold.ttf`
+- `node_modules/pdfjs-dist 2/standard_fonts/LiberationSans-BoldItalic.ttf`
+- `node_modules/pdfjs-dist 2/standard_fonts/FoxitFixedBoldItalic.pfb`
+- `node_modules/pdfjs-dist 2/standard_fonts/FoxitSerifBoldItalic.pfb`
+- `node_modules/pdfjs-dist 2/standard_fonts/FoxitSerifBold.pfb`
+- `node_modules/pdfjs-dist 2/standard_fonts/FoxitFixedBold.pfb`
+- `node_modules/react-dom 3/cjs/react-dom-test-utils.production.js`
+- `node_modules/react-dom 3/cjs/react-dom-test-utils.development.js`
+- `node_modules/fastq 2/test/test.js`
+- `node_modules/tslib/CopyrightNotice.txt`
+- `node_modules/tsx/dist/temporary-directory-B83uKxJF.cjs`
+- `node_modules/tsx/dist/temporary-directory-CwHp0_NW.mjs`
+- `node_modules/duck/test/duck.test.js`
+- `node_modules/react-dom 2/cjs/react-dom-test-utils.production.js`
+- `node_modules/react-dom 2/cjs/react-dom-test-utils.development.js`
+- `node_modules/@pdf-lib 2/standard-fonts/lib/Courier-Bold.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/lib/Times-Bold.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/lib/Times-BoldItalic.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/lib/Helvetica-Bold.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/lib/Helvetica-BoldOblique.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/lib/Courier-BoldOblique.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/es/Courier-Bold.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/es/Times-Bold.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/es/Times-BoldItalic.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/es/Helvetica-Bold.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/es/Helvetica-BoldOblique.compressed.json`
+- `node_modules/@pdf-lib 2/standard-fonts/es/Courier-BoldOblique.compressed.json`
+- `node_modules/@swc/helpers/esm/_tagged_template_literal_loose.js`
+- `node_modules/@swc/helpers/esm/_tagged_template_literal.js`
+- `node_modules/@swc/helpers/src/_tagged_template_literal.mjs`
+- `node_modules/@swc/helpers/src/_tagged_template_literal_loose.mjs`
+- `node_modules/@swc/helpers/cjs/_tagged_template_literal.cjs`
+- `node_modules/@swc/helpers/cjs/_tagged_template_literal_loose.cjs`
+- `node_modules/option 3/test/options.test.js`
+- `node_modules/@vercel 2/speed-insights/vitest.config.mts`
+- `node_modules/@vercel 2/speed-insights/test.setup.ts`
+- `node_modules/raf/test.js`
+- `node_modules/option/test/options.test.js`
+- `node_modules/@vercel 3/speed-insights/vitest.config.mts`
+- `node_modules/@vercel 3/speed-insights/test.setup.ts`
+- `node_modules/fraction.js/tests/fraction.test.js`
+- `node_modules/html2canvas/dist/types/css/types/__tests__/color-tests.d.ts`
+- `node_modules/html2canvas/dist/types/css/types/__tests__/image-tests.d.ts`
+- `node_modules/html2canvas/dist/types/css/property-descriptors/__tests__/transform-tests.d.ts`
+- `node_modules/html2canvas/dist/types/css/property-descriptors/__tests__/background-tests.d.ts`
+- `node_modules/html2canvas/dist/types/css/syntax/__tests__/tokernizer-tests.d.ts`
+- `node_modules/html2canvas/dist/lib/css/types/__tests__/color-tests.js`
+- `node_modules/html2canvas/dist/lib/css/types/__tests__/image-tests.js.map`
+- `node_modules/html2canvas/dist/lib/css/types/__tests__/color-tests.js.map`
+- `node_modules/html2canvas/dist/lib/css/types/__tests__/image-tests.js`
+- `node_modules/html2canvas/dist/lib/css/property-descriptors/__tests__/background-tests.js`
+- `node_modules/html2canvas/dist/lib/css/property-descriptors/__tests__/transform-tests.js.map`
+- `node_modules/html2canvas/dist/lib/css/property-descriptors/__tests__/transform-tests.js`
+- `node_modules/html2canvas/dist/lib/css/property-descriptors/__tests__/background-tests.js.map`
+- `node_modules/html2canvas/dist/lib/css/syntax/__tests__/tokernizer-tests.js.map`
+- `node_modules/html2canvas/dist/lib/css/syntax/__tests__/tokernizer-tests.js`
+- `node_modules/underscore/amd/templateSettings.js`
+- `node_modules/underscore/amd/_tagTester.js`
+- `node_modules/underscore/amd/template.js`
+- `node_modules/underscore/modules/templateSettings.js`
+- `node_modules/underscore/modules/_tagTester.js`
+- `node_modules/underscore/modules/template.js`
+- `node_modules/underscore/cjs/templateSettings.js`
+- `node_modules/underscore/cjs/_tagTester.js`
+- `node_modules/underscore/cjs/template.js`
+- `node_modules/core-js/stable/regexp/test.js`
+- `node_modules/core-js/stable/array/copy-within.js`
+- `node_modules/core-js/stable/array/virtual/copy-within.js`
+- `node_modules/core-js/stable/typed-array/copy-within.js`
+- `node_modules/core-js/stable/instance/copy-within.js`
+- `node_modules/core-js/stable/string/bold.js`
+- `node_modules/core-js/stable/string/virtual/bold.js`
+- `node_modules/core-js/full/regexp/test.js`
+- `node_modules/core-js/full/array/is-template-object.js`
+- `node_modules/core-js/full/array/copy-within.js`
+- `node_modules/core-js/full/array/virtual/copy-within.js`
+- `node_modules/core-js/full/typed-array/copy-within.js`
+- `node_modules/core-js/full/instance/copy-within.js`
+- `node_modules/core-js/full/string/bold.js`
+- `node_modules/core-js/full/string/virtual/bold.js`
+- `node_modules/core-js/actual/regexp/test.js`
+- `node_modules/core-js/actual/array/copy-within.js`
+- `node_modules/core-js/actual/array/virtual/copy-within.js`
+- `node_modules/core-js/actual/typed-array/copy-within.js`
+- `node_modules/core-js/actual/instance/copy-within.js`
+- `node_modules/core-js/actual/string/bold.js`
+- `node_modules/core-js/actual/string/virtual/bold.js`
+- `node_modules/core-js/features/regexp/test.js`
+- `node_modules/core-js/features/array/is-template-object.js`
+- `node_modules/core-js/features/array/copy-within.js`
+- `node_modules/core-js/features/array/virtual/copy-within.js`
+- `node_modules/core-js/features/typed-array/copy-within.js`
+- `node_modules/core-js/features/instance/copy-within.js`
+- `node_modules/core-js/features/string/bold.js`
+- `node_modules/core-js/features/string/virtual/bold.js`
+- `node_modules/core-js/internals/copy-constructor-properties.js`
+- `node_modules/core-js/internals/array-copy-within.js`
+- `node_modules/core-js/es/regexp/test.js`
+- `node_modules/core-js/es/array/copy-within.js`
+- `node_modules/core-js/es/array/virtual/copy-within.js`
+- `node_modules/core-js/es/typed-array/copy-within.js`
+- `node_modules/core-js/es/instance/copy-within.js`
+- `node_modules/core-js/es/string/bold.js`
+- `node_modules/core-js/es/string/virtual/bold.js`
+- `node_modules/core-js/modules/es.typed-array.copy-within.js`
+- `node_modules/core-js/modules/es.array.copy-within.js`
+- `node_modules/core-js/modules/es.string.bold.js`
+- `node_modules/core-js/modules/es.regexp.test.js`
+- `node_modules/core-js/modules/esnext.array.is-template-object.js`
+- `node_modules/core-js/proposals/change-array-by-copy-stage-4.js`
+- `node_modules/core-js/proposals/array-is-template-object.js`
+- `node_modules/core-js/proposals/change-array-by-copy.js`
+- `node_modules/pdfjs-dist/standard_fonts/LiberationSans-Bold.ttf`
+- `node_modules/pdfjs-dist/standard_fonts/LiberationSans-BoldItalic.ttf`
+- `node_modules/pdfjs-dist/standard_fonts/FoxitFixedBoldItalic.pfb`
+- `node_modules/pdfjs-dist/standard_fonts/FoxitSerifBoldItalic.pfb`
+- `node_modules/pdfjs-dist/standard_fonts/FoxitSerifBold.pfb`
+- `node_modules/pdfjs-dist/standard_fonts/FoxitFixedBold.pfb`
+- `node_modules/fraction 2.js/tests/fraction.test.js`
+- `node_modules/caniuse-lite 2/data/features/testfeat.js`
+- `node_modules/caniuse-lite 2/data/features/temporal.js`
+- `node_modules/caniuse-lite 2/data/features/css-placeholder.js`
+- `node_modules/caniuse-lite 2/data/features/template-literals.js`
+- `node_modules/caniuse-lite 2/data/features/date-tolocaledatestring.js`
+- `node_modules/caniuse-lite 2/data/features/input-placeholder.js`
+- `node_modules/caniuse-lite 2/data/features/template.js`
+- `node_modules/caniuse-lite 2/data/features/css-placeholder-shown.js`
+- `node_modules/@swc 3/helpers/esm/_tagged_template_literal_loose.js`
+- `node_modules/@swc 3/helpers/esm/_tagged_template_literal.js`
+- `node_modules/@swc 3/helpers/src/_tagged_template_literal.mjs`
+- `node_modules/@swc 3/helpers/src/_tagged_template_literal_loose.mjs`
+- `node_modules/@swc 3/helpers/cjs/_tagged_template_literal.cjs`
+- `node_modules/@swc 3/helpers/cjs/_tagged_template_literal_loose.cjs`
+- `node_modules/autoprefixer 2/lib/hacks/placeholder.js`
+- `node_modules/autoprefixer 2/lib/hacks/grid-template-areas.js`
+- `node_modules/autoprefixer 2/lib/hacks/placeholder-shown.js`
+- `node_modules/autoprefixer 2/lib/hacks/grid-template.js`
+- `node_modules/lop 3/test/StringSource.test.js`
+- `node_modules/lop 3/test/regex-tokeniser.test.js`
+- `node_modules/lop 3/test/results.test.js`
+- `node_modules/lop 3/test/lazy-iterators.test.js`
+- `node_modules/lop 3/test/lop.test.js`
+- `node_modules/lop 3/test/rules.test.js`
+- `node_modules/lop 3/test/TokenIterator.test.js`
+- `node_modules/lop 3/test/errors.test.js`
+- `node_modules/lop 3/test/Tokeniser.test.js`
+- `node_modules/lop 3/test/bottom-up.test.js`
+- `node_modules/lop 3/lib/testing.js`
+- `node_modules/react-dom/test-utils.js`
+- `node_modules/react-dom/cjs/react-dom-test-utils.production.js`
+- `node_modules/react-dom/cjs/react-dom-test-utils.development.js`
+- `node_modules/core-js 3/stable/regexp/test.js`
+- `node_modules/core-js 3/stable/array/copy-within.js`
+- `node_modules/core-js 3/stable/array/virtual/copy-within.js`
+- `node_modules/core-js 3/stable/typed-array/copy-within.js`
+- `node_modules/core-js 3/stable/instance/copy-within.js`
+- `node_modules/core-js 3/stable/string/bold.js`
+- `node_modules/core-js 3/stable/string/virtual/bold.js`
+- `node_modules/core-js 3/full/regexp/test.js`
+- `node_modules/core-js 3/full/array/is-template-object.js`
+- `node_modules/core-js 3/full/array/copy-within.js`
+- `node_modules/core-js 3/full/array/virtual/copy-within.js`
+- `node_modules/core-js 3/full/typed-array/copy-within.js`
+- `node_modules/core-js 3/full/instance/copy-within.js`
+- `node_modules/core-js 3/full/string/bold.js`
+- `node_modules/core-js 3/full/string/virtual/bold.js`
+- `node_modules/core-js 3/actual/regexp/test.js`
+- `node_modules/core-js 3/actual/array/copy-within.js`
+- `node_modules/core-js 3/actual/array/virtual/copy-within.js`
+- `node_modules/core-js 3/actual/typed-array/copy-within.js`
+- `node_modules/core-js 3/actual/instance/copy-within.js`
+- `node_modules/core-js 3/actual/string/bold.js`
+- `node_modules/core-js 3/actual/string/virtual/bold.js`
+- `node_modules/core-js 3/features/regexp/test.js`
+- `node_modules/core-js 3/features/array/is-template-object.js`
+- `node_modules/core-js 3/features/array/copy-within.js`
+- `node_modules/core-js 3/features/array/virtual/copy-within.js`
+- `node_modules/core-js 3/features/typed-array/copy-within.js`
+- `node_modules/core-js 3/features/instance/copy-within.js`
+- `node_modules/core-js 3/features/string/bold.js`
+- `node_modules/core-js 3/features/string/virtual/bold.js`
+- `node_modules/core-js 3/internals/copy-constructor-properties.js`
+- `node_modules/core-js 3/internals/array-copy-within.js`
+- `node_modules/core-js 3/es/regexp/test.js`
+- `node_modules/core-js 3/es/array/copy-within.js`
+- `node_modules/core-js 3/es/array/virtual/copy-within.js`
+- `node_modules/core-js 3/es/typed-array/copy-within.js`
+- `node_modules/core-js 3/es/instance/copy-within.js`
+- `node_modules/core-js 3/es/string/bold.js`
+- `node_modules/core-js 3/es/string/virtual/bold.js`
+- `node_modules/core-js 3/modules/es.typed-array.copy-within.js`
+- `node_modules/core-js 3/modules/es.array.copy-within.js`
+- `node_modules/core-js 3/modules/es.string.bold.js`
+- `node_modules/core-js 3/modules/es.regexp.test.js`
+- `node_modules/core-js 3/modules/esnext.array.is-template-object.js`
+- `node_modules/core-js 3/proposals/change-array-by-copy-stage-4.js`
+- `node_modules/core-js 3/proposals/array-is-template-object.js`
+- `node_modules/core-js 3/proposals/change-array-by-copy.js`
+- `node_modules/pdf-lib 3/node_modules/tslib/CopyrightNotice.txt`
+- `node_modules/pdf-lib 3/es/core/structures/PDFFlateStream.js`
+- `node_modules/pdf-lib 3/es/core/structures/PDFFlateStream.d.ts.map`
+- `node_modules/pdf-lib 3/es/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib 3/es/core/structures/PDFFlateStream.js.map`
+- `node_modules/pdf-lib 3/es/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib 3/es/core/streams/FlateStream.d.ts.map`
+- `node_modules/pdf-lib 3/es/core/streams/FlateStream.js`
+- `node_modules/pdf-lib 3/es/core/streams/FlateStream.js.map`
+- `node_modules/pdf-lib 3/es/core/parser/ByteStream.js`
+- `node_modules/pdf-lib 3/es/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib 3/es/core/parser/ByteStream.js.map`
+- `node_modules/pdf-lib 3/es/core/parser/ByteStream.d.ts.map`
+- `node_modules/pdf-lib 3/ts3.4/es/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib 3/ts3.4/es/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib 3/ts3.4/es/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib 3/ts3.4/cjs/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib 3/ts3.4/cjs/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib 3/ts3.4/cjs/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib 3/src/core/structures/PDFFlateStream.ts`
+- `node_modules/pdf-lib 3/src/core/streams/FlateStream.ts`
+- `node_modules/pdf-lib 3/src/core/parser/ByteStream.ts`
+- `node_modules/pdf-lib 3/cjs/core/structures/PDFFlateStream.js`
+- `node_modules/pdf-lib 3/cjs/core/structures/PDFFlateStream.d.ts.map`
+- `node_modules/pdf-lib 3/cjs/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib 3/cjs/core/structures/PDFFlateStream.js.map`
+- `node_modules/pdf-lib 3/cjs/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib 3/cjs/core/streams/FlateStream.d.ts.map`
+- `node_modules/pdf-lib 3/cjs/core/streams/FlateStream.js`
+- `node_modules/pdf-lib 3/cjs/core/streams/FlateStream.js.map`
+- `node_modules/pdf-lib 3/cjs/core/parser/ByteStream.js`
+- `node_modules/pdf-lib 3/cjs/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib 3/cjs/core/parser/ByteStream.js.map`
+- `node_modules/pdf-lib 3/cjs/core/parser/ByteStream.d.ts.map`
+- `node_modules/autoprefixer 3/lib/old-selector.js`
+- `node_modules/autoprefixer 3/lib/old-value.js`
+- `node_modules/autoprefixer 3/lib/hacks/placeholder.js`
+- `node_modules/autoprefixer 3/lib/hacks/grid-template-areas.js`
+- `node_modules/autoprefixer 3/lib/hacks/placeholder-shown.js`
+- `node_modules/autoprefixer 3/lib/hacks/grid-template.js`
+- `node_modules/lop 2/test/StringSource.test.js`
+- `node_modules/lop 2/test/regex-tokeniser.test.js`
+- `node_modules/lop 2/test/results.test.js`
+- `node_modules/lop 2/test/lazy-iterators.test.js`
+- `node_modules/lop 2/test/lop.test.js`
+- `node_modules/lop 2/test/rules.test.js`
+- `node_modules/lop 2/test/TokenIterator.test.js`
+- `node_modules/lop 2/test/errors.test.js`
+- `node_modules/lop 2/test/Tokeniser.test.js`
+- `node_modules/lop 2/test/bottom-up.test.js`
+- `node_modules/lop 2/lib/testing.js`
+- `node_modules/caniuse-lite 3/data/features/testfeat.js`
+- `node_modules/caniuse-lite 3/data/features/temporal.js`
+- `node_modules/caniuse-lite 3/data/features/css-placeholder.js`
+- `node_modules/caniuse-lite 3/data/features/template-literals.js`
+- `node_modules/caniuse-lite 3/data/features/date-tolocaledatestring.js`
+- `node_modules/caniuse-lite 3/data/features/input-placeholder.js`
+- `node_modules/caniuse-lite 3/data/features/template.js`
+- `node_modules/caniuse-lite 3/data/features/css-placeholder-shown.js`
+- `node_modules/@swc 2/helpers/esm/_tagged_template_literal_loose.js`
+- `node_modules/@swc 2/helpers/esm/_tagged_template_literal.js`
+- `node_modules/@swc 2/helpers/src/_tagged_template_literal.mjs`
+- `node_modules/@swc 2/helpers/src/_tagged_template_literal_loose.mjs`
+- `node_modules/@swc 2/helpers/cjs/_tagged_template_literal.cjs`
+- `node_modules/@swc 2/helpers/cjs/_tagged_template_literal_loose.cjs`
+- `node_modules/pdf-lib 2/node_modules/tslib/CopyrightNotice.txt`
+- `node_modules/pdf-lib 2/es/core/structures/PDFFlateStream.js`
+- `node_modules/pdf-lib 2/es/core/structures/PDFFlateStream.d.ts.map`
+- `node_modules/pdf-lib 2/es/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib 2/es/core/structures/PDFFlateStream.js.map`
+- `node_modules/pdf-lib 2/es/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib 2/es/core/streams/FlateStream.d.ts.map`
+- `node_modules/pdf-lib 2/es/core/streams/FlateStream.js`
+- `node_modules/pdf-lib 2/es/core/streams/FlateStream.js.map`
+- `node_modules/pdf-lib 2/es/core/parser/ByteStream.js`
+- `node_modules/pdf-lib 2/es/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib 2/es/core/parser/ByteStream.js.map`
+- `node_modules/pdf-lib 2/es/core/parser/ByteStream.d.ts.map`
+- `node_modules/pdf-lib 2/ts3.4/es/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib 2/ts3.4/es/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib 2/ts3.4/es/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib 2/ts3.4/cjs/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib 2/ts3.4/cjs/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib 2/ts3.4/cjs/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib 2/src/core/structures/PDFFlateStream.ts`
+- `node_modules/pdf-lib 2/src/core/streams/FlateStream.ts`
+- `node_modules/pdf-lib 2/src/core/parser/ByteStream.ts`
+- `node_modules/pdf-lib 2/cjs/core/structures/PDFFlateStream.js`
+- `node_modules/pdf-lib 2/cjs/core/structures/PDFFlateStream.d.ts.map`
+- `node_modules/pdf-lib 2/cjs/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib 2/cjs/core/structures/PDFFlateStream.js.map`
+- `node_modules/pdf-lib 2/cjs/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib 2/cjs/core/streams/FlateStream.d.ts.map`
+- `node_modules/pdf-lib 2/cjs/core/streams/FlateStream.js`
+- `node_modules/pdf-lib 2/cjs/core/streams/FlateStream.js.map`
+- `node_modules/pdf-lib 2/cjs/core/parser/ByteStream.js`
+- `node_modules/pdf-lib 2/cjs/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib 2/cjs/core/parser/ByteStream.js.map`
+- `node_modules/pdf-lib 2/cjs/core/parser/ByteStream.d.ts.map`
+- `node_modules/core-js 2/stable/regexp/test.js`
+- `node_modules/core-js 2/stable/array/copy-within.js`
+- `node_modules/core-js 2/stable/array/virtual/copy-within.js`
+- `node_modules/core-js 2/stable/typed-array/copy-within.js`
+- `node_modules/core-js 2/stable/instance/copy-within.js`
+- `node_modules/core-js 2/stable/string/bold.js`
+- `node_modules/core-js 2/stable/string/virtual/bold.js`
+- `node_modules/core-js 2/full/regexp/test.js`
+- `node_modules/core-js 2/full/array/is-template-object.js`
+- `node_modules/core-js 2/full/array/copy-within.js`
+- `node_modules/core-js 2/full/array/virtual/copy-within.js`
+- `node_modules/core-js 2/full/typed-array/copy-within.js`
+- `node_modules/core-js 2/full/instance/copy-within.js`
+- `node_modules/core-js 2/full/string/bold.js`
+- `node_modules/core-js 2/full/string/virtual/bold.js`
+- `node_modules/core-js 2/actual/regexp/test.js`
+- `node_modules/core-js 2/actual/array/copy-within.js`
+- `node_modules/core-js 2/actual/array/virtual/copy-within.js`
+- `node_modules/core-js 2/actual/typed-array/copy-within.js`
+- `node_modules/core-js 2/actual/instance/copy-within.js`
+- `node_modules/core-js 2/actual/string/bold.js`
+- `node_modules/core-js 2/actual/string/virtual/bold.js`
+- `node_modules/core-js 2/features/regexp/test.js`
+- `node_modules/core-js 2/features/array/is-template-object.js`
+- `node_modules/core-js 2/features/array/copy-within.js`
+- `node_modules/core-js 2/features/array/virtual/copy-within.js`
+- `node_modules/core-js 2/features/typed-array/copy-within.js`
+- `node_modules/core-js 2/features/instance/copy-within.js`
+- `node_modules/core-js 2/features/string/bold.js`
+- `node_modules/core-js 2/features/string/virtual/bold.js`
+- `node_modules/core-js 2/internals/copy-constructor-properties.js`
+- `node_modules/core-js 2/internals/array-copy-within.js`
+- `node_modules/core-js 2/es/regexp/test.js`
+- `node_modules/core-js 2/es/array/copy-within.js`
+- `node_modules/core-js 2/es/array/virtual/copy-within.js`
+- `node_modules/core-js 2/es/typed-array/copy-within.js`
+- `node_modules/core-js 2/es/instance/copy-within.js`
+- `node_modules/core-js 2/es/string/bold.js`
+- `node_modules/core-js 2/es/string/virtual/bold.js`
+- `node_modules/core-js 2/modules/es.typed-array.copy-within.js`
+- `node_modules/core-js 2/modules/es.array.copy-within.js`
+- `node_modules/core-js 2/modules/es.string.bold.js`
+- `node_modules/core-js 2/modules/es.regexp.test.js`
+- `node_modules/core-js 2/modules/esnext.array.is-template-object.js`
+- `node_modules/core-js 2/proposals/change-array-by-copy-stage-4.js`
+- `node_modules/core-js 2/proposals/array-is-template-object.js`
+- `node_modules/core-js 2/proposals/change-array-by-copy.js`
+- `node_modules/mammoth/test/images.tests.js`
+- `node_modules/mammoth/test/test.js`
+- `node_modules/mammoth/test/transforms.tests.js`
+- `node_modules/mammoth/test/style-reader.tests.js`
+- `node_modules/mammoth/test/main.tests.js`
+- `node_modules/mammoth/test/zipfile.tests.js`
+- `node_modules/mammoth/test/testing.js`
+- `node_modules/mammoth/test/results.tests.js`
+- `node_modules/mammoth/test/unzip.tests.js`
+- `node_modules/mammoth/test/options-reader.tests.js`
+- `node_modules/mammoth/test/raw-text.tests.js`
+- `node_modules/mammoth/test/document-to-html.tests.js`
+- `node_modules/mammoth/test/mammoth.tests.js`
+- `node_modules/mammoth/test/writers/html-writer.tests.js`
+- `node_modules/mammoth/test/writers/markdown-writer.tests.js`
+- `node_modules/mammoth/test/html/simplify.tests.js`
+- `node_modules/mammoth/test/html/write.tests.js`
+- `node_modules/mammoth/test/xml/writer.tests.js`
+- `node_modules/mammoth/test/xml/reader.tests.js`
+- `node_modules/mammoth/test/styles/document-matchers.tests.js`
+- `node_modules/mammoth/test/styles/html-paths.tests.js`
+- `node_modules/mammoth/test/styles/parser/tokeniser.tests.js`
+- `node_modules/mammoth/test/docx/styles-reader.tests.js`
+- `node_modules/mammoth/test/docx/uris.tests.js`
+- `node_modules/mammoth/test/docx/body-reader.tests.js`
+- `node_modules/mammoth/test/docx/comments-reader.tests.js`
+- `node_modules/mammoth/test/docx/notes-reader.tests.js`
+- `node_modules/mammoth/test/docx/style-map.tests.js`
+- `node_modules/mammoth/test/docx/document-xml-reader.tests.js`
+- `node_modules/mammoth/test/docx/testing.js`
+- `node_modules/mammoth/test/docx/numbering-xml.tests.js`
+- `node_modules/mammoth/test/docx/content-types-reader.tests.js`
+- `node_modules/mammoth/test/docx/office-xml-reader.tests.js`
+- `node_modules/mammoth/test/docx/files.tests.js`
+- `node_modules/mammoth/test/docx/docx-reader.tests.js`
+- `node_modules/mammoth/test/docx/relationships-reader.tests.js`
+- `node_modules/mammoth/.github/pull_request_template.md`
+- `node_modules/mammoth/.github/ISSUE_TEMPLATE.md`
+- `node_modules/mammoth/.github/workflows/tests.yml`
+- `node_modules/@babel/runtime/helpers/taggedTemplateLiteralLoose.js`
+- `node_modules/@babel/runtime/helpers/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/@babel/runtime/helpers/classCheckPrivateStaticAccess.js`
+- `node_modules/@babel/runtime/helpers/temporalUndefined.js`
+- `node_modules/@babel/runtime/helpers/taggedTemplateLiteral.js`
+- `node_modules/@babel/runtime/helpers/temporalRef.js`
+- `node_modules/@babel/runtime/helpers/esm/taggedTemplateLiteralLoose.js`
+- `node_modules/@babel/runtime/helpers/esm/classCheckPrivateStaticFieldDescriptor.js`
+- `node_modules/@babel/runtime/helpers/esm/classCheckPrivateStaticAccess.js`
+- `node_modules/@babel/runtime/helpers/esm/temporalUndefined.js`
+- `node_modules/@babel/runtime/helpers/esm/taggedTemplateLiteral.js`
+- `node_modules/@babel/runtime/helpers/esm/temporalRef.js`
+- `node_modules/sprintf-js/test/test.js`
+- `node_modules/@pdf-lib/standard-fonts/lib/Courier-Bold.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/lib/Times-Bold.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/lib/Times-BoldItalic.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/lib/Helvetica-Bold.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/lib/Helvetica-BoldOblique.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/lib/Courier-BoldOblique.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/es/Courier-Bold.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/es/Times-Bold.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/es/Times-BoldItalic.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/es/Helvetica-Bold.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/es/Helvetica-BoldOblique.compressed.json`
+- `node_modules/@pdf-lib/standard-fonts/es/Courier-BoldOblique.compressed.json`
+- `node_modules/@vercel/speed-insights/vitest.config.mts`
+- `node_modules/@vercel/speed-insights/test.setup.ts`
+- `node_modules/underscore 2/modules/templateSettings.js`
+- `node_modules/underscore 2/modules/_tagTester.js`
+- `node_modules/underscore 2/modules/template.js`
+- `node_modules/sprintf-js 2/test/test.js`
+- `node_modules/isarray/test.js`
+- `node_modules/fastq/test/test.js`
+- `node_modules/tsx 2/dist/temporary-directory-B83uKxJF.cjs`
+- `node_modules/tsx 2/dist/temporary-directory-CwHp0_NW.mjs`
+- `node_modules/caniuse-lite/data/features/testfeat.js`
+- `node_modules/caniuse-lite/data/features/temporal.js`
+- `node_modules/caniuse-lite/data/features/css-placeholder.js`
+- `node_modules/caniuse-lite/data/features/template-literals.js`
+- `node_modules/caniuse-lite/data/features/date-tolocaledatestring.js`
+- `node_modules/caniuse-lite/data/features/input-placeholder.js`
+- `node_modules/caniuse-lite/data/features/template.js`
+- `node_modules/caniuse-lite/data/features/css-placeholder-shown.js`
+- `node_modules/@types 2/node/test.d.ts`
+- `node_modules/pdf-lib/node_modules/tslib/CopyrightNotice.txt`
+- `node_modules/pdf-lib/es/core/structures/PDFFlateStream.js`
+- `node_modules/pdf-lib/es/core/structures/PDFFlateStream.d.ts.map`
+- `node_modules/pdf-lib/es/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib/es/core/structures/PDFFlateStream.js.map`
+- `node_modules/pdf-lib/es/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib/es/core/streams/FlateStream.d.ts.map`
+- `node_modules/pdf-lib/es/core/streams/FlateStream.js`
+- `node_modules/pdf-lib/es/core/streams/FlateStream.js.map`
+- `node_modules/pdf-lib/es/core/parser/ByteStream.js`
+- `node_modules/pdf-lib/es/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib/es/core/parser/ByteStream.js.map`
+- `node_modules/pdf-lib/es/core/parser/ByteStream.d.ts.map`
+- `node_modules/pdf-lib/ts3.4/es/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib/ts3.4/es/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib/ts3.4/es/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib/ts3.4/cjs/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib/ts3.4/cjs/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib/ts3.4/cjs/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib/src/core/structures/PDFFlateStream.ts`
+- `node_modules/pdf-lib/src/core/streams/FlateStream.ts`
+- `node_modules/pdf-lib/src/core/parser/ByteStream.ts`
+- `node_modules/pdf-lib/cjs/core/structures/PDFFlateStream.js`
+- `node_modules/pdf-lib/cjs/core/structures/PDFFlateStream.d.ts.map`
+- `node_modules/pdf-lib/cjs/core/structures/PDFFlateStream.d.ts`
+- `node_modules/pdf-lib/cjs/core/structures/PDFFlateStream.js.map`
+- `node_modules/pdf-lib/cjs/core/streams/FlateStream.d.ts`
+- `node_modules/pdf-lib/cjs/core/streams/FlateStream.d.ts.map`
+- `node_modules/pdf-lib/cjs/core/streams/FlateStream.js`
+- `node_modules/pdf-lib/cjs/core/streams/FlateStream.js.map`
+- `node_modules/pdf-lib/cjs/core/parser/ByteStream.js`
+- `node_modules/pdf-lib/cjs/core/parser/ByteStream.d.ts`
+- `node_modules/pdf-lib/cjs/core/parser/ByteStream.js.map`
+- `node_modules/pdf-lib/cjs/core/parser/ByteStream.d.ts.map`
+- `node_modules/@types 3/node/test.d.ts`

@@ -119,52 +119,14 @@
                 }
             }, true);
             
-            // Override fetch
-            const originalFetch = window.fetch;
-            window.fetch = function(...args) {
-                const url = String(args[0] || '');
-                if (url.includes('effectivegatecpm.com')) {
-                    return Promise.reject().catch(() => {});
-                }
-                return originalFetch.apply(this, args).catch(err => {
-                    if (String(err).includes('effectivegatecpm.com')) {
-                        return Promise.reject().catch(() => {});
-                    }
-                    throw err;
-                });
-            };
-            
-            // Override XMLHttpRequest
-            const originalXHROpen = XMLHttpRequest.prototype.open;
-            XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-                if (String(url).includes('effectivegatecpm.com')) {
-                    this.addEventListener('error', function(e) {
-                        e.stopPropagation();
-                    });
-                }
-                return originalXHROpen.apply(this, [method, url, ...rest]);
+            // Allow Adsterra requests - only suppress console errors, don't block requests
+            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
             };
         })();
     </script>
 
-    <!-- Adsterra Popunder (Head) -->
-    <script type='text/javascript'>
-        (function() {
-            try {
-                var script = document.createElement('script');
-                script.src = 'https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js';
-                script.crossOrigin = 'anonymous';
-                script.onerror = function() { 
-                    return false; // Silently handle SSL errors
-                };
-                script.onload = function() {};
-                // Delay loading to reduce console noise
-                setTimeout(function() {
-                    document.head.appendChild(script);
-                }, 100);
-            } catch(e) {}
-        })();
-    </script>
+    <!-- Adsterra Popunder (Head) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <script data-cfasync="false" type='text/javascript' src='https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js'></script>
 
 </head>
 <body>
@@ -189,28 +151,11 @@
         
         
         
-        <!-- Adsterra Native Banner -->
+        <!-- Adsterra Native Banner - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
         <div style="margin: 1rem 0; text-align: center;">
-            <script type='text/javascript'>
-                (function() {
-                    try {
-                        var script = document.createElement('script');
-                        script.async = true;
-                        script.setAttribute('data-cfasync', 'false');
-                        script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
-                        script.crossOrigin = 'anonymous';
-                        script.onerror = function() { 
-                            return false; // Silently handle SSL errors
-                        };
-                        script.onload = function() {};
-                        // Delay loading to reduce console noise
-                        setTimeout(function() {
-                            document.head.appendChild(script);
-                        }, 200);
-                    } catch(e) {}
-                })();
-            </script>
             <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+            <script data-cfasync="false" type='text/javascript' src='https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js'></script>
+        </div>
         </div>
 
 
@@ -226,8 +171,8 @@
             </script>
         </div>
         <div class="tool-container">
-            <h2>🎵 MP4'den MP3'e</h2>
-            <p>Video dosyasından ses çıkarın ve MP3 format.</p>
+            <h2>🎵 MP4 to MP3</h2>
+            <p>Extract audio from video file and convert to MP3 format.</p>
 
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center;">
@@ -244,7 +189,7 @@
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">🎬</div>
-                <p>MP4 video dosyanızı buraya sürükleyin veya tıklayarak seçin</p>
+                <p>Drag and drop your MP4 video file here or click to select</p>
                 <input type="file" id="fileInput" accept="video/mp4,video/*" style="display: none;">
             </div>
 
@@ -252,9 +197,9 @@
                 <label for="bitrate">Bitrate:</label>
                 <select id="bitrate">
                     <option value="128">128 kbps (Standart)</option>
-                    <option value="192" selected>192 kbps (İyi Kalite)</option>
-                    <option value="256">256 kbps (Yüksek Kalite)</option>
-                    <option value="320">320 kbps (En Yüksek Kalite)</option>
+                    <option value="192" selected>192 kbps (Good Quality)</option>
+                    <option value="256">256 kbps (High Quality)</option>
+                    <option value="320">320 kbps (Highest Quality)</option>
                 </select>
             </div>
 
@@ -269,13 +214,13 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn" id="convertBtn" onclick="convertToMP3()" style="width: 100%; margin-top: 1rem;" disabled>MP3'e Convert</button>
+            <button class="btn" id="convertBtn" onclick="convertToMP3()" style="width: 100%; margin-top: 1rem;" disabled>Convert to MP3</button>
 
             <div id="resultArea" class="result-area" style="display: none; margin-top: 2rem;">
                 <h3>Conversion Complete!</h3>
                 <p id="resultInfo"></p>
                 <audio id="previewAudio" controls style="width: 100%; margin: 1rem 0;"></audio>
-                <button class="btn" onclick="downloadMP3()" style="width: 100%;">MP3 Dosyasını Download</button>
+                <button class="btn" onclick="downloadMP3()" style="width: 100%;">Download MP3 File</button>
             </div>
         </div>
                 
@@ -373,7 +318,7 @@
             if (file && file.type.startsWith('video/')) {
                 handleFile(file);
             } else {
-                alert('Please select a valid bir video dosyası file!');
+                alert('Please select a valid video file!');
             }
         });
 
@@ -454,7 +399,7 @@
                     const url = URL.createObjectURL(blob);
                     document.getElementById('previewAudio').src = url;
                     document.getElementById('resultInfo').textContent = 
-                        'Not: Tarayıcı sınırlamaları nedeniyle WebM formatında kaydedildi. Tam MP3 dönüştürme için backend servisi gereklidir.';
+                        'Note: Saved in WebM format due to browser limitations. Backend service required for full MP3 conversion.';
                     
                     progressFill.style.width = '100%';
                     setTimeout(() => {
@@ -494,24 +439,8 @@
         }
     </script>
 
-    <!-- Adsterra Popunder (Body) -->
-    <script type='text/javascript'>
-        (function() {
-            try {
-                var script = document.createElement('script');
-                script.src = 'https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js';
-                script.crossOrigin = 'anonymous';
-                script.onerror = function() { 
-                    return false; // Silently handle SSL errors
-                };
-                script.onload = function() {};
-                // Delay loading to reduce console noise
-                setTimeout(function() {
-                    document.head.appendChild(script);
-                }, 300);
-            } catch(e) {}
-        })();
-    </script>
+    <!-- Adsterra Popunder (Body) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <script data-cfasync="false" type='text/javascript' src='https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
 
 
     <script>
