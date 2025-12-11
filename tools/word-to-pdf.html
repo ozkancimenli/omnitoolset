@@ -82,7 +82,6 @@
             });
             
             // Intercept error events at the earliest possible moment
-                        // Intercept error events at the earliest possible moment
             const errorHandler = function(e) {
                 const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
                 const message = (e.message || '').toLowerCase();

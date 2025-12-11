@@ -67,6 +67,7 @@
     <link rel="preload" href="/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/styles.css"></noscript>
     <link rel="preload" href="/app.js" as="script" crossorigin>
+    <script src="/app.js" defer></script>
     
     <!-- Google AdSense -->
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -136,7 +137,6 @@
             });
             
             // Intercept error events at the earliest possible moment
-                        // Intercept error events at the earliest possible moment
             const errorHandler = function(e) {
                 const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
                 const message = (e.message || '').toLowerCase();
@@ -247,25 +247,4 @@
                 }
                 return originalXHROpen.apply(this, [method, url, ...rest]);
             };
-        
             
-             for Adsterra
-            window.addEventListener('error', function(e) {
-                const target = e.target || e.srcElement;
-                if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK' || target.tagName === 'IMG')) {
-                    const src = (target.src || target.href || '').toLowerCase();
-                    if (src.includes('effectivegatecpm.com') ||
-                        src.includes('pl28055668') ||
-                        src.includes('pl28055637') ||
-                        src.includes('pl28059282') ||
-                        src.includes('invoke.js')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                    }
-                }
-            }, true);
-        })();
-    </script>
-</body>
-</html>
