@@ -10,21 +10,29 @@
         skipLink.textContent = 'Skip to main content';
         skipLink.className = 'skip-link';
         skipLink.style.cssText = `
-            position: absolute;
-            top: -40px;
+            position: fixed;
+            top: -100px;
             left: 0;
             background: var(--primary-color);
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             text-decoration: none;
-            z-index: 1000;
-            border-radius: 4px;
+            z-index: 10000;
+            border-radius: 0 0 8px 0;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: top 0.3s ease, opacity 0.3s ease;
         `;
         skipLink.addEventListener('focus', () => {
             skipLink.style.top = '0';
+            skipLink.style.opacity = '1';
+            skipLink.style.pointerEvents = 'auto';
         });
         skipLink.addEventListener('blur', () => {
-            skipLink.style.top = '-40px';
+            skipLink.style.top = '-100px';
+            skipLink.style.opacity = '0';
+            skipLink.style.pointerEvents = 'none';
         });
         document.body.insertBefore(skipLink, document.body.firstChild);
         
