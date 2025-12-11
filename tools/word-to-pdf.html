@@ -328,18 +328,24 @@
 </main>
 
     <script>
-        let wordFile = null;
-        let pdfBlob = null;
+        document.addEventListener('DOMContentLoaded', function() {
+            let wordFile = null;
+            let pdfBlob = null;
 
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const convertBtn = document.getElementById('convertBtn');
-        const progressBar = document.getElementById('progressBar');
-        const progressFill = document.getElementById('progressFill');
-        const resultArea = document.getElementById('resultArea');
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const fileInfo = document.getElementById('fileInfo');
+            const convertBtn = document.getElementById('convertBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const resultArea = document.getElementById('resultArea');
 
-        uploadArea.addEventListener('click', () => fileInput.click());
+            if (!uploadArea || !fileInput) {
+                console.error('Tool elements not found');
+                return;
+            }
+
+            uploadArea.addEventListener('click', () => fileInput.click());
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('dragover');
@@ -365,7 +371,7 @@
             }
         });
 
-        function handleFile(file) {
+            function handleFile(file) {
             wordFile = file;
             document.getElementById('fileName').textContent = `File: ${file.name}`;
             document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
@@ -374,7 +380,7 @@
             resultArea.style.display = 'none';
         }
 
-        async function convertToPDF() {
+            async function convertToPDF() {
             if (!wordFile) return;
 
             convertBtn.disabled = true;
@@ -441,16 +447,21 @@
             }
         }
 
-        function downloadPDF() {
-            if (!pdfBlob) return;
-            
-            const url = URL.createObjectURL(pdfBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = wordFile.name.replace('.docx', '') + '.pdf';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
+            function downloadPDF() {
+                if (!pdfBlob) return;
+                
+                const url = URL.createObjectURL(pdfBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = wordFile.name.replace('.docx', '') + '.pdf';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            // Make functions global for onclick handlers
+            window.convertToPDF = convertToPDF;
+            window.downloadPDF = downloadPDF;
+        });
     </script>
 
     <!-- Adsterra Popunder (Body) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
@@ -546,5 +557,19 @@
     <!-- Analytics Script -->
     <script src="/js/analytics.js" defer></script>
 
+
+    <!-- Power-Up Scripts -->
+    <script src="/js/share-powerup.js" defer></script>
+    <script src="/js/user-preferences.js" defer></script>
+    <script src="/js/usage-statistics.js" defer></script>
+    <script src="/js/print-optimizer.js" defer></script>
+    <script src="/js/keyboard-shortcuts-powerup.js" defer></script>
+    <script src="/js/quick-actions-menu.js" defer></script>
+    <script src="/js/copy-enhancements.js" defer></script>
+    <script src="/js/tool-recommendations.js" defer></script>
+    <script src="/js/pwa-installer.js" defer></script>
+    <script src="/js/performance-powerup.js" defer></script>
+    <script src="/js/advanced-analytics.js" defer></script>
+    <script src="/js/smart-internal-linking.js" defer></script>
 </body>
 </html>

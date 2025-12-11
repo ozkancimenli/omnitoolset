@@ -225,115 +225,123 @@
     </footer>
 
     <script>
-        // DMS to Decimal Degrees
-        function dmsToDecimal(dms) {
-            const parts = dms.match(/(\d+)°\s*(\d+)['′]\s*([\d.]+)["″]?\s*([NSEW])/i);
-            if (!parts) return null;
-            const deg = parseFloat(parts[1]);
-            const min = parseFloat(parts[2]);
-            const sec = parseFloat(parts[3]);
-            const dir = parts[4].toUpperCase();
-            let decimal = deg + min/60 + sec/3600;
-            if (dir === 'S' || dir === 'W') decimal = -decimal;
-            return decimal;
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            
+                    // DMS to Decimal Degrees
+                    function dmsToDecimal(dms) {
+                        const parts = dms.match(/(\d+)°\s*(\d+)['′]\s*([\d.]+)["″]?\s*([NSEW])/i);
+                        if (!parts) return null;
+                        const deg = parseFloat(parts[1]);
+                        const min = parseFloat(parts[2]);
+                        const sec = parseFloat(parts[3]);
+                        const dir = parts[4].toUpperCase();
+                        let decimal = deg + min/60 + sec/3600;
+                        if (dir === 'S' || dir === 'W') decimal = -decimal;
+                        return decimal;
+                    }
+            
+                    // Decimal Degrees to DMS
+                    function decimalToDMS(decimal, isLat) {
+                        const abs = Math.abs(decimal);
+                        const deg = Math.floor(abs);
+                        const min = Math.floor((abs - deg) * 60);
+                        const sec = ((abs - deg) * 60 - min) * 60;
+                        const dir = isLat ? (decimal >= 0 ? 'N' : 'S') : (decimal >= 0 ? 'E' : 'W');
+                        return `${deg}°${min}'${sec.toFixed(2)}"${dir}`;
+                    }
+            
+                    // Parse input coordinates
+                    function parseInput(input, format) {
+                        input = input.trim();
+                        
+                        if (format === 'wgs84') {
+                            // Decimal degrees: 40.7128, -74.0060
+                            const match = input.match(/(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)/);
+                            if (match) {
+                                return { lat: parseFloat(match[1]), lon: parseFloat(match[2]) };
+                            }
+                        } else if (format === 'dms') {
+                            // DMS format: 40°42'46.08"N 74°0'21.6"W
+                            const parts = input.split(/\s+/);
+                            if (parts.length >= 2) {
+                                const lat = dmsToDecimal(parts[0]);
+                                const lon = dmsToDecimal(parts[1]);
+                                if (lat !== null && lon !== null) return { lat, lon };
+                            }
+                        } else if (format === 'utm') {
+                            // UTM: 18T 583934 4504692
+                            // Simplified - would need full UTM library
+                            showError('UTM conversion requires additional library. Please use WGS84 or DMS format.');
+                            return null;
+                        } else if (format === 'mgrs') {
+                            // MGRS: 18TWL839344504692
+                            showError('MGRS conversion requires additional library. Please use WGS84 or DMS format.');
+                            return null;
+                        }
+                        
+                        return null;
+                    }
+            
+                    // Format output
+                    function formatOutput(coords, format) {
+                        if (!coords || !coords.lat || !coords.lon) return '';
+                        
+                        if (format === 'wgs84') {
+                            return `${coords.lat.toFixed(6)}, ${coords.lon.toFixed(6)}`;
+                        } else if (format === 'dms') {
+                            return `${decimalToDMS(coords.lat, true)} ${decimalToDMS(coords.lon, false)}`;
+                        } else if (format === 'utm' || format === 'mgrs') {
+                            return 'Conversion to UTM/MGRS requires additional library. Please use WGS84 or DMS format.';
+                        }
+                        return '';
+                    }
+            
+                    function convertCoordinates() {
+                        const input = document.getElementById('inputCoords').value.trim();
+                        const fromFormat = document.getElementById('fromFormat').value;
+                        const toFormat = document.getElementById('toFormat').value;
+                        
+                        document.getElementById('errorArea').style.display = 'none';
+                        document.getElementById('resultArea').style.display = 'none';
+                        
+                        if (!input) {
+                            showError('Please enter coordinates');
+                            return;
+                        }
+                        
+                        if (fromFormat === toFormat) {
+                            showError('Please select different input and output formats');
+                            return;
+                        }
+                        
+                        const coords = parseInput(input, fromFormat);
+                        if (!coords) {
+                            showError('Invalid coordinate format. Please check your input.');
+                            return;
+                        }
+                        
+                        const output = formatOutput(coords, toFormat);
+                        document.getElementById('outputCoords').value = output;
+                        document.getElementById('resultArea').style.display = 'block';
+                    }
+            
+                    function showError(message) {
+                        document.getElementById('errorText').textContent = message;
+                        document.getElementById('errorArea').style.display = 'block';
+                    }
+            
+                    function copyResult() {
+                        const output = document.getElementById('outputCoords');
+                        output.select();
+                        document.execCommand('copy');
+                        alert('Copied to clipboard!');
+                    }
 
-        // Decimal Degrees to DMS
-        function decimalToDMS(decimal, isLat) {
-            const abs = Math.abs(decimal);
-            const deg = Math.floor(abs);
-            const min = Math.floor((abs - deg) * 60);
-            const sec = ((abs - deg) * 60 - min) * 60;
-            const dir = isLat ? (decimal >= 0 ? 'N' : 'S') : (decimal >= 0 ? 'E' : 'W');
-            return `${deg}°${min}'${sec.toFixed(2)}"${dir}`;
-        }
-
-        // Parse input coordinates
-        function parseInput(input, format) {
-            input = input.trim();
-            
-            if (format === 'wgs84') {
-                // Decimal degrees: 40.7128, -74.0060
-                const match = input.match(/(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)/);
-                if (match) {
-                    return { lat: parseFloat(match[1]), lon: parseFloat(match[2]) };
-                }
-            } else if (format === 'dms') {
-                // DMS format: 40°42'46.08"N 74°0'21.6"W
-                const parts = input.split(/\s+/);
-                if (parts.length >= 2) {
-                    const lat = dmsToDecimal(parts[0]);
-                    const lon = dmsToDecimal(parts[1]);
-                    if (lat !== null && lon !== null) return { lat, lon };
-                }
-            } else if (format === 'utm') {
-                // UTM: 18T 583934 4504692
-                // Simplified - would need full UTM library
-                showError('UTM conversion requires additional library. Please use WGS84 or DMS format.');
-                return null;
-            } else if (format === 'mgrs') {
-                // MGRS: 18TWL839344504692
-                showError('MGRS conversion requires additional library. Please use WGS84 or DMS format.');
-                return null;
-            }
-            
-            return null;
-        }
-
-        // Format output
-        function formatOutput(coords, format) {
-            if (!coords || !coords.lat || !coords.lon) return '';
-            
-            if (format === 'wgs84') {
-                return `${coords.lat.toFixed(6)}, ${coords.lon.toFixed(6)}`;
-            } else if (format === 'dms') {
-                return `${decimalToDMS(coords.lat, true)} ${decimalToDMS(coords.lon, false)}`;
-            } else if (format === 'utm' || format === 'mgrs') {
-                return 'Conversion to UTM/MGRS requires additional library. Please use WGS84 or DMS format.';
-            }
-            return '';
-        }
-
-        function convertCoordinates() {
-            const input = document.getElementById('inputCoords').value.trim();
-            const fromFormat = document.getElementById('fromFormat').value;
-            const toFormat = document.getElementById('toFormat').value;
-            
-            document.getElementById('errorArea').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'none';
-            
-            if (!input) {
-                showError('Please enter coordinates');
-                return;
-            }
-            
-            if (fromFormat === toFormat) {
-                showError('Please select different input and output formats');
-                return;
-            }
-            
-            const coords = parseInput(input, fromFormat);
-            if (!coords) {
-                showError('Invalid coordinate format. Please check your input.');
-                return;
-            }
-            
-            const output = formatOutput(coords, toFormat);
-            document.getElementById('outputCoords').value = output;
-            document.getElementById('resultArea').style.display = 'block';
-        }
-
-        function showError(message) {
-            document.getElementById('errorText').textContent = message;
-            document.getElementById('errorArea').style.display = 'block';
-        }
-
-        function copyResult() {
-            const output = document.getElementById('outputCoords');
-            output.select();
-            document.execCommand('copy');
-            alert('Copied to clipboard!');
-        }
+                    // Make functions global for onclick handlers
+                    window.convertCoordinates = convertCoordinates;
+                    window.copyResult = copyResult;
+                
+        });
     </script>
 
     <!-- Adsterra Popunder (Body) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
@@ -424,5 +432,19 @@
     <!-- Analytics Script -->
     <script src="/js/analytics.js" defer></script>
 
+
+    <!-- Power-Up Scripts -->
+    <script src="/js/share-powerup.js" defer></script>
+    <script src="/js/user-preferences.js" defer></script>
+    <script src="/js/usage-statistics.js" defer></script>
+    <script src="/js/print-optimizer.js" defer></script>
+    <script src="/js/keyboard-shortcuts-powerup.js" defer></script>
+    <script src="/js/quick-actions-menu.js" defer></script>
+    <script src="/js/copy-enhancements.js" defer></script>
+    <script src="/js/tool-recommendations.js" defer></script>
+    <script src="/js/pwa-installer.js" defer></script>
+    <script src="/js/performance-powerup.js" defer></script>
+    <script src="/js/advanced-analytics.js" defer></script>
+    <script src="/js/smart-internal-linking.js" defer></script>
 </body>
 </html>
