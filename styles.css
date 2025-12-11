@@ -352,28 +352,32 @@ main {
 }
 
 .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-    min-height: 200px;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 1.5rem !important;
+    margin: 2rem 0 !important;
+    min-height: 200px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .tool-card {
-    background: var(--bg-card);
+    background: var(--bg-card) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 1.5rem;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 20px !important;
+    padding: 1.5rem !important;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    text-decoration: none;
-    color: var(--text-primary);
-    display: block;
-    position: relative;
-    overflow: visible;
-    min-height: 150px;
+    text-decoration: none !important;
+    color: var(--text-primary) !important;
+    display: block !important;
+    position: relative !important;
+    overflow: visible !important;
+    min-height: 150px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .tool-card::before {
