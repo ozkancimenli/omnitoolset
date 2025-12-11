@@ -216,43 +216,9 @@
                 </script>
             </div>
 
-            <!-- Categories Grid -->
-            <div class="categories-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
-                <div class="category-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; text-align: center; transition: all 0.3s ease;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">📄 PDF Tools</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Merge, split, compress, and convert PDF files</p>
-                    <a href="/all-tools.html#pdf" style="color: var(--primary-color); text-decoration: none;">View Tools →</a>
-                </div>
-
-                <div class="category-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; text-align: center; transition: all 0.3s ease;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">🖼️ Image Tools</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Resize, compress, convert, and edit images</p>
-                    <a href="/all-tools.html#image" style="color: var(--primary-color); text-decoration: none;">View Tools →</a>
-                </div>
-
-                <div class="category-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; text-align: center; transition: all 0.3s ease;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">🔤 Text Tools</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Format, convert, and manipulate text</p>
-                    <a href="/all-tools.html#text" style="color: var(--primary-color); text-decoration: none;">View Tools →</a>
-                </div>
-
-                <div class="category-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; text-align: center; transition: all 0.3s ease;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">💻 Developer Tools</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">JSON, XML, code formatters, and more</p>
-                    <a href="/all-tools.html#developer" style="color: var(--primary-color); text-decoration: none;">View Tools →</a>
-                </div>
-
-                <div class="category-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; text-align: center; transition: all 0.3s ease;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">🧮 Calculators</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Math, finance, health, and engineering calculators</p>
-                    <a href="/all-tools.html#calculator" style="color: var(--primary-color); text-decoration: none;">View Tools →</a>
-                </div>
-
-                <div class="category-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; text-align: center; transition: all 0.3s ease;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">🔄 Converters</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Unit, format, and file converters</p>
-                    <a href="/all-tools.html#converter" style="color: var(--primary-color); text-decoration: none;">View Tools →</a>
-                </div>
+            <!-- Categories Grid - Will be populated by JavaScript -->
+            <div class="categories-grid" id="categoriesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+                <!-- Categories will be loaded dynamically -->
             </div>
 
             <!-- AdSense Banner Ad (Middle) -->
@@ -284,6 +250,55 @@
 
     <!-- Adsterra Popunder (Body) -->
     <script data-cfasync="false" type='text/javascript' src='https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+
+    <script>
+        // Load categories dynamically
+        (function() {
+            const categoriesGrid = document.getElementById('categoriesGrid');
+            if (!categoriesGrid) return;
+
+            const categoriesInfo = {
+                'PDF': { icon: '📄', desc: 'Merge, split, compress, and convert PDF files' },
+                'Image': { icon: '🖼️', desc: 'Resize, compress, convert, and edit images' },
+                'Text': { icon: '🔤', desc: 'Format, convert, and manipulate text' },
+                'Developer': { icon: '💻', desc: 'JSON, XML, code formatters, and more' },
+                'Student': { icon: '🎓', desc: 'Math, science, and study tools' },
+                'Engineering': { icon: '⚙️', desc: 'Engineering calculators and converters' },
+                'GIS': { icon: '🗺️', desc: 'GPS coordinates, distance, area, and mapping tools' },
+                'Health': { icon: '🏥', desc: 'BMI, health calculators, and medical tools' },
+                'Finance': { icon: '💰', desc: 'Financial calculators and currency converters' },
+                'Media': { icon: '🎬', desc: 'Video and audio converters' },
+                'QR Code': { icon: '📱', desc: 'QR code generators and scanners' },
+                'Utility': { icon: '🔧', desc: 'Utility tools and helpers' },
+                'Other': { icon: '📦', desc: 'Other useful tools and converters' },
+                'Lifestyle': { icon: '🌟', desc: 'Lifestyle and personal tools' }
+            };
+
+            // Get categories from app.js tools array (if available)
+            let categories = [];
+            if (typeof tools !== 'undefined') {
+                categories = Array.from(new Set(tools.map(t => t.category))).sort();
+            } else {
+                // Fallback: use all known categories
+                categories = Object.keys(categoriesInfo).sort();
+            }
+
+            categories.forEach(category => {
+                const info = categoriesInfo[category] || { icon: '📦', desc: `${category} tools` };
+                const categoryLower = category.toLowerCase().replace(/\s+/g, '-');
+                
+                const card = document.createElement('div');
+                card.className = 'category-card';
+                card.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; text-align: center; transition: all 0.3s ease;';
+                card.innerHTML = `
+                    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">${info.icon} ${category} Tools</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">${info.desc}</p>
+                    <a href="/all-tools.html#${categoryLower}" style="color: var(--primary-color); text-decoration: none;">View Tools →</a>
+                `;
+                categoriesGrid.appendChild(card);
+            });
+        })();
+    </script>
 
     <script src="/app.js" defer></script>
 </body>
