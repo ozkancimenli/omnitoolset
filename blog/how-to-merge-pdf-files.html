@@ -167,3 +167,7 @@
                 return originalXHROpen.apply(this, [method, url, ...rest]);
             };
             
+            // Allow Adsterra requests - only suppress console errors, don't block requests
+            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
+        })();
+    </script>
