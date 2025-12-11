@@ -132,8 +132,7 @@
                         message.includes('message channel closed') ||
                         message.includes('receiving end does not exist') ||
                         message.includes('could not establish connection') ||
-                        message.includes('asynchronous response') ||
-                        message.includes('could not establish connection')) {
+                        message.includes('asynchronous response')) {
                         return; // Suppress these errors
                     }
                     originalMethods[method].apply(console, args);
