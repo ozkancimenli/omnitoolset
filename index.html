@@ -127,9 +127,18 @@
                         (message.includes('favicon.ico') && message.includes('404')) ||
                         (message.includes('favicon') && message.includes('failed to load')) ||
                         message.includes('runtime.lasterror') ||
+                        message.includes('runtime.lasterror') ||
+                        message.includes('runtime.lasterror') ||
+                        message.includes('runtime.lasterror') ||
                         message.includes('unchecked runtime') ||
+                        message.includes('message port closed') ||
+                        message.includes('message port closed') ||
                         message.includes('message channel closed') ||
-                        message.includes('asynchronous response')) {
+                        message.includes('receiving end does not exist') ||
+                        message.includes('could not establish connection') ||
+                        message.includes('asynchronous response') ||
+                        message.includes('receiving end does not exist') ||
+                        message.includes('could not establish connection')) {
                         return; // Suppress these errors
                     }
                     originalMethods[method].apply(console, args);
