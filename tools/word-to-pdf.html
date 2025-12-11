@@ -167,28 +167,8 @@
                 }
             }, true);
             
-            
             // Allow Adsterra requests - only suppress console errors, don't block requests
             // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
-            };
-        
-            
-             for Adsterra
-            window.addEventListener('error', function(e) {
-                const target = e.target || e.srcElement;
-                if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK' || target.tagName === 'IMG')) {
-                    const src = (target.src || target.href || '').toLowerCase();
-                    if (src.includes('effectivegatecpm.com') ||
-                        src.includes('pl28055668') ||
-                        src.includes('pl28055637') ||
-                        src.includes('pl28059282') ||
-                        src.includes('invoke.js')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                    }
-                }
-            }, true);
         })();
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
