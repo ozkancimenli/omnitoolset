@@ -66,8 +66,8 @@
     <!-- Performance: Preload critical resources -->
     <link rel="preload" href="/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/styles.css"></noscript>
-    <link rel="preload" href="/app.js" as="script" crossorigin>
-    <script src="/app.js" defer></script>
+    <link rel="preload" href="/app.js" as="script" crossorigin="anonymous">
+    <script src="/app.js" defer crossorigin="anonymous"></script>
     
     <!-- Google AdSense -->
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
@@ -248,3 +248,9 @@
                 return originalXHROpen.apply(this, [method, url, ...rest]);
             };
             
+            // Allow Adsterra requests - only suppress console errors, don't block requests
+            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
+        })();
+    </script>
+</body>
+</html>
