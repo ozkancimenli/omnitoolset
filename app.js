@@ -369,7 +369,8 @@ function renderPopularTools() {
     updateFavoriteButtons();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize immediately if DOM is already loaded, otherwise wait
+function initApp() {
     // Update tool count dynamically
     const toolCountElements = document.querySelectorAll('#toolCount, #statTools');
     const totalTools = tools.length;
@@ -384,7 +385,14 @@ document.addEventListener('DOMContentLoaded', () => {
     setupRecentTools();
     renderQuickAccess();
     renderPopularTools();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    // DOM is already loaded
+    initApp();
+}
 
 function renderQuickAccess() {
     const recentTools = getRecentTools();
