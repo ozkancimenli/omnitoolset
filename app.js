@@ -466,15 +466,15 @@ function renderTools(filteredTools = tools) {
         card.href = tool.page;
         card.className = 'tool-card';
         // Force visibility with inline styles
-        card.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; color: #f1f5f9 !important; background: rgba(30, 41, 59, 0.8) !important;';
+        card.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; color: #f1f5f9 !important; background: rgba(30, 41, 59, 0.95) !important; border: 1px solid rgba(99, 102, 241, 0.3) !important; border-radius: 20px !important; padding: 1.5rem !important; min-height: 150px !important;';
         const favorites = JSON.parse(localStorage.getItem('omnitoolset_favorites') || '[]');
         const isFavorite = favorites.includes(tool.id);
         card.innerHTML = `
             <button class="favorite-btn" data-tool-id="${tool.id}" style="position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 2rem; height: 2rem; cursor: pointer; font-size: 1.2rem; z-index: 10; transition: all 0.2s;" title="Add to favorites">${isFavorite ? '★' : '☆'}</button>
-            <span class="tool-icon">${tool.icon}</span>
-            <h3 class="tool-title">${tool.title}</h3>
-            <p class="tool-description">${tool.description}</p>
-            <span class="tool-category">${tool.category}</span>
+            <span class="tool-icon" style="font-size: 2.5rem !important; display: block !important; margin-bottom: 1rem !important; color: #f1f5f9 !important;">${tool.icon}</span>
+            <h3 class="tool-title" style="font-size: 1.25rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; color: #f1f5f9 !important;">${tool.title}</h3>
+            <p class="tool-description" style="font-size: 0.9rem !important; color: #cbd5e1 !important; line-height: 1.5 !important;">${tool.description}</p>
+            <span class="tool-category" style="display: inline-block !important; padding: 0.25rem 0.75rem !important; background: rgba(99, 102, 241, 0.2) !important; color: #6366f1 !important; border-radius: 6px !important; font-size: 0.75rem !important; font-weight: 500 !important; margin-top: 0.75rem !important;">${tool.category}</span>
         `;
         grid.appendChild(card);
     });
