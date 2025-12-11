@@ -93,7 +93,18 @@
                     filename.includes('pl28059282') ||
                     message.includes('effectivegatecpm.com') ||
                     message.includes('err_ssl') ||
-                    stack.includes('effectivegatecpm.com')) {
+                    stack.includes('effectivegatecpm.com')
+                const url = (e.target?.src || e.target?.href || e.filename || '').toLowerCase();
+                if (url.includes('effectivegatecpm.com') ||
+                    url.includes('pl28055668') ||
+                    url.includes('pl28055637') ||
+                    url.includes('pl28059282')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                if (filename.includes('effectivegatecpm.com') ||
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
@@ -118,10 +129,61 @@
                     return false;
                 }
             }, true);
+            // Suppress resource loading errors (separate listener for better coverage)
+            window.addEventListener('error', function(e) {
+                const target = e.target || e.srcElement;
+                if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK' || target.tagName === 'IMG')) {
+                    const src = (target.src || target.href || '').toLowerCase();
+                    if (src.includes('effectivegatecpm.com') ||
+                        src.includes('pl28055668') ||
+                        src.includes('pl28055637') ||
+                        src.includes('pl28059282') ||
+                        src.includes('invoke.js')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+                // Also catch network errors in the error message
+                const message = String(e.message || '').toLowerCase();
+                if ((message.includes('failed to load resource') ||
+                     message.includes('net::err_ssl') ||
+                     message.includes('net::err') ||
+                     message.includes('ssl_protocol_error')) &&
+                    (message.includes('effectivegatecpm') ||
+                     message.includes('pl280556') ||
+                     message.includes('pl280592') ||
+                     message.includes('invoke.js'))) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+            }, true);
+            
             
             // Allow Adsterra requests - only suppress console errors, don't block requests
             // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
             };
+        
+            
+            // Suppress resource loading errors for Adsterra
+            window.addEventListener('error', function(e) {
+                const target = e.target || e.srcElement;
+                if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK' || target.tagName === 'IMG')) {
+                    const src = (target.src || target.href || '').toLowerCase();
+                    if (src.includes('effectivegatecpm.com') ||
+                        src.includes('pl28055668') ||
+                        src.includes('pl28055637') ||
+                        src.includes('pl28059282') ||
+                        src.includes('invoke.js')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                }
+            })();
         })();
     </script>
 
