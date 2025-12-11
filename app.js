@@ -378,6 +378,45 @@ function initApp() {
         if (el) el.textContent = totalTools + '+';
     });
     
+    // Check for hash-based category filter (e.g., /all-tools.html#gis)
+    const hash = window.location.hash.replace('#', '').toLowerCase();
+    if (hash) {
+        // Map hash to category name (e.g., 'gis' -> 'GIS', 'qr-code' -> 'QR Code')
+        const categoryMap = {
+            'gis': 'GIS',
+            'pdf': 'PDF',
+            'image': 'Image',
+            'text': 'Text',
+            'developer': 'Developer',
+            'student': 'Student',
+            'engineering': 'Engineering',
+            'health': 'Health',
+            'finance': 'Finance',
+            'media': 'Media',
+            'qr-code': 'QR Code',
+            'utility': 'Utility',
+            'other': 'Other',
+            'lifestyle': 'Lifestyle'
+        };
+        
+        const category = categoryMap[hash] || hash.charAt(0).toUpperCase() + hash.slice(1);
+        const categoryTools = tools.filter(t => t.category.toLowerCase() === category.toLowerCase());
+        if (categoryTools.length > 0) {
+            renderTools(categoryTools);
+            // Update category filter buttons if they exist
+            setTimeout(() => {
+                const categoryBtn = Array.from(document.querySelectorAll('.category-btn')).find(
+                    btn => btn.textContent.toLowerCase() === category.toLowerCase()
+                );
+                if (categoryBtn) {
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    categoryBtn.classList.add('active');
+                }
+            }, 100);
+            return;
+        }
+    }
+    
     renderTools();
     setupSearch();
     setupCategoryFilter();
@@ -451,7 +490,8 @@ function renderQuickAccess() {
 }
 
 function renderTools(filteredTools = tools) {
-    const grid = document.getElementById('toolsGrid');
+    // Support both toolsGrid (homepage) and allToolsGrid (all-tools page)
+    const grid = document.getElementById('toolsGrid') || document.getElementById('allToolsGrid');
     if (!grid) return;
     
     grid.innerHTML = '';
@@ -509,6 +549,7 @@ function setupCategoryFilter() {
     allBtn.onclick = () => {
         document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
         allBtn.classList.add('active');
+        window.location.hash = ''; // Clear hash
         filterByCategory(null);
     };
     categoryContainer.appendChild(allBtn);
@@ -521,6 +562,9 @@ function setupCategoryFilter() {
         btn.onclick = () => {
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            // Update hash for deep linking
+            const hash = category.toLowerCase().replace(/\s+/g, '-');
+            window.location.hash = hash;
             filterByCategory(category);
         };
         categoryContainer.appendChild(btn);
