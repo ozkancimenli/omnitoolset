@@ -45,47 +45,83 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Text Case Converter - Convert Text Case</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>text-case</code></li>
-        <li>Description: Convert text case: uppercase, lowercase, title case, and more. Free, online, no registration required.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Text Case Converter</h2>
+    <p>Convert text case: uppercase, lowercase, title case, and more. Free, online, no registration required.</p>
+
+<textarea id="inputText" rows="8" placeholder="Enter text to convert" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+<div style="display:grid; gap:0.75rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top:1rem;">
+  <button class="btn" onclick="convertCase('uppercase')" style="width:100%;">UPPERCASE</button>
+  <button class="btn" onclick="convertCase('lowercase')" style="width:100%;">lowercase</button>
+  <button class="btn" onclick="convertCase('title')" style="width:100%;">Title Case</button>
+  <button class="btn" onclick="convertCase('sentence')" style="width:100%;">Sentence case</button>
+  <button class="btn" onclick="convertCase('camel')" style="width:100%;">camelCase</button>
+  <button class="btn" onclick="convertCase('pascal')" style="width:100%;">PascalCase</button>
+  <button class="btn" onclick="convertCase('snake')" style="width:100%;">snake_case</button>
+  <button class="btn" onclick="convertCase('kebab')" style="width:100%;">kebab-case</button>
+</div>
+<textarea id="outputText" rows="8" placeholder="Converted text will appear here" readonly style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; resize: vertical; margin-top:1rem;"></textarea>
+<div style="display:flex; gap:0.75rem; margin-top:0.75rem;">
+  <button class="btn" onclick="copyText()">Copy</button>
+  <button class="btn" onclick="clearText()">Clear</button>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function convertCase(type) {
+    const input = document.getElementById('inputText').value;
+    const output = document.getElementById('outputText');
+    const status = document.getElementById('status');
+    
+    if (!input.trim()) {
+      status.textContent = 'Enter some text first.';
+      return;
+    }
+    
+    let result = '';
+    switch(type) {
+      case 'uppercase':
+        result = input.toUpperCase();
+        break;
+      case 'lowercase':
+        result = input.toLowerCase();
+        break;
+      case 'title':
+        result = input.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+        break;
+      case 'sentence':
+        result = input.toLowerCase().replace(/(^\w{1}|\.\s*\w{1})/gi, l => l.toUpperCase());
+        break;
+      case 'camel':
+        result = input.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()).replace(/^[A-Z]/, c => c.toLowerCase());
+        break;
+      case 'pascal':
+        result = input.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()).replace(/^[a-z]/, c => c.toUpperCase());
+        break;
+      case 'snake':
+        result = input.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        break;
+      case 'kebab':
+        result = input.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        break;
+    }
+    output.value = result;
+    status.textContent = 'Text converted to ' + type + '.';
+  }
+  
+  function copyText() {
+    const output = document.getElementById('outputText');
+    output.select();
+    document.execCommand('copy');
+    document.getElementById('status').textContent = 'Copied to clipboard!';
+  }
+  
+  function clearText() {
+    document.getElementById('inputText').value = '';
+    document.getElementById('outputText').value = '';
+    document.getElementById('status').textContent = 'Cleared.';
+  }
+</script>
+
   </div>
 </main>
 

@@ -45,47 +45,95 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Credit Card Validator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>credit-card-validator</code></li>
-        <li>Description: Validate credit card numbers using Luhn algorithm. Free card number checker.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Credit Card Validator</h2>
+    <p>Validate credit card numbers using Luhn algorithm. Free card number checker.</p>
+
+<input id="cardNumber" type="text" placeholder="Enter card number (e.g., 4532015112830366)" maxlength="19" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+<button class="btn" id="validateBtn" style="margin-top:0.75rem;">Validate</button>
+<div class="tools-grid" style="margin-top:1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Valid</p><h3 id="isValid" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Card Type</p><h3 id="cardType" class="tool-title" style="margin:0;">-</h3></div>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cardNumber = document.getElementById('cardNumber');
+    const validateBtn = document.getElementById('validateBtn');
+    const isValid = document.getElementById('isValid');
+    const cardType = document.getElementById('cardType');
+    const status = document.getElementById('status');
+
+    function luhnCheck(cardNum) {
+      const num = cardNum.replace(/\D/g, '');
+      let sum = 0;
+      let isEven = false;
+      for (let i = num.length - 1; i >= 0; i--) {
+        let digit = parseInt(num[i]);
+        if (isEven) {
+          digit *= 2;
+          if (digit > 9) digit -= 9;
+        }
+        sum += digit;
+        isEven = !isEven;
+      }
+      return sum % 10 === 0;
+    }
+
+    function getCardType(num) {
+      const numStr = num.replace(/\D/g, '');
+      if (/^4/.test(numStr)) return 'Visa';
+      if (/^5[1-5]/.test(numStr)) return 'Mastercard';
+      if (/^3[47]/.test(numStr)) return 'American Express';
+      if (/^6(?:011|5)/.test(numStr)) return 'Discover';
+      if (/^3[068]/.test(numStr)) return 'Diners Club';
+      if (/^35/.test(numStr)) return 'JCB';
+      return 'Unknown';
+    }
+
+    function formatCardNumber(value) {
+      const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+      const matches = v.match(/\d{4,16}/g);
+      const match = matches && matches[0] || '';
+      const parts = [];
+      for (let i = 0, len = match.length; i < len; i += 4) {
+        parts.push(match.substring(i, i + 4));
+      }
+      if (parts.length) {
+        return parts.join(' ');
+      } else {
+        return v;
+      }
+    }
+
+    cardNumber.addEventListener('input', (e) => {
+      e.target.value = formatCardNumber(e.target.value);
+    });
+
+    validateBtn.addEventListener('click', () => {
+      const num = cardNumber.value.replace(/\s/g, '');
+      if (!num || num.length < 13) {
+        status.textContent = 'Enter a valid card number.';
+        isValid.textContent = '-';
+        cardType.textContent = '-';
+        return;
+      }
+      const valid = luhnCheck(num);
+      const type = getCardType(num);
+      isValid.textContent = valid ? '✓ Valid' : '✗ Invalid';
+      isValid.style.color = valid ? 'var(--accent-color)' : 'var(--text-secondary)';
+      cardType.textContent = type;
+      status.textContent = valid ? 'Card number is valid.' : 'Card number is invalid.';
+    });
+
+    cardNumber.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        validateBtn.click();
+      }
+    });
+  });
+</script>
+
   </div>
 </main>
 
