@@ -45,47 +45,63 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Route Distance Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>route-distance-calculator</code></li>
-        <li>Description: Calculate distance along a route with multiple waypoints. Free GIS tool.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Route Distance Calculator</h2>
+    <p>Calculate distance along a route with multiple waypoints. Free GIS tool.</p>
+
+<p style="color: var(--text-secondary); margin-bottom:0.75rem;">Enter waypoints as "lat,lon" (one per line)</p>
+<textarea id="waypoints" rows="6" placeholder="40.7128,-74.0060&#10;40.7589,-73.9851&#10;40.7614,-73.9776" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: monospace; resize: vertical;"></textarea>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate Distance</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Total Distance</p>
+  <h3 id="result" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const text = document.getElementById('waypoints').value.trim();
+    if (!text) {
+      document.getElementById('status').textContent = 'Enter waypoints.';
+      return;
+    }
+    
+    const lines = text.split('\n').filter(l => l.trim());
+    if (lines.length < 2) {
+      document.getElementById('status').textContent = 'Enter at least 2 waypoints.';
+      return;
+    }
+    
+    const points = [];
+    for (const line of lines) {
+      const parts = line.split(',').map(s => parseFloat(s.trim()));
+      if (parts.length !== 2 || !isFinite(parts[0]) || !isFinite(parts[1])) {
+        document.getElementById('status').textContent = 'Invalid format. Use "lat,lon" per line.';
+        return;
+      }
+      points.push({ lat: parts[0], lon: parts[1] });
+    }
+    
+    let total = 0;
+    for (let i = 0; i < points.length - 1; i++) {
+      total += haversine(points[i].lat, points[i].lon, points[i+1].lat, points[i+1].lon);
+    }
+    
+    document.getElementById('result').textContent = total.toFixed(2) + ' km';
+    document.getElementById('status').textContent = `Calculated distance for ${points.length} waypoints using Haversine formula.`;
+  });
+</script>
+
   </div>
 </main>
 

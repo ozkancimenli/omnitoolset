@@ -45,47 +45,57 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Correlation Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>correlation-calculator</code></li>
-        <li>Description: Calculate correlation coefficient between two variables. Free statistics calculator.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Correlation Calculator</h2>
+    <p>Calculate correlation coefficient between two variables. Free statistics calculator.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">X values (comma-separated)</label>
+    <textarea id="xValues" rows="4" placeholder="1, 2, 3, 4, 5" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Y values (comma-separated)</label>
+    <textarea id="yValues" rows="4" placeholder="2, 4, 6, 8, 10" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+  </div>
+</div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate Correlation</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Correlation Coefficient (r)</p>
+  <h3 id="correlation" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function calculateCorrelation(x, y) {
+    if (x.length !== y.length || x.length === 0) return null;
+    const n = x.length;
+    const sumX = x.reduce((a, b) => a + b, 0);
+    const sumY = y.reduce((a, b) => a + b, 0);
+    const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+    const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+    const sumY2 = y.reduce((sum, yi) => sum + yi * yi, 0);
+    const numerator = n * sumXY - sumX * sumY;
+    const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+    return denominator === 0 ? 0 : numerator / denominator;
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const xStr = document.getElementById('xValues').value;
+    const yStr = document.getElementById('yValues').value;
+    const x = xStr.split(',').map(s => parseFloat(s.trim())).filter(n => isFinite(n));
+    const y = yStr.split(',').map(s => parseFloat(s.trim())).filter(n => isFinite(n));
+    
+    if (x.length === 0 || y.length === 0 || x.length !== y.length) {
+      document.getElementById('status').textContent = 'Enter equal number of X and Y values.';
+      return;
+    }
+    
+    const r = calculateCorrelation(x, y);
+    document.getElementById('correlation').textContent = r.toFixed(4);
+    document.getElementById('status').textContent = `Correlation calculated (${x.length} data points).`;
+  });
+</script>
+
   </div>
 </main>
 

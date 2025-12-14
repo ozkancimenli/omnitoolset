@@ -45,47 +45,69 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Heat Transfer Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>heat-transfer-calculator</code></li>
-        <li>Description: Calculate heat transfer, thermal conductivity, and heat flux. Free mechanical engineering calculator.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Heat Transfer Calculator</h2>
+    <p>Calculate heat transfer, thermal conductivity, and heat flux. Free mechanical engineering calculator.</p>
+
+<p style="color: var(--text-secondary); margin-bottom:0.75rem;">Enter any three values to calculate the fourth (Q = k × A × ΔT / L)</p>
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Heat Transfer (W)</label>
+    <input id="q" type="number" placeholder="1000" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Thermal Conductivity (W/m·K)</label>
+    <input id="k" type="number" placeholder="50" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Area (m²)</label>
+    <input id="a" type="number" placeholder="1" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Temperature Difference (K)</label>
+    <input id="dt" type="number" placeholder="20" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Thickness (m)</label>
+    <input id="l" type="number" placeholder="0.1" step="0.001" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Heat Transfer (W)</p>
+  <h3 id="result" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const q = parseFloat(document.getElementById('q').value);
+    const k = parseFloat(document.getElementById('k').value);
+    const a = parseFloat(document.getElementById('a').value);
+    const dt = parseFloat(document.getElementById('dt').value);
+    const l = parseFloat(document.getElementById('l').value);
+    
+    const hasQ = isFinite(q) && q > 0;
+    const hasK = isFinite(k) && k > 0;
+    const hasA = isFinite(a) && a > 0;
+    const hasDT = isFinite(dt) && dt > 0;
+    const hasL = isFinite(l) && l > 0;
+    const count = (hasQ ? 1 : 0) + (hasK ? 1 : 0) + (hasA ? 1 : 0) + (hasDT ? 1 : 0) + (hasL ? 1 : 0);
+    
+    if (count < 4) {
+      document.getElementById('status').textContent = 'Enter at least 4 values.';
+      return;
+    }
+    
+    let resultQ = q;
+    if (!hasQ && hasK && hasA && hasDT && hasL) {
+      resultQ = (k * a * dt) / l;
+    }
+    
+    document.getElementById('result').textContent = resultQ.toFixed(2) + ' W';
+    document.getElementById('status').textContent = 'Calculated using Q = k × A × ΔT / L.';
+  });
+</script>
+
   </div>
 </main>
 

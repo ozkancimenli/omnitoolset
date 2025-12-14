@@ -45,47 +45,123 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Git Command Generator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>git-command-generator</code></li>
-        <li>Description: Generate Git commands for common operations. Free developer tool.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Git Command Generator</h2>
+    <p>Generate Git commands for common operations. Free developer tool.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Operation</label>
+    <select id="operation" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="clone">Clone Repository</option>
+      <option value="init">Initialize Repository</option>
+      <option value="add">Add Files</option>
+      <option value="commit">Commit Changes</option>
+      <option value="push">Push to Remote</option>
+      <option value="pull">Pull from Remote</option>
+      <option value="branch">Create Branch</option>
+      <option value="checkout">Checkout Branch</option>
+      <option value="merge">Merge Branch</option>
+      <option value="status">Check Status</option>
+      <option value="log">View Log</option>
+    </select>
+  </div>
+  <div id="paramContainer"></div>
+</div>
+<button class="btn" id="generateBtn" style="margin-top:0.75rem;">Generate Command</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem;">
+  <p class="tool-description" style="margin:0 0 0.5rem 0;">Git Command</p>
+  <code id="command" style="display:block; padding:0.75rem; background: var(--bg-color); border:1px solid var(--border-color); border-radius:10px; font-family: monospace; color: var(--text-primary); word-break:break-all;">-</code>
+</div>
+<div style="display:flex; gap:0.75rem; margin-top:0.75rem;">
+  <button class="btn" onclick="copyCommand()">Copy</button>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function updateParams() {
+    const op = document.getElementById('operation').value;
+    const container = document.getElementById('paramContainer');
+    container.innerHTML = '';
+    
+    if (op === 'clone') {
+      container.innerHTML = '<div><label style="color: var(--text-secondary);">Repository URL</label><input id="param1" type="text" placeholder="https://github.com/user/repo.git" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></div>';
+    } else if (op === 'add') {
+      container.innerHTML = '<div><label style="color: var(--text-secondary);">Files (or . for all)</label><input id="param1" type="text" placeholder="." style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></div>';
+    } else if (op === 'commit') {
+      container.innerHTML = '<div><label style="color: var(--text-secondary);">Message</label><input id="param1" type="text" placeholder="Initial commit" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></div>';
+    } else if (op === 'push' || op === 'pull') {
+      container.innerHTML = '<div><label style="color: var(--text-secondary);">Remote (default: origin)</label><input id="param1" type="text" placeholder="origin" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></div><div><label style="color: var(--text-secondary);">Branch</label><input id="param2" type="text" placeholder="main" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></div>';
+    } else if (op === 'branch' || op === 'checkout') {
+      container.innerHTML = '<div><label style="color: var(--text-secondary);">Branch Name</label><input id="param1" type="text" placeholder="feature-branch" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></div>';
+    } else if (op === 'merge') {
+      container.innerHTML = '<div><label style="color: var(--text-secondary);">Branch to Merge</label><input id="param1" type="text" placeholder="feature-branch" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></div>';
+    }
+  }
+
+  document.getElementById('operation').addEventListener('change', updateParams);
+  updateParams();
+
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    const op = document.getElementById('operation').value;
+    let command = 'git ';
+    
+    switch (op) {
+      case 'clone':
+        const url = document.getElementById('param1')?.value || '';
+        command += `clone ${url}`;
+        break;
+      case 'init':
+        command += 'init';
+        break;
+      case 'add':
+        const files = document.getElementById('param1')?.value || '.';
+        command += `add ${files}`;
+        break;
+      case 'commit':
+        const msg = document.getElementById('param1')?.value || 'Update';
+        command += `commit -m "${msg}"`;
+        break;
+      case 'push':
+        const remote1 = document.getElementById('param1')?.value || 'origin';
+        const branch1 = document.getElementById('param2')?.value || 'main';
+        command += `push ${remote1} ${branch1}`;
+        break;
+      case 'pull':
+        const remote2 = document.getElementById('param1')?.value || 'origin';
+        const branch2 = document.getElementById('param2')?.value || 'main';
+        command += `pull ${remote2} ${branch2}`;
+        break;
+      case 'branch':
+        const branchName1 = document.getElementById('param1')?.value || '';
+        command += `branch ${branchName1}`;
+        break;
+      case 'checkout':
+        const branchName2 = document.getElementById('param1')?.value || '';
+        command += `checkout ${branchName2}`;
+        break;
+      case 'merge':
+        const branchName3 = document.getElementById('param1')?.value || '';
+        command += `merge ${branchName3}`;
+        break;
+      case 'status':
+        command += 'status';
+        break;
+      case 'log':
+        command += 'log --oneline';
+        break;
+    }
+    
+    document.getElementById('command').textContent = command;
+    document.getElementById('status').textContent = 'Command generated.';
+  });
+
+  function copyCommand() {
+    document.getElementById('command').select();
+    document.execCommand('copy');
+    document.getElementById('status').textContent = 'Command copied!';
+  }
+</script>
+
   </div>
 </main>
 

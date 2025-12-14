@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CSS Minify - Minify CSS Code | OmniToolset</title>
+  <title>CSS Minify | OmniToolset</title>
   <meta name="description" content="Minify CSS code by removing whitespace. Free, online, no registration required.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.omnitoolset.com/tools/css-minify.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.omnitoolset.com/tools/css-minify.html">
-  <meta property="og:title" content="CSS Minify - Minify CSS Code | OmniToolset">
+  <meta property="og:title" content="CSS Minify | OmniToolset">
   <meta property="og:description" content="Minify CSS code by removing whitespace. Free, online, no registration required.">
   <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -18,7 +18,7 @@
   <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://www.omnitoolset.com/tools/css-minify.html">
-  <meta name="twitter:title" content="CSS Minify - Minify CSS Code | OmniToolset">
+  <meta name="twitter:title" content="CSS Minify | OmniToolset">
   <meta name="twitter:description" content="Minify CSS code by removing whitespace. Free, online, no registration required.">
   <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
   <link rel="stylesheet" href="/styles.css">
@@ -45,47 +45,55 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: CSS Minify - Minify CSS Code</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>css-minify</code></li>
-        <li>Description: Minify CSS code by removing whitespace. Free, online, no registration required.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>CSS Minify</h2>
+    <p>Minify CSS code by removing whitespace. Free, online, no registration required.</p>
+
+<textarea id="inputCode" rows="12" placeholder="Paste your CSS code here..." style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: 'Courier New', monospace; resize: vertical;"></textarea>
+<button class="btn" id="minifyBtn" style="margin-top:0.75rem;">Minify CSS</button>
+<textarea id="outputCode" rows="12" placeholder="Minified CSS will appear here" readonly style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: 'Courier New', monospace; resize: vertical; margin-top:1rem;"></textarea>
+<div style="display:flex; gap:0.75rem; margin-top:0.75rem;">
+  <button class="btn" onclick="copyCode()">Copy</button>
+  <button class="btn" onclick="clearCode()">Clear</button>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function minifyCSS(css) {
+    return css
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\s+/g, ' ')
+      .replace(/\s*([{}:;,])\s*/g, '$1')
+      .replace(/;\s*}/g, '}')
+      .trim();
+  }
+
+  document.getElementById('minifyBtn').addEventListener('click', () => {
+    const input = document.getElementById('inputCode').value;
+    if (!input.trim()) {
+      document.getElementById('status').textContent = 'Enter CSS code.';
+      return;
+    }
+    const minified = minifyCSS(input);
+    document.getElementById('outputCode').value = minified;
+    const originalSize = input.length;
+    const minifiedSize = minified.length;
+    const savings = ((originalSize - minifiedSize) / originalSize * 100).toFixed(1);
+    document.getElementById('status').textContent = `Minified. Size: ${originalSize} → ${minifiedSize} bytes (${savings}% reduction).`;
+  });
+
+  function copyCode() {
+    document.getElementById('outputCode').select();
+    document.execCommand('copy');
+    document.getElementById('status').textContent = 'Copied to clipboard!';
+  }
+
+  function clearCode() {
+    document.getElementById('inputCode').value = '';
+    document.getElementById('outputCode').value = '';
+    document.getElementById('status').textContent = 'Cleared.';
+  }
+</script>
+
   </div>
 </main>
 

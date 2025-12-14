@@ -45,47 +45,62 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Anagram Generator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>anagram-generator</code></li>
-        <li>Description: Generate anagrams from words. Free word tool for students and writers.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Anagram Generator</h2>
+    <p>Generate anagrams from words. Free word tool for students and writers.</p>
+
+<input id="wordInput" type="text" placeholder="Enter a word (e.g., 'listen')" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+<button class="btn" id="generateBtn" style="margin-top:0.75rem;">Generate Anagrams</button>
+<textarea id="outputText" rows="10" placeholder="Anagrams will appear here" readonly style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; resize: vertical; margin-top:1rem;"></textarea>
+<div style="display:flex; gap:0.75rem; margin-top:0.75rem;">
+  <button class="btn" onclick="copyText()">Copy</button>
+  <button class="btn" onclick="clearText()">Clear</button>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function generateAnagrams(word) {
+    if (word.length > 8) return ['Word too long. Maximum 8 characters.'];
+    const chars = word.toLowerCase().split('');
+    const anagrams = new Set();
+    function permute(arr, prefix = '') {
+      if (arr.length === 0) {
+        anagrams.add(prefix);
+        return;
+      }
+      for (let i = 0; i < arr.length; i++) {
+        const newArr = [...arr];
+        newArr.splice(i, 1);
+        permute(newArr, prefix + arr[i]);
+      }
+    }
+    permute(chars);
+    return Array.from(anagrams).sort();
+  }
+
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    const word = document.getElementById('wordInput').value.trim();
+    if (!word) {
+      document.getElementById('status').textContent = 'Enter a word.';
+      return;
+    }
+    const anagrams = generateAnagrams(word);
+    document.getElementById('outputText').value = anagrams.join('\n');
+    document.getElementById('status').textContent = `Generated ${anagrams.length} anagram(s).`;
+  });
+
+  function copyText() {
+    document.getElementById('outputText').select();
+    document.execCommand('copy');
+    document.getElementById('status').textContent = 'Copied!';
+  }
+
+  function clearText() {
+    document.getElementById('wordInput').value = '';
+    document.getElementById('outputText').value = '';
+    document.getElementById('status').textContent = 'Cleared.';
+  }
+</script>
+
   </div>
 </main>
 

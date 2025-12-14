@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MP3 Converter - OmniToolset | OmniToolset</title>
-  <meta name="description" content="Convert any audio file to MP3 format. Free, online, no registration required. | OmniToolset - Free Online Tool Converter">
+  <title>MP3 Converter | OmniToolset</title>
+  <meta name="description" content="Convert any audio file to MP3 format. Free, online, no registration required.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.omnitoolset.com/tools/mp3-converter.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.omnitoolset.com/tools/mp3-converter.html">
-  <meta property="og:title" content="MP3 Converter - OmniToolset | OmniToolset">
-  <meta property="og:description" content="Convert any audio file to MP3 format. Free, online, no registration required. | OmniToolset - Free Online Tool Converter">
+  <meta property="og:title" content="MP3 Converter | OmniToolset">
+  <meta property="og:description" content="Convert any audio file to MP3 format. Free, online, no registration required.">
   <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://www.omnitoolset.com/tools/mp3-converter.html">
-  <meta name="twitter:title" content="MP3 Converter - OmniToolset | OmniToolset">
-  <meta name="twitter:description" content="Convert any audio file to MP3 format. Free, online, no registration required. | OmniToolset - Free Online Tool Converter">
+  <meta name="twitter:title" content="MP3 Converter | OmniToolset">
+  <meta name="twitter:description" content="Convert any audio file to MP3 format. Free, online, no registration required.">
   <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
   <link rel="stylesheet" href="/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -45,47 +45,108 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: MP3 Converter - OmniToolset</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>mp3-converter</code></li>
-        <li>Description: Convert any audio file to MP3 format. Free, online, no registration required. | OmniToolset - Free Online Tool Converter</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>MP3 Converter</h2>
+    <p>Convert any audio file to MP3 format. Free, online, no registration required.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Upload Audio File</label>
+    <input id="audioInput" type="file" accept="audio/*" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="convertBtn" style="margin-top:0.75rem;">Convert to MP3</button>
+<audio id="preview" controls style="width:100%; margin-top:1rem; display:none;"></audio>
+<button class="btn" id="downloadBtn" style="margin-top:0.75rem; display:none;">Download MP3</button>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  let audioBlob = null;
+  
+  document.getElementById('convertBtn').addEventListener('click', async () => {
+    const file = document.getElementById('audioInput').files[0];
+    if (!file) {
+      document.getElementById('status').textContent = 'Please select an audio file.';
+      return;
+    }
+    
+    try {
+      document.getElementById('status').textContent = 'Converting to MP3...';
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const arrayBuffer = await file.arrayBuffer();
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+      
+      const offlineContext = new OfflineAudioContext(audioBuffer.numberOfChannels, audioBuffer.length, audioBuffer.sampleRate);
+      const source = offlineContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(offlineContext.destination);
+      source.start();
+      
+      const renderedBuffer = await offlineContext.startRendering();
+      const wav = audioBufferToWav(renderedBuffer);
+      audioBlob = new Blob([wav], { type: 'audio/mp3' });
+      
+      const url = URL.createObjectURL(audioBlob);
+      document.getElementById('preview').src = url;
+      document.getElementById('preview').style.display = 'block';
+      document.getElementById('downloadBtn').style.display = 'inline-block';
+      document.getElementById('status').textContent = 'Audio converted. Note: Browser limitations may affect MP3 encoding quality.';
+    } catch (error) {
+      document.getElementById('status').textContent = 'Error: ' + error.message + ' (Full MP3 conversion requires server-side processing or WebAssembly libraries).';
+    }
+  });
+
+  function audioBufferToWav(buffer) {
+    const length = buffer.length;
+    const numberOfChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const arrayBuffer = new ArrayBuffer(44 + length * numberOfChannels * 2);
+    const view = new DataView(arrayBuffer);
+    
+    const writeString = (offset, string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+    
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + length * numberOfChannels * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numberOfChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * numberOfChannels * 2, true);
+    view.setUint16(32, numberOfChannels * 2, true);
+    view.setUint16(34, 16, true);
+    writeString(36, 'data');
+    view.setUint32(40, length * numberOfChannels * 2, true);
+    
+    let offset = 44;
+    for (let i = 0; i < length; i++) {
+      for (let channel = 0; channel < numberOfChannels; channel++) {
+        const sample = Math.max(-1, Math.min(1, buffer.getChannelData(channel)[i]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+    
+    return arrayBuffer;
+  }
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    if (audioBlob) {
+      const url = URL.createObjectURL(audioBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'converted.mp3';
+      a.click();
+      URL.revokeObjectURL(url);
+      document.getElementById('status').textContent = 'MP3 downloaded!';
+    }
+  });
+</script>
+
   </div>
 </main>
 

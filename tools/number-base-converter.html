@@ -45,47 +45,81 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Number Base Converter - Convert Between Number Bases</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>number-base-converter</code></li>
-        <li>Description: Convert numbers between different bases (binary, decimal, hexadecimal, octal). Free, online, no registration required. | OmniToolset - Free Online Tool Converter</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Number Base Converter</h2>
+    <p>Convert numbers between different bases (binary, decimal, hexadecimal, octal). Free, online, no registration required.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">From Base</label>
+    <select id="fromBase" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="2">Binary (2)</option>
+      <option value="8">Octal (8)</option>
+      <option value="10" selected>Decimal (10)</option>
+      <option value="16">Hexadecimal (16)</option>
+    </select>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">To Base</label>
+    <select id="toBase" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="2">Binary (2)</option>
+      <option value="8">Octal (8)</option>
+      <option value="10">Decimal (10)</option>
+      <option value="16" selected>Hexadecimal (16)</option>
+    </select>
+  </div>
+</div>
+<input id="inputNumber" type="text" placeholder="Enter number" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); margin-top:1rem;">
+<button class="btn" id="convertBtn" style="margin-top:0.75rem;">Convert</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Result</p>
+  <h3 id="result" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const inputNumber = document.getElementById('inputNumber');
+    const fromBase = document.getElementById('fromBase');
+    const toBase = document.getElementById('toBase');
+    const convertBtn = document.getElementById('convertBtn');
+    const result = document.getElementById('result');
+    const status = document.getElementById('status');
+
+    function convertBase(num, fromBase, toBase) {
+      const from = parseInt(fromBase);
+      const to = parseInt(toBase);
+      if (from === to) return num;
+      
+      let decimal = parseInt(num, from);
+      if (isNaN(decimal)) return null;
+      
+      if (to === 10) return decimal.toString();
+      return decimal.toString(to).toUpperCase();
+    }
+
+    convertBtn.addEventListener('click', () => {
+      const num = inputNumber.value.trim();
+      if (!num) {
+        status.textContent = 'Enter a number.';
+        result.textContent = '-';
+        return;
+      }
+      const converted = convertBase(num, fromBase.value, toBase.value);
+      if (converted === null) {
+        result.textContent = 'Invalid';
+        status.textContent = 'Invalid number for selected base.';
+      } else {
+        result.textContent = converted;
+        status.textContent = `${num} (base ${fromBase.value}) = ${converted} (base ${toBase.value})`;
+      }
+    });
+
+    inputNumber.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') convertBtn.click();
+    });
+  });
+</script>
+
   </div>
 </main>
 

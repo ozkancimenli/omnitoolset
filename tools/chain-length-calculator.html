@@ -45,47 +45,54 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Chain Length Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>chain-length-calculator</code></li>
-        <li>Description: Calculate chain length for sprockets. Free mechanical engineering calculator.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Chain Length Calculator</h2>
+    <p>Calculate chain length for sprockets. Free mechanical engineering calculator.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Sprocket 1 Teeth</label>
+    <input id="t1" type="number" placeholder="20" step="1" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Sprocket 2 Teeth</label>
+    <input id="t2" type="number" placeholder="40" step="1" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Center Distance (mm)</label>
+    <input id="c" type="number" placeholder="500" step="0.1" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Pitch (mm)</label>
+    <input id="p" type="number" placeholder="12.7" step="0.1" value="12.7" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Chain Length (links)</p>
+  <h3 id="result" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const t1 = parseFloat(document.getElementById('t1').value);
+    const t2 = parseFloat(document.getElementById('t2').value);
+    const c = parseFloat(document.getElementById('c').value);
+    const p = parseFloat(document.getElementById('p').value) || 12.7;
+    
+    if (!isFinite(t1) || t1 <= 0 || !isFinite(t2) || t2 <= 0 || !isFinite(c) || c <= 0 || !isFinite(p) || p <= 0) {
+      document.getElementById('status').textContent = 'Enter valid values.';
+      return;
+    }
+    
+    const L = 2 * (c / p) + (t1 + t2) / 2 + Math.pow((t2 - t1) / (2 * Math.PI), 2) * (p / c);
+    const links = Math.ceil(L);
+    
+    document.getElementById('result').textContent = links + ' links';
+    document.getElementById('status').textContent = `Calculated chain length (rounded up to nearest link).`;
+  });
+</script>
+
   </div>
 </main>
 

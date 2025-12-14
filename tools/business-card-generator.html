@@ -45,47 +45,78 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Business Card Generator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>business-card-generator</code></li>
-        <li>Description: Generate professional business cards. Free business card maker.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Business Card Generator</h2>
+    <p>Generate professional business cards. Free business card maker.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Name</label>
+    <input id="name" type="text" placeholder="John Doe" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Title</label>
+    <input id="title" type="text" placeholder="CEO" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Company</label>
+    <input id="company" type="text" placeholder="Company Name" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Email</label>
+    <input id="email" type="email" placeholder="john@example.com" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Phone</label>
+    <input id="phone" type="tel" placeholder="+1 234 567 8900" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Website</label>
+    <input id="website" type="url" placeholder="www.example.com" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="generateBtn" style="margin-top:0.75rem;">Generate Business Card</button>
+<div id="cardPreview" style="margin-top:1rem; padding:2rem; border:1px solid #ddd; border-radius:10px; background: white; max-width:400px; aspect-ratio: 1.75/1; display:none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+  <h3 id="previewName" style="margin:0 0 0.5rem 0; font-size:1.5rem;"></h3>
+  <p id="previewTitle" style="margin:0 0 0.5rem 0; color:#666; font-size:1rem;"></p>
+  <p id="previewCompany" style="margin:0 0 1rem 0; font-weight:bold; font-size:1.1rem;"></p>
+  <div style="border-top:1px solid #eee; padding-top:1rem; margin-top:1rem;">
+    <p id="previewEmail" style="margin:0.25rem 0; font-size:0.9rem;"></p>
+    <p id="previewPhone" style="margin:0.25rem 0; font-size:0.9rem;"></p>
+    <p id="previewWebsite" style="margin:0.25rem 0; font-size:0.9rem;"></p>
+  </div>
+</div>
+<button class="btn" id="printBtn" style="margin-top:0.75rem; display:none;">Print Business Card</button>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    const name = document.getElementById('name').value || 'Your Name';
+    const title = document.getElementById('title').value || 'Your Title';
+    const company = document.getElementById('company').value || 'Company Name';
+    const email = document.getElementById('email').value || '';
+    const phone = document.getElementById('phone').value || '';
+    const website = document.getElementById('website').value || '';
+    
+    document.getElementById('previewName').textContent = name;
+    document.getElementById('previewTitle').textContent = title;
+    document.getElementById('previewCompany').textContent = company;
+    document.getElementById('previewEmail').textContent = email || '';
+    document.getElementById('previewEmail').style.display = email ? 'block' : 'none';
+    document.getElementById('previewPhone').textContent = phone || '';
+    document.getElementById('previewPhone').style.display = phone ? 'block' : 'none';
+    document.getElementById('previewWebsite').textContent = website || '';
+    document.getElementById('previewWebsite').style.display = website ? 'block' : 'none';
+    
+    document.getElementById('cardPreview').style.display = 'block';
+    document.getElementById('printBtn').style.display = 'inline-block';
+    document.getElementById('status').textContent = 'Business card generated. Click Print to save as PDF.';
+  });
+
+  document.getElementById('printBtn').addEventListener('click', () => {
+    window.print();
+  });
+</script>
+
   </div>
 </main>
 

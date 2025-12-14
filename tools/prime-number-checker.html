@@ -45,47 +45,73 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Prime Number Checker</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>prime-number-checker</code></li>
-        <li>Description: Check if a number is prime and find prime factors. Free math tool for students.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Prime Number Checker</h2>
+    <p>Check if a number is prime and find prime factors. Free math tool for students.</p>
+
+<input id="number" type="number" placeholder="Enter a number" min="1" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+<button class="btn" id="checkBtn" style="margin-top:0.75rem;">Check</button>
+<div class="tools-grid" style="margin-top:1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Is Prime</p><h3 id="isPrime" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Prime Factors</p><h3 id="factors" class="tool-title" style="margin:0; font-size:1rem;">-</h3></div>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const number = document.getElementById('number');
+    const checkBtn = document.getElementById('checkBtn');
+    const isPrime = document.getElementById('isPrime');
+    const factors = document.getElementById('factors');
+    const status = document.getElementById('status');
+
+    function isPrimeNumber(n) {
+      if (n < 2) return false;
+      if (n === 2) return true;
+      if (n % 2 === 0) return false;
+      for (let i = 3; i * i <= n; i += 2) {
+        if (n % i === 0) return false;
+      }
+      return true;
+    }
+
+    function getPrimeFactors(n) {
+      const factors = [];
+      let d = 2;
+      while (d * d <= n) {
+        while (n % d === 0) {
+          factors.push(d);
+          n /= d;
+        }
+        d++;
+      }
+      if (n > 1) factors.push(n);
+      return factors;
+    }
+
+    checkBtn.addEventListener('click', () => {
+      const num = parseInt(number.value);
+      if (!num || num < 1) {
+        status.textContent = 'Enter a positive number.';
+        isPrime.textContent = '-';
+        factors.textContent = '-';
+        return;
+      }
+      const prime = isPrimeNumber(num);
+      const primeFactors = getPrimeFactors(num);
+      isPrime.textContent = prime ? '✓ Prime' : '✗ Not Prime';
+      isPrime.style.color = prime ? 'var(--accent-color)' : 'var(--text-secondary)';
+      factors.textContent = primeFactors.length > 0 ? primeFactors.join(' × ') : '1';
+      status.textContent = prime ? `${num} is a prime number.` : `${num} is not a prime number.`;
+    });
+
+    number.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        checkBtn.click();
+      }
+    });
+  });
+</script>
+
   </div>
 </main>
 

@@ -45,47 +45,105 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Roman Numeral Converter</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>roman-numeral-converter</code></li>
-        <li>Description: Convert between Roman numerals and Arabic numbers. Free converter for students. | OmniToolset - Free Online Tool Converter</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Roman Numeral Converter</h2>
+    <p>Convert between Roman numerals and Arabic numbers. Free converter for students.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Roman Numeral</label>
+    <input id="roman" type="text" placeholder="MMXXIV" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); text-transform: uppercase;">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Arabic Number</label>
+    <input id="arabic" type="number" placeholder="2024" min="1" max="3999" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<div style="display:flex; gap:0.75rem; margin-top:0.75rem;">
+  <button class="btn" onclick="convertToArabic()">Roman → Arabic</button>
+  <button class="btn" onclick="convertToRoman()">Arabic → Roman</button>
+</div>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Result</p>
+  <h3 id="result" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  const romanValues = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+
+  function romanToArabic(roman) {
+    const str = roman.toUpperCase().trim();
+    if (!/^[IVXLCDM]+$/.test(str)) return null;
+    let result = 0;
+    for (let i = 0; i < str.length; i++) {
+      const current = romanValues[str[i]];
+      const next = romanValues[str[i + 1]];
+      if (next && current < next) {
+        result += next - current;
+        i++;
+      } else {
+        result += current;
+      }
+    }
+    return result;
+  }
+
+  function arabicToRoman(num) {
+    if (num < 1 || num > 3999) return null;
+    const values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
+    const numerals = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I'];
+    let result = '';
+    for (let i = 0; i < values.length; i++) {
+      while (num >= values[i]) {
+        result += numerals[i];
+        num -= values[i];
+      }
+    }
+    return result;
+  }
+
+  function convertToArabic() {
+    const roman = document.getElementById('roman').value.trim();
+    const result = document.getElementById('result');
+    const status = document.getElementById('status');
+    if (!roman) {
+      status.textContent = 'Enter a Roman numeral.';
+      return;
+    }
+    const arabic = romanToArabic(roman);
+    if (arabic === null) {
+      result.textContent = 'Invalid';
+      status.textContent = 'Invalid Roman numeral.';
+    } else {
+      result.textContent = arabic;
+      document.getElementById('arabic').value = arabic;
+      status.textContent = `${roman} = ${arabic}`;
+    }
+  }
+
+  function convertToRoman() {
+    const arabic = parseInt(document.getElementById('arabic').value);
+    const result = document.getElementById('result');
+    const status = document.getElementById('status');
+    if (!arabic || arabic < 1 || arabic > 3999) {
+      status.textContent = 'Enter a number between 1 and 3999.';
+      result.textContent = '-';
+      return;
+    }
+    const roman = arabicToRoman(arabic);
+    result.textContent = roman;
+    document.getElementById('roman').value = roman;
+    status.textContent = `${arabic} = ${roman}`;
+  }
+
+  document.getElementById('roman').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') convertToArabic();
+  });
+  document.getElementById('arabic').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') convertToRoman();
+  });
+</script>
+
   </div>
 </main>
 

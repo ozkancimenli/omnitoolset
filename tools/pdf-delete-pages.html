@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Delete PDF Pages - Remove Pages from PDF | OmniToolset</title>
+  <title>Delete PDF Pages | OmniToolset</title>
   <meta name="description" content="Remove specific pages from PDF. Free, online, no registration required.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.omnitoolset.com/tools/pdf-delete-pages.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.omnitoolset.com/tools/pdf-delete-pages.html">
-  <meta property="og:title" content="Delete PDF Pages - Remove Pages from PDF | OmniToolset">
+  <meta property="og:title" content="Delete PDF Pages | OmniToolset">
   <meta property="og:description" content="Remove specific pages from PDF. Free, online, no registration required.">
   <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -18,13 +18,15 @@
   <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://www.omnitoolset.com/tools/pdf-delete-pages.html">
-  <meta name="twitter:title" content="Delete PDF Pages - Remove Pages from PDF | OmniToolset">
+  <meta name="twitter:title" content="Delete PDF Pages | OmniToolset">
   <meta name="twitter:description" content="Remove specific pages from PDF. Free, online, no registration required.">
   <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
   <link rel="stylesheet" href="/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <meta name="google-adsense-account" content="ca-pub-8640955536193345">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <header class="main-header">
@@ -45,47 +47,99 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Delete PDF Pages - Remove Pages from PDF</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>pdf-delete-pages</code></li>
-        <li>Description: Remove specific pages from PDF. Free, online, no registration required.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Delete PDF Pages</h2>
+    <p>Remove specific pages from PDF. Free, online, no registration required.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Upload PDF</label>
+    <input id="pdfInput" type="file" accept=".pdf" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Pages to Delete (e.g., 1,3,5-7)</label>
+    <input id="pagesToDelete" type="text" placeholder="1,3,5-7" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="deleteBtn" style="margin-top:0.75rem;">Delete Pages</button>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  
+  function parsePageRange(rangeStr, totalPages) {
+    const pages = new Set();
+    const parts = rangeStr.split(',');
+    for (const part of parts) {
+      const trimmed = part.trim();
+      if (trimmed.includes('-')) {
+        const [start, end] = trimmed.split('-').map(s => parseInt(s.trim()));
+        for (let i = start; i <= end; i++) {
+          if (i >= 1 && i <= totalPages) pages.add(i);
+        }
+      } else {
+        const page = parseInt(trimmed);
+        if (page >= 1 && page <= totalPages) pages.add(page);
+      }
+    }
+    return pages;
+  }
+  
+  document.getElementById('deleteBtn').addEventListener('click', async () => {
+    const file = document.getElementById('pdfInput').files[0];
+    const rangeStr = document.getElementById('pagesToDelete').value.trim();
+    
+    if (!file) {
+      document.getElementById('status').textContent = 'Please select a PDF file.';
+      return;
+    }
+    
+    if (!rangeStr) {
+      document.getElementById('status').textContent = 'Enter pages to delete.';
+      return;
+    }
+    
+    try {
+      document.getElementById('status').textContent = 'Processing PDF...';
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const pagesToDelete = parsePageRange(rangeStr, pdf.numPages);
+      
+      if (pagesToDelete.size === 0) {
+        document.getElementById('status').textContent = 'No valid pages to delete.';
+        return;
+      }
+      
+      const { jsPDF } = window.jspdf;
+      const newPdf = new jsPDF();
+      let pageAdded = false;
+      
+      for (let i = 1; i <= pdf.numPages; i++) {
+        if (!pagesToDelete.has(i)) {
+          if (pageAdded) newPdf.addPage();
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 1.5 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = newPdf.internal.pageSize.width;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          newPdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+          pageAdded = true;
+        }
+      }
+      
+      newPdf.save('pdf-without-pages.pdf');
+      document.getElementById('status').textContent = `Deleted ${pagesToDelete.size} page(s). PDF downloaded!`;
+    } catch (error) {
+      document.getElementById('status').textContent = 'Error: ' + error.message;
+    }
+  });
+</script>
+
   </div>
 </main>
 

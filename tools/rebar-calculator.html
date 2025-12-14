@@ -45,47 +45,52 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Rebar Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>rebar-calculator</code></li>
-        <li>Description: Calculate rebar weight and length. Free construction calculator for civil engineers.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Rebar Calculator</h2>
+    <p>Calculate rebar weight and length. Free construction calculator for civil engineers.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Diameter (mm)</label>
+    <input id="diameter" type="number" placeholder="12" step="0.1" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Length (m)</label>
+    <input id="length" type="number" placeholder="6" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Quantity</label>
+    <input id="quantity" type="number" placeholder="10" step="1" value="1" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate</button>
+<div class="tools-grid" style="margin-top:1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Weight per Bar (kg)</p><h3 id="resultWeight" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Total Weight (kg)</p><h3 id="resultTotal" class="tool-title" style="margin:0;">-</h3></div>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const d = parseFloat(document.getElementById('diameter').value);
+    const l = parseFloat(document.getElementById('length').value);
+    const qty = parseFloat(document.getElementById('quantity').value) || 1;
+    
+    if (!isFinite(d) || d <= 0 || !isFinite(l) || l <= 0 || !isFinite(qty) || qty <= 0) {
+      document.getElementById('status').textContent = 'Enter valid values.';
+      return;
+    }
+    
+    const rho = 7850;
+    const area = Math.PI * Math.pow(d / 1000 / 2, 2);
+    const weightPerBar = rho * area * l;
+    const totalWeight = weightPerBar * qty;
+    
+    document.getElementById('resultWeight').textContent = weightPerBar.toFixed(2) + ' kg';
+    document.getElementById('resultTotal').textContent = totalWeight.toFixed(2) + ' kg';
+    document.getElementById('status').textContent = 'Calculated rebar weight (steel density 7850 kg/m³).';
+  });
+</script>
+
   </div>
 </main>
 

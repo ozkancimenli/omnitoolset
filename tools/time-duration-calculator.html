@@ -45,47 +45,50 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Time Duration Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>time-duration-calculator</code></li>
-        <li>Description: Calculate time duration between two dates/times. Free time calculator.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Time Duration Calculator</h2>
+    <p>Calculate time duration between two dates/times. Free time calculator.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Start Date & Time</label>
+    <input id="startDateTime" type="datetime-local" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">End Date & Time</label>
+    <input id="endDateTime" type="datetime-local" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate Duration</button>
+<div class="tools-grid" style="margin-top:1rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Days</p><h3 id="days" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Hours</p><h3 id="hours" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Minutes</p><h3 id="minutes" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Seconds</p><h3 id="seconds" class="tool-title" style="margin:0;">-</h3></div>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const start = new Date(document.getElementById('startDateTime').value);
+    const end = new Date(document.getElementById('endDateTime').value);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      document.getElementById('status').textContent = 'Select valid dates and times.';
+      return;
+    }
+    const diff = Math.abs(end - start);
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    document.getElementById('days').textContent = days;
+    document.getElementById('hours').textContent = hours;
+    document.getElementById('minutes').textContent = minutes;
+    document.getElementById('seconds').textContent = seconds;
+    document.getElementById('status').textContent = 'Duration calculated.';
+  });
+</script>
+
   </div>
 </main>
 

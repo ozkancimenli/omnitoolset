@@ -45,47 +45,76 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Power Factor Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>power-factor-calculator</code></li>
-        <li>Description: Calculate power factor in AC circuits. Free electrical engineering calculator.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Power Factor Calculator</h2>
+    <p>Calculate power factor in AC circuits. Free electrical engineering calculator.</p>
+
+<p style="color: var(--text-secondary); margin-bottom:0.75rem;">Enter any three values to calculate the fourth (PF = P / (V × I))</p>
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Power Factor</label>
+    <input id="pf" type="number" placeholder="0.85" step="0.01" min="0" max="1" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Real Power (W)</label>
+    <input id="power" type="number" placeholder="850" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Voltage (V)</label>
+    <input id="voltage" type="number" placeholder="120" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Current (A)</label>
+    <input id="current" type="number" placeholder="8.33" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate</button>
+<div class="tools-grid" style="margin-top:1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Power Factor</p><h3 id="resultPF" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Real Power (W)</p><h3 id="resultP" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Apparent Power (VA)</p><h3 id="resultS" class="tool-title" style="margin:0;">-</h3></div>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const pf = parseFloat(document.getElementById('pf').value);
+    const p = parseFloat(document.getElementById('power').value);
+    const v = parseFloat(document.getElementById('voltage').value);
+    const i = parseFloat(document.getElementById('current').value);
+    
+    const hasPF = isFinite(pf) && pf >= 0 && pf <= 1;
+    const hasP = isFinite(p) && p > 0;
+    const hasV = isFinite(v) && v > 0;
+    const hasI = isFinite(i) && i > 0;
+    const count = (hasPF ? 1 : 0) + (hasP ? 1 : 0) + (hasV ? 1 : 0) + (hasI ? 1 : 0);
+    
+    if (count < 3) {
+      document.getElementById('status').textContent = 'Enter at least three values.';
+      return;
+    }
+    
+    let resultPF = pf, resultP = p, resultS = 0;
+    if (!hasPF && hasP && hasV && hasI) {
+      resultPF = p / (v * i);
+      resultS = v * i;
+    } else if (!hasP && hasPF && hasV && hasI) {
+      resultP = pf * v * i;
+      resultS = v * i;
+    } else if (!hasV && hasPF && hasP && hasI) {
+      const s = p / pf;
+      resultS = s;
+    } else if (!hasI && hasPF && hasP && hasV) {
+      const s = p / pf;
+      resultS = s;
+    }
+    
+    document.getElementById('resultPF').textContent = resultPF.toFixed(3);
+    document.getElementById('resultP').textContent = resultP.toFixed(2) + ' W';
+    document.getElementById('resultS').textContent = resultS.toFixed(2) + ' VA';
+    document.getElementById('status').textContent = 'Calculated using PF = P / (V × I).';
+  });
+</script>
+
   </div>
 </main>
 

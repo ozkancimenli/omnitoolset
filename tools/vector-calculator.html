@@ -45,47 +45,103 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Vector Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>vector-calculator</code></li>
-        <li>Description: Calculate vector operations: addition, subtraction, dot product, cross product. Free math calculator.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Vector Calculator</h2>
+    <p>Calculate vector operations: addition, subtraction, dot product, cross product. Free math calculator.</p>
+
+<p style="color: var(--text-secondary); margin-bottom:0.75rem;">Enter 3D vectors (comma-separated: x,y,z)</p>
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Vector A (e.g., 1,2,3)</label>
+    <input id="vectorA" type="text" placeholder="1,2,3" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Vector B (e.g., 4,5,6)</label>
+    <input id="vectorB" type="text" placeholder="4,5,6" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Operation</label>
+    <select id="operation" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="+">+ (Add)</option>
+      <option value="-">- (Subtract)</option>
+      <option value="dot">· (Dot Product)</option>
+      <option value="cross">× (Cross Product)</option>
+      <option value="magnitude">|A| (Magnitude A)</option>
+    </select>
+  </div>
+</div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem;">
+  <p class="tool-description" style="margin:0 0 0.5rem 0;">Result</p>
+  <h3 id="result" class="tool-title" style="margin:0; font-family: monospace;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function parseVector(str) {
+    const nums = str.split(',').map(s => parseFloat(s.trim()));
+    if (nums.length !== 3 || nums.some(n => !isFinite(n))) return null;
+    return nums;
+  }
+
+  function vectorAdd(a, b) {
+    return [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+  }
+
+  function vectorSubtract(a, b) {
+    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  }
+
+  function dotProduct(a, b) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  }
+
+  function crossProduct(a, b) {
+    return [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0]
+    ];
+  }
+
+  function magnitude(a) {
+    return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+  }
+
+  function formatVector(v) {
+    if (typeof v === 'number') return v.toFixed(4);
+    return `[${v[0].toFixed(2)}, ${v[1].toFixed(2)}, ${v[2].toFixed(2)}]`;
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const a = parseVector(document.getElementById('vectorA').value);
+    const b = parseVector(document.getElementById('vectorB').value);
+    const op = document.getElementById('operation').value;
+    
+    if (!a) {
+      document.getElementById('status').textContent = 'Enter valid vector A (x,y,z).';
+      return;
+    }
+    
+    let result;
+    if (op === 'magnitude') {
+      result = magnitude(a);
+      document.getElementById('result').textContent = result.toFixed(4);
+    } else {
+      if (!b) {
+        document.getElementById('status').textContent = 'Enter valid vector B (x,y,z).';
+        return;
+      }
+      if (op === '+') result = vectorAdd(a, b);
+      else if (op === '-') result = vectorSubtract(a, b);
+      else if (op === 'dot') result = dotProduct(a, b);
+      else if (op === 'cross') result = crossProduct(a, b);
+      document.getElementById('result').textContent = formatVector(result);
+    }
+    
+    document.getElementById('status').textContent = 'Vector calculated.';
+  });
+</script>
+
   </div>
 </main>
 

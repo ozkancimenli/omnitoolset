@@ -45,47 +45,124 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Color Palette Generator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>color-palette-generator</code></li>
-        <li>Description: Generate beautiful color palettes for your design projects. Free color scheme generator for developers and designers.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Color Palette Generator</h2>
+    <p>Generate beautiful color palettes for your design projects. Free color scheme generator for developers and designers.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Base Color</label>
+    <input id="baseColor" type="color" value="#3498db" style="width:100%; padding:0.5rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); height:50px;">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Palette Type</label>
+    <select id="type" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="monochromatic">Monochromatic</option>
+      <option value="analogous">Analogous</option>
+      <option value="complementary">Complementary</option>
+      <option value="triadic">Triadic</option>
+    </select>
+  </div>
+</div>
+<button class="btn" id="generateBtn" style="margin-top:0.75rem;">Generate Palette</button>
+<div id="palette" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:0.5rem; margin-top:1rem;">
+</div>
+<div style="margin-top:1rem;">
+  <label style="color: var(--text-secondary);">Hex Codes</label>
+  <textarea id="hexCodes" rows="2" readonly style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: monospace; resize: vertical;"></textarea>
+</div>
+<button class="btn" id="copyBtn" style="margin-top:0.75rem;">Copy Hex Codes</button>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function hexToHsl(hex) {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    if (max === min) {
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        case b: h = ((r - g) / d + 4) / 6; break;
+      }
+    }
+    return [h * 360, s * 100, l * 100];
+  }
+
+  function hslToHex(h, s, l) {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = n => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  }
+
+  function generatePalette(baseHex, type) {
+    const [h, s, l] = hexToHsl(baseHex);
+    const colors = [];
+    
+    if (type === 'monochromatic') {
+      for (let i = 0; i < 5; i++) {
+        const newL = Math.max(10, Math.min(90, l + (i - 2) * 15));
+        colors.push(hslToHex(h, s, newL));
+      }
+    } else if (type === 'analogous') {
+      for (let i = 0; i < 5; i++) {
+        const newH = (h + (i - 2) * 30 + 360) % 360;
+        colors.push(hslToHex(newH, s, l));
+      }
+    } else if (type === 'complementary') {
+      colors.push(baseHex);
+      colors.push(hslToHex((h + 180) % 360, s, l));
+      colors.push(hslToHex(h, s, Math.max(10, l - 20)));
+      colors.push(hslToHex((h + 180) % 360, s, Math.max(10, l - 20)));
+      colors.push(hslToHex(h, s, Math.min(90, l + 20)));
+    } else if (type === 'triadic') {
+      colors.push(baseHex);
+      colors.push(hslToHex((h + 120) % 360, s, l));
+      colors.push(hslToHex((h + 240) % 360, s, l));
+      colors.push(hslToHex(h, s, Math.max(10, l - 15)));
+      colors.push(hslToHex((h + 120) % 360, s, Math.min(90, l + 15)));
+    }
+    
+    return colors;
+  }
+
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    const base = document.getElementById('baseColor').value;
+    const type = document.getElementById('type').value;
+    const colors = generatePalette(base, type);
+    const palette = document.getElementById('palette');
+    palette.innerHTML = '';
+    colors.forEach(color => {
+      const div = document.createElement('div');
+      div.style.cssText = `background:${color}; padding:2rem; border-radius:8px; text-align:center; color:${parseInt(color.slice(1,3),16) + parseInt(color.slice(3,5),16) + parseInt(color.slice(5,7),16) > 382 ? '#000' : '#fff'};`;
+      div.textContent = color;
+      palette.appendChild(div);
+    });
+    document.getElementById('hexCodes').value = colors.join(', ');
+    document.getElementById('status').textContent = 'Generated ' + type + ' palette.';
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const codes = document.getElementById('hexCodes').value;
+    navigator.clipboard.writeText(codes).then(() => {
+      document.getElementById('status').textContent = 'Hex codes copied to clipboard!';
+    });
+  });
+
+  document.getElementById('generateBtn').click();
+</script>
+
   </div>
 </main>
 

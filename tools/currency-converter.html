@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Currency Converter - Convert Between Currencies | OmniToolset</title>
-  <meta name="description" content="Convert between different currencies. Free, online, no registration required. | OmniToolset - Free Online Tool Converter">
+  <title>Currency Converter | OmniToolset</title>
+  <meta name="description" content="Convert between different currencies. Free, online, no registration required.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.omnitoolset.com/tools/currency-converter.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.omnitoolset.com/tools/currency-converter.html">
-  <meta property="og:title" content="Currency Converter - Convert Between Currencies | OmniToolset">
-  <meta property="og:description" content="Convert between different currencies. Free, online, no registration required. | OmniToolset - Free Online Tool Converter">
+  <meta property="og:title" content="Currency Converter | OmniToolset">
+  <meta property="og:description" content="Convert between different currencies. Free, online, no registration required.">
   <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://www.omnitoolset.com/tools/currency-converter.html">
-  <meta name="twitter:title" content="Currency Converter - Convert Between Currencies | OmniToolset">
-  <meta name="twitter:description" content="Convert between different currencies. Free, online, no registration required. | OmniToolset - Free Online Tool Converter">
+  <meta name="twitter:title" content="Currency Converter | OmniToolset">
+  <meta name="twitter:description" content="Convert between different currencies. Free, online, no registration required.">
   <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
   <link rel="stylesheet" href="/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -45,47 +45,76 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Currency Converter - Convert Between Currencies</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>currency-converter</code></li>
-        <li>Description: Convert between different currencies. Free, online, no registration required. | OmniToolset - Free Online Tool Converter</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Currency Converter</h2>
+    <p>Convert between different currencies. Free, online, no registration required.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Amount</label>
+    <input id="amount" type="number" placeholder="100" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">From</label>
+    <select id="fromCurrency" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="USD">USD - US Dollar</option>
+      <option value="EUR">EUR - Euro</option>
+      <option value="GBP">GBP - British Pound</option>
+      <option value="JPY">JPY - Japanese Yen</option>
+      <option value="CAD">CAD - Canadian Dollar</option>
+      <option value="AUD">AUD - Australian Dollar</option>
+      <option value="CHF">CHF - Swiss Franc</option>
+      <option value="CNY">CNY - Chinese Yuan</option>
+      <option value="INR">INR - Indian Rupee</option>
+      <option value="TRY">TRY - Turkish Lira</option>
+    </select>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">To</label>
+    <select id="toCurrency" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="EUR">EUR - Euro</option>
+      <option value="USD" selected>USD - US Dollar</option>
+      <option value="GBP">GBP - British Pound</option>
+      <option value="JPY">JPY - Japanese Yen</option>
+      <option value="CAD">CAD - Canadian Dollar</option>
+      <option value="AUD">AUD - Australian Dollar</option>
+      <option value="CHF">CHF - Swiss Franc</option>
+      <option value="CNY">CNY - Chinese Yuan</option>
+      <option value="INR">INR - Indian Rupee</option>
+      <option value="TRY">TRY - Turkish Lira</option>
+    </select>
+  </div>
+</div>
+<button class="btn" id="convertBtn" style="margin-top:0.75rem;">Convert</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Result</p>
+  <h3 id="result" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  const rates = {
+    USD: 1, EUR: 0.92, GBP: 0.79, JPY: 149.5, CAD: 1.35, AUD: 1.52, CHF: 0.88, CNY: 7.24, INR: 83.1, TRY: 30.2
+  };
+
+  document.getElementById('convertBtn').addEventListener('click', () => {
+    const amount = Number(document.getElementById('amount').value);
+    const from = document.getElementById('fromCurrency').value;
+    const to = document.getElementById('toCurrency').value;
+    
+    if (!isFinite(amount) || amount < 0) {
+      document.getElementById('status').textContent = 'Enter a valid amount.';
+      return;
+    }
+    
+    const fromRate = rates[from];
+    const toRate = rates[to];
+    const result = (amount / fromRate) * toRate;
+    
+    document.getElementById('result').textContent = result.toFixed(2) + ' ' + to;
+    document.getElementById('status').textContent = `Note: Rates are approximate. For real-time rates, use a financial API.`;
+  });
+</script>
+
   </div>
 </main>
 

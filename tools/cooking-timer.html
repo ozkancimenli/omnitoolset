@@ -45,47 +45,78 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Cooking Timer</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>cooking-timer</code></li>
-        <li>Description: Multiple cooking timers for your kitchen. Free cooking timer.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Cooking Timer</h2>
+    <p>Multiple cooking timers for your kitchen. Free cooking timer.</p>
+
+<div id="timers"></div>
+<button class="btn" onclick="addTimer()" style="margin-top:0.75rem;">Add Timer</button>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  let timerId = 0;
+  const timers = {};
+
+  function addTimer() {
+    const id = timerId++;
+    const div = document.createElement('div');
+    div.id = 'timer-' + id;
+    div.style.cssText = 'padding:1rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); margin-top:0.75rem;';
+    div.innerHTML = `
+      <div style="display:grid; gap:0.75rem; grid-template-columns: 2fr 1fr 1fr 1fr auto; align-items:end;">
+        <input type="text" placeholder="Timer name" class="timer-name" style="padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+        <input type="number" placeholder="Min" class="timer-min" min="0" max="59" style="padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+        <input type="number" placeholder="Sec" class="timer-sec" min="0" max="59" style="padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+        <div style="text-align:center; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color);">
+          <span class="timer-display" style="font-size:1.2rem; font-weight:600;">00:00</span>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn" onclick="startTimer(${id})" style="padding:0.5rem 1rem;">Start</button>
+          <button class="btn" onclick="stopTimer(${id})" style="padding:0.5rem 1rem;">Stop</button>
+          <button class="btn" onclick="removeTimer(${id})" style="padding:0.5rem 1rem;">Remove</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('timers').appendChild(div);
+  }
+
+  function startTimer(id) {
+    const timer = document.getElementById('timer-' + id);
+    const min = parseInt(timer.querySelector('.timer-min').value) || 0;
+    const sec = parseInt(timer.querySelector('.timer-sec').value) || 0;
+    let total = min * 60 + sec;
+    if (total <= 0) return;
+    
+    if (timers[id]) clearInterval(timers[id]);
+    
+    const display = timer.querySelector('.timer-display');
+    timers[id] = setInterval(() => {
+      if (total <= 0) {
+        clearInterval(timers[id]);
+        display.textContent = '00:00';
+        alert('Timer ' + (timer.querySelector('.timer-name').value || id) + ' finished!');
+        return;
+      }
+      const m = Math.floor(total / 60);
+      const s = total % 60;
+      display.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+      total--;
+    }, 1000);
+  }
+
+  function stopTimer(id) {
+    if (timers[id]) {
+      clearInterval(timers[id]);
+      delete timers[id];
+    }
+  }
+
+  function removeTimer(id) {
+    stopTimer(id);
+    const timer = document.getElementById('timer-' + id);
+    if (timer) timer.remove();
+  }
+</script>
+
   </div>
 </main>
 

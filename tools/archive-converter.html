@@ -4,27 +4,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Archive Converter - Convert Between Archive Formats | OmniToolset</title>
-  <meta name="description" content="Convert between archive formats. Free, online, no registration required. | OmniToolset - Free Online Tool Converter">
+  <title>Archive Converter | OmniToolset</title>
+  <meta name="description" content="Convert between archive formats (ZIP, RAR, 7Z, etc.). Free, online, no registration required.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.omnitoolset.com/tools/archive-converter.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.omnitoolset.com/tools/archive-converter.html">
-  <meta property="og:title" content="Archive Converter - Convert Between Archive Formats | OmniToolset">
-  <meta property="og:description" content="Convert between archive formats. Free, online, no registration required. | OmniToolset - Free Online Tool Converter">
+  <meta property="og:title" content="Archive Converter | OmniToolset">
+  <meta property="og:description" content="Convert between archive formats (ZIP, RAR, 7Z, etc.). Free, online, no registration required.">
   <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://www.omnitoolset.com/tools/archive-converter.html">
-  <meta name="twitter:title" content="Archive Converter - Convert Between Archive Formats | OmniToolset">
-  <meta name="twitter:description" content="Convert between archive formats. Free, online, no registration required. | OmniToolset - Free Online Tool Converter">
+  <meta name="twitter:title" content="Archive Converter | OmniToolset">
+  <meta name="twitter:description" content="Convert between archive formats (ZIP, RAR, 7Z, etc.). Free, online, no registration required.">
   <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
   <link rel="stylesheet" href="/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <meta name="google-adsense-account" content="ca-pub-8640955536193345">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
   <header class="main-header">
@@ -45,47 +46,64 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Archive Converter - Convert Between Archive Formats</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>archive-converter</code></li>
-        <li>Description: Convert between archive formats. Free, online, no registration required. | OmniToolset - Free Online Tool Converter</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Archive Converter</h2>
+    <p>Convert between archive formats (ZIP, RAR, 7Z, etc.). Free, online, no registration required.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Upload Archive File</label>
+    <input id="archiveInput" type="file" accept=".zip,.rar,.7z" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Convert To</label>
+    <select id="format" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="zip">ZIP</option>
+    </select>
+  </div>
+</div>
+<button class="btn" id="convertBtn" style="margin-top:0.75rem;">Convert Archive</button>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('convertBtn').addEventListener('click', async () => {
+    const file = document.getElementById('archiveInput').files[0];
+    const format = document.getElementById('format').value;
+    
+    if (!file) {
+      document.getElementById('status').textContent = 'Please select an archive file.';
+      return;
+    }
+    
+    try {
+      if (file.name.endsWith('.zip')) {
+        document.getElementById('status').textContent = 'ZIP file detected. Extracting and repacking...';
+        const zip = await JSZip.loadAsync(file);
+        const newZip = new JSZip();
+        
+        zip.forEach(async (relativePath, file) => {
+          if (!file.dir) {
+            const content = await file.async('blob');
+            newZip.file(relativePath, content);
+          }
+        });
+        
+        const blob = await newZip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'converted.zip';
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById('status').textContent = 'Archive converted and downloaded!';
+      } else {
+        document.getElementById('status').textContent = 'RAR and 7Z conversion requires specialized libraries. Please use dedicated archive conversion tools for best results.';
+      }
+    } catch (error) {
+      document.getElementById('status').textContent = 'Error: ' + error.message + ' (Archive conversion requires jszip library for ZIP files).';
+    }
+  });
+</script>
+
   </div>
 </main>
 

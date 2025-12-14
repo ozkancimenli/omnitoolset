@@ -45,47 +45,89 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Text to Speech</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>text-to-speech</code></li>
-        <li>Description: Convert text to speech audio. Free text to speech converter.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Text to Speech</h2>
+    <p>Convert text to speech audio. Free text to speech converter.</p>
+
+<textarea id="textInput" rows="6" placeholder="Enter text to convert to speech..." style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-top:1rem;">
+  <div>
+    <label style="color: var(--text-secondary);">Voice</label>
+    <select id="voice" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></select>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Rate</label>
+    <input id="rate" type="range" min="0.5" max="2" step="0.1" value="1" style="width:100%;">
+    <span id="rateValue" style="color: var(--text-secondary); font-size:0.9rem;">1.0</span>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Pitch</label>
+    <input id="pitch" type="range" min="0" max="2" step="0.1" value="1" style="width:100%;">
+    <span id="pitchValue" style="color: var(--text-secondary); font-size:0.9rem;">1.0</span>
+  </div>
+</div>
+<div style="display:flex; gap:0.75rem; margin-top:1rem;">
+  <button class="btn" id="speakBtn">Speak</button>
+  <button class="btn" id="stopBtn">Stop</button>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  let synth = window.speechSynthesis;
+  let utterance = null;
+
+  function loadVoices() {
+    const voices = synth.getVoices();
+    const voiceSelect = document.getElementById('voice');
+    voiceSelect.innerHTML = '';
+    voices.forEach((voice, i) => {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = voice.name + ' (' + voice.lang + ')';
+      voiceSelect.appendChild(option);
+    });
+  }
+
+  if (synth.onvoiceschanged !== undefined) {
+    synth.onvoiceschanged = loadVoices;
+  }
+  loadVoices();
+
+  document.getElementById('rate').addEventListener('input', (e) => {
+    document.getElementById('rateValue').textContent = e.target.value;
+  });
+
+  document.getElementById('pitch').addEventListener('input', (e) => {
+    document.getElementById('pitchValue').textContent = e.target.value;
+  });
+
+  document.getElementById('speakBtn').addEventListener('click', () => {
+    const text = document.getElementById('textInput').value;
+    if (!text.trim()) {
+      document.getElementById('status').textContent = 'Enter text to speak.';
+      return;
+    }
+    
+    synth.cancel();
+    utterance = new SpeechSynthesisUtterance(text);
+    const voices = synth.getVoices();
+    utterance.voice = voices[parseInt(document.getElementById('voice').value) || 0];
+    utterance.rate = parseFloat(document.getElementById('rate').value);
+    utterance.pitch = parseFloat(document.getElementById('pitch').value);
+    
+    utterance.onend = () => {
+      document.getElementById('status').textContent = 'Speech completed.';
+    };
+    
+    synth.speak(utterance);
+    document.getElementById('status').textContent = 'Speaking...';
+  });
+
+  document.getElementById('stopBtn').addEventListener('click', () => {
+    synth.cancel();
+    document.getElementById('status').textContent = 'Stopped.';
+  });
+</script>
+
   </div>
 </main>
 

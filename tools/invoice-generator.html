@@ -45,47 +45,104 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Invoice Generator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>invoice-generator</code></li>
-        <li>Description: Generate professional invoices. Free invoice maker for small businesses and freelancers.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
+  <div class="tool-container">
+    <h2>Invoice Generator</h2>
+    <p>Generate professional invoices. Free invoice maker for small businesses and freelancers.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">From (Your Name/Company)</label>
+    <input id="from" type="text" placeholder="Your Company Name" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">To (Client Name)</label>
+    <input id="to" type="text" placeholder="Client Name" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Invoice Number</label>
+    <input id="invoiceNum" type="text" placeholder="INV-001" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Date</label>
+    <input id="date" type="date" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Item Description</label>
+    <input id="item" type="text" placeholder="Service/Product" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Amount ($)</label>
+    <input id="amount" type="number" placeholder="100" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="generateBtn" style="margin-top:0.75rem;">Generate Invoice</button>
+<div id="invoicePreview" style="margin-top:1rem; padding:2rem; border:1px solid var(--border-color); border-radius:10px; background: white; max-width:800px; display:none;">
+  <div style="display:flex; justify-content:space-between; margin-bottom:2rem;">
+    <div>
+      <h3 id="previewFrom" style="margin:0;"></h3>
     </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
+    <div style="text-align:right;">
+      <h2 style="margin:0;">INVOICE</h2>
+      <p style="margin:0.5rem 0;">Invoice #: <span id="previewNum"></span></p>
+      <p style="margin:0.5rem 0;">Date: <span id="previewDate"></span></p>
     </div>
   </div>
-  <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+  <div style="margin-bottom:1rem;">
+    <p style="margin:0;"><strong>Bill To:</strong></p>
+    <p id="previewTo" style="margin:0.5rem 0;"></p>
+  </div>
+  <table style="width:100%; border-collapse:collapse; margin-bottom:1rem;">
+    <thead>
+      <tr style="border-bottom:2px solid #ddd;">
+        <th style="text-align:left; padding:0.75rem;">Description</th>
+        <th style="text-align:right; padding:0.75rem;">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="previewItem" style="padding:0.75rem;"></td>
+        <td id="previewAmount" style="text-align:right; padding:0.75rem;"></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr style="border-top:2px solid #ddd;">
+        <td style="text-align:right; padding:0.75rem; font-weight:bold;">Total:</td>
+        <td id="previewTotal" style="text-align:right; padding:0.75rem; font-weight:bold;"></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<button class="btn" id="printBtn" style="margin-top:0.75rem; display:none;">Print Invoice</button>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('date').valueAsDate = new Date();
+  
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    const from = document.getElementById('from').value || 'Your Company';
+    const to = document.getElementById('to').value || 'Client Name';
+    const num = document.getElementById('invoiceNum').value || 'INV-001';
+    const date = document.getElementById('date').value || new Date().toISOString().split('T')[0];
+    const item = document.getElementById('item').value || 'Service';
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    
+    document.getElementById('previewFrom').textContent = from;
+    document.getElementById('previewTo').textContent = to;
+    document.getElementById('previewNum').textContent = num;
+    document.getElementById('previewDate').textContent = date;
+    document.getElementById('previewItem').textContent = item;
+    document.getElementById('previewAmount').textContent = '$' + amount.toFixed(2);
+    document.getElementById('previewTotal').textContent = '$' + amount.toFixed(2);
+    
+    document.getElementById('invoicePreview').style.display = 'block';
+    document.getElementById('printBtn').style.display = 'inline-block';
+    document.getElementById('status').textContent = 'Invoice generated. Click Print to save as PDF.';
+  });
+
+  document.getElementById('printBtn').addEventListener('click', () => {
+    window.print();
+  });
+</script>
+
   </div>
 </main>
 

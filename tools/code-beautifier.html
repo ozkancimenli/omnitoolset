@@ -45,47 +45,144 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Code Beautifier</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>code-beautifier</code></li>
-        <li>Description: Beautify and format code in multiple languages. Free code formatter.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Code Beautifier</h2>
+    <p>Beautify and format code in multiple languages. Free code formatter.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Language</label>
+    <select id="language" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="javascript">JavaScript</option>
+      <option value="css">CSS</option>
+      <option value="html">HTML</option>
+      <option value="json">JSON</option>
+    </select>
+  </div>
+</div>
+<textarea id="inputCode" rows="12" placeholder="Paste your code here..." style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: 'Courier New', monospace; resize: vertical; margin-top:1rem;"></textarea>
+<button class="btn" id="beautifyBtn" style="margin-top:0.75rem;">Beautify Code</button>
+<textarea id="outputCode" rows="12" placeholder="Beautified code will appear here" readonly style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: 'Courier New', monospace; resize: vertical; margin-top:1rem;"></textarea>
+<div style="display:flex; gap:0.75rem; margin-top:0.75rem;">
+  <button class="btn" onclick="copyCode()">Copy</button>
+  <button class="btn" onclick="clearCode()">Clear</button>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function formatJavaScript(code) {
+    try {
+      let formatted = code.replace(/;\s*/g, ';\n').replace(/\{\s*/g, '{\n').replace(/\}\s*/g, '\n}\n');
+      formatted = formatted.replace(/,\s*/g, ', ').replace(/=\s*/g, ' = ').replace(/==\s*/g, ' == ').replace(/!=\s*/g, ' != ');
+      formatted = formatted.split('\n').map(line => line.trim()).filter(line => line.length > 0).join('\n');
+      let indent = 0;
+      const lines = formatted.split('\n');
+      const result = [];
+      for (let line of lines) {
+        if (line.includes('}')) indent = Math.max(0, indent - 1);
+        result.push('  '.repeat(indent) + line.trim());
+        if (line.includes('{')) indent++;
+      }
+      return result.join('\n');
+    } catch (e) {
+      return 'Error formatting code: ' + e.message;
+    }
+  }
+
+  function formatCSS(css) {
+    try {
+      css = css.replace(/\s+/g, ' ').trim();
+      let indent = 0;
+      let result = '';
+      let inRule = false;
+      for (let i = 0; i < css.length; i++) {
+        const char = css[i];
+        if (char === '{') {
+          result += ' {\n';
+          indent++;
+          inRule = true;
+        } else if (char === '}') {
+          indent--;
+          result += '\n' + '  '.repeat(indent) + '}';
+          inRule = false;
+        } else if (char === ';' && inRule) {
+          result += ';\n' + '  '.repeat(indent);
+        } else if (char === ':') {
+          result += ': ';
+        } else if (char !== ' ' || (result[result.length - 1] !== ' ' && result[result.length - 1] !== '\n')) {
+          result += char;
+        }
+      }
+      return result.split('\n').map(line => line.trim()).filter(line => line.length > 0).join('\n');
+    } catch (e) {
+      return 'Error formatting code: ' + e.message;
+    }
+  }
+
+  function formatHTML(html) {
+    try {
+      html = html.replace(/>\s+</g, '><').trim();
+      let indent = 0;
+      let result = '';
+      const selfClosing = ['br', 'hr', 'img', 'input', 'meta', 'link', 'area', 'base', 'col', 'embed', 'source', 'track', 'wbr'];
+      const tokens = html.match(/<[^>]+>|[^<]+/g) || [];
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        if (token.startsWith('</')) {
+          indent = Math.max(0, indent - 1);
+          result += '  '.repeat(indent) + token + '\n';
+        } else if (token.startsWith('<')) {
+          const tagName = token.match(/<\s*(\w+)/);
+          const isSelfClosing = tagName && selfClosing.includes(tagName[1].toLowerCase());
+          result += '  '.repeat(indent) + token + '\n';
+          if (!isSelfClosing && !token.includes('/>')) indent++;
+        } else if (token.trim()) {
+          result += '  '.repeat(indent) + token.trim() + '\n';
+        }
+      }
+      return result.trim();
+    } catch (e) {
+      return 'Error formatting code: ' + e.message;
+    }
+  }
+
+  function formatJSON(json) {
+    try {
+      const obj = JSON.parse(json);
+      return JSON.stringify(obj, null, 2);
+    } catch (e) {
+      return 'Error formatting JSON: ' + e.message;
+    }
+  }
+
+  document.getElementById('beautifyBtn').addEventListener('click', () => {
+    const input = document.getElementById('inputCode').value;
+    const lang = document.getElementById('language').value;
+    if (!input.trim()) {
+      document.getElementById('status').textContent = 'Enter code.';
+      return;
+    }
+    let formatted;
+    if (lang === 'javascript') formatted = formatJavaScript(input);
+    else if (lang === 'css') formatted = formatCSS(input);
+    else if (lang === 'html') formatted = formatHTML(input);
+    else if (lang === 'json') formatted = formatJSON(input);
+    document.getElementById('outputCode').value = formatted;
+    document.getElementById('status').textContent = 'Code beautified.';
+  });
+
+  function copyCode() {
+    document.getElementById('outputCode').select();
+    document.execCommand('copy');
+    document.getElementById('status').textContent = 'Copied to clipboard!';
+  }
+
+  function clearCode() {
+    document.getElementById('inputCode').value = '';
+    document.getElementById('outputCode').value = '';
+    document.getElementById('status').textContent = 'Cleared.';
+  }
+</script>
+
   </div>
 </main>
 

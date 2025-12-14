@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Base64 to Image - Convert Base64 to Image | OmniToolset</title>
+  <title>Base64 to Image | OmniToolset</title>
   <meta name="description" content="Convert Base64 string to image. Free, online, no registration required.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.omnitoolset.com/tools/base64-to-image.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.omnitoolset.com/tools/base64-to-image.html">
-  <meta property="og:title" content="Base64 to Image - Convert Base64 to Image | OmniToolset">
+  <meta property="og:title" content="Base64 to Image | OmniToolset">
   <meta property="og:description" content="Convert Base64 string to image. Free, online, no registration required.">
   <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -18,7 +18,7 @@
   <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://www.omnitoolset.com/tools/base64-to-image.html">
-  <meta name="twitter:title" content="Base64 to Image - Convert Base64 to Image | OmniToolset">
+  <meta name="twitter:title" content="Base64 to Image | OmniToolset">
   <meta name="twitter:description" content="Convert Base64 string to image. Free, online, no registration required.">
   <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
   <link rel="stylesheet" href="/styles.css">
@@ -45,47 +45,55 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Base64 to Image - Convert Base64 to Image</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>base64-to-image</code></li>
-        <li>Description: Convert Base64 string to image. Free, online, no registration required.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Base64 to Image</h2>
+    <p>Convert Base64 string to image. Free, online, no registration required.</p>
+
+<textarea id="base64Input" rows="6" placeholder="Paste Base64 string (data:image/... or plain base64)" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: monospace; resize: vertical;"></textarea>
+<button class="btn" id="convertBtn" style="margin-top:0.75rem;">Convert to Image</button>
+<div id="imageContainer" style="margin-top:1rem; text-align:center; display:none;">
+  <img id="imageOutput" style="max-width:100%; border:1px solid var(--border-color); border-radius:10px;" alt="Converted image">
+  <div style="display:flex; gap:0.75rem; justify-content:center; margin-top:0.75rem;">
+    <button class="btn" onclick="downloadImage()">Download</button>
+  </div>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('convertBtn').addEventListener('click', () => {
+    const base64 = document.getElementById('base64Input').value.trim();
+    const statusEl = document.getElementById('status');
+    const container = document.getElementById('imageContainer');
+    const img = document.getElementById('imageOutput');
+    
+    if (!base64) {
+      statusEl.textContent = 'Enter Base64 string.';
+      return;
+    }
+    
+    try {
+      let dataUrl = base64;
+      if (!base64.startsWith('data:')) {
+        dataUrl = 'data:image/png;base64,' + base64;
+      }
+      img.src = dataUrl;
+      container.style.display = 'block';
+      statusEl.textContent = 'Image converted.';
+    } catch (err) {
+      container.style.display = 'none';
+      statusEl.textContent = 'Error: Invalid Base64 string.';
+    }
+  });
+
+  function downloadImage() {
+    const img = document.getElementById('imageOutput');
+    const link = document.createElement('a');
+    link.href = img.src;
+    link.download = 'image.png';
+    link.click();
+    document.getElementById('status').textContent = 'Image downloaded.';
+  }
+</script>
+
   </div>
 </main>
 

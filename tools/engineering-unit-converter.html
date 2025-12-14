@@ -5,13 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Engineering Unit Converter | OmniToolset</title>
-  <meta name="description" content="Convert engineering units: pressure, force, torque, power, and more. Free tool for engineers. | OmniToolset - Free Online Tool Converter">
+  <meta name="description" content="Convert engineering units: pressure, force, torque, power, and more. Free tool for engineers.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.omnitoolset.com/tools/engineering-unit-converter.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.omnitoolset.com/tools/engineering-unit-converter.html">
   <meta property="og:title" content="Engineering Unit Converter | OmniToolset">
-  <meta property="og:description" content="Convert engineering units: pressure, force, torque, power, and more. Free tool for engineers. | OmniToolset - Free Online Tool Converter">
+  <meta property="og:description" content="Convert engineering units: pressure, force, torque, power, and more. Free tool for engineers.">
   <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -19,7 +19,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://www.omnitoolset.com/tools/engineering-unit-converter.html">
   <meta name="twitter:title" content="Engineering Unit Converter | OmniToolset">
-  <meta name="twitter:description" content="Convert engineering units: pressure, force, torque, power, and more. Free tool for engineers. | OmniToolset - Free Online Tool Converter">
+  <meta name="twitter:description" content="Convert engineering units: pressure, force, torque, power, and more. Free tool for engineers.">
   <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
   <link rel="stylesheet" href="/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -45,47 +45,85 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Engineering Unit Converter</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>engineering-unit-converter</code></li>
-        <li>Description: Convert engineering units: pressure, force, torque, power, and more. Free tool for engineers. | OmniToolset - Free Online Tool Converter</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Engineering Unit Converter</h2>
+    <p>Convert engineering units: pressure, force, torque, power, and more. Free tool for engineers.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Category</label>
+    <select id="category" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="pressure">Pressure</option>
+      <option value="force">Force</option>
+      <option value="torque">Torque</option>
+      <option value="power">Power</option>
+      <option value="energy">Energy</option>
+    </select>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">From</label>
+    <select id="fromUnit" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></select>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">To</label>
+    <select id="toUnit" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></select>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Value</label>
+    <input id="value" type="number" placeholder="1" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="convertBtn" style="margin-top:0.75rem;">Convert</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Result</p>
+  <h3 id="result" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  const units = {
+    pressure: { pa: 1, kpa: 1000, mpa: 1000000, psi: 6894.76, bar: 100000, atm: 101325 },
+    force: { n: 1, kn: 1000, lbf: 4.44822, kgf: 9.80665 },
+    torque: { nm: 1, ftlb: 1.35582, inlb: 0.112985 },
+    power: { w: 1, kw: 1000, hp: 745.7, btuhr: 0.293071 },
+    energy: { j: 1, kj: 1000, cal: 4.184, btu: 1055.06, kwh: 3600000 }
+  };
+
+  function updateUnits() {
+    const cat = document.getElementById('category').value;
+    const from = document.getElementById('fromUnit');
+    const to = document.getElementById('toUnit');
+    from.innerHTML = '';
+    to.innerHTML = '';
+    const unitList = Object.keys(units[cat]);
+    unitList.forEach(u => {
+      from.innerHTML += `<option value="${u}">${u}</option>`;
+      to.innerHTML += `<option value="${u === unitList[0] ? unitList[1] || unitList[0] : unitList[0]}">${u === unitList[0] ? unitList[1] || unitList[0] : u}</option>`;
+    });
+  }
+
+  document.getElementById('category').addEventListener('change', updateUnits);
+
+  document.getElementById('convertBtn').addEventListener('click', () => {
+    const cat = document.getElementById('category').value;
+    const from = document.getElementById('fromUnit').value;
+    const to = document.getElementById('toUnit').value;
+    const val = Number(document.getElementById('value').value);
+    
+    if (!isFinite(val)) {
+      document.getElementById('status').textContent = 'Enter a valid number.';
+      return;
+    }
+    
+    const fromBase = val * units[cat][from];
+    const result = fromBase / units[cat][to];
+    
+    document.getElementById('result').textContent = result.toFixed(4) + ' ' + to;
+    document.getElementById('status').textContent = 'Converted.';
+  });
+
+  updateUnits();
+</script>
+
   </div>
 </main>
 

@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stopwatch - Digital Stopwatch Timer | OmniToolset</title>
+  <title>Stopwatch | OmniToolset</title>
   <meta name="description" content="Digital stopwatch timer. Free, online, no registration required.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.omnitoolset.com/tools/stopwatch.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.omnitoolset.com/tools/stopwatch.html">
-  <meta property="og:title" content="Stopwatch - Digital Stopwatch Timer | OmniToolset">
+  <meta property="og:title" content="Stopwatch | OmniToolset">
   <meta property="og:description" content="Digital stopwatch timer. Free, online, no registration required.">
   <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -18,7 +18,7 @@
   <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://www.omnitoolset.com/tools/stopwatch.html">
-  <meta name="twitter:title" content="Stopwatch - Digital Stopwatch Timer | OmniToolset">
+  <meta name="twitter:title" content="Stopwatch | OmniToolset">
   <meta name="twitter:description" content="Digital stopwatch timer. Free, online, no registration required.">
   <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
   <link rel="stylesheet" href="/styles.css">
@@ -45,47 +45,93 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Stopwatch - Digital Stopwatch Timer</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>stopwatch</code></li>
-        <li>Description: Digital stopwatch timer. Free, online, no registration required.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Stopwatch</h2>
+    <p>Digital stopwatch timer. Free, online, no registration required.</p>
+
+<div class="tool-card" style="padding:2rem; margin-top:1rem; text-align:center;">
+  <h3 id="display" class="tool-title" style="margin:0; font-size:3rem; font-family: monospace;">00:00:00.00</h3>
+</div>
+<div style="display:flex; gap:0.75rem; justify-content:center; margin-top:1rem;">
+  <button class="btn" id="startBtn">Start</button>
+  <button class="btn" id="stopBtn">Stop</button>
+  <button class="btn" id="resetBtn">Reset</button>
+  <button class="btn" id="lapBtn">Lap</button>
+</div>
+<div id="laps" style="margin-top:1rem; max-height:200px; overflow-y:auto;"></div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  let startTime = null;
+  let elapsed = 0;
+  let timerInterval = null;
+  let lapCount = 0;
+
+  function updateDisplay() {
+    const total = elapsed + (startTime ? Date.now() - startTime : 0);
+    const ms = Math.floor((total % 1000) / 10);
+    const s = Math.floor((total / 1000) % 60);
+    const m = Math.floor((total / 1000 / 60) % 60);
+    const h = Math.floor(total / 1000 / 60 / 60);
+    document.getElementById('display').textContent = 
+      String(h).padStart(2, '0') + ':' + 
+      String(m).padStart(2, '0') + ':' + 
+      String(s).padStart(2, '0') + '.' + 
+      String(ms).padStart(2, '0');
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    if (!startTime) {
+      startTime = Date.now() - elapsed;
+      timerInterval = setInterval(updateDisplay, 10);
+      document.getElementById('status').textContent = 'Stopwatch running.';
+    }
+  });
+
+  document.getElementById('stopBtn').addEventListener('click', () => {
+    if (startTime) {
+      elapsed += Date.now() - startTime;
+      startTime = null;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      document.getElementById('status').textContent = 'Stopwatch stopped.';
+    }
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    startTime = null;
+    elapsed = 0;
+    lapCount = 0;
+    updateDisplay();
+    document.getElementById('laps').innerHTML = '';
+    document.getElementById('status').textContent = 'Stopwatch reset.';
+  });
+
+  document.getElementById('lapBtn').addEventListener('click', () => {
+    if (startTime || elapsed > 0) {
+      lapCount++;
+      const lapTime = elapsed + (startTime ? Date.now() - startTime : 0);
+      const ms = Math.floor((lapTime % 1000) / 10);
+      const s = Math.floor((lapTime / 1000) % 60);
+      const m = Math.floor((lapTime / 1000 / 60) % 60);
+      const h = Math.floor(lapTime / 1000 / 60 / 60);
+      const lapStr = String(h).padStart(2, '0') + ':' + 
+                     String(m).padStart(2, '0') + ':' + 
+                     String(s).padStart(2, '0') + '.' + 
+                     String(ms).padStart(2, '0');
+      const lapDiv = document.createElement('div');
+      lapDiv.style.cssText = 'padding:0.5rem; border-bottom:1px solid var(--border-color); color: var(--text-primary);';
+      lapDiv.textContent = `Lap ${lapCount}: ${lapStr}`;
+      document.getElementById('laps').prepend(lapDiv);
+    }
+  });
+</script>
+
   </div>
 </main>
 

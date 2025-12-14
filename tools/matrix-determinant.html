@@ -45,47 +45,70 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Matrix Determinant Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>matrix-determinant</code></li>
-        <li>Description: Calculate determinant of 2x2 and 3x3 matrices. Free matrix calculator.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Matrix Determinant Calculator</h2>
+    <p>Calculate determinant of 2x2 and 3x3 matrices. Free matrix calculator.</p>
+
+<select id="matrixSize" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); margin-bottom:1rem;">
+  <option value="2">2×2 Matrix</option>
+  <option value="3">3×3 Matrix</option>
+</select>
+<div id="matrixInput"></div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate Determinant</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Determinant</p>
+  <h3 id="determinant" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function createMatrixInputs(size) {
+    const container = document.getElementById('matrixInput');
+    container.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.style.cssText = `display:grid; gap:0.5rem; grid-template-columns: repeat(${size}, 1fr);`;
+    for (let i = 0; i < size * size; i++) {
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.placeholder = '0';
+      input.className = 'matrix-cell';
+      input.style.cssText = 'padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);';
+      grid.appendChild(input);
+    }
+    container.appendChild(grid);
+  }
+
+  function det2x2(a, b, c, d) {
+    return a * d - b * c;
+  }
+
+  function det3x3(a, b, c, d, e, f, g, h, i) {
+    return a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+  }
+
+  document.getElementById('matrixSize').addEventListener('change', (e) => {
+    createMatrixInputs(parseInt(e.target.value));
+  });
+
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const size = parseInt(document.getElementById('matrixSize').value);
+    const cells = Array.from(document.querySelectorAll('.matrix-cell')).map(c => parseFloat(c.value) || 0);
+    if (cells.some(c => !isFinite(c))) {
+      document.getElementById('status').textContent = 'Enter valid numbers.';
+      return;
+    }
+    let det;
+    if (size === 2) {
+      det = det2x2(cells[0], cells[1], cells[2], cells[3]);
+    } else {
+      det = det3x3(cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], cells[6], cells[7], cells[8]);
+    }
+    document.getElementById('determinant').textContent = det;
+    document.getElementById('status').textContent = 'Determinant calculated.';
+  });
+
+  createMatrixInputs(2);
+</script>
+
   </div>
 </main>
 

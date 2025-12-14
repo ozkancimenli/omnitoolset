@@ -45,47 +45,93 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Advanced BMI Calculator</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>bmi-calculator-advanced</code></li>
-        <li>Description: Calculate BMI with body fat percentage and health recommendations. Free health calculator.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Advanced BMI Calculator</h2>
+    <p>Calculate BMI with body fat percentage and health recommendations. Free health calculator.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Height (cm)</label>
+    <input id="height" type="number" placeholder="170" min="50" max="300" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Weight (kg)</label>
+    <input id="weight" type="number" placeholder="65" min="10" max="400" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Age</label>
+    <input id="age" type="number" placeholder="30" min="1" max="120" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Gender</label>
+    <select id="gender" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+  </div>
+</div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate</button>
+<div class="tools-grid" style="margin-top:1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">BMI</p><h3 id="bmi" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Category</p><h3 id="category" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Body Fat %</p><h3 id="bodyFat" class="tool-title" style="margin:0;">-</h3></div>
+</div>
+<div class="tool-card" style="padding:1rem; margin-top:1rem;">
+  <p class="tool-description" style="margin:0 0 0.5rem 0;">Recommendation</p>
+  <p id="recommendation" style="margin:0; color: var(--text-secondary);">-</p>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  function categorize(bmi) {
+    if (bmi < 18.5) return 'Underweight';
+    if (bmi < 25) return 'Normal';
+    if (bmi < 30) return 'Overweight';
+    return 'Obese';
+  }
+
+  function estimateBodyFat(bmi, age, gender) {
+    if (gender === 'male') {
+      return (1.20 * bmi) + (0.23 * age) - 16.2;
+    } else {
+      return (1.20 * bmi) + (0.23 * age) - 5.4;
+    }
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const height = Number(document.getElementById('height').value) / 100;
+    const weight = Number(document.getElementById('weight').value);
+    const age = Number(document.getElementById('age').value);
+    const gender = document.getElementById('gender').value;
+    
+    if (!height || !weight || !age) {
+      document.getElementById('status').textContent = 'Enter valid values.';
+      return;
+    }
+    
+    const bmi = weight / (height * height);
+    const category = categorize(bmi);
+    const bodyFat = estimateBodyFat(bmi, age, gender);
+    
+    document.getElementById('bmi').textContent = bmi.toFixed(1);
+    document.getElementById('category').textContent = category;
+    document.getElementById('bodyFat').textContent = bodyFat.toFixed(1) + '%';
+    
+    let recommendation = '';
+    if (bmi < 18.5) {
+      recommendation = 'Consider consulting a healthcare provider. You may need to gain weight for optimal health.';
+    } else if (bmi < 25) {
+      recommendation = 'Your BMI is in the healthy range. Maintain a balanced diet and regular exercise.';
+    } else if (bmi < 30) {
+      recommendation = 'Consider a balanced diet and regular exercise to reach a healthier weight.';
+    } else {
+      recommendation = 'Consider consulting a healthcare provider for a personalized weight management plan.';
+    }
+    
+    document.getElementById('recommendation').textContent = recommendation;
+    document.getElementById('status').textContent = 'Calculated.';
+  });
+</script>
+
   </div>
 </main>
 

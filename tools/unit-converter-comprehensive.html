@@ -5,13 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comprehensive Unit Converter | OmniToolset</title>
-  <meta name="description" content="Convert between all units: length, weight, volume, temperature, area, speed, energy. Free unit converter. | OmniToolset - Free Online Tool Converter">
+  <meta name="description" content="Convert between all units: length, weight, volume, temperature, area, speed, energy. Free unit converter.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.omnitoolset.com/tools/unit-converter-comprehensive.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.omnitoolset.com/tools/unit-converter-comprehensive.html">
   <meta property="og:title" content="Comprehensive Unit Converter | OmniToolset">
-  <meta property="og:description" content="Convert between all units: length, weight, volume, temperature, area, speed, energy. Free unit converter. | OmniToolset - Free Online Tool Converter">
+  <meta property="og:description" content="Convert between all units: length, weight, volume, temperature, area, speed, energy. Free unit converter.">
   <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -19,7 +19,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://www.omnitoolset.com/tools/unit-converter-comprehensive.html">
   <meta name="twitter:title" content="Comprehensive Unit Converter | OmniToolset">
-  <meta name="twitter:description" content="Convert between all units: length, weight, volume, temperature, area, speed, energy. Free unit converter. | OmniToolset - Free Online Tool Converter">
+  <meta name="twitter:description" content="Convert between all units: length, weight, volume, temperature, area, speed, energy. Free unit converter.">
   <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
   <link rel="stylesheet" href="/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -45,47 +45,100 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Comprehensive Unit Converter</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>unit-converter-comprehensive</code></li>
-        <li>Description: Convert between all units: length, weight, volume, temperature, area, speed, energy. Free unit converter. | OmniToolset - Free Online Tool Converter</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Comprehensive Unit Converter</h2>
+    <p>Convert between all units: length, weight, volume, temperature, area, speed, energy. Free unit converter.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Category</label>
+    <select id="category" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="length">Length</option>
+      <option value="weight">Weight</option>
+      <option value="volume">Volume</option>
+      <option value="temperature">Temperature</option>
+      <option value="area">Area</option>
+      <option value="speed">Speed</option>
+      <option value="energy">Energy</option>
+    </select>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">From</label>
+    <select id="fromUnit" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></select>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">To</label>
+    <select id="toUnit" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);"></select>
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Value</label>
+    <input id="value" type="number" placeholder="1" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="convertBtn" style="margin-top:0.75rem;">Convert</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem; text-align:center;">
+  <p class="tool-description" style="margin:0;">Result</p>
+  <h3 id="result" class="tool-title" style="margin:0;">-</h3>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  const units = {
+    length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, ft: 0.3048, in: 0.0254, mi: 1609.34, yd: 0.9144 },
+    weight: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495, ton: 1000 },
+    volume: { l: 1, ml: 0.001, gal: 3.78541, qt: 0.946353, pt: 0.473176, cup: 0.236588, floz: 0.0295735 },
+    temperature: { c: 'c', f: 'f', k: 'k' },
+    area: { m2: 1, km2: 1000000, cm2: 0.0001, ft2: 0.092903, in2: 0.00064516, acre: 4046.86, hectare: 10000 },
+    speed: { ms: 1, kmh: 0.277778, mph: 0.44704, knot: 0.514444, fts: 0.3048 },
+    energy: { j: 1, kj: 1000, cal: 4.184, kcal: 4184, btu: 1055.06, kwh: 3600000 }
+  };
+
+  function updateUnits() {
+    const cat = document.getElementById('category').value;
+    const from = document.getElementById('fromUnit');
+    const to = document.getElementById('toUnit');
+    from.innerHTML = '';
+    to.innerHTML = '';
+    const unitList = Object.keys(units[cat]);
+    unitList.forEach(u => {
+      from.innerHTML += `<option value="${u}">${u}</option>`;
+      to.innerHTML += `<option value="${u === unitList[0] ? unitList[1] || unitList[0] : unitList[0]}">${u === unitList[0] ? unitList[1] || unitList[0] : u}</option>`;
+    });
+  }
+
+  document.getElementById('category').addEventListener('change', updateUnits);
+
+  document.getElementById('convertBtn').addEventListener('click', () => {
+    const cat = document.getElementById('category').value;
+    const from = document.getElementById('fromUnit').value;
+    const to = document.getElementById('toUnit').value;
+    const val = Number(document.getElementById('value').value);
+    
+    if (!isFinite(val)) {
+      document.getElementById('status').textContent = 'Enter a valid number.';
+      return;
+    }
+    
+    let result;
+    if (cat === 'temperature') {
+      let c;
+      if (from === 'c') c = val;
+      else if (from === 'f') c = (val - 32) * 5/9;
+      else if (from === 'k') c = val - 273.15;
+      if (to === 'c') result = c;
+      else if (to === 'f') result = c * 9/5 + 32;
+      else if (to === 'k') result = c + 273.15;
+    } else {
+      const fromBase = val * units[cat][from];
+      result = fromBase / units[cat][to];
+    }
+    
+    document.getElementById('result').textContent = result.toFixed(4) + ' ' + to;
+    document.getElementById('status').textContent = 'Converted.';
+  });
+
+  updateUnits();
+</script>
+
   </div>
 </main>
 

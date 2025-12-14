@@ -45,47 +45,54 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: Text Analyzer</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>text-analyzer</code></li>
-        <li>Description: Analyze text: word frequency, readability, sentiment. Free text analysis tool.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>Text Analyzer</h2>
+    <p>Analyze text: word frequency, readability, sentiment. Free text analysis tool.</p>
+
+<textarea id="inputText" rows="10" placeholder="Enter text to analyze" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+<button class="btn" id="analyzeBtn" style="margin-top:0.75rem;">Analyze</button>
+<div class="tools-grid" style="margin-top:1rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Words</p><h3 id="words" class="tool-title" style="margin:0;">0</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Characters</p><h3 id="characters" class="tool-title" style="margin:0;">0</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Sentences</p><h3 id="sentences" class="tool-title" style="margin:0;">0</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Avg Word Length</p><h3 id="avgWordLength" class="tool-title" style="margin:0;">0</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Unique Words</p><h3 id="uniqueWords" class="tool-title" style="margin:0;">0</h3></div>
+</div>
+<div style="margin-top:1rem; padding:1rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color);">
+  <p style="margin:0 0 0.5rem 0; color: var(--text-secondary); font-weight:600;">Top Words</p>
+  <div id="topWords" style="color: var(--text-primary); line-height:1.8;"></div>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('analyzeBtn').addEventListener('click', () => {
+    const text = document.getElementById('inputText').value;
+    if (!text.trim()) {
+      document.getElementById('status').textContent = 'Enter text.';
+      return;
+    }
+    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+    const characters = text.length;
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+    const avgWordLength = words.length > 0 ? (characters / words.length).toFixed(1) : 0;
+    const uniqueWords = new Set(words.map(w => w.toLowerCase())).size;
+    
+    const wordFreq = {};
+    words.forEach(w => {
+      const lower = w.toLowerCase().replace(/[^\w]/g, '');
+      if (lower) wordFreq[lower] = (wordFreq[lower] || 0) + 1;
+    });
+    const topWords = Object.entries(wordFreq).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    
+    document.getElementById('words').textContent = words.length;
+    document.getElementById('characters').textContent = characters;
+    document.getElementById('sentences').textContent = sentences;
+    document.getElementById('avgWordLength').textContent = avgWordLength;
+    document.getElementById('uniqueWords').textContent = uniqueWords;
+    document.getElementById('topWords').innerHTML = topWords.map(([word, count]) => `<span style="margin-right:1rem;"><strong>${word}</strong>: ${count}</span>`).join('');
+    document.getElementById('status').textContent = 'Text analyzed.';
+  });
+</script>
+
   </div>
 </main>
 

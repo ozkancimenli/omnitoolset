@@ -45,47 +45,84 @@
 
 <main class="tool-page">
   <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
-  <div class="tool-container" style="margin-bottom: 1.5rem;">
-    <h2>Coming Soon: REST API Tester</h2>
-    <p>This tool page was missing its interface. We added a safe placeholder so the link opens correctly. If you need this tool urgently, let us know and we can prioritize it.</p>
-    <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color);">
-      <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">Details:</p>
-      <ul style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.2rem;">
-        <li>Slug: <code>api-tester</code></li>
-        <li>Description: Test REST API endpoints. Free API testing tool for developers.</li>
-        <li>Status: Placeholder page (no tool logic yet)</li>
-      </ul>
-    </div>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-      <a class="btn" href="/contact.html" style="text-decoration: none;">Request this tool</a>
-      <a class="btn" href="/all-tools.html" style="text-decoration: none;">Browse other tools</a>
-      <a class="btn" href="/index.html" style="text-decoration: none;">Back to home</a>
-    </div>
-  </div>
   <div class="tool-container">
-    <h3>Working tools you can use now</h3>
-    <div class="tools-grid" style="margin-top: 1rem;">
-      <a class="tool-card" href="/tools/pdf-merge.html" style="text-decoration: none;">
-        <span class="tool-icon">📄</span>
-        <h3 class="tool-title">PDF Merge</h3>
-        <p class="tool-description">Combine multiple PDFs into one.</p>
-      </a>
-      <a class="tool-card" href="/tools/word-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📝</span>
-        <h3 class="tool-title">Word to PDF</h3>
-        <p class="tool-description">Convert DOC/DOCX files to PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/powerpoint-to-pdf.html" style="text-decoration: none;">
-        <span class="tool-icon">📽️</span>
-        <h3 class="tool-title">PowerPoint to PDF</h3>
-        <p class="tool-description">Export presentations as PDF.</p>
-      </a>
-      <a class="tool-card" href="/tools/coordinate-converter.html" style="text-decoration: none;">
-        <span class="tool-icon">🗺️</span>
-        <h3 class="tool-title">Coordinate Converter</h3>
-        <p class="tool-description">Convert between WGS84, UTM, MGRS.</p>
-      </a>
-    </div>
+    <h2>REST API Tester</h2>
+    <p>Test REST API endpoints. Free API testing tool for developers.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Method</label>
+    <select id="method" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+      <option value="GET">GET</option>
+      <option value="POST">POST</option>
+      <option value="PUT">PUT</option>
+      <option value="PATCH">PATCH</option>
+      <option value="DELETE">DELETE</option>
+    </select>
+  </div>
+  <div style="grid-column: span 2;">
+    <label style="color: var(--text-secondary);">URL</label>
+    <input id="url" type="text" placeholder="https://api.example.com/endpoint" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<label style="color: var(--text-secondary); margin-top:1rem; display:block;">Body (JSON)</label>
+<textarea id="body" rows="6" placeholder='{"key": "value"}' style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary); font-family: monospace; resize: vertical;"></textarea>
+<button class="btn" id="sendBtn" style="margin-top:0.75rem;">Send Request</button>
+<div class="tool-card" style="padding:1rem; margin-top:1rem;">
+  <p class="tool-description" style="margin:0 0 0.5rem 0;">Response</p>
+  <pre id="response" style="white-space:pre-wrap; word-break:break-word; margin:0; color: var(--text-primary); font-family: monospace; font-size:0.9rem;">-</pre>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.getElementById('sendBtn').addEventListener('click', async () => {
+    const method = document.getElementById('method').value;
+    const url = document.getElementById('url').value.trim();
+    const bodyText = document.getElementById('body').value.trim();
+    const responseEl = document.getElementById('response');
+    const statusEl = document.getElementById('status');
+    
+    if (!url) {
+      statusEl.textContent = 'Enter a URL.';
+      return;
+    }
+    
+    responseEl.textContent = 'Sending...';
+    statusEl.textContent = 'Requesting...';
+    
+    try {
+      const options = { method };
+      if (bodyText && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+        try {
+          JSON.parse(bodyText);
+          options.body = bodyText;
+          options.headers = { 'Content-Type': 'application/json' };
+        } catch (e) {
+          statusEl.textContent = 'Invalid JSON in body.';
+          return;
+        }
+      }
+      
+      const start = performance.now();
+      const res = await fetch(url, options);
+      const elapsed = performance.now() - start;
+      const text = await res.text();
+      
+      let formatted;
+      try {
+        formatted = JSON.stringify(JSON.parse(text), null, 2);
+      } catch {
+        formatted = text;
+      }
+      
+      responseEl.textContent = `Status: ${res.status} ${res.statusText}\n\n${formatted}`;
+      statusEl.textContent = `Response received in ${elapsed.toFixed(0)}ms (CORS may block some requests).`;
+    } catch (err) {
+      responseEl.textContent = `Error: ${err.message}`;
+      statusEl.textContent = 'Request failed. CORS may be blocking this request.';
+    }
+  });
+</script>
+
   </div>
 </main>
 
