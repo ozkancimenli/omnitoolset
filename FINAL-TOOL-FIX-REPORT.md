@@ -49,3 +49,5 @@ Tool sayfalarındaki JavaScript kodları DOM yüklenmeden önce çalışıyordu 
 3. Onclick handler'ların çalıştığını doğrulayın
 4. Eğer hala sorun varsa, belirli tool sayfasını bildirin
 
+
+

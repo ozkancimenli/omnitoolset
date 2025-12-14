@@ -215,3 +215,5 @@ Aşağıdaki dosyalarda CSS yolu düzeltilmeli:
 **Rapor Oluşturulma Tarihi:** 2025-01-27  
 **Sonraki Kontrol Önerisi:** 1 ay sonra veya büyük güncellemelerden sonra
 
+
+

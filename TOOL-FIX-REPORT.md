@@ -23,3 +23,5 @@ Tüm tool sayfaları kontrol edilmeli ve inline script'ler DOMContentLoaded içi
 ## Durum
 **Kısmen tamamlandı** - 2 dosya düzeltildi, ~285 dosya kaldı.
 
+
+

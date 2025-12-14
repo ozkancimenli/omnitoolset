@@ -42,3 +42,5 @@ Tüm inline script'leri `DOMContentLoaded` event listener içine aldım.
 ## Test
 Tool sayfaları artık açılmalı ve çalışmalı. Eğer hala sorun varsa, browser console'da hata mesajlarını kontrol edin.
 
+
+

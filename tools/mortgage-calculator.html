@@ -1,189 +1,136 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.omnitoolset.com/tools/mortgage-calculator.html">
-
-
-    <title>Mortgage Calculator | OmniToolset</title>
-        <meta name="keywords" content="mortgage calculator, home loan calculator, amortization, student finance tool">
-    <meta name="description" content="Calculate mortgage payments with amortization schedule. Free finance calculator.">
-        <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.omnitoolset.com/tools/mortgage-calculator.html">
-    <meta property="og:title" content="Mortgage Calculator | OmniToolset">
-    <meta property="og:description" content="Calculate mortgage payments with amortization schedule. Free finance calculator.">
-    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Mortgage Calculator | OmniToolset">
-    <meta property="og:site_name" content="OmniToolset">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.omnitoolset.com/tools/mortgage-calculator.html">
-    <meta property="twitter:title" content="Mortgage Calculator | OmniToolset">
-    <meta property="twitter:description" content="Calculate mortgage payments with amortization schedule. Free finance calculator.">
-    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
-    <meta property="twitter:image:alt" content="Mortgage Calculator | OmniToolset">
-    <link rel="stylesheet" href="/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
-    </head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mortgage Calculator | OmniToolset</title>
+  <meta name="description" content="Calculate mortgage payments with amortization schedule. Free finance calculator.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.omnitoolset.com/tools/mortgage-calculator.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.omnitoolset.com/tools/mortgage-calculator.html">
+  <meta property="og:title" content="Mortgage Calculator | OmniToolset">
+  <meta property="og:description" content="Calculate mortgage payments with amortization schedule. Free finance calculator.">
+  <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://www.omnitoolset.com/tools/mortgage-calculator.html">
+  <meta name="twitter:title" content="Mortgage Calculator | OmniToolset">
+  <meta name="twitter:description" content="Calculate mortgage payments with amortization schedule. Free finance calculator.">
+  <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+  <link rel="stylesheet" href="/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossorigin="anonymous"></script>
+</head>
 <body>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
-     crossorigin="anonymous"></script>    
-            <!-- Suppress Adsterra SSL errors in console - Maximum suppression -->
-    <script>
-        (function() {
-            // Intercept ALL console methods before anything else loads
-            const originalMethods = {};
-            ['error', 'warn', 'log', 'info', 'debug', 'trace', 'table', 'group', 'groupEnd'].forEach(method => {
-                originalMethods[method] = console[method];
-            });
-            
-            // Aggressive filter for Adsterra errors
-            function shouldSuppress(...args) {
-                const message = args.map(arg => {
-                    if (typeof arg === 'string') return arg;
-                    if (arg && typeof arg === 'object') {
-                        try {
-                            return JSON.stringify(arg);
-                        } catch(e) {
-                            return String(arg);
-                        }
-                    }
-                    return String(arg);
-                }).join(' ').toLowerCase();
-                
-                return (message.includes('effectivegatecpm.com') || 
-                        message.includes('pl28055668') ||
-                        message.includes('pl28055637') ||
-                        message.includes('pl28059282') ||
-                        message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
-                        message.includes('612a325632297ecc15cfd2d178f355ec') ||
-                        message.includes('9094fe56f6d4377965dfac5145838787')) && 
-                       (message.includes('err_ssl') || 
-                        message.includes('ssl_protocol') ||
-                        message.includes('failed to load') ||
-                        message.includes('net::'));
-            }
-            
-            // Override all console methods
-            Object.keys(originalMethods).forEach(method => {
-                console[method] = function(...args) {
-                    if (shouldSuppress(...args)) {
-                        return; // Completely suppress
-                    }
-                    originalMethods[method].apply(console, args);
-                };
-            });
-            
-            // Intercept error events at the earliest possible moment
-            const errorHandler = function(e) {
-                const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
-                const message = (e.message || '').toLowerCase();
-                const stack = (e.error?.stack || '').toLowerCase();
-                const url = (e.target?.src || e.target?.href || e.filename || '').toLowerCase();
-                
-                // Suppress ALL Adsterra-related errors
-                if (filename.includes('effectivegatecpm.com') || 
-                    filename.includes('pl28055668') ||
-                    filename.includes('pl28055637') ||
-                    filename.includes('pl28059282') ||
-                    url.includes('effectivegatecpm.com') ||
-                    url.includes('pl28055668') ||
-                    url.includes('pl28055637') ||
-                    url.includes('pl28059282') ||
-                    message.includes('effectivegatecpm.com') ||
-                    message.includes('pl28055668') ||
-                    message.includes('pl28055637') ||
-                    message.includes('pl28059282') ||
-                    message.includes('err_ssl') ||
-                    message.includes('ssl_protocol') ||
-                    message.includes('failed to load resource') ||
-                    message.includes('net::err_ssl') ||
-                    stack.includes('effectivegatecpm.com') ||
-                    stack.includes('pl28055668') ||
-                    stack.includes('pl28055637') ||
-                    stack.includes('pl28059282')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            };
-            
-// Add multiple error listeners with highest priority
-            window.addEventListener('error', errorHandler, true);
-            window.addEventListener('error', errorHandler, {capture: true, passive: false});
-            document.addEventListener('error', errorHandler, true);
-            
-            // Suppress promise rejections
-            window.addEventListener('unhandledrejection', function(e) {
-                const reason = String(e.reason || '').toLowerCase();
-                if (reason.includes('effectivegatecpm.com') || 
-                    reason.includes('err_ssl') ||
-                    reason.includes('pl28055668') ||
-                    reason.includes('pl28055637') ||
-                    reason.includes('pl28059282')) {
-                    e.preventDefault();
-                    return false;
-                }
-            }, true);
-            // Suppress resource loading errors (separate listener for better coverage)
-            window.addEventListener('error', function(e) {
-                const target = e.target || e.srcElement;
-                if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK' || target.tagName === 'IMG')) {
-                    const src = (target.src || target.href || '').toLowerCase();
-                    if (src.includes('effectivegatecpm.com') ||
-                        src.includes('pl28055668') ||
-                        src.includes('pl28055637') ||
-                        src.includes('pl28059282') ||
-                        src.includes('invoke.js')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                // Also catch network errors in the error message
-                const message = String(e.message || '').toLowerCase();
-                if ((message.includes('failed to load resource') ||
-                     message.includes('net::err_ssl') ||
-                     message.includes('net::err') ||
-                     message.includes('ssl_protocol_error')) &&
-                    (message.includes('effectivegatecpm') ||
-                     message.includes('pl280556') ||
-                     message.includes('pl280592') ||
-                     message.includes('invoke.js'))) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            }, true);
-            
-            
-            // Allow Adsterra requests - only suppress console errors, don't block requests
-            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
-            };
-            
+  <header class="main-header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo-section">
+          <h1 class="logo" aria-label="OmniToolset - Free Online Tools">🛠️ OmniToolset</h1>
+        </div>
+        <nav class="main-nav" role="navigation" aria-label="Main navigation">
+          <a href="/index.html" class="nav-link">Home</a>
+          <a href="/blog.html" class="nav-link">Blog</a>
+          <a href="/categories.html" class="nav-link">Categories</a>
+          <a href="/all-tools.html" class="nav-link">All Tools</a>
+        </nav>
+      </div>
+    </div>
+  </header>
 
-    <!-- Power-Up Scripts -->
-    <script src="/js/share-powerup.js" defer></script>
-    <script src="/js/user-preferences.js" defer></script>
-    <script src="/js/usage-statistics.js" defer></script>
-    <script src="/js/print-optimizer.js" defer></script>
-    <script src="/js/keyboard-shortcuts-powerup.js" defer></script>
-    <script src="/js/quick-actions-menu.js" defer></script>
-    <script src="/js/copy-enhancements.js" defer></script>
-    <script src="/js/tool-recommendations.js" defer></script>
-    <script src="/js/pwa-installer.js" defer></script>
-    <script src="/js/performance-powerup.js" defer></script>
-    <script src="/js/advanced-analytics.js" defer></script>
-    <script src="/js/smart-internal-linking.js" defer></script>
-    </body>
+<main class="tool-page">
+  <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
+  <div class="tool-container">
+    <h2>Mortgage Calculator</h2>
+    <p>Calculate mortgage payments with amortization schedule. Free finance calculator.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Home Price ($)</label>
+    <input id="homePrice" type="number" placeholder="300000" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Down Payment ($)</label>
+    <input id="downPayment" type="number" placeholder="60000" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Annual Interest Rate (%)</label>
+    <input id="rate" type="number" placeholder="4.5" step="0.01" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Loan Term (years)</label>
+    <input id="years" type="number" placeholder="30" step="0.5" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="calcBtn" style="margin-top:0.75rem;">Calculate</button>
+<div class="tools-grid" style="margin-top:1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Monthly Payment</p><h3 id="payment" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Total Interest</p><h3 id="totalInterest" class="tool-title" style="margin:0;">-</h3></div>
+  <div class="tool-card" style="padding:1rem; margin:0;"><p class="tool-description" style="margin:0;">Total Amount</p><h3 id="totalAmount" class="tool-title" style="margin:0;">-</h3></div>
+</div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const homePrice = document.getElementById('homePrice');
+    const downPayment = document.getElementById('downPayment');
+    const rate = document.getElementById('rate');
+    const years = document.getElementById('years');
+    const payment = document.getElementById('payment');
+    const totalInterest = document.getElementById('totalInterest');
+    const totalAmount = document.getElementById('totalAmount');
+    const status = document.getElementById('status');
+
+    document.getElementById('calcBtn').addEventListener('click', () => {
+      const hp = Number(homePrice.value);
+      const dp = Number(downPayment.value) || 0;
+      const p = hp - dp;
+      const r = Number(rate.value) / 100 / 12;
+      const n = Number(years.value) * 12;
+      if (!isFinite(hp) || !isFinite(dp) || !isFinite(r) || !isFinite(n) || hp <= 0 || dp < 0 || dp >= hp || r < 0 || n <= 0) { 
+        status.textContent = 'Enter valid numbers.'; 
+        return; 
+      }
+      if (r === 0) {
+        const monthlyPayment = p / n;
+        const totalInt = 0;
+        const totalAmt = p;
+        payment.textContent = '$' + monthlyPayment.toFixed(2);
+        totalInterest.textContent = '$' + totalInt.toFixed(2);
+        totalAmount.textContent = '$' + totalAmt.toFixed(2);
+      } else {
+        const monthlyPayment = p * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        const totalAmt = monthlyPayment * n;
+        const totalInt = totalAmt - p;
+        payment.textContent = '$' + monthlyPayment.toFixed(2);
+        totalInterest.textContent = '$' + totalInt.toFixed(2);
+        totalAmount.textContent = '$' + totalAmt.toFixed(2);
+      }
+      status.textContent = 'Mortgage calculated.';
+    });
+  });
+</script>
+
+  </div>
+</main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="container">
+      <p>&copy; 2025 OmniToolset. All rights reserved.</p>
+      <nav aria-label="Footer navigation" style="margin-top: 1rem; font-size: 0.9rem;">
+        <a href="/privacy-policy.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Privacy Policy</a>
+        <a href="/terms-of-service.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Terms of Service</a>
+        <a href="/advertise.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Advertise</a>
+        <a href="/contact.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Contact</a>
+        <a href="/about.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">About</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/pwa-installer.js" defer></script>
+  <script src="/js/performance-powerup.js" defer></script>
+</body>
 </html>

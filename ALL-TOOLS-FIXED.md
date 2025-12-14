@@ -29,3 +29,5 @@ Tool sayfaları artık açılmalı ve çalışmalı. Eğer hala sorun varsa:
 2. Network tab'da script yükleme sorunlarını kontrol edin
 3. Belirli bir tool sayfası varsa, o sayfayı test edin
 
+
+

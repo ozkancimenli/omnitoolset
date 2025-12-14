@@ -187,3 +187,5 @@ Site artık:
 **Maximum Power-Up Tarihi:** 2025-12-11  
 **Durum:** ✅ TAMAMLANDI VE AKTİF
 
+
+

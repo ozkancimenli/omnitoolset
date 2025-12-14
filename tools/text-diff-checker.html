@@ -1,189 +1,114 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.omnitoolset.com/tools/text-diff-checker.html">
-
-
-    <title>Text Diff Checker | OmniToolset</title>
-        <meta name="keywords" content="text diff, text compare, diff checker, developer tool">
-    <meta name="description" content="Compare two texts and find differences. Free text diff tool.">
-        <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.omnitoolset.com/tools/text-diff-checker.html">
-    <meta property="og:title" content="Text Diff Checker | OmniToolset">
-    <meta property="og:description" content="Compare two texts and find differences. Free text diff tool.">
-    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Text Diff Checker | OmniToolset">
-    <meta property="og:site_name" content="OmniToolset">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.omnitoolset.com/tools/text-diff-checker.html">
-    <meta property="twitter:title" content="Text Diff Checker | OmniToolset">
-    <meta property="twitter:description" content="Compare two texts and find differences. Free text diff tool.">
-    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
-    <meta property="twitter:image:alt" content="Text Diff Checker | OmniToolset">
-    <link rel="stylesheet" href="/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
-    </head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Diff Checker | OmniToolset</title>
+  <meta name="description" content="Side-by-side diff with additions and deletions highlighted.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.omnitoolset.com/tools/text-diff-checker.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.omnitoolset.com/tools/text-diff-checker.html">
+  <meta property="og:title" content="Text Diff Checker | OmniToolset">
+  <meta property="og:description" content="Side-by-side diff with additions and deletions highlighted.">
+  <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://www.omnitoolset.com/tools/text-diff-checker.html">
+  <meta name="twitter:title" content="Text Diff Checker | OmniToolset">
+  <meta name="twitter:description" content="Side-by-side diff with additions and deletions highlighted.">
+  <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+  <link rel="stylesheet" href="/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
+</head>
 <body>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
-     crossorigin="anonymous"></script>    
-            <!-- Suppress Adsterra SSL errors in console - Maximum suppression -->
-    <script>
-        (function() {
-            // Intercept ALL console methods before anything else loads
-            const originalMethods = {};
-            ['error', 'warn', 'log', 'info', 'debug', 'trace', 'table', 'group', 'groupEnd'].forEach(method => {
-                originalMethods[method] = console[method];
-            });
-            
-            // Aggressive filter for Adsterra errors
-            function shouldSuppress(...args) {
-                const message = args.map(arg => {
-                    if (typeof arg === 'string') return arg;
-                    if (arg && typeof arg === 'object') {
-                        try {
-                            return JSON.stringify(arg);
-                        } catch(e) {
-                            return String(arg);
-                        }
-                    }
-                    return String(arg);
-                }).join(' ').toLowerCase();
-                
-                return (message.includes('effectivegatecpm.com') || 
-                        message.includes('pl28055668') ||
-                        message.includes('pl28055637') ||
-                        message.includes('pl28059282') ||
-                        message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
-                        message.includes('612a325632297ecc15cfd2d178f355ec') ||
-                        message.includes('9094fe56f6d4377965dfac5145838787')) && 
-                       (message.includes('err_ssl') || 
-                        message.includes('ssl_protocol') ||
-                        message.includes('failed to load') ||
-                        message.includes('net::'));
-            }
-            
-            // Override all console methods
-            Object.keys(originalMethods).forEach(method => {
-                console[method] = function(...args) {
-                    if (shouldSuppress(...args)) {
-                        return; // Completely suppress
-                    }
-                    originalMethods[method].apply(console, args);
-                };
-            });
-            
-            // Intercept error events at the earliest possible moment
-            const errorHandler = function(e) {
-                const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
-                const message = (e.message || '').toLowerCase();
-                const stack = (e.error?.stack || '').toLowerCase();
-                const url = (e.target?.src || e.target?.href || e.filename || '').toLowerCase();
-                
-                // Suppress ALL Adsterra-related errors
-                if (filename.includes('effectivegatecpm.com') || 
-                    filename.includes('pl28055668') ||
-                    filename.includes('pl28055637') ||
-                    filename.includes('pl28059282') ||
-                    url.includes('effectivegatecpm.com') ||
-                    url.includes('pl28055668') ||
-                    url.includes('pl28055637') ||
-                    url.includes('pl28059282') ||
-                    message.includes('effectivegatecpm.com') ||
-                    message.includes('pl28055668') ||
-                    message.includes('pl28055637') ||
-                    message.includes('pl28059282') ||
-                    message.includes('err_ssl') ||
-                    message.includes('ssl_protocol') ||
-                    message.includes('failed to load resource') ||
-                    message.includes('net::err_ssl') ||
-                    stack.includes('effectivegatecpm.com') ||
-                    stack.includes('pl28055668') ||
-                    stack.includes('pl28055637') ||
-                    stack.includes('pl28059282')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            };
-            
-// Add multiple error listeners with highest priority
-            window.addEventListener('error', errorHandler, true);
-            window.addEventListener('error', errorHandler, {capture: true, passive: false});
-            document.addEventListener('error', errorHandler, true);
-            
-            // Suppress promise rejections
-            window.addEventListener('unhandledrejection', function(e) {
-                const reason = String(e.reason || '').toLowerCase();
-                if (reason.includes('effectivegatecpm.com') || 
-                    reason.includes('err_ssl') ||
-                    reason.includes('pl28055668') ||
-                    reason.includes('pl28055637') ||
-                    reason.includes('pl28059282')) {
-                    e.preventDefault();
-                    return false;
-                }
-            }, true);
-            // Suppress resource loading errors (separate listener for better coverage)
-            window.addEventListener('error', function(e) {
-                const target = e.target || e.srcElement;
-                if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK' || target.tagName === 'IMG')) {
-                    const src = (target.src || target.href || '').toLowerCase();
-                    if (src.includes('effectivegatecpm.com') ||
-                        src.includes('pl28055668') ||
-                        src.includes('pl28055637') ||
-                        src.includes('pl28059282') ||
-                        src.includes('invoke.js')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                // Also catch network errors in the error message
-                const message = String(e.message || '').toLowerCase();
-                if ((message.includes('failed to load resource') ||
-                     message.includes('net::err_ssl') ||
-                     message.includes('net::err') ||
-                     message.includes('ssl_protocol_error')) &&
-                    (message.includes('effectivegatecpm') ||
-                     message.includes('pl280556') ||
-                     message.includes('pl280592') ||
-                     message.includes('invoke.js'))) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            }, true);
-            
-            
-            // Allow Adsterra requests - only suppress console errors, don't block requests
-            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
-            };
-            
 
-    <!-- Power-Up Scripts -->
-    <script src="/js/share-powerup.js" defer></script>
-    <script src="/js/user-preferences.js" defer></script>
-    <script src="/js/usage-statistics.js" defer></script>
-    <script src="/js/print-optimizer.js" defer></script>
-    <script src="/js/keyboard-shortcuts-powerup.js" defer></script>
-    <script src="/js/quick-actions-menu.js" defer></script>
-    <script src="/js/copy-enhancements.js" defer></script>
-    <script src="/js/tool-recommendations.js" defer></script>
-    <script src="/js/pwa-installer.js" defer></script>
-    <script src="/js/performance-powerup.js" defer></script>
-    <script src="/js/advanced-analytics.js" defer></script>
-    <script src="/js/smart-internal-linking.js" defer></script>
-    </body>
+<header class="main-header">
+  <div class="container">
+    <div class="header-content">
+      <div class="logo-section">
+        <h1 class="logo" aria-label="OmniToolset - Free Online Tools">🛠️ OmniToolset</h1>
+      </div>
+      <nav class="main-nav" role="navigation" aria-label="Main navigation">
+        <a href="/index.html" class="nav-link">Home</a>
+        <a href="/blog.html" class="nav-link">Blog</a>
+        <a href="/categories.html" class="nav-link">Categories</a>
+        <a href="/all-tools.html" class="nav-link">All Tools</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+  <main class="tool-page">
+    <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
+    <div class="tool-container">
+      <h2>Text Diff Checker</h2>
+      <p>Side-by-side diff with additions and deletions highlighted.</p>
+
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1rem;">
+  <div>
+    <h3 style="color: var(--text-primary);">Original</h3>
+    <textarea id="textA" rows="10" placeholder="Enter original text"></textarea>
+  </div>
+  <div>
+    <h3 style="color: var(--text-primary);">Modified</h3>
+    <textarea id="textB" rows="10" placeholder="Enter modified text"></textarea>
+  </div>
+</div>
+<div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin:0.75rem 0 1.25rem 0;">
+  <button class="btn" id="diffBtn">Compute Diff</button>
+</div>
+<div id="result" class="result-area" style="padding:1rem; border:1px solid var(--border-color); border-radius:12px; min-height:120px;"></div>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<style>
+  .diff-add {{ background: rgba(34,197,94,0.15); color: #16a34a; }}
+  .diff-del {{ background: rgba(239,68,68,0.15); color: #dc2626; text-decoration: line-through; }}
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {{
+    const textA = document.getElementById('textA');
+    const textB = document.getElementById('textB');
+    const result = document.getElementById('result');
+    const status = document.getElementById('status');
+
+    document.getElementById('diffBtn').addEventListener('click', () => {{
+      result.innerHTML = '';
+      status.textContent = '';
+      const diff = Diff.diffWords(textA.value || '', textB.value || '');
+      diff.forEach(part => {{
+        const span = document.createElement('span');
+        span.textContent = part.value;
+        if (part.added) span.className = 'diff-add';
+        else if (part.removed) span.className = 'diff-del';
+        result.appendChild(span);
+      }});
+      status.textContent = 'Diff computed.';
+    }});
+  }});
+</script>
+
+    </div>
+  </main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="container">
+      <p>&copy; 2025 OmniToolset. All rights reserved.</p>
+      <nav aria-label="Footer navigation" style="margin-top: 1rem; font-size: 0.9rem;">
+        <a href="/privacy-policy.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Privacy Policy</a>
+        <a href="/terms-of-service.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Terms of Service</a>
+        <a href="/advertise.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Advertise</a>
+        <a href="/contact.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Contact</a>
+        <a href="/about.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">About</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/pwa-installer.js" defer></script>
+  <script src="/js/performance-powerup.js" defer></script>
+</body>
 </html>

@@ -1,188 +1,118 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.omnitoolset.com/tools/length-converter.html">
-
-
-    <title>Length Converter - Convert Length Units | OmniToolset</title>
-    <meta name="description" content="Convert between length units (meters, feet, inches, etc.). Free, online, no registration required. | OmniToolset - Free Online Tool Converter">>
-        <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.omnitoolset.com/tools/length-converter.html">
-    <meta property="og:title" content="Length Converter - Convert Length Units | OmniToolset">
-    <meta property="og:description" content="Convert between length units (meters, feet, inches, etc.). Free, online, no registration required.">
-    <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Length Converter - Convert Length Units | OmniToolset">
-    <meta property="og:site_name" content="OmniToolset">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.omnitoolset.com/tools/length-converter.html">
-    <meta property="twitter:title" content="Length Converter - Convert Length Units | OmniToolset">
-    <meta property="twitter:description" content="Convert between length units (meters, feet, inches, etc.). Free, online, no registration required.">
-    <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
-    <meta property="twitter:image:alt" content="Length Converter - Convert Length Units | OmniToolset">
-    <link rel="stylesheet" href="/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="google-adsense-account" content="ca-pub-8640955536193345">
-    </head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Length Converter | OmniToolset</title>
+  <meta name="description" content="Convert between meters, feet, inches, and centimeters.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.omnitoolset.com/tools/length-converter.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.omnitoolset.com/tools/length-converter.html">
+  <meta property="og:title" content="Length Converter | OmniToolset">
+  <meta property="og:description" content="Convert between meters, feet, inches, and centimeters.">
+  <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="OmniToolset - 270+ Free Online Tools">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://www.omnitoolset.com/tools/length-converter.html">
+  <meta name="twitter:title" content="Length Converter | OmniToolset">
+  <meta name="twitter:description" content="Convert between meters, feet, inches, and centimeters.">
+  <meta name="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
+  <link rel="stylesheet" href="/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="google-adsense-account" content="ca-pub-8640955536193345">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345" crossorigin="anonymous"></script>
+</head>
 <body>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
-     crossorigin="anonymous"></script>    
-            <!-- Suppress Adsterra SSL errors in console - Maximum suppression -->
-    <script>
-        (function() {
-            // Intercept ALL console methods before anything else loads
-            const originalMethods = {};
-            ['error', 'warn', 'log', 'info', 'debug', 'trace', 'table', 'group', 'groupEnd'].forEach(method => {
-                originalMethods[method] = console[method];
-            });
-            
-            // Aggressive filter for Adsterra errors
-            function shouldSuppress(...args) {
-                const message = args.map(arg => {
-                    if (typeof arg === 'string') return arg;
-                    if (arg && typeof arg === 'object') {
-                        try {
-                            return JSON.stringify(arg);
-                        } catch(e) {
-                            return String(arg);
-                        }
-                    }
-                    return String(arg);
-                }).join(' ').toLowerCase();
-                
-                return (message.includes('effectivegatecpm.com') || 
-                        message.includes('pl28055668') ||
-                        message.includes('pl28055637') ||
-                        message.includes('pl28059282') ||
-                        message.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
-                        message.includes('612a325632297ecc15cfd2d178f355ec') ||
-                        message.includes('9094fe56f6d4377965dfac5145838787')) && 
-                       (message.includes('err_ssl') || 
-                        message.includes('ssl_protocol') ||
-                        message.includes('failed to load') ||
-                        message.includes('net::'));
-            }
-            
-            // Override all console methods
-            Object.keys(originalMethods).forEach(method => {
-                console[method] = function(...args) {
-                    if (shouldSuppress(...args)) {
-                        return; // Completely suppress
-                    }
-                    originalMethods[method].apply(console, args);
-                };
-            });
-            
-            // Intercept error events at the earliest possible moment
-            const errorHandler = function(e) {
-                const filename = (e.filename || e.source || e.target?.src || '').toLowerCase();
-                const message = (e.message || '').toLowerCase();
-                const stack = (e.error?.stack || '').toLowerCase();
-                const url = (e.target?.src || e.target?.href || e.filename || '').toLowerCase();
-                
-                // Suppress ALL Adsterra-related errors
-                if (filename.includes('effectivegatecpm.com') || 
-                    filename.includes('pl28055668') ||
-                    filename.includes('pl28055637') ||
-                    filename.includes('pl28059282') ||
-                    url.includes('effectivegatecpm.com') ||
-                    url.includes('pl28055668') ||
-                    url.includes('pl28055637') ||
-                    url.includes('pl28059282') ||
-                    message.includes('effectivegatecpm.com') ||
-                    message.includes('pl28055668') ||
-                    message.includes('pl28055637') ||
-                    message.includes('pl28059282') ||
-                    message.includes('err_ssl') ||
-                    message.includes('ssl_protocol') ||
-                    message.includes('failed to load resource') ||
-                    message.includes('net::err_ssl') ||
-                    stack.includes('effectivegatecpm.com') ||
-                    stack.includes('pl28055668') ||
-                    stack.includes('pl28055637') ||
-                    stack.includes('pl28059282')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            };
-            
-// Add multiple error listeners with highest priority
-            window.addEventListener('error', errorHandler, true);
-            window.addEventListener('error', errorHandler, {capture: true, passive: false});
-            document.addEventListener('error', errorHandler, true);
-            
-            // Suppress promise rejections
-            window.addEventListener('unhandledrejection', function(e) {
-                const reason = String(e.reason || '').toLowerCase();
-                if (reason.includes('effectivegatecpm.com') || 
-                    reason.includes('err_ssl') ||
-                    reason.includes('pl28055668') ||
-                    reason.includes('pl28055637') ||
-                    reason.includes('pl28059282')) {
-                    e.preventDefault();
-                    return false;
-                }
-            }, true);
-            // Suppress resource loading errors (separate listener for better coverage)
-            window.addEventListener('error', function(e) {
-                const target = e.target || e.srcElement;
-                if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK' || target.tagName === 'IMG')) {
-                    const src = (target.src || target.href || '').toLowerCase();
-                    if (src.includes('effectivegatecpm.com') ||
-                        src.includes('pl28055668') ||
-                        src.includes('pl28055637') ||
-                        src.includes('pl28059282') ||
-                        src.includes('invoke.js')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                // Also catch network errors in the error message
-                const message = String(e.message || '').toLowerCase();
-                if ((message.includes('failed to load resource') ||
-                     message.includes('net::err_ssl') ||
-                     message.includes('net::err') ||
-                     message.includes('ssl_protocol_error')) &&
-                    (message.includes('effectivegatecpm') ||
-                     message.includes('pl280556') ||
-                     message.includes('pl280592') ||
-                     message.includes('invoke.js'))) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            }, true);
-            
-            
-            // Allow Adsterra requests - only suppress console errors, don't block requests
-            // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
-            };
-            
 
-    <!-- Power-Up Scripts -->
-    <script src="/js/share-powerup.js" defer></script>
-    <script src="/js/user-preferences.js" defer></script>
-    <script src="/js/usage-statistics.js" defer></script>
-    <script src="/js/print-optimizer.js" defer></script>
-    <script src="/js/keyboard-shortcuts-powerup.js" defer></script>
-    <script src="/js/quick-actions-menu.js" defer></script>
-    <script src="/js/copy-enhancements.js" defer></script>
-    <script src="/js/tool-recommendations.js" defer></script>
-    <script src="/js/pwa-installer.js" defer></script>
-    <script src="/js/performance-powerup.js" defer></script>
-    <script src="/js/advanced-analytics.js" defer></script>
-    <script src="/js/smart-internal-linking.js" defer></script>
-    </body>
+<header class="main-header">
+  <div class="container">
+    <div class="header-content">
+      <div class="logo-section">
+        <h1 class="logo" aria-label="OmniToolset - Free Online Tools">🛠️ OmniToolset</h1>
+      </div>
+      <nav class="main-nav" role="navigation" aria-label="Main navigation">
+        <a href="/index.html" class="nav-link">Home</a>
+        <a href="/blog.html" class="nav-link">Blog</a>
+        <a href="/categories.html" class="nav-link">Categories</a>
+        <a href="/all-tools.html" class="nav-link">All Tools</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+  <main class="tool-page">
+    <a href="/all-tools.html" class="back-button">← Back to All Tools</a>
+    <div class="tool-container">
+      <h2>Length Converter</h2>
+      <p>Convert between meters, feet, inches, and centimeters.</p>
+
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+  <div>
+    <label style="color: var(--text-secondary);">Meters (m)</label>
+    <input id="m" type="number" placeholder="1" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Feet (ft)</label>
+    <input id="ft" type="number" placeholder="3.2808" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Inches (in)</label>
+    <input id="inch" type="number" placeholder="39.37" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+  <div>
+    <label style="color: var(--text-secondary);">Centimeters (cm)</label>
+    <input id="cm" type="number" placeholder="100" style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-color); color: var(--text-primary);">
+  </div>
+</div>
+<button class="btn" id="convertBtn" style="margin-top:0.75rem;">Convert</button>
+<p id="status" style="margin-top:0.75rem; color: var(--text-secondary);"></p>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const m = document.getElementById('m');
+    const ft = document.getElementById('ft');
+    const inch = document.getElementById('inch');
+    const cm = document.getElementById('cm');
+    const status = document.getElementById('status');
+
+    function fromMeters(val) {
+      ft.value = (val * 3.28084).toFixed(4);
+      inch.value = (val * 39.3701).toFixed(2);
+      cm.value = (val * 100).toFixed(2);
+    }
+    function fromFeet(val) { fromMeters(val / 3.28084); }
+    function fromInch(val) { fromMeters(val / 39.3701); }
+    function fromCm(val) { fromMeters(val / 100); }
+
+    document.getElementById('convertBtn').addEventListener('click', () => {
+      if (m.value) { fromMeters(Number(m.value)); status.textContent = 'Converted from meters.'; return; }
+      if (ft.value) { fromFeet(Number(ft.value)); status.textContent = 'Converted from feet.'; return; }
+      if (inch.value) { fromInch(Number(inch.value)); status.textContent = 'Converted from inches.'; return; }
+      if (cm.value) { fromCm(Number(cm.value)); status.textContent = 'Converted from cm.'; return; }
+      status.textContent = 'Enter a value.';
+    });
+  });
+</script>
+
+    </div>
+  </main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="container">
+      <p>&copy; 2025 OmniToolset. All rights reserved.</p>
+      <nav aria-label="Footer navigation" style="margin-top: 1rem; font-size: 0.9rem;">
+        <a href="/privacy-policy.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Privacy Policy</a>
+        <a href="/terms-of-service.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Terms of Service</a>
+        <a href="/advertise.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Advertise</a>
+        <a href="/contact.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">Contact</a>
+        <a href="/about.html" style="margin: 0 1rem; color: var(--text-secondary); text-decoration: none;">About</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/js/pwa-installer.js" defer></script>
+  <script src="/js/performance-powerup.js" defer></script>
+</body>
 </html>

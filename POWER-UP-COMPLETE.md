@@ -260,3 +260,5 @@ Site artık:
 **Power-Up Tarihi:** 2025-12-11  
 **Durum:** ✅ AKTİF VE ÇALIŞIYOR
 
+
+
