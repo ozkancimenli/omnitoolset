@@ -45,6 +45,13 @@
     <!-- Manifest for PWA (future) -->
     <link rel="manifest" href="/manifest.json">
     
+    <!-- Preconnect to Google domains for faster loading -->
+    <link rel="preconnect" href="https://www.google.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+    <link rel="dns-prefetch" href="https://pl28055637.effectivegatecpm.com">
+    <link rel="dns-prefetch" href="https://pl28055668.effectivegatecpm.com">
+    
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WF6SNHNXN"></script>
     <script>
@@ -73,12 +80,25 @@
     <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml">
     
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="/styles.css">
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/styles.css"></noscript>
     
     <!-- Google AdSense -->
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
-     crossorigin="anonymous"></script>
+    <!-- AdSense - Load after page is interactive -->
+    <script>
+        // Defer AdSense loading
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var script = document.createElement('script');
+                script.async = true;
+                script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345';
+                script.crossOrigin = 'anonymous';
+                document.head.appendChild(script);
+            }, 1000);
+        });
+    </script>
     
             <!-- Suppress Adsterra SSL errors in console - Maximum suppression -->
     <script>
@@ -525,11 +545,17 @@
     <script src="/js/quick-actions-menu.js" defer></script>
     <script src="/js/copy-enhancements.js" defer></script>
     <script src="/js/tool-recommendations.js" defer></script>
+    <!-- Performance Optimizer - Load first -->
+    <script src="/js/performance-optimizer.js" defer></script>
+    
+    <!-- Non-critical scripts - Load after page is interactive -->
     <script src="/js/share-powerup.js" defer></script>
     <script src="/js/user-preferences.js" defer></script>
     <script src="/js/usage-statistics.js" defer></script>
     <script src="/js/print-optimizer.js" defer></script>
     <script src="/js/advanced-search.js" defer></script>
+    
+    <!-- SEO Ping - Load last, low priority -->
     <script src="/js/seo-ping.js" defer></script>
 </body>
 </html>
