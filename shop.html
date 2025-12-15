@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <!-- Canonical URL -->
     <link rel="canonical" href="https://www.omnitoolset.com/shop.html">
 
@@ -28,6 +28,39 @@
     <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
     <meta property="twitter:image:alt" content="Recommended Products - OmniToolset">
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Shop page responsive fixes */
+        @media (max-width: 768px) {
+            .product-banner-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+            
+            .product-banner-grid > div:first-child {
+                order: 2;
+            }
+            
+            .product-banner-grid > div:last-child {
+                order: 1;
+            }
+            
+            .tool-container {
+                padding: 1rem;
+            }
+            
+            .tool-container h2 {
+                font-size: 1.75rem;
+            }
+            
+            .tool-container h3 {
+                font-size: 1.25rem;
+            }
+            
+            .tool-container h4 {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8640955536193345"
@@ -81,20 +114,20 @@
             <!-- Oedro Banner Section -->
             <div style="margin: 3rem 0; padding: 2rem; background: var(--bg-color); border-radius: 12px; border: 2px solid var(--border-color);">
                 <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">🚗 Automotive Accessories</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;" class="product-banner-grid">
                     <div>
                         <h4 style="margin-bottom: 1rem;">OEDRO - Premium Auto Parts</h4>
                         <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
                             OEDRO is a leading auto parts brand specializing in floor mats, bumpers, tonneau covers, running boards, storage boxes, headlight assembly, and LED light bars. With over 1 million car-fit data points, they guarantee perfect fitment for your vehicle.
                         </p>
                         <ul style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">
-                            <li>✅ 6.3% commission on all sales</li>
-                            <li>✅ Average product price: $200</li>
                             <li>✅ 30-day cookie period</li>
                             <li>✅ Weekly & monthly bonus opportunities</li>
                             <li>✅ Free shipping on all orders</li>
                             <li>✅ 30-day returns</li>
                             <li>✅ 1-year warranty</li>
+                            <li>✅ Perfect fitment guarantee</li>
+                            <li>✅ Over 1 million car-fit data points</li>
                         </ul>
                         <a href="https://www.awin1.com/cread.php?awinmid=28349&awinaffid=2682178&clickref=omnitoolset-shop&ued=https%3A%2F%2Fwww.oedro.com%2F" 
                            target="_blank" 
@@ -117,48 +150,6 @@
                 </div>
             </div>
 
-            <!-- Ravin Crossbows Banner Section -->
-            <div style="margin: 3rem 0; padding: 2rem; background: var(--bg-color); border-radius: 12px; border: 2px solid var(--border-color);">
-                <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">🏹 Premium Hunting Crossbows</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
-                    <div>
-                        <h4 style="margin-bottom: 1rem;">Ravin Crossbows - Apex Performance</h4>
-                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
-                            Ravin Crossbows delivers apex-level performance for serious hunters. Known for cutting-edge technology, unmatched precision, and compact power, Ravin is the top choice for those who demand elite gear. Join Ravin Nation and experience rifle-like accuracy.
-                        </p>
-                        <ul style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">
-                            <li>✅ 5% commission on all sales</li>
-                            <li>✅ Premium products: $1,000 - $3,000+</li>
-                            <li>✅ 30-day cookie period</li>
-                            <li>✅ High conversion rates</li>
-                            <li>✅ Free ground shipping ($399+)</li>
-                            <li>✅ Trusted by elite hunters</li>
-                            <li>✅ Award-winning technology</li>
-                        </ul>
-                        <a href="https://www.awin1.com/cread.php?awinmid=115809&awinaffid=2682178&clickref=omnitoolset-crossbows&ued=https%3A%2F%2Fravincrossbows.com%2F" 
-                           target="_blank" 
-                           rel="nofollow sponsored"
-                           style="display: inline-block; padding: 1rem 2rem; background: var(--primary-color); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: transform 0.2s;"
-                           onmouseover="this.style.transform='scale(1.05)'" 
-                           onmouseout="this.style.transform='scale(1)'">
-                            Shop Ravin Crossbows →
-                        </a>
-                    </div>
-                    <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius: 12px;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">🏹</div>
-                        <h4 style="color: white; margin-bottom: 0.5rem;">Ravin Crossbows</h4>
-                        <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-bottom: 1.5rem;">Apex Performance for Elite Hunters</p>
-                        <a href="https://www.awin1.com/cread.php?awinmid=115809&awinaffid=2682178&clickref=omnitoolset-crossbows&ued=https%3A%2F%2Fravincrossbows.com%2F" 
-                           target="_blank" 
-                           rel="nofollow sponsored"
-                           style="display: inline-block; padding: 0.75rem 1.5rem; background: white; color: #1a1a1a; text-decoration: none; border-radius: 8px; font-weight: 600; transition: transform 0.2s;"
-                           onmouseover="this.style.transform='scale(1.05)'" 
-                           onmouseout="this.style.transform='scale(1)'">
-                            Explore Crossbows
-                        </a>
-                    </div>
-                </div>
-            </div>
 
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center;">
@@ -217,37 +208,6 @@
                             Shop Now →
                         </a>
                     </div>
-                    <!-- Ravin Crossbows Categories -->
-                    <div style="padding: 1.5rem; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
-                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏹</div>
-                        <h4 style="margin-bottom: 0.5rem;">Crossbows</h4>
-                        <a href="https://www.awin1.com/cread.php?awinmid=115809&awinaffid=2682178&clickref=omnitoolset-crossbows&ued=https%3A%2F%2Fravincrossbows.com%2Fcrossbows" 
-                           target="_blank" 
-                           rel="nofollow sponsored"
-                           style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem;">
-                            Shop Now →
-                        </a>
-                    </div>
-                    <div style="padding: 1.5rem; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
-                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
-                        <h4 style="margin-bottom: 0.5rem;">Broadheads</h4>
-                        <a href="https://www.awin1.com/cread.php?awinmid=115809&awinaffid=2682178&clickref=omnitoolset-crossbows&ued=https%3A%2F%2Fravincrossbows.com%2Fbroadheads" 
-                           target="_blank" 
-                           rel="nofollow sponsored"
-                           style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem;">
-                            Shop Now →
-                        </a>
-                    </div>
-                    <div style="padding: 1.5rem; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
-                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📦</div>
-                        <h4 style="margin-bottom: 0.5rem;">Accessories</h4>
-                        <a href="https://www.awin1.com/cread.php?awinmid=115809&awinaffid=2682178&clickref=omnitoolset-crossbows&ued=https%3A%2F%2Fravincrossbows.com%2Faccessories" 
-                           target="_blank" 
-                           rel="nofollow sponsored"
-                           style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem;">
-                            Shop Now →
-                        </a>
-                    </div>
                 </div>
             </div>
 
@@ -293,6 +253,7 @@
     <script data-cfasync="false" type='text/javascript' src='https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
 </body>
 </html>
+
 
 
 

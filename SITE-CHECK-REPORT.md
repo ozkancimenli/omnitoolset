@@ -217,3 +217,4 @@ Aşağıdaki dosyalarda CSS yolu düzeltilmeli:
 
 
 
+
