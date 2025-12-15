@@ -1832,6 +1832,7 @@
 
     
     
+    
     <!-- Blog Posts -->
     <url>
         <loc>https://www.omnitoolset.com/blog/best-free-alternatives-to-adobe.html</loc>
@@ -2056,6 +2057,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-compress-images-online-free.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.omnitoolset.com/blog/how-to-compress-large-files.html</loc>
         <lastmod>2025-12-14</lastmod>
         <changefreq>monthly</changefreq>
@@ -2063,6 +2070,12 @@
     </url>
     <url>
         <loc>https://www.omnitoolset.com/blog/how-to-compress-pdf-files.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-compress-pdf-free-online.html</loc>
         <lastmod>2025-12-14</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -2122,6 +2135,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-convert-jpg-to-png-free.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.omnitoolset.com/blog/how-to-convert-markdown-to-html.html</loc>
         <lastmod>2025-12-14</lastmod>
         <changefreq>monthly</changefreq>
@@ -2164,7 +2183,19 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-convert-pdf-to-word-free.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.omnitoolset.com/blog/how-to-convert-png-to-jpg.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-convert-png-to-jpg-free.html</loc>
         <lastmod>2025-12-14</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -2237,6 +2268,12 @@
     </url>
     <url>
         <loc>https://www.omnitoolset.com/blog/how-to-convert-word-to-pdf.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-convert-word-to-pdf-free.html</loc>
         <lastmod>2025-12-14</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -2315,6 +2352,12 @@
     </url>
     <url>
         <loc>https://www.omnitoolset.com/blog/how-to-extract-text-from-pdf.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-extract-text-from-pdf-free.html</loc>
         <lastmod>2025-12-14</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -2446,6 +2489,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-merge-pdf-files-online-free.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.omnitoolset.com/blog/how-to-minify-css.html</loc>
         <lastmod>2025-12-14</lastmod>
         <changefreq>monthly</changefreq>
@@ -2512,6 +2561,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-resize-images-online-free.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.omnitoolset.com/blog/how-to-reverse-text.html</loc>
         <lastmod>2025-12-14</lastmod>
         <changefreq>monthly</changefreq>
@@ -2537,6 +2592,12 @@
     </url>
     <url>
         <loc>https://www.omnitoolset.com/blog/how-to-split-pdf-files.html</loc>
+        <lastmod>2025-12-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.omnitoolset.com/blog/how-to-split-pdf-online-free.html</loc>
         <lastmod>2025-12-14</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>

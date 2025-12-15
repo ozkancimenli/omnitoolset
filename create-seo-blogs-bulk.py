@@ -128,16 +128,16 @@ def create_seo_blog(slug, title, description, keywords):
     
     <!-- Schema.org -->
     <script type="application/ld+json">
-    {{
+    {{{{
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": "{title}",
       "description": "{description}",
-      "author": {{"@type": "Organization", "name": "OmniToolset"}},
-      "publisher": {{"@type": "Organization", "name": "OmniToolset"}},
+      "author": {{{{"@type": "Organization", "name": "OmniToolset"}}}},
+      "publisher": {{{{"@type": "Organization", "name": "OmniToolset"}}}},
       "datePublished": "{current_date}T00:00:00+00:00",
       "mainEntityOfPage": "https://www.omnitoolset.com/blog/{slug}.html"
-    }}
+    }}}}
     </script>
     
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -145,16 +145,16 @@ def create_seo_blog(slug, title, description, keywords):
 </head>
 <body>
     <script>
-        window.addEventListener('load', function() {{
-            setTimeout(function() {{
-                try {{
+        window.addEventListener('load', function() {{{{
+            setTimeout(function() {{{{
+                try {{{{
                     var script = document.createElement('script');
                     script.src = 'https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js';
-                    script.onerror = function() {{ return false; }};
+                    script.onerror = function() {{{{{ return false; }}}}};
                     document.head.appendChild(script);
-                }} catch(e) {{}}
-            }}, 2000);
-        });
+                }}}} catch(e) {{{{{}}}}}
+            }}}}, 2000);
+        }}}});
     </script>
     
     <header class="main-header">
@@ -181,16 +181,16 @@ def create_seo_blog(slug, title, description, keywords):
         <div style="margin: 2rem 0; text-align: center;">
             <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
             <script>
-                window.addEventListener('load', function() {{
-                    setTimeout(function() {{
-                        try {{
+                window.addEventListener('load', function() {{{{
+                    setTimeout(function() {{{{
+                        try {{{{
                             var script = document.createElement('script');
                             script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
-                            script.onerror = function() {{ return false; }};
+                            script.onerror = function() {{{{{ return false; }}}}};
                             document.head.appendChild(script);
-                        }} catch(e) {{}}
-                    }}, 2000);
-                }});
+                        }}}} catch(e) {{{{{}}}}}
+                    }}}}, 2000);
+                }}}});
             </script>
         </div>
         
@@ -201,11 +201,11 @@ def create_seo_blog(slug, title, description, keywords):
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
             <script>
-                window.addEventListener('load', function() {{
-                    setTimeout(function() {{
-                        (adsbygoogle = window.adsbygoogle || []).push({{}});
-                    }}, 1000);
-                }});
+                window.addEventListener('load', function() {{{{
+                    setTimeout(function() {{{{
+                        (adsbygoogle = window.adsbygoogle || []).push({{{{}}}});
+                    }}}}, 1000);
+                }}}});
             </script>
         </div>
         
@@ -288,11 +288,11 @@ def create_seo_blog(slug, title, description, keywords):
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
             <script>
-                window.addEventListener('load', function() {{
-                    setTimeout(function() {{
-                        (adsbygoogle = window.adsbygoogle || []).push({{}});
-                    }}, 1000);
-                }});
+                window.addEventListener('load', function() {{{{
+                    setTimeout(function() {{{{
+                        (adsbygoogle = window.adsbygoogle || []).push({{{{}}}});
+                    }}}}, 1000);
+                }}}});
             </script>
         </div>
 
