@@ -52,35 +52,44 @@
     <link rel="dns-prefetch" href="https://pl28055637.effectivegatecpm.com">
     <link rel="dns-prefetch" href="https://pl28055668.effectivegatecpm.com">
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WF6SNHNXN"></script>
+    <!-- Google Analytics - Defer to improve PageSpeed -->
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-1WF6SNHNXN', {
-            'anonymize_ip': true,
-            'cookie_flags': 'SameSite=None;Secure'
+        // Defer Google Analytics loading
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var script = document.createElement('script');
+                script.async = true;
+                script.src = 'https://www.googletagmanager.com/gtag/js?id=G-1WF6SNHNXN';
+                document.head.appendChild(script);
+                
+                script.onload = function() {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', 'G-1WF6SNHNXN', {
+                        'anonymize_ip': true,
+                        'cookie_flags': 'SameSite=None;Secure'
+                    });
+                };
+            }, 3000);
         });
     </script>
     
-    <!-- Preconnect for Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preconnect for Performance - Only critical domains -->
     <link rel="preconnect" href="https://pagead2.googlesyndication.com">
-    <link rel="preconnect" href="https://www.googletagmanager.com">
-    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
-    <link rel="dns-prefetch" href="https://www.google-analytics.com">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://pl28055637.effectivegatecpm.com">
+    <link rel="dns-prefetch" href="https://pl28055668.effectivegatecpm.com">
     
     <!-- Preload Critical Resources -->
-    <link rel="preload" href="/styles.css" as="style">
     <link rel="preload" href="/app.js" as="script">
     <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml">
     
-    <!-- Stylesheet -->
-    <!-- Preload critical CSS -->
+    <!-- Critical CSS - Inline for fastest rendering -->
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}:root{--primary-color:#6366f1;--bg-color:#0f172a;--bg-card:rgba(30,41,59,.8);--text-primary:#f1f5f9;--text-secondary:#cbd5e1;--border-color:rgba(99,102,241,.2)}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg-color);color:var(--text-primary);min-height:100vh;line-height:1.6}.container{max-width:1200px;margin:0 auto;padding:0 20px}.main-header{background:var(--bg-color);border-bottom:1px solid var(--border-color);padding:1rem 0;position:sticky;top:0;z-index:1000}.header-content{display:flex;justify-content:space-between;align-items:center}.logo{font-size:1.5rem;font-weight:700;color:var(--text-primary);margin:0}.main-nav{display:flex;gap:1.5rem}.nav-link{color:var(--text-secondary);text-decoration:none;font-weight:500}.hero{text-align:center;padding:3rem 0}.hero h1{font-size:2.5rem;margin-bottom:1rem;color:var(--text-primary)}.hero p{font-size:1.2rem;color:var(--text-secondary);margin-bottom:2rem}.search-container{max-width:600px;margin:0 auto 2rem;position:relative}.search-input{width:100%;padding:1rem 3rem 1rem 1.5rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:1rem}
+    </style>
+    
+    <!-- Non-critical CSS - Load asynchronously -->
     <link rel="preload" href="/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/styles.css"></noscript>
     
@@ -490,17 +499,28 @@
         </div>
     </footer>
 
-    <!-- PWA Installer -->
-    <script src="/js/pwa-installer.js" defer></script>
+    <!-- PWA Installer & Loading States - Defer -->
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var scripts = [
+                    '/js/pwa-installer.js',
+                    '/js/loading-states.js',
+                    '/js/performance-powerup.js'
+                ];
+                
+                scripts.forEach(function(src) {
+                    var script = document.createElement('script');
+                    script.src = src;
+                    script.defer = true;
+                    document.body.appendChild(script);
+                });
+            }, 1500);
+        });
+    </script>
     
-    <!-- Loading States -->
-    <script src="/js/loading-states.js" defer></script>
-    
-    <!-- Performance Power-Up -->
-    <script src="/js/performance-powerup.js" defer></script>
-    
-    <!-- App.js for tools data - Load at end to ensure DOM is ready -->
-    <script src="/app.js"></script>
+    <!-- App.js for tools data - Defer for better performance -->
+    <script src="/app.js" defer></script>
     <script>
         // Debug: Check if app.js loaded
         window.addEventListener('load', function() {
@@ -558,34 +578,81 @@
         });
     </script>
     
-    <!-- Accessibility -->
-    <script src="/js/accessibility.js" defer></script>
+    <!-- Accessibility & Analytics - Defer for better performance -->
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var scripts = [
+                    '/js/accessibility.js',
+                    '/js/analytics.js',
+                    '/js/advanced-analytics.js'
+                ];
+                
+                scripts.forEach(function(src) {
+                    var script = document.createElement('script');
+                    script.src = src;
+                    script.defer = true;
+                    document.body.appendChild(script);
+                });
+            }, 1500);
+        });
+    </script>
     
-    <!-- Analytics Script -->
-    <script src="/js/analytics.js" defer></script>
+    <!-- Smart Internal Linking - Defer -->
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var script = document.createElement('script');
+                script.src = '/js/smart-internal-linking.js';
+                script.defer = true;
+                document.body.appendChild(script);
+            }, 2000);
+        });
+    </script>
     
-    <!-- Advanced Analytics -->
-    <script src="/js/advanced-analytics.js" defer></script>
-    
-    <!-- Smart Internal Linking -->
-    <script src="/js/smart-internal-linking.js" defer></script>
-    
-    <!-- Advanced Power-Up Features -->
-    <script src="/js/keyboard-shortcuts-powerup.js" defer></script>
-    <script src="/js/quick-actions-menu.js" defer></script>
-    <script src="/js/copy-enhancements.js" defer></script>
-    <script src="/js/tool-recommendations.js" defer></script>
-    <!-- Performance Optimizer - Load first -->
-    <script src="/js/performance-optimizer.js" defer></script>
-    
-    <!-- Non-critical scripts - Load after page is interactive -->
-    <script src="/js/share-powerup.js" defer></script>
-    <script src="/js/user-preferences.js" defer></script>
-    <script src="/js/usage-statistics.js" defer></script>
-    <script src="/js/print-optimizer.js" defer></script>
-    <script src="/js/advanced-search.js" defer></script>
-    
-    <!-- SEO Ping - Load last, low priority -->
-    <script src="/js/seo-ping.js" defer></script>
+    <!-- Advanced Power-Up Features - Defer all -->
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var scripts = [
+                    '/js/keyboard-shortcuts-powerup.js',
+                    '/js/quick-actions-menu.js',
+                    '/js/copy-enhancements.js',
+                    '/js/tool-recommendations.js'
+                ];
+                
+                scripts.forEach(function(src) {
+                    var script = document.createElement('script');
+                    script.src = src;
+                    script.defer = true;
+                    document.body.appendChild(script);
+                });
+            }, 2000);
+        });
+    </script>
+    <!-- Non-critical scripts - Load after page is fully interactive -->
+    <script>
+        // Load all non-critical scripts after page load
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var scripts = [
+                    '/js/performance-optimizer.js',
+                    '/js/share-powerup.js',
+                    '/js/user-preferences.js',
+                    '/js/usage-statistics.js',
+                    '/js/print-optimizer.js',
+                    '/js/advanced-search.js',
+                    '/js/seo-ping.js'
+                ];
+                
+                scripts.forEach(function(src) {
+                    var script = document.createElement('script');
+                    script.src = src;
+                    script.defer = true;
+                    document.body.appendChild(script);
+                });
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
