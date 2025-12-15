@@ -28,60 +28,9 @@
         });
     }
     
-    // PWA Install Prompt
-    let deferredPrompt;
-    const installButton = document.createElement('button');
-    installButton.textContent = '📱 Install App';
-    installButton.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        z-index: 1000;
-        display: none;
-        transition: all 0.3s ease;
-    `;
-    
-    installButton.addEventListener('mouseenter', () => {
-        installButton.style.transform = 'scale(1.05)';
-        installButton.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.4)';
-    });
-    
-    installButton.addEventListener('mouseleave', () => {
-        installButton.style.transform = 'scale(1)';
-        installButton.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.3)';
-    });
-    
-    installButton.addEventListener('click', async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log('User choice:', outcome);
-            deferredPrompt = null;
-            installButton.style.display = 'none';
-        }
-    });
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installButton.style.display = 'block';
-        document.body.appendChild(installButton);
-    });
-    
-    window.addEventListener('appinstalled', () => {
-        console.log('PWA installed');
-        installButton.style.display = 'none';
-        deferredPrompt = null;
-    });
+    // PWA Install Prompt - DISABLED (removed install button)
+    // Service Worker registration is kept for offline functionality
+    // but the install button is removed as per user request
 })();
 
 

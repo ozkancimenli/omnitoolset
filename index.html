@@ -200,32 +200,70 @@
             // Suppress resource loading errors (separate listener for better coverage)
             window.addEventListener('error', function(e) {
                 const target = e.target || e.srcElement;
+                const filename = (e.filename || e.source || '').toLowerCase();
+                const message = String(e.message || '').toLowerCase();
+                const url = (target?.src || target?.href || e.filename || '').toLowerCase();
+                
+                // Suppress Adsterra-related errors
                 if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK' || target.tagName === 'IMG')) {
                     const src = (target.src || target.href || '').toLowerCase();
                     if (src.includes('effectivegatecpm.com') ||
                         src.includes('pl28055668') ||
                         src.includes('pl28055637') ||
                         src.includes('pl28059282') ||
-                        src.includes('invoke.js')) {
+                        src.includes('invoke.js') ||
+                        src.includes('5ce4ee5ab685f82c323752c9b8d45ace') ||
+                        src.includes('612a325632297ecc15cfd2d178f355ec') ||
+                        src.includes('9094fe56f6d4377965dfac5145838787')) {
                         e.preventDefault();
                         e.stopPropagation();
                         e.stopImmediatePropagation();
                         return false;
                     }
                 }
-                // Also catch network errors in the error message
-                const message = String(e.message || '').toLowerCase();
+                
+                // Also catch network errors in the error message, filename, or URL
                 if ((message.includes('failed to load resource') ||
                      message.includes('net::err_ssl') ||
                      message.includes('net::err') ||
-                     message.includes('ssl_protocol_error')) &&
+                     message.includes('ssl_protocol_error') ||
+                     message.includes('get https://') ||
+                     filename.includes('effectivegatecpm.com') ||
+                     filename.includes('pl280556') ||
+                     filename.includes('pl280592') ||
+                     url.includes('effectivegatecpm.com') ||
+                     url.includes('pl280556') ||
+                     url.includes('pl280592')) &&
                     (message.includes('effectivegatecpm') ||
                      message.includes('pl280556') ||
                      message.includes('pl280592') ||
-                     message.includes('invoke.js'))) {
+                     message.includes('invoke.js') ||
+                     filename.includes('effectivegatecpm') ||
+                     filename.includes('pl280556') ||
+                     filename.includes('pl280592') ||
+                     url.includes('effectivegatecpm') ||
+                     url.includes('pl280556') ||
+                     url.includes('pl280592'))) {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
+                    return false;
+                }
+            }, true);
+            
+            // Also suppress Chrome extension errors (content-script.js, etc.)
+            window.addEventListener('error', function(e) {
+                const message = String(e.message || '').toLowerCase();
+                const filename = String(e.filename || '').toLowerCase();
+                if (message.includes('chrome-extension://') ||
+                    message.includes('content-script') ||
+                    message.includes('contentScript') ||
+                    message.includes('net::err_file_not_found') ||
+                    filename.includes('chrome-extension://') ||
+                    filename.includes('content-script') ||
+                    filename.includes('contentScript')) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     return false;
                 }
             }, true);
@@ -261,13 +299,41 @@
             // Note: We removed fetch/XMLHttpRequest blocking to allow ads to load
         })();
     </script>
+    <!-- Adsterra Popunder (Head) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <script data-cfasync="false" type='text/javascript'>
+        (function() {
+            try {
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = 'https://pl28055668.effectivegatecpm.com/5c/e4/ee/5ce4ee5ab685f82c323752c9b8d45ace.js';
+                script.onerror = function() { 
+                    // Silently ignore SSL errors - this is expected in some environments
+                    return false;
+                };
+                script.onload = function() {
+                    // Script loaded successfully
+                };
+                // Suppress any errors from this script
+                script.addEventListener('error', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    return false;
+                }, true);
+                document.head.appendChild(script);
+            } catch(e) { 
+                // Silently ignore - SSL errors are expected in local development
+            }
+        })();
+    </script>
 </head>
 <body>
     <header class="main-header">
         <div class="container">
             <div class="header-content">
                 <div class="logo-section">
-                    <h1 class="logo" aria-label="OmniToolset - Free Online Tools">🛠️ OmniToolset</h1>
+                    <a href="/index.html" style="text-decoration: none; color: inherit;">
+                        <h1 class="logo" aria-label="OmniToolset - Free Online Tools">🛠️ OmniToolset</h1>
+                    </a>
                 </div>
                 <nav class="main-nav" role="navigation" aria-label="Main navigation">
                     <a href="/index.html" class="nav-link active" aria-current="page">Home</a>
@@ -287,6 +353,44 @@
                 <p class="hero-description">Convert, edit, and transform files instantly. No registration required. 100% free.</p>
             </div>
 
+            <!-- Adsterra Native Banner (Top) -->
+            <div style="margin: 2rem 0; text-align: center;">
+                <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
+                <script data-cfasync="false" type='text/javascript'>
+                    (function() {
+                        try {
+                            var script = document.createElement('script');
+                            script.type = 'text/javascript';
+                            script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
+                            script.onerror = function() { 
+                                // Silently ignore SSL errors - this is expected in some environments
+                                return false;
+                            };
+                            script.addEventListener('error', function(e) {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                return false;
+                            }, true);
+                            document.head.appendChild(script);
+                        } catch(e) { 
+                            // Silently ignore - SSL errors are expected in local development
+                        }
+                    })();
+                </script>
+            </div>
+
+            <!-- AdSense Banner Ad (Top) -->
+            <div style="margin: 2rem 0; text-align: center; min-height: 100px;">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8640955536193345"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
             <!-- Category Filter - Will be populated by app.js -->
             <div class="category-filter" id="categoryFilter">
                 <!-- Category buttons will be generated dynamically by app.js -->
@@ -300,7 +404,27 @@
             <!-- Adsterra Native Banner (After Tools) -->
             <div style="margin: 3rem 0; text-align: center;">
                 <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
-                <script data-cfasync="false" type='text/javascript' src='https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js'></script>
+                <script data-cfasync="false" type='text/javascript'>
+                    (function() {
+                        try {
+                            var script = document.createElement('script');
+                            script.type = 'text/javascript';
+                            script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
+                            script.onerror = function() { 
+                                // Silently ignore SSL errors - this is expected in some environments
+                                return false;
+                            };
+                            script.addEventListener('error', function(e) {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                return false;
+                            }, true);
+                            document.head.appendChild(script);
+                        } catch(e) { 
+                            // Silently ignore - SSL errors are expected in local development
+                        }
+                    })();
+                </script>
             </div>
 
             <!-- AdSense Banner Ad (After Tools) -->
@@ -362,7 +486,27 @@
     </script>
 
     <!-- Adsterra Popunder (Body) -->
-    <script data-cfasync="false" type='text/javascript' src='https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js'></script>
+    <script data-cfasync="false" type='text/javascript'>
+        (function() {
+            try {
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = 'https://pl28059282.effectivegatecpm.com/90/94/fe/9094fe56f6d4377965dfac5145838787.js';
+                script.onerror = function() { 
+                    // Silently ignore SSL errors - this is expected in some environments
+                    return false;
+                };
+                script.addEventListener('error', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    return false;
+                }, true);
+                document.body.appendChild(script);
+            } catch(e) { 
+                // Silently ignore - SSL errors are expected in local development
+            }
+        })();
+    </script>
     
     <!-- Accessibility -->
     <script src="/js/accessibility.js" defer></script>

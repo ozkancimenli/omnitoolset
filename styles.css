@@ -13,9 +13,8 @@
     --accent-color: #ec4899;
     --bg-color: #0f172a;
     --bg-card: rgba(30, 41, 59, 0.8);
-    --bg-card-hover: rgba(51, 65, 85, 0.9);
+    --bg-card-hover: rgba(40, 51, 68, 0.85);
     --bg-hover: #334155;
-    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     --text-primary: #f1f5f9;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
@@ -24,41 +23,16 @@
     --success: #10b981;
     --warning: #f59e0b;
     --error: #ef4444;
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 25px rgba(99, 102, 241, 0.15);
-    --shadow-xl: 0 20px 40px rgba(99, 102, 241, 0.2);
-    --glow: 0 0 20px rgba(99, 102, 241, 0.3);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg-gradient);
-    background-attachment: fixed;
+    background: var(--bg-color);
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
-    position: relative;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-body > * {
-    position: relative;
-    z-index: 1;
 }
 
 .container {
@@ -68,21 +42,16 @@ body > * {
 }
 
 .main-header {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: var(--bg-color);
     border-bottom: 1px solid var(--border-color);
     padding: 1rem 0;
     position: sticky;
     top: 0;
     z-index: 1000;
-    box-shadow: var(--shadow-md);
-    transition: all 0.3s ease;
 }
 
 .main-header:hover {
-    background: rgba(15, 23, 42, 0.95);
-    border-bottom-color: var(--border-hover);
+    /* Hover effects removed */
 }
 
 .header-content {
@@ -100,24 +69,12 @@ body > * {
 .logo {
     font-size: 1.75rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary-color);
     margin: 0;
-    transition: all 0.3s ease;
-    animation: gradient-shift 3s ease infinite;
-}
-
-@keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
 }
 
 .logo:hover {
-    transform: scale(1.05);
-    filter: drop-shadow(var(--glow));
+    /* Hover effects removed */
 }
 
 .main-nav {
@@ -133,32 +90,14 @@ body > * {
     border-radius: 8px;
     font-weight: 500;
     font-size: 0.95rem;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.nav-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    border-radius: 8px;
 }
 
 .nav-link:hover {
-    color: var(--text-primary);
-    background: rgba(99, 102, 241, 0.15);
-    transform: translateY(-2px);
+    /* Hover effects removed */
 }
 
 .nav-link:hover::before {
-    opacity: 1;
+    /* Hover effects removed */
 }
 
 .nav-link.active {
@@ -253,13 +192,11 @@ main {
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--primary-light);
-    box-shadow: var(--shadow-lg);
+    /* Hover effects removed */
 }
 
 .stat-card:hover::after {
-    opacity: 1;
+    /* Hover effects removed */
 }
 
 .stat-number {
@@ -312,9 +249,7 @@ main {
 }
 
 .category-btn:hover {
-    border-color: var(--primary-color);
-    color: var(--text-primary);
-    background: var(--bg-hover);
+    /* Hover effects removed */
 }
 
 .category-btn.active {
@@ -363,43 +298,29 @@ main {
 
 .tool-card {
     background: var(--bg-card) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-color) !important;
-    border-radius: 20px !important;
+    border-radius: 12px !important;
     padding: 1.5rem !important;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none !important;
     color: var(--text-primary) !important;
     display: block !important;
     position: relative !important;
-    overflow: visible !important;
     min-height: 150px !important;
     visibility: visible !important;
     opacity: 1 !important;
 }
 
 .tool-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-    transition: left 0.5s ease;
+    display: none;
 }
 
 .tool-card:hover::before {
-    left: 100%;
+    display: none;
 }
 
 .tool-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-xl), var(--glow);
-    background: var(--bg-card-hover);
+    /* Hover effects removed */
 }
 
 .tool-icon {
@@ -463,8 +384,7 @@ footer {
 }
 
 .back-button:hover {
-    background: var(--bg-hover);
-    border-color: var(--primary-color);
+    /* Hover effects removed */
 }
 
 .tool-container {
@@ -496,8 +416,7 @@ footer {
 }
 
 .upload-area:hover {
-    border-color: var(--primary-color);
-    background: rgba(99, 102, 241, 0.05);
+    /* Hover effects removed */
 }
 
 .upload-area.dragover {
@@ -539,13 +458,11 @@ footer {
 }
 
 .btn:hover::before {
-    width: 300px;
-    height: 300px;
+    /* Hover effects removed */
 }
 
 .btn:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: var(--shadow-xl), var(--glow);
+    /* Hover effects removed */
 }
 
 .btn:active {
@@ -669,28 +586,13 @@ footer {
 .blog-hero {
     text-align: center;
     padding: 4rem 0;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-    border-radius: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     margin-bottom: 3rem;
-    position: relative;
-    overflow: hidden;
 }
 
-.blog-hero::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
-    animation: pulse 4s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.1); opacity: 0.8; }
-}
+/* Pulse animation removed */
 
 .blog-search {
     max-width: 600px;
@@ -702,18 +604,15 @@ footer {
     width: 100%;
     padding: 1rem 3rem 1rem 1.5rem;
     background: var(--bg-card);
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     color: var(--text-primary);
     font-size: 1rem;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
 }
 
 .blog-search input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), var(--shadow-lg);
 }
 
 .blog-search::after {
@@ -737,65 +636,40 @@ footer {
 .blog-category-btn {
     padding: 0.6rem 1.5rem;
     background: var(--bg-card);
-    border: 2px solid var(--border-color);
-    border-radius: 24px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     color: var(--text-secondary);
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
 }
 
 .blog-category-btn:hover {
-    border-color: var(--primary-color);
-    color: var(--text-primary);
-    background: rgba(99, 102, 241, 0.1);
-    transform: translateY(-2px);
+    /* Hover effects removed */
 }
 
 .blog-category-btn.active {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: var(--primary-color);
     border-color: var(--primary-color);
     color: white;
-    box-shadow: var(--shadow-md);
 }
 
 .blog-post-card {
     background: var(--bg-card);
-    backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: 12px;
     padding: 2rem;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     color: inherit;
     display: block;
-    position: relative;
-    overflow: hidden;
-}
-
-.blog-post-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
-    transform: scaleY(0);
-    transition: transform 0.3s ease;
 }
 
 .blog-post-card:hover::before {
-    transform: scaleY(1);
+    /* Hover effects removed */
 }
 
 .blog-post-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-xl), var(--glow);
-    background: var(--bg-card-hover);
+    /* Hover effects removed */
 }
 
 .blog-post-meta {
@@ -829,22 +703,7 @@ html {
     scroll-behavior: smooth;
 }
 
-/* Loading animation */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.tool-card,
-.blog-post-card {
-    animation: fadeInUp 0.6s ease-out;
-}
+/* Loading animation removed for better performance */
 
 /* Glassmorphism effect */
 .glass {
@@ -856,8 +715,5 @@ html {
 
 /* Feature Cards Hover Effect */
 .feature-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-xl), var(--glow);
-    background: var(--bg-card-hover);
+    /* Hover effects removed */
 }

@@ -1,6 +1,9 @@
-// Quick Actions Menu - Floating action button with quick access
+// Quick Actions Menu - DISABLED (removed per user request)
 (function() {
     'use strict';
+    
+    // Quick Actions Menu disabled - returning early
+    return;
     
     function createQuickActionsMenu() {
         const menu = document.createElement('div');

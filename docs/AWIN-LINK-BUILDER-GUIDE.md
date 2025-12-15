@@ -89,6 +89,48 @@ https://www.awin1.com/cread.php?awinmid=100851&awinaffid=YOUR_PUBLISHER_ID&click
 
 ---
 
+### 4. King Koil Airbeds Linki Oluşturma
+
+#### Adım 1: Advertiser Seçimi
+- **Advertiser**: "King Koil Airbeds" veya program ID'sini arayın
+- Advertiser'ı seçin
+- **Not:** Program ID'sini AWIN dashboard'unuzdan bulmanız gerekiyor
+
+#### Adım 2: Link Tipi
+- **Link Type**: **"Deep Link"** seçin (önerilir)
+- Ana sayfa için "Text Link" de kullanılabilir
+
+#### Adım 3: Destination URL (Deep Link için)
+- **King Koil Airbeds ana sayfası**: `https://www.kingkoilairbeds.com/`
+- **Kategori sayfası**: `https://www.kingkoilairbeds.com/collections/all` (tüm ürünler)
+- **Belirli ürün sayfası**: Ürün URL'sini kullanabilirsiniz
+
+#### Adım 4: Campaign Parameters (İsteğe bağlı)
+- **Campaign Name**: `omnitoolset` veya `omnitoolset-airbeds`
+- **Medium**: `affiliate`
+- **Source**: `omnitoolset`
+
+#### Adım 5: Click References (Önerilir)
+- **Click Reference**: `omnitoolset-airbeds` veya `shop-page`
+- Hangi sayfadan geldiğini takip etmek için
+
+#### Adım 6: Link Oluştur
+- **"Create Link"** butonuna tıklayın
+- Oluşturulan linki kopyalayın
+
+#### Örnek Link Formatı:
+```
+https://www.awin1.com/cread.php?awinmid=KING_KOIL_PROGRAM_ID&awinaffid=2682178&clickref=omnitoolset-airbeds&ued=https%3A%2F%2Fwww.kingkoilairbeds.com%2F
+```
+
+**Önemli Notlar:**
+- ⚠️ **PPC YASAK** - Paid search yapmayın
+- ✅ Sadece AWIN'dan gelen coupon kodlarını kullanın
+- ✅ Product feed kullanın, scraping yapmayın
+- ✅ News Manager'a subscribe olun (launch bildirimleri için)
+
+---
+
 ## 🎨 My Creative (İsteğe Bağlı)
 
 Eğer SwifDoo veya Kdan'dan resmi banner'lar istiyorsanız:
@@ -174,6 +216,21 @@ https://www.awin1.com/cread.php?awinmid=100851&awinaffid=YOUR_PUBLISHER_ID&click
 https://www.awin1.com/cread.php?awinmid=100851&awinaffid=YOUR_PUBLISHER_ID&clickref=pdf-tools&p=https://www.pdfreaderpro.com/pricing
 ```
 
+### King Koil Airbeds (Basit Link - Ana Sayfa):
+```
+https://www.awin1.com/cread.php?awinmid=KING_KOIL_PROGRAM_ID&awinaffid=2682178&clickref=omnitoolset-airbeds&ued=https%3A%2F%2Fwww.kingkoilairbeds.com%2F
+```
+
+### King Koil Airbeds (Deep Link - Tüm Ürünler):
+```
+https://www.awin1.com/cread.php?awinmid=KING_KOIL_PROGRAM_ID&awinaffid=2682178&clickref=omnitoolset-airbeds&ued=https%3A%2F%2Fwww.kingkoilairbeds.com%2Fcollections%2Fall
+```
+
+### King Koil Airbeds (Deep Link - Belirli Ürün):
+```
+https://www.awin1.com/cread.php?awinmid=KING_KOIL_PROGRAM_ID&awinaffid=2682178&clickref=omnitoolset-airbeds&ued=https%3A%2F%2Fwww.kingkoilairbeds.com%2Fproducts%2Fproduct-name
+```
+
 ---
 
 ## 📝 Notlar
@@ -190,11 +247,30 @@ https://www.awin1.com/cread.php?awinmid=100851&awinaffid=YOUR_PUBLISHER_ID&click
 1. Awin Dashboard → **Links & Tools** → **Link Builder**
 2. SwifDoo PDF (115767) seç → Deep Link oluştur → Pricing sayfasına yönlendir
 3. Kdan-PDF Reader Pro (100851) seç → Deep Link oluştur → Pricing sayfasına yönlendir
-4. Oluşturulan linkleri kopyala
-5. HTML dosyalarındaki placeholder linkleri değiştir
+4. King Koil Airbeds seç → Deep Link oluştur → Ana sayfa veya kategori sayfasına yönlendir
+5. Oluşturulan linkleri kopyala
+6. HTML dosyalarındaki placeholder linkleri değiştir
+
+---
+
+## 📋 King Koil Airbeds - Özel Notlar
+
+### Link Oluşturma Checklist:
+- [ ] AWIN dashboard'dan King Koil Airbeds program ID'sini buldum
+- [ ] Link Builder'da program ID'sini girdim
+- [ ] Deep Link oluşturdum (ana sayfa veya kategori)
+- [ ] Click reference ekledim (`omnitoolset-airbeds`)
+- [ ] Link'i test ettim
+- [ ] `shop.html` dosyasındaki `KING_KOIL_ID` placeholder'ını gerçek ID ile değiştirdim
+
+### Önemli Kurallar (Tekrar):
+- ❌ **PPC YASAK** - Paid search yapmayın
+- ✅ **Coupon Codes** - Sadece AWIN'dan gelen kodları kullanın
+- ✅ **Product Feed** - Scraping yapmayın, feed kullanın
+- ✅ **News Manager** - Launch bildirimleri için subscribe olun
 
 ---
 
 *Last Updated: January 2025*
-*SwifDoo PDF ID: 115767 | Kdan-PDF Reader Pro ID: 100851*
+*SwifDoo PDF ID: 115767 | Kdan-PDF Reader Pro ID: 100851 | King Koil Airbeds ID: [AWIN Dashboard'dan bulun]*
 
