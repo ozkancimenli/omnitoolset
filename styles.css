@@ -49,6 +49,7 @@ body {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
+    align-items: start;
 }
 
 .main-content {
@@ -79,6 +80,30 @@ body {
     padding-bottom: 0.5rem;
 }
 
+.sidebar-widget img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.sidebar-widget .adsbygoogle {
+    display: block !important;
+    width: 100% !important;
+    max-width: 300px !important;
+    margin: 0 auto;
+}
+
+.sidebar-widget a {
+    display: block;
+    width: 100%;
+}
+
+.sidebar-widget img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+}
+
 /* Mobile: Sidebar below content */
 @media (max-width: 1024px) {
     .content-with-sidebar {
@@ -89,10 +114,6 @@ body {
     .sidebar {
         position: static;
         max-height: none;
-    }
-    
-    /* Sidebar widgets in mobile: 2 columns */
-    .sidebar-widgets-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1.5rem;
@@ -100,8 +121,12 @@ body {
 }
 
 @media (max-width: 768px) {
-    .sidebar-widgets-grid {
+    .sidebar {
         grid-template-columns: 1fr;
+    }
+    
+    .sidebar-widget {
+        padding: 1rem;
     }
 }
 
