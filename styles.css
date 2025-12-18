@@ -41,12 +41,12 @@ body {
     padding: 0 20px;
 }
 
-/* WordPress-style Sidebar Layout */
+/* 3-Column Layout: Left Ads | Main Content | Right Ads */
 .content-with-sidebar {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 300px 1fr 300px;
     gap: 2rem;
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 0 20px;
     align-items: start;
@@ -55,6 +55,7 @@ body {
 .main-content {
     min-width: 0; /* Prevents grid overflow */
     overflow: hidden; /* Prevents content overflow */
+    max-width: 100%;
 }
 
 .sidebar {
@@ -65,6 +66,18 @@ body {
     overflow-y: auto;
     width: 300px;
     flex-shrink: 0;
+}
+
+.sidebar-left {
+    order: 1;
+}
+
+.main-content {
+    order: 2;
+}
+
+.sidebar-right {
+    order: 3;
 }
 
 .sidebar-widget {
@@ -114,6 +127,25 @@ body {
     margin: 0 auto;
 }
 
+/* Tablet: Hide left sidebar, show right */
+@media (max-width: 1400px) {
+    .content-with-sidebar {
+        grid-template-columns: 1fr 300px;
+    }
+    
+    .sidebar-left {
+        display: none;
+    }
+    
+    .main-content {
+        order: 1;
+    }
+    
+    .sidebar-right {
+        order: 2;
+    }
+}
+
 /* Mobile: Sidebar below content */
 @media (max-width: 1024px) {
     .content-with-sidebar {
@@ -128,6 +160,19 @@ body {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1.5rem;
+    }
+    
+    .sidebar-left {
+        display: block;
+        order: 2;
+    }
+    
+    .main-content {
+        order: 1;
+    }
+    
+    .sidebar-right {
+        order: 3;
     }
     
     .sidebar-widget {
