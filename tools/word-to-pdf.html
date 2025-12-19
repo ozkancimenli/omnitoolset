@@ -261,17 +261,17 @@
                 <div class="upload-icon">📄</div>
                 <p>Drag and drop your Word file here or click to select</p>
                 <input type="file" id="fileInput" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;">
-    
+            </div>
 
             <div id="fileInfo" class="result-area" style="display: none;">
                 <h3>Selected File</h3>
                 <p id="fileName"></p>
                 <p id="fileSize"></p>
-    
+            </div>
 
             <div class="progress-bar" id="progressBar" style="display: none;">
                 <div class="progress-fill" id="progressFill"></div>
-    
+            </div>
 
             <button class="btn" id="convertBtn" onclick="convertToPDF()" style="width: 100%; margin-top: 1rem;" disabled>Convert to PDF</button>
 
@@ -279,7 +279,7 @@
                 <h3>Conversion Complete!</h3>
                 <p id="resultInfo"></p>
                 <button class="btn" onclick="downloadPDF()" style="width: 100%;">Download PDF File</button>
-    
+            </div>
 
         
                 <!-- Affiliate Upgrade Banner -->
@@ -572,136 +572,132 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let wordFile = null;
-            let pdfBlob = null;
+            if (!window.jspdf || !window.mammoth) {
+                console.error('Required libraries not loaded');
+                return;
+            }
 
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
             const fileInfo = document.getElementById('fileInfo');
+            const fileNameEl = document.getElementById('fileName');
+            const fileSizeEl = document.getElementById('fileSize');
             const convertBtn = document.getElementById('convertBtn');
             const progressBar = document.getElementById('progressBar');
             const progressFill = document.getElementById('progressFill');
             const resultArea = document.getElementById('resultArea');
+            const resultInfo = document.getElementById('resultInfo');
 
-            if (!uploadArea || !fileInput) {
-                console.error('Tool elements not found');
+            if (!uploadArea || !fileInput || !fileInfo || !fileNameEl || !fileSizeEl || !convertBtn || !progressBar || !progressFill || !resultArea || !resultInfo) {
+                console.error('Word to PDF UI elements missing');
                 return;
             }
 
+            let wordFile = null;
+            let pdfBlob = null;
+
+            const resetState = () => {
+                pdfBlob = null;
+                resultArea.style.display = 'none';
+                progressBar.style.display = 'none';
+                progressFill.style.width = '0%';
+                convertBtn.disabled = !wordFile;
+            };
+
+            const handleFile = (file) => {
+                if (!file || (!file.name.toLowerCase().endsWith('.docx') && !file.type.includes('wordprocessingml'))) {
+                    alert('Please select a valid Word (.docx) file!');
+                    return;
+                }
+                wordFile = file;
+                fileNameEl.textContent = `File: ${file.name}`;
+                fileSizeEl.textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                fileInfo.style.display = 'block';
+                resetState();
+                fileInput.value = '';
+            };
+
             uploadArea.addEventListener('click', () => fileInput.click());
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file && (file.name.endsWith('.docx') || file.type.includes('wordprocessingml'))) {
-                handleFile(file);
-            } else {
-                alert('Please select a valid Word (.docx) file!');
-            }
-        });
 
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                handleFile(file);
-            }
-        });
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
 
-            function handleFile(file) {
-            wordFile = file;
-            document.getElementById('fileName').textContent = `File: ${file.name}`;
-            document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
-            fileInfo.style.display = 'block';
-            convertBtn.disabled = false;
-            resultArea.style.display = 'none';
-        }
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleFile(e.dataTransfer.files[0]);
+            });
+
+            fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
             async function convertToPDF() {
-            if (!wordFile) return;
+                if (!wordFile) return;
 
-            convertBtn.disabled = true;
-            progressBar.style.display = 'block';
-            progressFill.style.width = '0%';
+                resetState();
+                convertBtn.disabled = true;
+                progressBar.style.display = 'block';
+                progressFill.style.width = '10%';
 
-            try {
-                progressFill.style.width = '30%';
-                
-                const arrayBuffer = await wordFile.arrayBuffer();
-                
-                progressFill.style.width = '50%';
-                
-                // Convert Word to HTML
-                const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
-                const html = result.value;
-                
-                progressFill.style.width = '70%';
-                
-                // Convert HTML to PDF using jsPDF
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF();
-                
-                // Create a temporary div to render HTML
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-                tempDiv.style.position = 'absolute';
-                tempDiv.style.left = '-9999px';
-                document.body.appendChild(tempDiv);
-                
-                // Simple text extraction for PDF
-                const text = tempDiv.innerText || tempDiv.textContent || '';
-                const lines = pdf.splitTextToSize(text, 180);
-                
-                let y = 20;
-                for (let i = 0; i < lines.length; i++) {
-                    if (y > 270) {
-                        pdf.addPage();
-                        y = 20;
-                    }
-                    pdf.text(lines[i], 10, y);
-                    y += 7;
-                }
-                
-                document.body.removeChild(tempDiv);
-                
-                pdfBlob = pdf.output('blob');
-                
-                progressFill.style.width = '100%';
-                document.getElementById('resultInfo').textContent = 
-                    'Note: Complex formatting (tables, images) may not be fully preserved.';
-                
-                setTimeout(() => {
-                    progressBar.style.display = 'none';
+                try {
+                    const arrayBuffer = await wordFile.arrayBuffer();
+                    progressFill.style.width = '35%';
+
+                    const htmlResult = await mammoth.convertToHtml({ arrayBuffer });
+                    progressFill.style.width = '55%';
+
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF();
+
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = htmlResult.value;
+                    tempDiv.style.position = 'absolute';
+                    tempDiv.style.left = '-9999px';
+                    document.body.appendChild(tempDiv);
+
+                    const text = tempDiv.innerText || tempDiv.textContent || '';
+                    const lines = pdf.splitTextToSize(text, 180);
+
+                    let y = 20;
+                    lines.forEach((line) => {
+                        if (y > 270) {
+                            pdf.addPage();
+                            y = 20;
+                        }
+                        pdf.text(line, 10, y);
+                        y += 7;
+                    });
+
+                    document.body.removeChild(tempDiv);
+
+                    pdfBlob = pdf.output('blob');
+                    progressFill.style.width = '100%';
+                    resultInfo.textContent = 'Note: Complex formatting (tables, images) may not be fully preserved.';
                     resultArea.style.display = 'block';
-                    convertBtn.disabled = false;
-                }, 500);
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Convertme An error occurred: ' + error.message);
-                convertBtn.disabled = false;
-                progressBar.style.display = 'none';
+                } catch (error) {
+                    console.error('Conversion error:', error);
+                    alert('An error occurred while converting your file. Please try again.');
+                } finally {
+                    progressBar.style.display = 'none';
+                    convertBtn.disabled = !wordFile;
+                }
             }
-        }
 
             function downloadPDF() {
                 if (!pdfBlob) return;
-                
                 const url = URL.createObjectURL(pdfBlob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = wordFile.name.replace('.docx', '') + '.pdf';
+                a.download = wordFile.name.replace(/\\.docx$/i, '') + '.pdf';
                 a.click();
                 URL.revokeObjectURL(url);
             }
 
-            // Make functions global for onclick handlers
             window.convertToPDF = convertToPDF;
             window.downloadPDF = downloadPDF;
         });
