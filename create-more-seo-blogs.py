@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Daha fazla SEO odaklı blog yazıları oluşturma scripti - Part 2
+Daha fazla SEO blog yazısı oluştur - Yüksek trafik potansiyeli
 """
 
 import os
@@ -10,114 +10,472 @@ from datetime import datetime
 blog_dir = Path('blog')
 blog_dir.mkdir(exist_ok=True)
 
-# Daha fazla blog yazıları
-more_blog_topics = [
-    # Text Tools - Advanced
-    ("how-to-sort-text-lines", "How to Sort Text Lines - Alphabetical Sorter Tool", "Sort text lines alphabetically or numerically. Perfect for organizing lists and data.", "sort text, text sorter, alphabetize text, sort lines"),
-    ("how-to-find-text-differences", "How to Find Text Differences - Text Diff Tool", "Compare two texts and find differences. Useful for code reviews and document comparison.", "text diff, compare text, text difference, diff tool"),
-    ("how-to-convert-markdown-to-html", "How to Convert Markdown to HTML - Free Converter", "Convert Markdown text to HTML format. Perfect for documentation and web content.", "markdown to html, convert markdown, markdown converter"),
-    ("how-to-escape-html", "How to Escape HTML Characters - HTML Escape Tool", "Escape HTML special characters for safe display. Prevent XSS attacks and format correctly.", "html escape, escape html, html entities"),
-    ("how-to-reverse-text", "How to Reverse Text - Text Reverser Tool", "Reverse text characters or lines. Useful for testing and data manipulation.", "reverse text, text reverser, flip text"),
-    ("how-to-find-and-replace-text", "How to Find and Replace Text - Text Replacer Tool", "Find and replace text in documents. Batch processing and regex support.", "find replace, text replacer, search replace"),
-    ("how-to-convert-text-to-binary", "How to Convert Text to Binary - Binary Converter", "Convert text to binary code and vice versa. Learn binary encoding basics.", "text to binary, binary converter, binary code"),
-    ("how-to-convert-text-to-morse", "How to Convert Text to Morse Code - Morse Converter", "Convert text to Morse code and decode Morse code back to text.", "morse code, text to morse, morse converter"),
-    ("how-to-generate-slug", "How to Generate URL Slug - Slug Generator Tool", "Generate URL-friendly slugs from text. Perfect for SEO and clean URLs.", "slug generator, url slug, seo slug"),
-    ("how-to-convert-to-camel-case", "How to Convert to Camel Case - Case Converter", "Convert text to camelCase format. Useful for programming and coding.", "camel case, camelcase converter, programming case"),
-    ("how-to-extract-emails-from-text", "How to Extract Emails from Text - Email Extractor", "Extract email addresses from text documents. Find all emails quickly.", "extract emails, email extractor, find emails"),
-    ("how-to-extract-urls-from-text", "How to Extract URLs from Text - URL Extractor", "Extract URLs and links from text. Useful for web scraping and analysis.", "extract urls, url extractor, find links"),
-    
-    # Developer Tools - Advanced
-    ("how-to-minify-css", "How to Minify CSS - CSS Minifier Tool", "Minify CSS code to reduce file size. Improve website loading speed.", "css minifier, minify css, compress css"),
-    ("how-to-minify-html", "How to Minify HTML - HTML Minifier Tool", "Minify HTML code to reduce file size. Remove whitespace and comments.", "html minifier, minify html, compress html"),
-    ("how-to-minify-javascript", "How to Minify JavaScript - JS Minifier Tool", "Minify JavaScript code for production. Reduce file size and improve performance.", "javascript minifier, minify js, compress javascript"),
-    ("how-to-format-css", "How to Format CSS - CSS Formatter Tool", "Format and beautify CSS code. Make CSS readable and organized.", "css formatter, format css, beautify css"),
-    ("how-to-validate-xml", "How to Validate XML - XML Validator Tool", "Validate XML syntax and structure. Find errors in XML documents.", "xml validator, validate xml, xml checker"),
-    ("how-to-validate-yaml", "How to Validate YAML - YAML Validator Tool", "Validate YAML syntax and format. Essential for configuration files.", "yaml validator, validate yaml, yaml checker"),
-    ("how-to-generate-hash", "How to Generate Hash - Hash Generator Tool", "Generate SHA1, SHA256, SHA512 hashes. Secure your data with hashing.", "hash generator, generate hash, sha256 generator"),
-    ("how-to-pick-color", "How to Pick Color - Color Picker Tool", "Pick colors and convert between Hex, RGB, HSL formats. Perfect for designers.", "color picker, pick color, color converter"),
-    ("how-to-convert-timestamp", "How to Convert Timestamp - Timestamp Converter", "Convert Unix timestamp to date and vice versa. Handle time conversions easily.", "timestamp converter, unix timestamp, date converter"),
-    ("how-to-minify-json", "How to Minify JSON - JSON Minifier Tool", "Minify JSON code to reduce file size. Remove unnecessary whitespace.", "json minifier, minify json, compress json"),
-    
-    # Image Tools - Advanced
-    ("how-to-convert-image-to-base64", "How to Convert Image to Base64 - Base64 Image Converter", "Convert images to Base64 format for embedding in HTML or CSS.", "image to base64, base64 image, embed image"),
-    ("how-to-convert-base64-to-image", "How to Convert Base64 to Image - Base64 Decoder", "Convert Base64 strings back to images. Decode Base64 image data.", "base64 to image, decode base64 image"),
-    ("how-to-convert-image-to-grayscale", "How to Convert Image to Grayscale - Grayscale Converter", "Convert images to grayscale. Remove color and create black and white images.", "grayscale converter, black white image, remove color"),
-    ("how-to-invert-image-colors", "How to Invert Image Colors - Color Inverter", "Invert image colors to create negative effects. Reverse color values.", "invert colors, color inverter, negative image"),
-    ("how-to-apply-sepia-filter", "How to Apply Sepia Filter - Sepia Effect Tool", "Apply sepia filter to images. Create vintage and retro photo effects.", "sepia filter, sepia effect, vintage photo"),
-    
-    # PDF Tools - Advanced
-    ("how-to-create-pdf-from-images", "How to Create PDF from Images - Image to PDF Converter", "Create PDF documents from multiple images. Combine images into one PDF.", "image to pdf, create pdf from images, combine images pdf"),
-    ("how-to-convert-epub-to-pdf", "How to Convert EPUB to PDF - EPUB Converter", "Convert EPUB ebook files to PDF format. Read ebooks as PDF documents.", "epub to pdf, convert epub, ebook converter"),
-    ("how-to-convert-pdf-to-jpg", "How to Convert PDF to JPG - PDF to Image Converter", "Convert PDF pages to JPG images. Extract images from PDF documents.", "pdf to jpg, pdf to image, convert pdf pages"),
-    ("how-to-convert-pdf-to-png", "How to Convert PDF to PNG - PDF to PNG Converter", "Convert PDF pages to PNG format. High quality image extraction.", "pdf to png, pdf to image, pdf converter"),
-    
-    # Media Tools - Advanced
-    ("how-to-convert-audio-formats", "How to Convert Audio Formats - Audio Converter Tool", "Convert audio files between different formats. MP3, WAV, OGG, and more.", "audio converter, convert audio, audio format converter"),
-    ("how-to-convert-video-formats", "How to Convert Video Formats - Video Converter Tool", "Convert video files between different formats. MP4, AVI, MOV, and more.", "video converter, convert video, video format converter"),
-    ("how-to-convert-mp3-formats", "How to Convert to MP3 - MP3 Converter Tool", "Convert any audio file to MP3 format. Universal audio compatibility.", "mp3 converter, convert to mp3, audio to mp3"),
-    
-    # Calculator Tools
-    ("how-to-calculate-area", "How to Calculate Area - Area Calculator Tool", "Calculate area of rectangles, circles, triangles, and more shapes.", "area calculator, calculate area, shape area"),
-    ("how-to-calculate-volume", "How to Calculate Volume - Volume Calculator Tool", "Calculate volume of 3D shapes. Cubes, spheres, cylinders, and more.", "volume calculator, calculate volume, 3d volume"),
-    ("how-to-calculate-perimeter", "How to Calculate Perimeter - Perimeter Calculator", "Calculate perimeter of shapes. Rectangles, circles, polygons, and more.", "perimeter calculator, calculate perimeter, shape perimeter"),
-    
-    # Utility Tools
-    ("how-to-generate-random-password", "How to Generate Random Password - Password Generator", "Generate secure random passwords. Customizable length and character sets.", "password generator, random password, secure password"),
-    ("how-to-check-password-strength", "How to Check Password Strength - Password Checker", "Check password strength and security. Test your password security level.", "password strength, password checker, secure password"),
-    ("how-to-generate-random-number", "How to Generate Random Number - Random Number Generator", "Generate random numbers within a range. Perfect for games and testing.", "random number generator, generate random number"),
-    
-    # Advanced Topics
-    ("how-to-optimize-pdf-files", "How to Optimize PDF Files - PDF Optimization Guide", "Optimize PDF files for web and email. Reduce file size while maintaining quality.", "optimize pdf, pdf optimization, compress pdf"),
-    ("how-to-merge-images-into-pdf", "How to Merge Images into PDF - Image to PDF Guide", "Combine multiple images into a single PDF document. Step-by-step guide.", "merge images pdf, images to pdf, combine images"),
-    ("how-to-split-pdf-by-bookmarks", "How to Split PDF by Bookmarks - Advanced PDF Splitter", "Split PDF files using bookmarks. Organize large documents easily.", "split pdf bookmarks, pdf splitter, organize pdf"),
-    ("how-to-protect-pdf-with-password", "How to Protect PDF with Password - PDF Security", "Add password protection to PDF files. Secure your sensitive documents.", "protect pdf, pdf password, secure pdf"),
+# Daha fazla yüksek trafik potansiyeli olan blog yazıları
+more_seo_blogs = [
+    # Image Tools - High Traffic
+    {
+        "slug": "how-to-compress-images-online-free-2025",
+        "title": "How to Compress Images Online Free - Reduce Image File Size 2025",
+        "description": "Compress images online for free and reduce file size without losing quality. Step-by-step guide to optimize images for web, email, and social media. No software required.",
+        "keywords": "compress images, reduce image size, image compressor free, compress images online, image optimizer, shrink images",
+        "tool_link": "/tools/image-compress.html",
+        "content": """
+            <h2>Why Compress Images?</h2>
+            <p>Image compression reduces file size while maintaining visual quality. This is essential for faster website loading, easier email sharing, and efficient storage management.</p>
+            
+            <h2>How to Compress Images Online (Step-by-Step)</h2>
+            <ol>
+                <li>Visit our <a href="/tools/image-compress.html">free image compressor</a></li>
+                <li>Upload your image (JPG, PNG, WEBP supported)</li>
+                <li>Choose compression level (low, medium, or high)</li>
+                <li>Click "Compress Image"</li>
+                <li>Download your optimized image</li>
+            </ol>
+            
+            <h2>Benefits of Image Compression</h2>
+            <ul>
+                <li>✅ Faster website loading times</li>
+                <li>✅ Reduced bandwidth usage</li>
+                <li>✅ Easier email sharing</li>
+                <li>✅ Better mobile experience</li>
+                <li>✅ Lower storage costs</li>
+            </ul>
+            
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Use medium compression for best quality/size balance</li>
+                <li>Compress before uploading to websites</li>
+                <li>Keep original files as backup</li>
+                <li>Compress images for social media posts</li>
+            </ul>
+            
+            <h2>Related Tools</h2>
+            <ul>
+                <li><a href="/tools/image-resize.html">Resize Images</a></li>
+                <li><a href="/tools/jpg-png-convert.html">Convert Image Formats</a></li>
+                <li><a href="/all-tools.html">View All Image Tools</a></li>
+            </ul>
+        """
+    },
+    {
+        "slug": "how-to-resize-images-online-free-2025",
+        "title": "How to Resize Images Online Free - Image Resizer Guide 2025",
+        "description": "Resize images online for free. Step-by-step guide to change image dimensions, resize photos for social media, web, and email. Works with JPG, PNG, and more.",
+        "keywords": "resize images, resize photos, image resizer free, resize images online, change image size, photo resizer",
+        "tool_link": "/tools/image-resize.html",
+        "content": """
+            <h2>Why Resize Images?</h2>
+            <p>Resizing images helps meet size requirements for websites, social media platforms, email attachments, and print materials. Proper sizing ensures faster loading and better presentation.</p>
+            
+            <h2>How to Resize Images Online</h2>
+            <ol>
+                <li>Visit our <a href="/tools/image-resize.html">free image resizer</a></li>
+                <li>Upload your image</li>
+                <li>Enter desired width and height (or use presets)</li>
+                <li>Maintain aspect ratio (optional)</li>
+                <li>Click "Resize Image"</li>
+                <li>Download your resized image</li>
+            </ol>
+            
+            <h2>Common Image Sizes</h2>
+            <ul>
+                <li><strong>Facebook:</strong> 1200x630px (cover), 1080x1080px (post)</li>
+                <li><strong>Instagram:</strong> 1080x1080px (square), 1080x1350px (portrait)</li>
+                <li><strong>Twitter:</strong> 1200x675px</li>
+                <li><strong>LinkedIn:</strong> 1200x627px</li>
+                <li><strong>Website:</strong> 1920x1080px (hero), 800x600px (thumbnail)</li>
+            </ul>
+            
+            <h2>Tips for Best Results</h2>
+            <ul>
+                <li>Maintain aspect ratio to avoid distortion</li>
+                <li>Use high-quality originals for better results</li>
+                <li>Resize before uploading to social media</li>
+                <li>Compress after resizing for optimal file size</li>
+            </ul>
+            
+            <h2>Related Tools</h2>
+            <ul>
+                <li><a href="/tools/image-compress.html">Compress Images</a></li>
+                <li><a href="/tools/jpg-png-convert.html">Convert Formats</a></li>
+                <li><a href="/all-tools.html">View All Tools</a></li>
+            </ul>
+        """
+    },
+    {
+        "slug": "how-to-convert-jpg-to-png-online-free",
+        "title": "How to Convert JPG to PNG Online Free - Image Format Converter 2025",
+        "description": "Convert JPG to PNG format online for free. Step-by-step guide to transform JPEG images to PNG format while preserving quality. No software download needed.",
+        "keywords": "jpg to png, convert jpg to png, jpeg to png converter, jpg png converter free, image format converter",
+        "tool_link": "/tools/jpg-png-convert.html",
+        "content": """
+            <h2>JPG vs PNG: What's the Difference?</h2>
+            <p><strong>JPG (JPEG):</strong> Smaller file size, lossy compression, best for photos</p>
+            <p><strong>PNG:</strong> Larger file size, lossless compression, supports transparency, best for graphics</p>
+            
+            <h2>When to Convert JPG to PNG</h2>
+            <ul>
+                <li>Need transparency (PNG supports alpha channel)</li>
+                <li>Working with graphics or logos</li>
+                <li>Require lossless quality</li>
+                <li>Creating web graphics</li>
+            </ul>
+            
+            <h2>How to Convert JPG to PNG</h2>
+            <ol>
+                <li>Visit our <a href="/tools/jpg-png-convert.html">JPG to PNG converter</a></li>
+                <li>Upload your JPG image</li>
+                <li>Click "Convert to PNG"</li>
+                <li>Download your PNG file</li>
+            </ol>
+            
+            <h2>Key Features</h2>
+            <ul>
+                <li>✅ 100% free conversion</li>
+                <li>✅ Preserves image quality</li>
+                <li>✅ Fast processing</li>
+                <li>✅ No file size limits</li>
+                <li>✅ Works in browser</li>
+            </ul>
+            
+            <h2>Related Tools</h2>
+            <ul>
+                <li><a href="/tools/jpg-png-convert.html">PNG to JPG Converter</a></li>
+                <li><a href="/tools/webp-convert.html">WEBP Converter</a></li>
+                <li><a href="/all-tools.html">View All Converters</a></li>
+            </ul>
+        """
+    },
+    # PDF Tools - More
+    {
+        "slug": "how-to-split-pdf-files-online-free-2025",
+        "title": "How to Split PDF Files Online Free - PDF Splitter Guide 2025",
+        "description": "Split PDF files online for free. Step-by-step guide to divide PDF documents by pages or bookmarks. Extract specific pages from PDF files easily.",
+        "keywords": "split pdf, split pdf files, pdf splitter free, split pdf online, divide pdf, extract pdf pages",
+        "tool_link": "/tools/pdf-split.html",
+        "content": """
+            <h2>Why Split PDF Files?</h2>
+            <p>Splitting PDFs helps organize documents, extract specific pages, create smaller files for sharing, and manage large documents more efficiently.</p>
+            
+            <h2>How to Split PDF Files</h2>
+            <ol>
+                <li>Visit our <a href="/tools/pdf-split.html">free PDF splitter</a></li>
+                <li>Upload your PDF file</li>
+                <li>Choose split method:
+                    <ul>
+                        <li>Split by page range</li>
+                        <li>Split by bookmarks</li>
+                        <li>Split every N pages</li>
+                    </ul>
+                </li>
+                <li>Click "Split PDF"</li>
+                <li>Download your split PDF files</li>
+            </ol>
+            
+            <h2>Use Cases</h2>
+            <ul>
+                <li>Extract specific pages from large documents</li>
+                <li>Create separate files for each chapter</li>
+                <li>Split invoices or receipts</li>
+                <li>Organize scanned documents</li>
+            </ul>
+            
+            <h2>Related Tools</h2>
+            <ul>
+                <li><a href="/tools/pdf-merge.html">Merge PDF</a></li>
+                <li><a href="/tools/pdf-delete-pages.html">Delete PDF Pages</a></li>
+                <li><a href="/all-tools.html">View All PDF Tools</a></li>
+            </ul>
+        """
+    },
+    {
+        "slug": "how-to-convert-word-to-pdf-online-free-2025",
+        "title": "How to Convert Word to PDF Online Free - Word to PDF Converter 2025",
+        "description": "Convert Word documents to PDF format online for free. Step-by-step guide to transform DOC and DOCX files to PDF. No software installation required.",
+        "keywords": "word to pdf, convert word to pdf, docx to pdf, word pdf converter free, doc to pdf online",
+        "tool_link": "/tools/word-to-pdf.html",
+        "content": """
+            <h2>Why Convert Word to PDF?</h2>
+            <p>PDF format ensures consistent formatting across devices, prevents editing, and is ideal for sharing professional documents, forms, and reports.</p>
+            
+            <h2>How to Convert Word to PDF</h2>
+            <ol>
+                <li>Visit our <a href="/tools/word-to-pdf.html">Word to PDF converter</a></li>
+                <li>Upload your Word document (.doc or .docx)</li>
+                <li>Click "Convert to PDF"</li>
+                <li>Download your PDF file</li>
+            </ol>
+            
+            <h2>Benefits of PDF Format</h2>
+            <ul>
+                <li>✅ Consistent formatting</li>
+                <li>✅ Universal compatibility</li>
+                <li>✅ Prevents unauthorized editing</li>
+                <li>✅ Professional appearance</li>
+                <li>✅ Smaller file sizes</li>
+            </ul>
+            
+            <h2>Related Tools</h2>
+            <ul>
+                <li><a href="/tools/pdf-to-word.html">PDF to Word Converter</a></li>
+                <li><a href="/tools/excel-to-pdf.html">Excel to PDF</a></li>
+                <li><a href="/all-tools.html">View All Converters</a></li>
+            </ul>
+        """
+    },
+    # Text Tools
+    {
+        "slug": "how-to-count-words-characters-online-free",
+        "title": "How to Count Words and Characters Online Free - Word Counter Tool 2025",
+        "description": "Count words, characters, paragraphs, and sentences online for free. Perfect for writers, students, and content creators. Real-time word counting tool.",
+        "keywords": "word counter, character counter, count words online, word count tool, text counter free, character count",
+        "tool_link": "/tools/text-counter.html",
+        "content": """
+            <h2>Why Use a Word Counter?</h2>
+            <p>Word counters help meet writing requirements, track content length, optimize for SEO, and ensure proper formatting for essays, articles, and social media posts.</p>
+            
+            <h2>How to Count Words Online</h2>
+            <ol>
+                <li>Visit our <a href="/tools/text-counter.html">free word counter</a></li>
+                <li>Paste or type your text</li>
+                <li>Get instant results:
+                    <ul>
+                        <li>Word count</li>
+                        <li>Character count (with/without spaces)</li>
+                        <li>Paragraph count</li>
+                        <li>Sentence count</li>
+                    </ul>
+                </li>
+            </ol>
+            
+            <h2>Common Word Count Requirements</h2>
+            <ul>
+                <li><strong>Twitter:</strong> 280 characters</li>
+                <li><strong>Facebook:</strong> 63,206 characters</li>
+                <li><strong>Instagram Caption:</strong> 2,200 characters</li>
+                <li><strong>Academic Essays:</strong> 500-5000 words</li>
+                <li><strong>Blog Posts:</strong> 1000-3000 words</li>
+            </ul>
+            
+            <h2>Related Tools</h2>
+            <ul>
+                <li><a href="/tools/text-case.html">Text Case Converter</a></li>
+                <li><a href="/tools/remove-duplicates.html">Remove Duplicate Lines</a></li>
+                <li><a href="/all-tools.html">View All Text Tools</a></li>
+            </ul>
+        """
+    },
+    {
+        "slug": "how-to-convert-text-case-online-free",
+        "title": "How to Convert Text Case Online Free - Text Case Converter 2025",
+        "description": "Convert text between different cases online for free. Transform text to uppercase, lowercase, title case, sentence case, and more. Instant conversion tool.",
+        "keywords": "text case converter, uppercase lowercase, case converter free, text case tool, convert case online",
+        "tool_link": "/tools/text-case.html",
+        "content": """
+            <h2>Text Case Types</h2>
+            <ul>
+                <li><strong>UPPERCASE:</strong> ALL LETTERS CAPITALIZED</li>
+                <li><strong>lowercase:</strong> all letters small</li>
+                <li><strong>Title Case:</strong> First Letter Of Each Word Capitalized</li>
+                <li><strong>Sentence case:</strong> First letter of sentence capitalized</li>
+                <li><strong>camelCase:</strong> firstWordLowercase</li>
+                <li><strong>PascalCase:</strong> FirstWordCapitalized</li>
+            </ul>
+            
+            <h2>How to Convert Text Case</h2>
+            <ol>
+                <li>Visit our <a href="/tools/text-case.html">text case converter</a></li>
+                <li>Paste or type your text</li>
+                <li>Select desired case type</li>
+                <li>Click "Convert"</li>
+                <li>Copy your converted text</li>
+            </ol>
+            
+            <h2>Use Cases</h2>
+            <ul>
+                <li>Formatting titles and headings</li>
+                <li>Programming variable names</li>
+                <li>Email subject lines</li>
+                <li>Social media posts</li>
+                <li>Document formatting</li>
+            </ul>
+            
+            <h2>Related Tools</h2>
+            <ul>
+                <li><a href="/tools/text-counter.html">Word Counter</a></li>
+                <li><a href="/tools/remove-duplicates.html">Text Cleaner</a></li>
+                <li><a href="/all-tools.html">View All Text Tools</a></li>
+            </ul>
+        """
+    },
+    # Developer Tools
+    {
+        "slug": "how-to-format-json-online-free-2025",
+        "title": "How to Format JSON Online Free - JSON Formatter & Beautifier 2025",
+        "description": "Format and beautify JSON code online for free. Validate JSON syntax, make code readable, and fix formatting issues. Essential tool for developers.",
+        "keywords": "json formatter, format json, json beautifier, json validator, json formatter online, prettify json",
+        "tool_link": "/tools/json-formatter.html",
+        "content": """
+            <h2>What is JSON Formatting?</h2>
+            <p>JSON formatting makes JSON code readable by adding proper indentation, line breaks, and spacing. This helps developers read, debug, and maintain JSON data.</p>
+            
+            <h2>How to Format JSON Online</h2>
+            <ol>
+                <li>Visit our <a href="/tools/json-formatter.html">JSON formatter</a></li>
+                <li>Paste your JSON code</li>
+                <li>Click "Format JSON"</li>
+                <li>Get formatted, validated JSON</li>
+                <li>Copy the formatted code</li>
+            </ol>
+            
+            <h2>Features</h2>
+            <ul>
+                <li>✅ Validates JSON syntax</li>
+                <li>✅ Beautifies code with indentation</li>
+                <li>✅ Highlights syntax errors</li>
+                <li>✅ Minifies JSON (optional)</li>
+                <li>✅ Works with large JSON files</li>
+            </ul>
+            
+            <h2>Use Cases</h2>
+            <ul>
+                <li>API response formatting</li>
+                <li>Configuration file editing</li>
+                <li>Debugging JSON data</li>
+                <li>Code documentation</li>
+            </ul>
+            
+            <h2>Related Tools</h2>
+            <ul>
+                <li><a href="/tools/json-validator.html">JSON Validator</a></li>
+                <li><a href="/tools/base64-encode.html">Base64 Encoder</a></li>
+                <li><a href="/all-tools.html">View All Developer Tools</a></li>
+            </ul>
+        """
+    },
+    {
+        "slug": "how-to-generate-qr-code-online-free-2025",
+        "title": "How to Generate QR Code Online Free - QR Code Generator 2025",
+        "description": "Generate QR codes online for free. Create QR codes for URLs, text, contact info, and more. Customizable colors and sizes. No registration required.",
+        "keywords": "qr code generator, generate qr code, qr code maker, qr code free, create qr code online, qr code generator free",
+        "tool_link": "/tools/qr-generator.html",
+        "content": """
+            <h2>What is a QR Code?</h2>
+            <p>QR (Quick Response) codes are two-dimensional barcodes that can store information like URLs, text, contact details, and more. They can be scanned with smartphones to quickly access information.</p>
+            
+            <h2>How to Generate QR Code</h2>
+            <ol>
+                <li>Visit our <a href="/tools/qr-generator.html">QR code generator</a></li>
+                <li>Enter your content (URL, text, etc.)</li>
+                <li>Customize (optional):
+                    <ul>
+                        <li>Size</li>
+                        <li>Colors</li>
+                        <li>Error correction level</li>
+                    </ul>
+                </li>
+                <li>Click "Generate QR Code"</li>
+                <li>Download your QR code</li>
+            </ol>
+            
+            <h2>QR Code Use Cases</h2>
+            <ul>
+                <li>Website URLs</li>
+                <li>Contact information (vCard)</li>
+                <li>WiFi credentials</li>
+                <li>Product information</li>
+                <li>Event tickets</li>
+                <li>Payment links</li>
+            </ul>
+            
+            <h2>Related Tools</h2>
+            <ul>
+                <li><a href="/tools/barcode-generator.html">Barcode Generator</a></li>
+                <li><a href="/all-tools.html">View All Generators</a></li>
+            </ul>
+        """
+    },
+    # Comparison & List Posts
+    {
+        "slug": "best-free-image-tools-online-2025",
+        "title": "Best Free Image Tools Online 2025 - Complete List of Free Image Utilities",
+        "description": "Discover the best free image tools available online in 2025. Complete list of free image editors, compressors, converters, and resizers. No software download required.",
+        "keywords": "best free image tools, free image editor, image tools online, free image compressor, image converter free, online image tools",
+        "tool_link": "/all-tools.html",
+        "content": """
+            <h2>Top Free Image Tools</h2>
+            
+            <h3>1. Image Compressor</h3>
+            <p>Reduce image file size without losing quality. Perfect for web optimization and email sharing.</p>
+            <p><a href="/tools/image-compress.html">Try Image Compressor →</a></p>
+            
+            <h3>2. Image Resizer</h3>
+            <p>Resize images to any dimension. Ideal for social media, websites, and print materials.</p>
+            <p><a href="/tools/image-resize.html">Try Image Resizer →</a></p>
+            
+            <h3>3. Image Format Converter</h3>
+            <p>Convert between JPG, PNG, WEBP, and other formats. Preserve quality during conversion.</p>
+            <p><a href="/tools/jpg-png-convert.html">Try Image Converter →</a></p>
+            
+            <h3>4. Image to PDF</h3>
+            <p>Convert images to PDF format. Combine multiple images into one PDF document.</p>
+            <p><a href="/tools/jpg-to-pdf.html">Try Image to PDF →</a></p>
+            
+            <h2>Why Use Free Image Tools?</h2>
+            <ul>
+                <li>✅ No software installation</li>
+                <li>✅ Works on any device</li>
+                <li>✅ No registration required</li>
+                <li>✅ 100% free forever</li>
+                <li>✅ Privacy protected</li>
+            </ul>
+            
+            <h2>View All Image Tools</h2>
+            <p><a href="/all-tools.html">Explore Complete Tool Collection →</a></p>
+        """
+    },
+    {
+        "slug": "free-online-tools-no-download-2025",
+        "title": "Free Online Tools No Download Required - 270+ Browser-Based Tools 2025",
+        "description": "Access 270+ free online tools without downloading any software. PDF tools, image editors, text utilities, developer tools, and more. All work in your browser.",
+        "keywords": "free online tools, online tools no download, browser tools, web tools free, online utilities, free web tools",
+        "tool_link": "/all-tools.html",
+        "content": """
+            <h2>Why Use Browser-Based Tools?</h2>
+            <ul>
+                <li>✅ No software installation</li>
+                <li>✅ Works on any device</li>
+                <li>✅ Always up-to-date</li>
+                <li>✅ No storage space needed</li>
+                <li>✅ Access from anywhere</li>
+            </ul>
+            
+            <h2>Tool Categories</h2>
+            
+            <h3>PDF Tools</h3>
+            <p>Merge, split, compress, convert, and edit PDF files online.</p>
+            <p><a href="/categories.html#pdf">View PDF Tools →</a></p>
+            
+            <h3>Image Tools</h3>
+            <p>Resize, compress, convert, and edit images online.</p>
+            <p><a href="/categories.html#image">View Image Tools →</a></p>
+            
+            <h3>Text Tools</h3>
+            <p>Count words, convert case, format text, and more.</p>
+            <p><a href="/categories.html#text">View Text Tools →</a></p>
+            
+            <h3>Developer Tools</h3>
+            <p>JSON formatter, base64 encoder, regex tester, and more.</p>
+            <p><a href="/categories.html#developer">View Developer Tools →</a></p>
+            
+            <h2>Explore All Tools</h2>
+            <p><a href="/all-tools.html">Browse 270+ Free Tools →</a></p>
+        """
+    }
 ]
 
-def get_tool_link(slug):
-    """Slug'a göre tool linki döndür"""
-    tool_map = {
-        "how-to-sort-text-lines": "/tools/text-sorter.html",
-        "how-to-find-text-differences": "/tools/text-diff.html",
-        "how-to-convert-markdown-to-html": "/tools/markdown-to-html.html",
-        "how-to-escape-html": "/tools/html-escape.html",
-        "how-to-reverse-text": "/tools/reverse-text.html",
-        "how-to-find-and-replace-text": "/tools/text-replace.html",
-        "how-to-convert-text-to-binary": "/tools/text-to-binary.html",
-        "how-to-convert-text-to-morse": "/tools/text-to-morse.html",
-        "how-to-generate-slug": "/tools/slug-generator.html",
-        "how-to-convert-to-camel-case": "/tools/camel-case.html",
-        "how-to-extract-emails-from-text": "/tools/extract-emails.html",
-        "how-to-extract-urls-from-text": "/tools/extract-urls.html",
-        "how-to-minify-css": "/tools/css-minifier.html",
-        "how-to-minify-html": "/tools/html-minifier.html",
-        "how-to-minify-javascript": "/tools/javascript-minifier.html",
-        "how-to-format-css": "/tools/css-formatter.html",
-        "how-to-validate-xml": "/tools/xml-validator.html",
-        "how-to-validate-yaml": "/tools/yaml-validator.html",
-        "how-to-generate-hash": "/tools/hash-generator.html",
-        "how-to-pick-color": "/tools/color-picker.html",
-        "how-to-convert-timestamp": "/tools/timestamp-converter.html",
-        "how-to-minify-json": "/tools/json-minify.html",
-        "how-to-convert-image-to-base64": "/tools/image-to-base64.html",
-        "how-to-convert-base64-to-image": "/tools/base64-to-image.html",
-        "how-to-convert-image-to-grayscale": "/tools/image-grayscale.html",
-        "how-to-invert-image-colors": "/tools/image-invert.html",
-        "how-to-apply-sepia-filter": "/tools/image-sepia.html",
-        "how-to-create-pdf-from-images": "/tools/pdf-merge-images.html",
-        "how-to-convert-epub-to-pdf": "/tools/epub-to-pdf.html",
-        "how-to-convert-pdf-to-jpg": "/tools/pdf-to-jpg.html",
-        "how-to-convert-pdf-to-png": "/tools/pdf-to-png.html",
-        "how-to-convert-audio-formats": "/tools/audio-converter.html",
-        "how-to-convert-video-formats": "/tools/video-converter.html",
-        "how-to-convert-mp3-formats": "/tools/mp3-converter.html",
-        "how-to-generate-random-password": "/tools/advanced-password-generator.html",
-        "how-to-check-password-strength": "/tools/password-strength-checker.html",
-    }
-    return tool_map.get(slug, "/all-tools.html")
-
-def create_blog_post(slug, title, description, keywords):
-    """Blog yazısı HTML'i oluştur"""
-    tool_link = get_tool_link(slug)
+def create_seo_blog_post(blog_data):
+    """Create SEO-optimized blog post HTML"""
     current_date = datetime.now().strftime("%Y-%m-%d")
     
     html = f'''<!DOCTYPE html>
@@ -125,30 +483,26 @@ def create_blog_post(slug, title, description, keywords):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{title} | OmniToolset</title>
-    <meta name="description" content="{description}">
+    <title>{blog_data["title"]} | OmniToolset</title>
+    <meta name="description" content="{blog_data["description"]}">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.omnitoolset.com/blog/{slug}.html">
+    <link rel="canonical" href="https://www.omnitoolset.com/blog/{blog_data["slug"]}.html">
     <link rel="stylesheet" href="/styles.css">
     
     <!-- Google AdSense -->
     <meta name="google-adsense-account" content="ca-pub-8640955536193345">
-    <meta name="keywords" content="{keywords}">
-    <meta name="robots" content="index, follow">
+    <meta name="keywords" content="{blog_data["keywords"]}">
     <meta name="author" content="OmniToolset">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.omnitoolset.com/blog/{slug}.html">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://www.omnitoolset.com/blog/{slug}.html">
-    <meta property="og:title" content="{title} | OmniToolset">
-    <meta property="og:description" content="{description}">
+    <meta property="og:url" content="https://www.omnitoolset.com/blog/{blog_data["slug"]}.html">
+    <meta property="og:title" content="{blog_data["title"]} | OmniToolset">
+    <meta property="og:description" content="{blog_data["description"]}">
     <meta property="og:image" content="https://www.omnitoolset.com/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{title} | OmniToolset">
+    <meta property="og:image:alt" content="{blog_data["title"]} | OmniToolset">
     <meta property="og:site_name" content="OmniToolset">
     <meta property="article:published_time" content="{current_date}T00:00:00+00:00">
     <meta property="article:modified_time" content="{current_date}T00:00:00+00:00">
@@ -157,19 +511,19 @@ def create_blog_post(slug, title, description, keywords):
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.omnitoolset.com/blog/{slug}.html">
-    <meta property="twitter:title" content="{title} | OmniToolset">
-    <meta property="twitter:description" content="{description}">
+    <meta property="twitter:url" content="https://www.omnitoolset.com/blog/{blog_data["slug"]}.html">
+    <meta property="twitter:title" content="{blog_data["title"]} | OmniToolset">
+    <meta property="twitter:description" content="{blog_data["description"]}">
     <meta property="twitter:image" content="https://www.omnitoolset.com/og-image.jpg">
-    <meta property="twitter:image:alt" content="{title} | OmniToolset">
+    <meta property="twitter:image:alt" content="{blog_data["title"]} | OmniToolset">
     
     <!-- Structured Data -->
     <script type="application/ld+json">
     {{
       "@context": "https://schema.org",
       "@type": "BlogPosting",
-      "headline": "{title} | OmniToolset",
-      "description": "{description}",
+      "headline": "{blog_data["title"]} | OmniToolset",
+      "description": "{blog_data["description"]}",
       "image": "https://www.omnitoolset.com/og-image.jpg",
       "author": {{
         "@type": "Organization",
@@ -187,7 +541,7 @@ def create_blog_post(slug, title, description, keywords):
       "dateModified": "{current_date}T00:00:00+00:00",
       "mainEntityOfPage": {{
         "@type": "WebPage",
-        "@id": "https://www.omnitoolset.com/blog/{slug}.html"
+        "@id": "https://www.omnitoolset.com/blog/{blog_data["slug"]}.html"
       }}
     }}
     </script>
@@ -201,7 +555,7 @@ def create_blog_post(slug, title, description, keywords):
      crossorigin="anonymous"></script>
 </head>
 <body>
-    <!-- Adsterra Popunder (Head) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <!-- Adsterra Popunder (Head) -->
     <script data-cfasync="false" type='text/javascript'>
         try {{
             (function() {{
@@ -218,9 +572,9 @@ def create_blog_post(slug, title, description, keywords):
         <div class="container">
             <div class="header-content">
                 <div class="logo-section">
-        <a href="/index.html" style="text-decoration: none; color: inherit;">
-                    <h1 class="logo">🛠️ OmniToolset</h1>
-        </a>
+                    <a href="/index.html" style="text-decoration: none; color: inherit;">
+                        <h1 class="logo">🛠️ OmniToolset</h1>
+                    </a>
                 </div>
                 <nav class="main-nav">
                     <a href="/index.html" class="nav-link">Home</a>
@@ -234,20 +588,20 @@ def create_blog_post(slug, title, description, keywords):
     <main class="tool-page">
         <a href="/blog.html" class="back-button">← Back to Blog</a>
         
-        <!-- Adsterra Native Banner (Top) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+        <!-- Adsterra Native Banner (Top) -->
         <div style="margin: 2rem 0; text-align: center;">
             <div id="container-612a325632297ecc15cfd2d178f355ec"></div>
             <script data-cfasync="false" type='text/javascript'>
-                    try {{
-                        (function() {{
-                            var script = document.createElement('script');
-                            script.type = 'text/javascript';
-                            script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
-                            script.onerror = function() {{ /* Silently ignore SSL errors */ }};
-                            document.head.appendChild(script);
-                        }})();
-                    }} catch(e) {{ /* Silently ignore */ }}
-                </script>
+                try {{
+                    (function() {{
+                        var script = document.createElement('script');
+                        script.type = 'text/javascript';
+                        script.src = 'https://pl28055637.effectivegatecpm.com/612a325632297ecc15cfd2d178f355ec/invoke.js';
+                        script.onerror = function() {{ /* Silently ignore SSL errors */ }};
+                        document.head.appendChild(script);
+                    }})();
+                }} catch(e) {{ /* Silently ignore */ }}
+            </script>
         </div>
         
         <!-- AdSense Banner Ad (Top) -->
@@ -263,37 +617,12 @@ def create_blog_post(slug, title, description, keywords):
         </div>
         
         <article style="max-width: 800px; margin: 2rem auto; padding: 2rem;">
+            <h1>{blog_data["title"]}</h1>
+            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                {blog_data["description"]}
+            </p>
             
-            <h1>{title}</h1>
-            <p>{description}</p>
-            
-            <h2>What is This Tool?</h2>
-            <p>Our free online tool makes it easy to accomplish this task without installing any software. Simply visit our tool page and get started in seconds.</p>
-            
-            <h2>How to Use This Tool</h2>
-            <ol>
-                <li>Visit our <a href="{tool_link}">free online tool</a></li>
-                <li>Upload or input your file/data</li>
-                <li>Configure settings as needed</li>
-                <li>Click the process button</li>
-                <li>Download or copy your result</li>
-            </ol>
-            
-            <h2>Key Features</h2>
-            <ul>
-                <li>✅ 100% free to use</li>
-                <li>✅ No registration required</li>
-                <li>✅ Works on all devices</li>
-                <li>✅ Fast and secure processing</li>
-                <li>✅ No file size limits</li>
-                <li>✅ Privacy guaranteed - files processed locally</li>
-            </ul>
-            
-            <h2>Why Use Our Tool?</h2>
-            <p>Our tool is designed to be simple, fast, and reliable. Whether you're a professional or a casual user, you'll find our tool easy to use and effective for your needs.</p>
-            
-            <p>Try our <a href="{tool_link}">free online tool</a> today and see how easy it is to get the job done!</p>
-        
+            {blog_data["content"]}
             
             <!-- AdSense Banner Ad (Middle) -->
             <div style="margin: 2rem 0; text-align: center; min-height: 100px;">
@@ -364,7 +693,7 @@ def create_blog_post(slug, title, description, keywords):
         </div>
     </main>
     
-    <!-- Adsterra Popunder (Body) - data-cfasync="false" prevents Cloudflare RocketLoader interference -->
+    <!-- Adsterra Popunder (Body) -->
     <script data-cfasync="false" type='text/javascript'>
         try {{
             (function() {{
@@ -393,24 +722,34 @@ def create_blog_post(slug, title, description, keywords):
     
     return html
 
-# Blog yazılarını oluştur
-created = 0
-skipped = 0
-
-for slug, title, desc, keywords in more_blog_topics:
-    file_path = blog_dir / f"{slug}.html"
+def main():
+    """Main function"""
+    print("📝 Creating more SEO blog posts for traffic...")
+    print("=" * 60)
     
-    if file_path.exists():
-        print(f"⏭️  {slug}.html (already exists)")
-        skipped += 1
-        continue
+    created = 0
+    skipped = 0
     
-    html_content = create_blog_post(slug, title, desc, keywords)
-    file_path.write_text(html_content, encoding='utf-8')
-    print(f"✅ {slug}.html")
-    created += 1
+    for blog_data in more_seo_blogs:
+        file_path = blog_dir / f"{blog_data['slug']}.html"
+        
+        if file_path.exists():
+            print(f"⏭️  {blog_data['slug']}.html (already exists)")
+            skipped += 1
+            continue
+        
+        html_content = create_seo_blog_post(blog_data)
+        file_path.write_text(html_content, encoding='utf-8')
+        print(f"✅ {blog_data['slug']}.html")
+        print(f"   Title: {blog_data['title'][:60]}...")
+        created += 1
+    
+    print("=" * 60)
+    print(f"\n📊 Summary:")
+    print(f"   ✅ Created: {created}")
+    print(f"   ⏭️  Skipped: {skipped}")
+    print(f"   📁 Total: {len(more_seo_blogs)}")
+    print(f"\n💡 These blog posts target high-traffic keywords for SEO!")
 
-print(f"\n📊 Summary:")
-print(f"   ✅ Created: {created}")
-print(f"   ⏭️  Skipped: {skipped}")
-print(f"   📁 Total: {len(more_blog_topics)}")
+if __name__ == "__main__":
+    main()
