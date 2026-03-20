@@ -61,67 +61,21 @@
       <% if (product.slug === 'sms-ai-assistant') { %>
         <section class="section-space content-grid">
           <article class="content-card">
-            <h2>Live module metrics</h2>
-            <div class="stat-grid">
-              <div class="stat-card">
-                <strong><%= smsPageData.stats.openConversations %></strong>
-                <span>Open conversations</span>
-              </div>
-              <div class="stat-card">
-                <strong><%= smsPageData.stats.totalMessages %></strong>
-                <span>Total stored messages</span>
-              </div>
-              <div class="stat-card">
-                <strong><%= smsPageData.stats.confirmedBookings %></strong>
-                <span>Confirmed bookings</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="content-card">
-            <h2>Booking behavior</h2>
+            <h2>What the live MVP handles</h2>
             <ul class="feature-list">
-              <li>Incoming SMS is stored before the assistant replies.</li>
-              <li>The assistant suggests one or two nearby time slots.</li>
-              <li>When the customer selects a slot, the booking is marked confirmed.</li>
-              <li>Missed calls trigger an automatic SMS follow-up with booking options.</li>
+              <li><%= smsPageData.publicSummary.bookingFlow %></li>
+              <li><%= smsPageData.publicSummary.missedCallFlow %></li>
+              <li>The assistant keeps replies short, friendly, and booking-oriented.</li>
             </ul>
           </article>
-        </section>
-
-        <section class="section-space content-grid">
-          <article class="content-card">
-            <h2>Webhook endpoints</h2>
-            <div class="code-block">
-              <code>POST <%= smsPageData.webhooks.sms %></code>
-            </div>
-            <div class="code-block">
-              <code>POST <%= smsPageData.webhooks.voiceIncoming %></code>
-            </div>
-            <div class="code-block">
-              <code>POST <%= smsPageData.webhooks.voiceDialResult %></code>
-            </div>
-            <p class="small-copy">
-              Default business: <strong><%= smsPageData.business.name %></strong> on <strong><%= smsPageData.business.phone || 'set DEFAULT_BUSINESS_PHONE' %></strong> in <strong><%= smsPageData.business.timezone %></strong>.
-            </p>
-          </article>
 
           <article class="content-card">
-            <h2>Local test commands</h2>
-            <div class="code-block">
-              <pre><code>curl -X POST <%= smsPageData.webhooks.sms %> \
-  -d 'From=+15550000001' \
-  -d 'To=<%= smsPageData.business.phone || '+15551234567' %>' \
-  -d 'Body=Hi, can I book for tomorrow afternoon?' \
-  -d 'MessageSid=SM-demo-001'</code></pre>
-            </div>
-            <div class="code-block">
-              <pre><code>curl -X POST <%= smsPageData.webhooks.voiceDialResult %> \
-  -d 'From=+15550000001' \
-  -d 'To=<%= smsPageData.business.phone || '+15551234567' %>' \
-  -d 'CallSid=CA-demo-001' \
-  -d 'DialCallStatus=no-answer'</code></pre>
-            </div>
+            <h2>How rollout works</h2>
+            <ul class="feature-list">
+              <li>SMS AI Assistant is the only live product in the current OmniToolset release.</li>
+              <li>Operational setup is handled during onboarding, not shown publicly to visitors.</li>
+              <li><%= smsPageData.publicSummary.onboarding %></li>
+            </ul>
           </article>
         </section>
       <% } else { %>

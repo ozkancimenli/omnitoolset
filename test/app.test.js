@@ -28,6 +28,15 @@ test('homepage lists all five products', async () => {
   assert.match(response.text, /Inbox \/ Simple CRM/);
 });
 
+test('sms product page does not expose internal webhook docs publicly', async () => {
+  const response = await request(app).get('/products/sms-ai-assistant');
+
+  assert.equal(response.status, 200);
+  assert.doesNotMatch(response.text, /Webhook endpoints/);
+  assert.doesNotMatch(response.text, /Local test commands/);
+  assert.doesNotMatch(response.text, /localhost:3000/);
+});
+
 test('scaffold module exposes a placeholder status endpoint', async () => {
   const response = await request(app).get('/api/review-booster/status');
 
@@ -81,5 +90,6 @@ test('sms assistant offers slots and confirms a booking', async () => {
   const statusResponse = await request(app).get('/api/sms-assistant/status');
 
   assert.equal(statusResponse.status, 200);
-  assert.ok(statusResponse.body.metrics.confirmedBookings >= 1);
+  assert.equal(statusResponse.body.status, 'Live');
+  assert.equal(statusResponse.body.implemented, true);
 });

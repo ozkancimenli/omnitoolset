@@ -17,6 +17,7 @@ export function createApp() {
   }
 
   const app = express();
+  app.set('trust proxy', true);
   const repositories = createRepositories();
 
   bootstrapDatabase(repositories);

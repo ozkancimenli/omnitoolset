@@ -1,6 +1,5 @@
 import { Router } from 'express';
 
-import { env } from '../../config/env.js';
 import {
   getProductBySlug,
   homepageHeadline,
@@ -31,16 +30,10 @@ function buildSmsPageData(repositories) {
       totalMessages: repositories.messages.countAll(),
       confirmedBookings: repositories.bookings.countConfirmed()
     },
-    webhooks: {
-      sms: `${env.appUrl}/api/sms-assistant/webhooks/sms`,
-      voiceIncoming: `${env.appUrl}/api/sms-assistant/webhooks/voice/incoming`,
-      voiceDialResult: `${env.appUrl}/api/sms-assistant/webhooks/voice/dial-result`
-    },
-    business: {
-      name: env.defaultBusiness.name,
-      phone: env.defaultBusiness.twilioPhone || env.twilio.phoneNumber,
-      timezone: env.defaultBusiness.timezone,
-      forwardingPhone: env.defaultBusiness.forwardingPhone
+    publicSummary: {
+      bookingFlow: 'Customers text in, get a fast reply, receive one or two appointment options, and can confirm their booking in the same thread.',
+      missedCallFlow: 'If a call is missed, the system follows up over SMS instead of letting the lead disappear.',
+      onboarding: 'Webhook mapping, Twilio setup, and environment configuration are handled during implementation, not exposed on the marketing page.'
     }
   };
 }

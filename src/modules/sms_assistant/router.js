@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { asyncHandler } from '../../core/http/async-handler.js';
-import { buildAbsoluteUrl } from '../../integrations/twilio/client.js';
+import { buildAbsoluteUrlFromRequest } from '../../integrations/twilio/client.js';
 import {
   createDialResultTwiml,
   createEmptyMessagingTwiml,
@@ -13,7 +13,19 @@ export function createSmsAssistantRouter({ service }) {
   const router = Router();
 
   router.get('/status', (_req, res) => {
-    res.json(service.getModuleOverview());
+    const overview = service.getModuleOverview();
+    res.json({
+      product: overview.product,
+      status: overview.status,
+      implemented: true,
+      liveFeatures: [
+        'Incoming SMS webhook handling',
+        'OpenAI-generated SMS replies',
+        'Booking slot suggestions',
+        'Missed call auto-SMS flow',
+        'Conversation and booking persistence'
+      ]
+    });
   });
 
   router.post(
@@ -76,7 +88,7 @@ export function createSmsAssistantRouter({ service }) {
       res.type('text/xml');
       res.send(
         createIncomingVoiceTwiml({
-          actionUrl: buildAbsoluteUrl('/api/sms-assistant/webhooks/voice/dial-result'),
+          actionUrl: buildAbsoluteUrlFromRequest(req, '/api/sms-assistant/webhooks/voice/dial-result'),
           forwardingPhone: routing.forwardingPhone,
           callerId: routing.callerId
         })
