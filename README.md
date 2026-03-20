@@ -206,6 +206,17 @@ If `BUSINESS_FORWARDING_PHONE` is set, inbound calls dial that number first. If 
 4. Add the environment variables from `.env.example`.
 5. Use a disk mount if you want SQLite persistence across deploys.
 
+### Vercel
+
+The repo now includes a `vercel-build` script and `vercel.json` with the framework forced to `express`, which avoids the incorrect `next build` path.
+
+Important limitation:
+
+- Vercel runs Express as a serverless function
+- local SQLite is not persistent there
+- the app now falls back to `/tmp/omnitoolset.sqlite` on Vercel so it can boot
+- for real conversation and booking persistence, use a hosted database instead of SQLite
+
 ## Extending the platform
 
 When you implement the next product:

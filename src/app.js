@@ -9,8 +9,13 @@ import { createModules } from './modules/index.js';
 import { createPlatformRouter } from './modules/platform/router.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+let appContext;
 
 export function createApp() {
+  if (appContext) {
+    return appContext;
+  }
+
   const app = express();
   const repositories = createRepositories();
 
@@ -72,9 +77,13 @@ export function createApp() {
     });
   });
 
-  return {
+  appContext = {
     app,
     repositories,
     modules
   };
+
+  return appContext;
 }
+
+export default createApp().app;

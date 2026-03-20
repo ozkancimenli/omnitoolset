@@ -15,7 +15,9 @@ function clamp(value, min, max, fallback) {
 export const env = {
   port: toNumber(process.env.PORT, 3000),
   appUrl: process.env.APP_URL || 'http://localhost:3000',
-  databasePath: process.env.DATABASE_PATH || './data/omnitoolset.sqlite',
+  databasePath:
+    process.env.DATABASE_PATH ||
+    (process.env.VERCEL ? '/tmp/omnitoolset.sqlite' : './data/omnitoolset.sqlite'),
   defaultBusiness: {
     name: process.env.DEFAULT_BUSINESS_NAME || 'Northstar Health',
     slug: process.env.DEFAULT_BUSINESS_SLUG || 'northstar-health',

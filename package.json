@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
+    "vercel-build": "echo 'Vercel Express deployment - no build step required'",
     "test": "node --test",
     "check": "node --test"
   },
