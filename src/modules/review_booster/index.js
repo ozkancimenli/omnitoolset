@@ -1,12 +1,6 @@
-import { getProductBySlug } from '../../config/products.js';
-import { createReviewBoosterRouter } from './router.js';
+import { getProductByModuleId } from '../../config/product-catalog.js';
+import { createScaffoldModule } from '../../core/modules/create-scaffold-module.js';
 
 export function createReviewBoosterModule() {
-  const product = getProductBySlug('review-booster');
-
-  return {
-    slug: product.slug,
-    apiPath: product.apiPath,
-    router: createReviewBoosterRouter()
-  };
+  return createScaffoldModule(getProductByModuleId('review_booster'));
 }

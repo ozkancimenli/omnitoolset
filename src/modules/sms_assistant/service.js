@@ -1,13 +1,18 @@
 import { DateTime } from 'luxon';
 
-import { env, hasOpenAICredentials, hasTwilioCredentials } from '../../config/env.js';
+import {
+  env,
+  getDefaultBusinessSeed,
+  hasOpenAICredentials,
+  hasTwilioCredentials
+} from '../../config/env.js';
 import { generateSmsReply } from '../../integrations/openai/openai-client.js';
 import { buildAbsoluteUrl, sendSms } from '../../integrations/twilio/client.js';
 import {
   createMissedCallPlan,
   createReplyPlan,
   serializeSlots
-} from './booking-service.js';
+} from './booking-planner.js';
 
 const MISSED_CALL_STATUSES = new Set(['no-answer', 'busy', 'failed', 'canceled']);
 
@@ -35,20 +40,8 @@ function buildConversationMetadata(conversation, plan) {
 
 export function createSmsAssistantService({ repositories }) {
   function resolveBusiness(phoneNumber) {
-    return (
-      repositories.businesses.getByTwilioPhone(phoneNumber) ||
-      repositories.businesses.ensureBusiness({
-        name: env.defaultBusiness.name,
-        slug: env.defaultBusiness.slug,
-        twilioPhone: env.defaultBusiness.twilioPhone,
-        timezone: env.defaultBusiness.timezone,
-        forwardingPhone: env.defaultBusiness.forwardingPhone,
-        servicesSummary: env.defaultBusiness.servicesSummary,
-        hoursSummary: env.defaultBusiness.hoursSummary,
-        bookingDurationMinutes: env.defaultBusiness.bookingDurationMinutes,
-        bookingWindowDays: env.defaultBusiness.bookingWindowDays
-      })
-    );
+    return repositories.businesses.getByTwilioPhone(phoneNumber) ||
+      repositories.businesses.ensureBusiness(getDefaultBusinessSeed());
   }
 
   function saveBookingForPlan({ plan, business, conversation, customerPhone, customerName }) {

@@ -1,4 +1,4 @@
-import { env } from '../config/env.js';
+import { getDefaultBusinessSeed } from '../config/env.js';
 import { db } from './client.js';
 import { createBookingsRepository } from './repositories/bookings-repository.js';
 import { createBusinessesRepository } from './repositories/businesses-repository.js';
@@ -21,15 +21,5 @@ export function createRepositories() {
 }
 
 export function bootstrapDatabase(repositories) {
-  return repositories.businesses.ensureBusiness({
-    name: env.defaultBusiness.name,
-    slug: env.defaultBusiness.slug,
-    twilioPhone: env.defaultBusiness.twilioPhone,
-    timezone: env.defaultBusiness.timezone,
-    forwardingPhone: env.defaultBusiness.forwardingPhone,
-    servicesSummary: env.defaultBusiness.servicesSummary,
-    hoursSummary: env.defaultBusiness.hoursSummary,
-    bookingDurationMinutes: env.defaultBusiness.bookingDurationMinutes,
-    bookingWindowDays: env.defaultBusiness.bookingWindowDays
-  });
+  return repositories.businesses.ensureBusiness(getDefaultBusinessSeed());
 }

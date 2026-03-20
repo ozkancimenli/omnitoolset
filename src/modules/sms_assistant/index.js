@@ -1,14 +1,15 @@
-import { getProductBySlug } from '../../config/products.js';
+import { getProductByModuleId } from '../../config/product-catalog.js';
 import { createSmsAssistantRouter } from './router.js';
 import { createSmsAssistantService } from './service.js';
 
 export function createSmsAssistantModule({ repositories }) {
-  const product = getProductBySlug('sms-ai-assistant');
+  const product = getProductByModuleId('sms_assistant');
   const service = createSmsAssistantService({ repositories });
 
   return {
-    slug: product.slug,
-    apiPath: product.apiPath,
+    moduleId: product.moduleId,
+    product,
+    apiBasePath: product.apiBasePath,
     service,
     router: createSmsAssistantRouter({ service })
   };

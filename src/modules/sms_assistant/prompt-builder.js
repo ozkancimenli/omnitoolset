@@ -1,4 +1,4 @@
-import { formatSlotForSms } from './booking-service.js';
+import { formatSlotForSms } from './booking-planner.js';
 
 function summarizeHistory(history) {
   return history

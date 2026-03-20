@@ -43,6 +43,20 @@ export const env = {
   }
 };
 
+export function getDefaultBusinessSeed() {
+  return {
+    name: env.defaultBusiness.name,
+    slug: env.defaultBusiness.slug,
+    twilioPhone: env.defaultBusiness.twilioPhone,
+    timezone: env.defaultBusiness.timezone,
+    forwardingPhone: env.defaultBusiness.forwardingPhone,
+    servicesSummary: env.defaultBusiness.servicesSummary,
+    hoursSummary: env.defaultBusiness.hoursSummary,
+    bookingDurationMinutes: env.defaultBusiness.bookingDurationMinutes,
+    bookingWindowDays: env.defaultBusiness.bookingWindowDays
+  };
+}
+
 export function hasTwilioCredentials() {
   return Boolean(env.twilio.accountSid && env.twilio.authToken && env.twilio.phoneNumber);
 }

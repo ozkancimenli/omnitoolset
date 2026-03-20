@@ -1,6 +1,8 @@
 import { Router } from 'express';
 
-export function createScaffoldRouter(product) {
+import { PRODUCT_STATUS } from '../../config/product-catalog.js';
+
+function createScaffoldRouter(product) {
   const router = Router();
 
   router.get('/status', (_req, res) => {
@@ -10,7 +12,7 @@ export function createScaffoldRouter(product) {
       status: product.status,
       implemented: false,
       message:
-        product.status === 'Beta'
+        product.status === PRODUCT_STATUS.BETA
           ? 'This beta module is scaffolded and ready for future feature work.'
           : 'This module is intentionally staged as a coming-soon scaffold.',
       plannedCapabilities: product.plannedCapabilities
@@ -18,4 +20,13 @@ export function createScaffoldRouter(product) {
   });
 
   return router;
+}
+
+export function createScaffoldModule(product) {
+  return {
+    moduleId: product.moduleId,
+    product,
+    apiBasePath: product.apiBasePath,
+    router: createScaffoldRouter(product)
+  };
 }

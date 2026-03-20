@@ -23,7 +23,7 @@
               OmniToolset is structured as a platform, not a one-off script: one live product today, four staged modules ready for future rollout under the same codebase.
             </p>
             <div class="hero-actions">
-              <a class="button button-primary" href="<%= liveProduct.path %>">Open SMS AI Assistant</a>
+              <a class="button button-primary" href="<%= liveProduct.pagePath %>">Open SMS AI Assistant</a>
               <a class="button button-secondary" href="#products">See all products</a>
             </div>
           </div>
@@ -62,7 +62,7 @@
             <article class="product-card">
               <div class="card-topline">
                 <span class="status-badge status-<%= product.status.toLowerCase().replace(/\s+/g, '-') %>"><%= product.status %></span>
-                <span class="module-tag"><%= product.moduleKey %></span>
+                <span class="module-tag"><%= product.moduleId %></span>
               </div>
               <h3><%= product.name %></h3>
               <p><%= product.summary %></p>
@@ -72,7 +72,7 @@
                 <% } %>
               </ul>
               <div class="card-actions">
-                <a class="button button-secondary" href="<%= product.path %>">View Product</a>
+                <a class="button button-secondary" href="<%= product.pagePath %>">View Product</a>
                 <% if (product.waitlistEnabled) { %>
                   <span class="card-meta">Early access available</span>
                 <% } else { %>

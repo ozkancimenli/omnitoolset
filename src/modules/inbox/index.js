@@ -1,12 +1,6 @@
-import { getProductBySlug } from '../../config/products.js';
-import { createInboxRouter } from './router.js';
+import { getProductByModuleId } from '../../config/product-catalog.js';
+import { createScaffoldModule } from '../../core/modules/create-scaffold-module.js';
 
 export function createInboxModule() {
-  const product = getProductBySlug('inbox-simple-crm');
-
-  return {
-    slug: product.slug,
-    apiPath: product.apiPath,
-    router: createInboxRouter()
-  };
+  return createScaffoldModule(getProductByModuleId('inbox'));
 }

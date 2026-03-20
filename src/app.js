@@ -3,10 +3,10 @@ import { fileURLToPath } from 'url';
 
 import express from 'express';
 
-import { homepageHeadline, productCatalog } from './config/products.js';
+import { homepageHeadline, productCatalog } from './config/product-catalog.js';
+import { createModuleRegistry } from './core/modules/registry.js';
+import { createPlatformRouter } from './core/platform/router.js';
 import { bootstrapDatabase, createRepositories } from './db/index.js';
-import { createModules } from './modules/index.js';
-import { createPlatformRouter } from './modules/platform/router.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let appContext;
@@ -22,7 +22,7 @@ export function createApp() {
 
   bootstrapDatabase(repositories);
 
-  const modules = createModules({ repositories });
+  const modules = createModuleRegistry({ repositories });
 
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, 'views'));
@@ -45,7 +45,7 @@ export function createApp() {
   app.use('/', createPlatformRouter({ repositories }));
 
   for (const module of modules) {
-    app.use(module.apiPath, module.router);
+    app.use(module.apiBasePath, module.router);
   }
 
   app.get('/health', (_req, res) => {

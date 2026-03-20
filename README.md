@@ -25,10 +25,16 @@ The platform is intentionally honest: one live product, four staged modules.
 │   ├── server.js
 │   ├── config/
 │   │   ├── env.js
-│   │   └── products.js
+│   │   └── product-catalog.js
 │   ├── core/
-│   │   └── http/
-│   │       └── async-handler.js
+│   │   ├── modules/
+│   │   │   ├── create-scaffold-module.js
+│   │   │   └── registry.js
+│   │   ├── http/
+│   │   │   └── async-handler.js
+│   │   └── platform/
+│   │       ├── router.js
+│   │       └── view-models.js
 │   ├── db/
 │   │   ├── client.js
 │   │   ├── index.js
@@ -41,13 +47,16 @@ The platform is intentionally honest: one live product, four staged modules.
 │   │       ├── client.js
 │   │       └── twiml.js
 │   ├── modules/
-│   │   ├── platform/
 │   │   ├── sms_assistant/
+│   │   │   ├── booking-planner.js
+│   │   │   ├── prompt-builder.js
+│   │   │   ├── router.js
+│   │   │   ├── service.js
+│   │   │   └── index.js
 │   │   ├── review_booster/
 │   │   ├── follow_up/
 │   │   ├── lead_capture/
-│   │   ├── inbox/
-│   │   └── shared/
+│   │   └── inbox/
 │   └── views/
 └── test/
     └── app.test.js
@@ -56,11 +65,12 @@ The platform is intentionally honest: one live product, four staged modules.
 ### Module design
 
 - `config/` holds product definitions and environment parsing.
+- `core/platform/` owns the shared SaaS shell: homepage, product pages, and waitlist flow.
+- `core/modules/` owns module registration and shared scaffold-module behavior.
 - `db/` owns the SQLite schema plus repositories for businesses, conversations, messages, bookings, leads, reviews, and waitlist submissions.
 - `integrations/` isolates OpenAI and Twilio usage behind reusable helpers.
 - `modules/sms_assistant/` contains the live product flow: booking logic, prompt shaping, service orchestration, and webhook routes.
-- `modules/review_booster/`, `follow_up/`, `lead_capture/`, and `inbox/` expose scaffold routers and platform metadata for future implementation.
-- `modules/platform/` renders the homepage, product pages, and waitlist flow.
+- `modules/review_booster/`, `follow_up/`, `lead_capture/`, and `inbox/` stay as thin scaffold entry points that can later grow their own services without changing the core.
 
 ## Database model
 
@@ -147,7 +157,7 @@ npm test
 Manual checks:
 
 1. Open the homepage and verify all 5 products are visible with honest status labels.
-2. Open `/products/sms-ai-assistant` and confirm the live-module copy and webhook URLs render.
+2. Open `/products/sms-ai-assistant` and confirm the live-module copy renders without exposing internal webhook details.
 3. Submit one of the unfinished product waitlist forms and confirm the success banner.
 4. Send a local SMS webhook:
 
@@ -224,5 +234,5 @@ When you implement the next product:
 1. keep the folder in `src/modules/<module_name>/`
 2. add real service logic behind the module router
 3. reuse `db/repositories/` and `integrations/`
-4. update `src/config/products.js`
+4. update `src/config/product-catalog.js`
 5. expand the product page from scaffold to live

@@ -58,7 +58,7 @@
         </article>
       </section>
 
-      <% if (product.slug === 'sms-ai-assistant') { %>
+      <% if (product.moduleId === 'sms_assistant') { %>
         <section class="section-space content-grid">
           <article class="content-card">
             <h2>What the live MVP handles</h2>
@@ -88,7 +88,7 @@
             </p>
           </div>
 
-          <%- include('../partials/waitlist-form', { product, returnTo: product.path }) %>
+          <%- include('../partials/waitlist-form', { product, returnTo: product.pagePath }) %>
         </section>
       <% } %>
     </main>

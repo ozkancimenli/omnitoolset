@@ -1,7 +1,11 @@
 import OpenAI from 'openai';
 
 import { env, hasOpenAICredentials } from '../../config/env.js';
-import { buildFallbackReply, buildSystemPrompt, buildUserPrompt } from '../../modules/sms_assistant/prompt.js';
+import {
+  buildFallbackReply,
+  buildSystemPrompt,
+  buildUserPrompt
+} from '../../modules/sms_assistant/prompt-builder.js';
 
 const client = hasOpenAICredentials() ? new OpenAI({ apiKey: env.openai.apiKey }) : null;
 

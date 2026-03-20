@@ -6,7 +6,7 @@
     </a>
     <nav class="site-nav">
       <% for (const navProduct of productCatalog) { %>
-        <a href="<%= navProduct.path %>" class="<%= currentPath === navProduct.path ? 'is-active' : '' %>">
+        <a href="<%= navProduct.pagePath %>" class="<%= currentPath === navProduct.pagePath ? 'is-active' : '' %>">
           <%= navProduct.name %>
         </a>
       <% } %>

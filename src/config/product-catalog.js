@@ -1,15 +1,37 @@
+export const PRODUCT_STATUS = Object.freeze({
+  LIVE: 'Live',
+  BETA: 'Beta',
+  COMING_SOON: 'Coming Soon'
+});
+
 export const homepageHeadline = 'AI tools that help your business grow automatically.';
 
+function defineProduct({
+  moduleId,
+  slug,
+  apiSegment = slug,
+  ...product
+}) {
+  return {
+    moduleId,
+    slug,
+    pagePath: `/products/${slug}`,
+    apiBasePath: `/api/${apiSegment}`,
+    ...product
+  };
+}
+
 export const productCatalog = [
-  {
+  defineProduct({
+    moduleId: 'sms_assistant',
     slug: 'sms-ai-assistant',
-    moduleKey: 'sms_assistant',
+    apiSegment: 'sms-assistant',
     name: 'SMS AI Assistant',
-    status: 'Live',
-    path: '/products/sms-ai-assistant',
-    apiPath: '/api/sms-assistant',
-    headline: 'Never miss a customer again. We automatically reply to your customers and book appointments via SMS.',
-    summary: 'Twilio webhooks, OpenAI-generated SMS replies, booking suggestions, missed-call follow-up, and persistent conversation history.',
+    status: PRODUCT_STATUS.LIVE,
+    headline:
+      'Never miss a customer again. We automatically reply to your customers and book appointments via SMS.',
+    summary:
+      'Twilio webhooks, OpenAI-generated SMS replies, booking suggestions, missed-call follow-up, and persistent conversation history.',
     ctaLabel: 'View Live Product',
     waitlistEnabled: false,
     highlights: [
@@ -25,16 +47,15 @@ export const productCatalog = [
       'Analytics dashboard',
       'Calendar sync'
     ]
-  },
-  {
+  }),
+  defineProduct({
+    moduleId: 'review_booster',
     slug: 'review-booster',
-    moduleKey: 'review_booster',
     name: 'Review Booster',
-    status: 'Beta',
-    path: '/products/review-booster',
-    apiPath: '/api/review-booster',
+    status: PRODUCT_STATUS.BETA,
     headline: 'Turn great customer moments into fresh reviews without manual follow-up.',
-    summary: 'Scaffolded module for review request campaigns, sentiment-aware outreach, and review monitoring.',
+    summary:
+      'Scaffolded module for review request campaigns, sentiment-aware outreach, and review monitoring.',
     ctaLabel: 'Join Beta Waitlist',
     waitlistEnabled: true,
     highlights: [
@@ -47,16 +68,15 @@ export const productCatalog = [
       'Review link rotation by channel',
       'Negative-feedback catch flow before public review'
     ]
-  },
-  {
+  }),
+  defineProduct({
+    moduleId: 'follow_up',
     slug: 'follow-up-automation',
-    moduleKey: 'follow_up',
     name: 'Follow-up Automation',
-    status: 'Beta',
-    path: '/products/follow-up-automation',
-    apiPath: '/api/follow-up',
+    status: PRODUCT_STATUS.BETA,
     headline: 'Keep warm leads moving with AI-assisted follow-up sequences.',
-    summary: 'Scaffolded module for post-quote, post-visit, and inactive-lead follow-up automation.',
+    summary:
+      'Scaffolded module for post-quote, post-visit, and inactive-lead follow-up automation.',
     ctaLabel: 'Join Beta Waitlist',
     waitlistEnabled: true,
     highlights: [
@@ -69,14 +89,12 @@ export const productCatalog = [
       'Quote follow-up nudges',
       'Intent scoring for lead prioritization'
     ]
-  },
-  {
+  }),
+  defineProduct({
+    moduleId: 'lead_capture',
     slug: 'lead-capture-ai',
-    moduleKey: 'lead_capture',
     name: 'Lead Capture AI',
-    status: 'Coming Soon',
-    path: '/products/lead-capture-ai',
-    apiPath: '/api/lead-capture',
+    status: PRODUCT_STATUS.COMING_SOON,
     headline: 'Capture, qualify, and route inbound leads without a full sales stack.',
     summary: 'Coming-soon module scaffold for conversational lead capture and qualification.',
     ctaLabel: 'Request Early Access',
@@ -91,15 +109,15 @@ export const productCatalog = [
       'Form-to-SMS routing',
       'Lead scoring and handoff'
     ]
-  },
-  {
+  }),
+  defineProduct({
+    moduleId: 'inbox',
     slug: 'inbox-simple-crm',
-    moduleKey: 'inbox',
+    apiSegment: 'inbox-simple-crm',
     name: 'Inbox / Simple CRM',
-    status: 'Coming Soon',
-    path: '/products/inbox-simple-crm',
-    apiPath: '/api/inbox',
-    headline: 'A lightweight team inbox and customer record layer for small business communication.',
+    status: PRODUCT_STATUS.COMING_SOON,
+    headline:
+      'A lightweight team inbox and customer record layer for small business communication.',
     summary: 'Coming-soon scaffold for shared conversations, lead context, and simple CRM views.',
     ctaLabel: 'Request Early Access',
     waitlistEnabled: true,
@@ -113,13 +131,17 @@ export const productCatalog = [
       'Lead and customer notes',
       'Basic pipeline and task tracking'
     ]
-  }
+  })
 ];
 
 export function getProductBySlug(slug) {
-  return productCatalog.find((product) => product.slug === slug);
+  return productCatalog.find((product) => product.slug === slug) || null;
+}
+
+export function getProductByModuleId(moduleId) {
+  return productCatalog.find((product) => product.moduleId === moduleId) || null;
 }
 
 export function getLiveProduct() {
-  return productCatalog.find((product) => product.status === 'Live');
+  return productCatalog.find((product) => product.status === PRODUCT_STATUS.LIVE) || null;
 }
