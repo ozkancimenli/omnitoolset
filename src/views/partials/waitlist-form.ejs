@@ -1,0 +1,31 @@
+<form class="waitlist-form" action="/waitlist" method="post">
+  <input type="hidden" name="productSlug" value="<%= product.slug %>" />
+  <input type="hidden" name="returnTo" value="<%= returnTo %>" />
+
+  <label>
+    Name
+    <input type="text" name="name" required placeholder="Alex Morgan" />
+  </label>
+
+  <label>
+    Email
+    <input type="email" name="email" required placeholder="alex@company.com" />
+  </label>
+
+  <label>
+    Phone
+    <input type="tel" name="phone" placeholder="+1 555 123 4567" />
+  </label>
+
+  <label>
+    Company
+    <input type="text" name="company" placeholder="Northstar Health" />
+  </label>
+
+  <label>
+    Notes
+    <textarea name="notes" rows="3" placeholder="What would you want this module to handle first?"></textarea>
+  </label>
+
+  <button type="submit" class="button button-primary"><%= product.ctaLabel %></button>
+</form>
