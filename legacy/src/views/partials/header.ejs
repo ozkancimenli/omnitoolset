@@ -1,0 +1,16 @@
+<header class="site-header">
+  <div class="shell nav-row">
+    <a class="brand-mark" href="/">
+      <span class="brand-mark__eyebrow">OmniToolset</span>
+      <span class="brand-mark__name">One live product. Four staged next.</span>
+    </a>
+    <nav class="site-nav">
+      <a href="/" class="<%= currentPath === '/' ? 'is-active' : '' %>">Home</a>
+      <% for (const navProduct of productCatalog) { %>
+        <a href="<%= navProduct.pagePath %>" class="<%= currentPath === navProduct.pagePath ? 'is-active' : '' %>">
+          <%= navProduct.navLabel || navProduct.name %>
+        </a>
+      <% } %>
+    </nav>
+  </div>
+</header>

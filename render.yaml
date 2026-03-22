@@ -1,0 +1,80 @@
+services:
+  - type: web
+    name: omnitoolset-api
+    runtime: node
+    rootDir: apps/api
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: APP_URL
+        sync: false
+      - key: FRONTEND_APP_URL
+        value: https://omnitoolset.com
+      - key: DATABASE_URL
+        sync: false
+      - key: DEFAULT_BUSINESS_NAME
+        sync: false
+      - key: DEFAULT_BUSINESS_SLUG
+        sync: false
+      - key: DEFAULT_BUSINESS_PHONE
+        sync: false
+      - key: BUSINESS_TYPE
+        sync: false
+      - key: BUSINESS_TIMEZONE
+        sync: false
+      - key: BUSINESS_FORWARDING_PHONE
+        sync: false
+      - key: BUSINESS_SERVICES
+        sync: false
+      - key: BUSINESS_HOURS
+        sync: false
+      - key: BUSINESS_PRICE_SUMMARY
+        sync: false
+      - key: BOOKING_DURATION_MINUTES
+        value: "45"
+      - key: BOOKING_WINDOW_DAYS
+        value: "10"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_TEMPERATURE
+        value: "0.7"
+      - key: OPENAI_MAX_TOKENS
+        value: "90"
+      - key: OPENAI_TIMEOUT_MS
+        value: "8000"
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+      - key: TWILIO_VALIDATE_SIGNATURES
+        value: "true"
+      - key: REQUEST_BODY_LIMIT
+        value: 32kb
+      - key: SMS_MAX_BODY_CHARS
+        value: "600"
+      - key: SMS_RATE_LIMIT_WINDOW_MS
+        value: "300000"
+      - key: SMS_RATE_LIMIT_MAX
+        value: "12"
+      - key: VOICE_RATE_LIMIT_WINDOW_MS
+        value: "300000"
+      - key: VOICE_RATE_LIMIT_MAX
+        value: "6"
+      - key: SMS_DUPLICATE_WINDOW_MS
+        value: "30000"

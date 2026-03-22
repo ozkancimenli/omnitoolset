@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head') %>
+  </head>
+  <body>
+    <div class="page-noise"></div>
+    <%- include('../partials/header') %>
+
+    <main class="shell section-space">
+      <div
+        class="banner banner-success <%= waitlistSuccessProduct && waitlistSuccessProduct.slug === product.slug ? '' : 'is-hidden' %>"
+        data-access-success-banner
+      >
+        <% if (waitlistSuccessProduct && waitlistSuccessProduct.slug === product.slug) { %>
+          Early access request saved for <strong><%= product.name %></strong>.
+        <% } %>
+      </div>
+
+      <section class="product-hero">
+        <div>
+          <p class="eyebrow"><%= product.moduleBadgeLabel %></p>
+          <div class="hero-title-row">
+            <h1><%= product.name %></h1>
+            <span class="status-badge <%= product.statusClass %>"><%= product.status %></span>
+          </div>
+          <p class="hero-copy"><%= product.headline %></p>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="<%= product.pageActions.primaryAction.href %>">
+              <%= product.pageActions.primaryAction.label %>
+            </a>
+            <a class="button button-secondary" href="<%= product.pageActions.secondaryAction.href %>">
+              <%= product.pageActions.secondaryAction.label %>
+            </a>
+          </div>
+        </div>
+
+        <aside class="hero-panel">
+          <p class="panel-label">Current status</p>
+          <p class="panel-copy"><%= product.statusCopy %></p>
+
+          <div class="detail-stack">
+            <div class="detail-item">
+              <span class="detail-label">Platform role</span>
+              <p><%= product.suiteRole %></p>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Best fit</span>
+              <p><%= product.audience %></p>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Current scope</span>
+              <p><%= product.summary %></p>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="content-grid">
+        <article class="content-card" id="what-it-does">
+          <p class="panel-label">Available today</p>
+          <h2>What this product already covers</h2>
+          <p class="section-copy"><%= product.cardSummary %></p>
+          <ul class="feature-list">
+            <% for (const item of product.highlights) { %>
+              <li><%= item %></li>
+            <% } %>
+          </ul>
+        </article>
+
+        <article class="content-card">
+          <p class="panel-label"><%= product.status === 'Live' ? 'Next up' : 'Planned next' %></p>
+          <h2><%= product.status === 'Live' ? 'What expands from here' : 'What this module is intended to grow into' %></h2>
+          <ul class="feature-list">
+            <% for (const item of product.plannedCapabilities) { %>
+              <li><%= item %></li>
+            <% } %>
+          </ul>
+        </article>
+      </section>
+
+      <% if (product.moduleId === 'sms_assistant') { %>
+        <section class="section-space content-grid" id="live-mvp">
+          <article class="content-card">
+            <p class="panel-label">Live now</p>
+            <h2>What the first product already handles</h2>
+            <ul class="feature-list">
+              <% for (const item of smsPageData.livePoints) { %>
+                <li><%= item %></li>
+              <% } %>
+            </ul>
+          </article>
+
+          <article class="content-card">
+            <p class="panel-label">Suite role</p>
+            <h2>Why SMS AI Assistant leads the platform</h2>
+            <ul class="feature-list">
+              <% for (const item of smsPageData.suitePoints) { %>
+                <li><%= item %></li>
+              <% } %>
+            </ul>
+          </article>
+        </section>
+      <% } else { %>
+        <section class="section-space two-column-panel" id="early-access">
+          <div class="content-card">
+            <p class="panel-label">Early access</p>
+            <h2><%= product.status === 'Beta' ? 'Join the beta list' : 'Join the waitlist' %></h2>
+            <p class="section-copy">
+              This page shows where <%= product.name %> fits in the OmniToolset suite. The workflow itself is still staged, so the next step is early access instead of a fake demo.
+            </p>
+          </div>
+
+          <div class="content-card">
+            <%- include('../partials/waitlist-form', { product, accessRequestAction, returnTo: productAccessReturnTo, submitLabel: product.earlyAccessLabel }) %>
+          </div>
+        </section>
+      <% } %>
+
+      <section class="section-space">
+        <div class="section-heading">
+          <p class="eyebrow">More from OmniToolset</p>
+          <h2>Explore the rest of the platform</h2>
+        </div>
+
+        <div class="product-grid">
+          <% for (const otherProduct of otherProducts) { %>
+            <%- include('../partials/product-card', { product: otherProduct, featured: false }) %>
+          <% } %>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>

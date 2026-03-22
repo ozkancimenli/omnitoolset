@@ -1,0 +1,28 @@
+<form class="waitlist-form" action="<%= accessRequestAction %>" method="post">
+  <input type="hidden" name="productSlug" value="<%= product.slug %>" />
+  <input type="hidden" name="returnTo" value="<%= returnTo %>" />
+
+  <label>
+    Name
+    <input type="text" name="name" required maxlength="120" autocomplete="name" placeholder="Alex Morgan" />
+  </label>
+
+  <label>
+    Email
+    <input type="email" name="email" required maxlength="160" autocomplete="email" placeholder="alex@company.com" />
+  </label>
+
+  <label>
+    Company Name
+    <input type="text" name="company" required maxlength="160" autocomplete="organization" placeholder="Northstar Health" />
+  </label>
+
+  <label>
+    Note
+    <textarea name="note" rows="3" maxlength="1000" placeholder="What should this module help your team handle first?"></textarea>
+  </label>
+
+  <p class="form-help"><%= product.earlyAccessHelpText %></p>
+
+  <button type="submit" class="button button-primary"><%= submitLabel || product.ctaLabel %></button>
+</form>

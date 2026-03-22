@@ -1,0 +1,32 @@
+<article class="product-card <%= featured ? 'product-card-featured' : '' %>">
+  <div class="card-topline">
+    <span class="status-badge <%= product.statusClass %>"><%= product.status %></span>
+    <span class="card-kicker"><%= product.moduleBadgeLabel %></span>
+  </div>
+
+  <div class="card-body">
+    <h3>
+      <a class="card-title-link" href="<%= product.pagePath %>"><%= product.name %></a>
+    </h3>
+    <p><%= product.cardSummary %></p>
+    <p class="card-role"><%= product.suiteRole %></p>
+  </div>
+
+  <ul class="feature-list feature-list-compact">
+    <% for (const item of product.cardHighlights) { %>
+      <li><%= item %></li>
+    <% } %>
+  </ul>
+
+  <div class="card-actions">
+    <a class="button <%= product.primaryAction.variant === 'primary' ? 'button-primary' : 'button-secondary' %>" href="<%= product.primaryAction.href %>">
+      <%= product.primaryAction.label %>
+    </a>
+
+    <% if (product.secondaryAction) { %>
+      <a class="button <%= product.secondaryAction.variant === 'primary' ? 'button-primary' : 'button-secondary' %>" href="<%= product.secondaryAction.href %>">
+        <%= product.secondaryAction.label %>
+      </a>
+    <% } %>
+  </div>
+</article>

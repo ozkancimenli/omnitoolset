@@ -1,238 +1,141 @@
 # OmniToolset
 
-OmniToolset is a modular multi-product SaaS platform for AI-powered small business tools.
+OmniToolset is a multi-product SaaS platform for local businesses.
 
-This rebuild ships:
+- Frontend: Next.js on Vercel
+- Backend API: Express on Render
+- Database: PostgreSQL
+- Live product: SMS AI Assistant
+- Staged products: Review Booster, Follow-up Automation, Lead Capture AI, Inbox / Simple CRM
 
-- `SMS AI Assistant` as the only fully working MVP
-- `Review Booster` as a beta scaffold
-- `Follow-up Automation` as a beta scaffold
-- `Lead Capture AI` as a coming-soon scaffold
-- `Inbox / Simple CRM` as a coming-soon scaffold
-
-The platform is intentionally honest: one live product, four staged modules.
-
-## Architecture
+## Structure
 
 ```text
-.
-├── .env.example
-├── package.json
-├── public/
-│   └── styles.css
-├── src/
-│   ├── app.js
-│   ├── server.js
-│   ├── config/
-│   │   ├── env.js
-│   │   └── product-catalog.js
-│   ├── core/
-│   │   ├── modules/
-│   │   │   ├── create-scaffold-module.js
-│   │   │   └── registry.js
-│   │   ├── http/
-│   │   │   └── async-handler.js
-│   │   └── platform/
-│   │       ├── router.js
-│   │       └── view-models.js
-│   ├── db/
-│   │   ├── client.js
-│   │   ├── index.js
-│   │   ├── schema.sql
-│   │   └── repositories/
-│   ├── integrations/
-│   │   ├── openai/
-│   │   │   └── openai-client.js
-│   │   └── twilio/
-│   │       ├── client.js
-│   │       └── twiml.js
-│   ├── modules/
-│   │   ├── sms_assistant/
-│   │   │   ├── booking-planner.js
-│   │   │   ├── prompt-builder.js
-│   │   │   ├── router.js
-│   │   │   ├── service.js
-│   │   │   └── index.js
-│   │   ├── review_booster/
-│   │   ├── follow_up/
-│   │   ├── lead_capture/
-│   │   └── inbox/
-│   └── views/
-└── test/
-    └── app.test.js
+apps/
+  api/      Express API, SMS module, Postgres schema, Twilio/OpenAI integrations
+  web/      Next.js marketing site and product pages
+packages/
+  shared/   Shared product catalog and copy metadata
 ```
-
-### Module design
-
-- `config/` holds product definitions and environment parsing.
-- `core/platform/` owns the shared SaaS shell: homepage, product pages, and waitlist flow.
-- `core/modules/` owns module registration and shared scaffold-module behavior.
-- `db/` owns the SQLite schema plus repositories for businesses, conversations, messages, bookings, leads, reviews, and waitlist submissions.
-- `integrations/` isolates OpenAI and Twilio usage behind reusable helpers.
-- `modules/sms_assistant/` contains the live product flow: booking logic, prompt shaping, service orchestration, and webhook routes.
-- `modules/review_booster/`, `follow_up/`, `lead_capture/`, and `inbox/` stay as thin scaffold entry points that can later grow their own services without changing the core.
-
-## Database model
-
-The schema is designed for future expansion and already includes:
-
-- `businesses`
-- `conversations`
-- `messages`
-- `bookings`
-- `leads`
-- `reviews`
-- `waitlist_submissions`
-
-SQLite is used for the MVP. The repository boundary makes it straightforward to swap to PostgreSQL later.
-
-## SMS AI Assistant MVP
-
-Implemented today:
-
-- Twilio incoming SMS webhook
-- OpenAI-generated SMS replies with a safe local fallback
-- Booking flow that offers 1 to 2 time slots
-- Booking confirmation persistence
-- Missed-call auto-SMS via Twilio voice webhooks
-- Conversation and message storage in the database
-
-### SMS behavior
-
-- Replies stay short, warm, and human
-- The assistant moves toward booking
-- It offers one or two time options
-- It confirms the selected booking clearly
-
-## Scaffolded modules
-
-The other four products are intentionally not faked.
-
-Each staged module has:
-
-- a product page
-- a status badge
-- a placeholder API endpoint
-- a waitlist flow
-- a clean module folder ready for future implementation
-
-## Environment variables
-
-Copy `.env.example` to `.env` and fill in the values you need:
-
-```bash
-cp .env.example .env
-```
-
-Important variables:
-
-- `PORT`: local server port
-- `APP_URL`: public base URL used to render webhook URLs
-- `DATABASE_PATH`: SQLite database file
-- `DEFAULT_BUSINESS_*`: seed business data
-- `BUSINESS_FORWARDING_PHONE`: number to ring before missed-call SMS fallback
-- `TWILIO_ACCOUNT_SID`
-- `TWILIO_AUTH_TOKEN`
-- `TWILIO_PHONE_NUMBER`
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL`
 
 ## Local setup
 
+1. Start PostgreSQL locally.
+
+```bash
+docker run --name omnitoolset-postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=omnitoolset \
+  -p 5432:5432 \
+  -d postgres:16
+```
+
+2. Copy the workspace env files:
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+cp apps/api/.env.example apps/api/.env
+```
+
+The root `.env.example` is a consolidated reference for deployment tooling.
+3. Install dependencies.
+
 ```bash
 npm install
-npm run dev
 ```
 
-Open `http://localhost:3000`.
-
-## Local testing
-
-Run the automated tests:
+4. Run DB migrations.
 
 ```bash
-npm test
+npm run db:migrate
 ```
 
-Manual checks:
-
-1. Open the homepage and verify all 5 products are visible with honest status labels.
-2. Open `/products/sms-ai-assistant` and confirm the live-module copy renders without exposing internal webhook details.
-3. Submit one of the unfinished product waitlist forms and confirm the success banner.
-4. Send a local SMS webhook:
+5. Start the backend.
 
 ```bash
-curl -X POST http://localhost:3000/api/sms-assistant/webhooks/sms \
-  -d 'From=+15550000001' \
-  -d 'To=+15551234567' \
-  -d 'Body=Hi, I need an appointment tomorrow' \
-  -d 'MessageSid=SM-local-001'
+npm run dev:api
 ```
 
-5. Confirm a suggested slot:
+6. In another terminal, start the frontend.
 
 ```bash
-curl -X POST http://localhost:3000/api/sms-assistant/webhooks/sms \
-  -d 'From=+15550000001' \
-  -d 'To=+15551234567' \
-  -d 'Body=The first one works' \
-  -d 'MessageSid=SM-local-002'
+npm run dev:web
 ```
 
-6. Simulate a missed call:
+## Frontend routes
 
-```bash
-curl -X POST http://localhost:3000/api/sms-assistant/webhooks/voice/dial-result \
-  -d 'From=+15550000001' \
-  -d 'To=+15551234567' \
-  -d 'CallSid=CA-local-001' \
-  -d 'DialCallStatus=no-answer'
-```
+- `/`
+- `/sms`
+- `/sms/onboarding`
+- `/reviews`
+- `/follow-up`
+- `/lead-capture`
+- `/inbox`
 
-## Twilio setup
+## Backend endpoints
 
-Configure your Twilio phone number with:
+- `GET /health`
+- `GET /api/products`
+- `POST /api/access-requests`
+- `POST /api/billing/checkout-sessions`
+- `POST /api/billing/webhooks/stripe`
+- `POST /access-requests`
+- `GET /api/sms-assistant/status`
+- `GET /api/sms-assistant/onboarding/session`
+- `POST /api/sms-assistant/onboarding`
+- `POST /api/sms-assistant/simulate`
+- `POST /api/sms-assistant/webhooks/sms`
+- `POST /api/sms-assistant/webhooks/voice/incoming`
+- `POST /api/sms-assistant/webhooks/voice/dial-result`
 
-- Messaging webhook: `POST /api/sms-assistant/webhooks/sms`
-- Voice webhook: `POST /api/sms-assistant/webhooks/voice/incoming`
-- Dial result action: already emitted by the voice TwiML to `POST /api/sms-assistant/webhooks/voice/dial-result`
-
-If `BUSINESS_FORWARDING_PHONE` is set, inbound calls dial that number first. If the call is missed, OmniToolset sends the follow-up SMS automatically.
-
-## Deployment
-
-### Railway
-
-1. Create a new Node service from this repo.
-2. Set all `.env.example` values in Railway variables.
-3. Use `npm start` as the start command.
-4. Mount a persistent volume for the SQLite database or switch to PostgreSQL later.
-
-### Render
-
-1. Create a new Web Service.
-2. Build command: `npm install`
-3. Start command: `npm start`
-4. Add the environment variables from `.env.example`.
-5. Use a disk mount if you want SQLite persistence across deploys.
+## Deploy
 
 ### Vercel
 
-The repo now includes a `vercel-build` script and `vercel.json` with the framework forced to `express`, which avoids the incorrect `next build` path.
+- Project root: `apps/web`
+- Required env:
+  - `NEXT_PUBLIC_APP_URL=https://omnitoolset.com`
+  - `NEXT_PUBLIC_API_URL=https://api.omnitoolset.com`
 
-Important limitation:
+### Render
 
-- Vercel runs Express as a serverless function
-- local SQLite is not persistent there
-- the app now falls back to `/tmp/omnitoolset.sqlite` on Vercel so it can boot
-- for real conversation and booking persistence, use a hosted database instead of SQLite
+- Project root: `apps/api`
+- Build command: `npm install`
+- Start command: `npm start`
+- Required env:
+  - `APP_URL=https://api.omnitoolset.com`
+  - `FRONTEND_APP_URL=https://omnitoolset.com`
+  - `DATABASE_URL=...`
+  - `OPENAI_API_KEY=...`
+  - `STRIPE_SECRET_KEY=...`
+  - `STRIPE_WEBHOOK_SECRET=...`
+  - `STRIPE_PRICE_ID=...`
+  - `TWILIO_ACCOUNT_SID=...`
+  - `TWILIO_AUTH_TOKEN=...`
+  - `TWILIO_PHONE_NUMBER=...`
 
-## Extending the platform
+Point Twilio at the backend:
 
-When you implement the next product:
+- SMS: `https://api.omnitoolset.com/api/sms-assistant/webhooks/sms`
+- Voice: `https://api.omnitoolset.com/api/sms-assistant/webhooks/voice/incoming`
 
-1. keep the folder in `src/modules/<module_name>/`
-2. add real service logic behind the module router
-3. reuse `db/repositories/` and `integrations/`
-4. update `src/config/product-catalog.js`
-5. expand the product page from scaffold to live
+After successful Stripe payment, Checkout now redirects to:
+
+- `https://omnitoolset.com/sms/onboarding?session_id=...`
+
+After onboarding submission:
+
+- the business record is marked `active`
+- the configured `TWILIO_PHONE_NUMBER` is attached to that business
+- SMS and missed-call handling start routing through that business
+
+Current MVP note:
+
+- this is a single-number activation flow
+- one live Twilio number maps to one active SMS AI Assistant business at a time
+
+## Additional docs
+
+- [Local development](./docs/LOCAL_DEVELOPMENT.md)
+- [Deployment](./docs/DEPLOYMENT.md)
