@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { apiFetchJson } from '../lib/api-client';
 
 const initialForm = {
   workingHours: '',
@@ -49,10 +50,9 @@ export function SmsSettingsPanel({ sessionId }) {
 
     async function loadSettings() {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/sms-assistant/settings?session_id=${encodeURIComponent(sessionId)}`
+        const { response, payload } = await apiFetchJson(
+          `/api/sms-assistant/settings?session_id=${encodeURIComponent(sessionId)}`
         );
-        const payload = await response.json();
 
         if (!response.ok || !payload.ok) {
           throw new Error(payload.error || 'Unable to load settings right now.');
@@ -103,7 +103,7 @@ export function SmsSettingsPanel({ sessionId }) {
     setSuccess('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sms-assistant/settings`, {
+      const { response, payload } = await apiFetchJson('/api/sms-assistant/settings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -113,8 +113,6 @@ export function SmsSettingsPanel({ sessionId }) {
           ...form
         })
       });
-
-      const payload = await response.json();
 
       if (!response.ok || !payload.ok) {
         throw new Error(payload.error || 'Unable to save your settings.');

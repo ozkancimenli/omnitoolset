@@ -16,9 +16,30 @@ import { createLeadCaptureModule } from './modules/lead_capture/index.js';
 import { createReviewBoosterModule } from './modules/review_booster/index.js';
 import { createSmsAssistantModule } from './modules/sms_assistant/index.js';
 
+function buildAllowedOrigins() {
+  const allowed = new Set([
+    env.frontendAppUrl,
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ]);
+
+  try {
+    const frontendUrl = new URL(env.frontendAppUrl);
+    const alternateHost = frontendUrl.hostname.startsWith('www.')
+      ? frontendUrl.hostname.replace(/^www\./, '')
+      : `www.${frontendUrl.hostname}`;
+    allowed.add(`${frontendUrl.protocol}//${alternateHost}`);
+  } catch {
+    return allowed;
+  }
+
+  return allowed;
+}
+
 export function createApp({ repositories = createRepositories(), stripe = undefined } = {}) {
   const app = express();
   const requestBodyLimit = env.security.requestBodyLimit;
+  const allowedOrigins = buildAllowedOrigins();
   const accessRequestService = createAccessRequestService({ repositories });
   const accessRequestsRouter = createAccessRequestsRouter({ service: accessRequestService });
   const billingModule = createBillingModule({ repositories, stripe });
@@ -32,6 +53,24 @@ export function createApp({ repositories = createRepositories(), stripe = undefi
 
   app.use((req, _res, next) => {
     req.requestId = crypto.randomUUID();
+    next();
+  });
+
+  app.use((req, res, next) => {
+    const origin = req.get('origin');
+
+    if (origin && allowedOrigins.has(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    }
+
+    if (req.method === 'OPTIONS') {
+      res.status(204).end();
+      return;
+    }
+
     next();
   });
 

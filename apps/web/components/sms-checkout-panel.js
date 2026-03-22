@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiFetchJson } from '../lib/api-client';
 
 const initialForm = {
   name: '',
@@ -27,18 +28,13 @@ export function SmsCheckoutPanel({ compact = false }) {
     setError('');
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/billing/checkout-sessions`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(form)
-        }
-      );
-
-      const payload = await response.json();
+      const { response, payload } = await apiFetchJson('/api/billing/checkout-sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(form)
+      });
 
       if (!response.ok || !payload.checkoutUrl) {
         throw new Error(payload.error || 'Unable to start checkout right now.');

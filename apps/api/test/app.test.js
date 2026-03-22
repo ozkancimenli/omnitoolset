@@ -17,6 +17,18 @@ test('health endpoint responds with ok', async () => {
   assert.equal(response.body.ok, true);
 });
 
+test('api responds to allowed CORS preflight requests', async () => {
+  const app = createApp({ repositories: createFakeRepositories() });
+  const response = await request(app)
+    .options('/api/billing/checkout-sessions')
+    .set('Origin', 'https://omnitoolset.com')
+    .set('Access-Control-Request-Method', 'POST')
+    .set('Access-Control-Request-Headers', 'content-type');
+
+  assert.equal(response.statusCode, 204);
+  assert.equal(response.headers['access-control-allow-origin'], 'https://omnitoolset.com');
+});
+
 test('access request endpoint stores beta interest', async () => {
   const repositories = createFakeRepositories();
   const app = createApp({ repositories });

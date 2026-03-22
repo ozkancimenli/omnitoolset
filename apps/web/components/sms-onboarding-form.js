@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetchJson } from '../lib/api-client';
 
 const emptyForm = {
   businessName: '',
@@ -25,10 +26,9 @@ export function SmsOnboardingForm({ sessionId }) {
 
     async function loadContext() {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/sms-assistant/onboarding/session?session_id=${encodeURIComponent(sessionId)}`
+        const { response, payload } = await apiFetchJson(
+          `/api/sms-assistant/onboarding/session?session_id=${encodeURIComponent(sessionId)}`
         );
-        const payload = await response.json();
 
         if (!response.ok || !payload.ok) {
           throw new Error(payload.error || 'Unable to load your onboarding session.');
@@ -85,7 +85,7 @@ export function SmsOnboardingForm({ sessionId }) {
     setError('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sms-assistant/onboarding`, {
+      const { response, payload } = await apiFetchJson('/api/sms-assistant/onboarding', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -95,8 +95,6 @@ export function SmsOnboardingForm({ sessionId }) {
           ...form
         })
       });
-
-      const payload = await response.json();
 
       if (!response.ok || !payload.ok) {
         throw new Error(payload.error || 'Unable to save onboarding.');
