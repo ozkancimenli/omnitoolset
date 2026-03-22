@@ -700,11 +700,31 @@ export function createSmsAssistantService({ repositories }) {
     };
   }
 
+  async function getRuntimeDiagnostics() {
+    const configuredTwilioPhone = resolveBusinessPhone(env.twilio.phoneNumber);
+    const mappedBusiness = configuredTwilioPhone
+      ? await repositories.businesses.getByTwilioPhone(configuredTwilioPhone)
+      : null;
+
+    return {
+      hasOpenAI: hasOpenAICredentials(),
+      hasTwilio: hasTwilioCredentials(),
+      signatureValidationEnabled: env.twilio.validateSignatures,
+      configuredTwilioPhone: configuredTwilioPhone || null,
+      activeBusinessMapped: Boolean(mappedBusiness),
+      mappedBusinessStatus: mappedBusiness?.status || null,
+      automationEnabled: isAutomationEnabled(mappedBusiness),
+      onboardingCompleted: Boolean(mappedBusiness?.onboardingCompletedAt),
+      forwardingConfigured: Boolean(mappedBusiness?.forwardingPhone)
+    };
+  }
+
   return {
     evaluateInboundTraffic,
     handleIncomingSms,
     handleMissedCall,
     getVoiceRouting,
-    getModuleOverview
+    getModuleOverview,
+    getRuntimeDiagnostics
   };
 }

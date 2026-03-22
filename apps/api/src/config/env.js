@@ -59,7 +59,10 @@ export const env = {
   appUrl: normalizeUrl(process.env.APP_URL, 'http://localhost:4000'),
   frontendAppUrl: normalizeUrl(process.env.FRONTEND_APP_URL, PRIMARY_DOMAIN),
   databaseUrl:
-    process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/omnitoolset',
+    process.env.DATABASE_URL ||
+    (process.env.NODE_ENV === 'production'
+      ? ''
+      : 'postgres://postgres:postgres@localhost:5432/omnitoolset'),
   defaultBusiness: {
     name: process.env.DEFAULT_BUSINESS_NAME || 'Northstar Health',
     slug: process.env.DEFAULT_BUSINESS_SLUG || 'northstar-health',
@@ -160,7 +163,7 @@ export function sanitizeReturnTo(value, defaultPath = '/') {
 
 export function assertCriticalEnvironment() {
   if (!env.databaseUrl) {
-    throw new Error('DATABASE_URL is required.');
+    throw new Error('DATABASE_URL is required in production.');
   }
 
   if (env.twilio.validateSignatures && !env.twilio.authToken) {
@@ -191,6 +194,10 @@ export function getEnvironmentWarnings() {
 
   if (!hasStripeCredentials()) {
     warnings.push('Stripe billing is not fully configured. Checkout and webhook handling will be unavailable.');
+  }
+
+  if (!env.databaseUrl) {
+    warnings.push('DATABASE_URL is missing. The API cannot start without a database connection.');
   }
 
   return warnings;

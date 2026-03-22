@@ -15,6 +15,20 @@ test('health endpoint responds with ok', async () => {
 
   assert.equal(response.statusCode, 200);
   assert.equal(response.body.ok, true);
+  assert.ok(response.headers['x-request-id']);
+});
+
+test('sms status endpoint exposes safe runtime diagnostics', async () => {
+  const repositories = createFakeRepositories();
+  const app = createApp({ repositories });
+
+  const response = await request(app).get('/api/sms-assistant/status');
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.implemented, true);
+  assert.equal(response.body.diagnostics.hasTwilio, Boolean(env.twilio.accountSid && env.twilio.authToken && env.twilio.phoneNumber));
+  assert.equal(response.body.diagnostics.activeBusinessMapped, false);
+  assert.equal(response.body.diagnostics.mappedBusinessStatus, null);
 });
 
 test('api responds to allowed CORS preflight requests', async () => {

@@ -57,6 +57,8 @@ export function createApp({ repositories = createRepositories(), stripe = undefi
   });
 
   app.use((req, res, next) => {
+    res.setHeader('X-Request-Id', req.requestId);
+
     const origin = req.get('origin');
 
     if (origin && allowedOrigins.has(origin)) {

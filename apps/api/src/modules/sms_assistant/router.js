@@ -33,7 +33,11 @@ function rejectInvalidTwilioRequest(req, res, reason) {
   logger.warn('security.twilio_webhook_rejected', {
     requestId: req.requestId,
     path: req.path,
-    reason
+    reason,
+    method: req.method,
+    host: req.get('host') || null,
+    contentType: req.get('content-type') || null,
+    hasSignature: Boolean(req.get('x-twilio-signature'))
   });
 
   res.status(403).type('text/plain').send('Forbidden');
@@ -42,8 +46,10 @@ function rejectInvalidTwilioRequest(req, res, reason) {
 export function createSmsAssistantRouter({ service, billingService }) {
   const router = Router();
 
-  router.get('/status', (_req, res) => {
+  router.get('/status', async (_req, res) => {
     const overview = service.getModuleOverview();
+    const diagnostics = await service.getRuntimeDiagnostics();
+
     res.json({
       product: overview.product,
       status: overview.status,
@@ -54,7 +60,18 @@ export function createSmsAssistantRouter({ service, billingService }) {
         'Booking slot suggestions',
         'Missed call auto-SMS flow',
         'Conversation and booking persistence'
-      ]
+      ],
+      diagnostics: {
+        hasOpenAI: diagnostics.hasOpenAI,
+        hasTwilio: diagnostics.hasTwilio,
+        signatureValidationEnabled: diagnostics.signatureValidationEnabled,
+        configuredTwilioPhone: maskPhoneNumber(diagnostics.configuredTwilioPhone),
+        activeBusinessMapped: diagnostics.activeBusinessMapped,
+        mappedBusinessStatus: diagnostics.mappedBusinessStatus,
+        automationEnabled: diagnostics.automationEnabled,
+        onboardingCompleted: diagnostics.onboardingCompleted,
+        forwardingConfigured: diagnostics.forwardingConfigured
+      }
     });
   });
 
@@ -208,6 +225,13 @@ export function createSmsAssistantRouter({ service, billingService }) {
 
   router.post('/webhooks/sms', async (req, res) => {
     res.type('text/xml');
+
+    logger.info('sms_assistant.sms_webhook_received', {
+      requestId: req.requestId,
+      host: req.get('host') || null,
+      contentType: req.get('content-type') || null,
+      hasSignature: Boolean(req.get('x-twilio-signature'))
+    });
 
     if (!isFormWebhookRequest(req)) {
       res.status(415).send(createEmptyMessagingTwiml());
