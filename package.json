@@ -14,6 +14,7 @@
     "dev:web": "npm run dev --workspace @omnitoolset/web",
     "dev:api": "npm run dev --workspace @omnitoolset/api",
     "build:web": "npm run build --workspace @omnitoolset/web",
+    "vercel-build": "npm run build --workspace @omnitoolset/web",
     "build:api": "npm run check --workspace @omnitoolset/api",
     "db:migrate": "npm run db:migrate --workspace @omnitoolset/api",
     "db:seed": "npm run db:seed --workspace @omnitoolset/api",
