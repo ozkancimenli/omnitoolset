@@ -8,6 +8,7 @@ import { getHomePageModel } from '../lib/site';
 export default async function HomePage({ searchParams }) {
   const { headline, products, liveProduct, accessProducts } = getHomePageModel();
   const submissionState = (await searchParams)?.submitted;
+  const startHref = `${liveProduct.routePath}#start-now`;
 
   return (
     <div className="page">
@@ -19,9 +20,14 @@ export default async function HomePage({ searchParams }) {
             One live product today, four staged products behind it, and a single platform designed
             for local businesses that need faster customer response.
           </p>
+          <div className="hero-proof">
+            <span>Live now</span>
+            <span>$49/month</span>
+            <span>Stripe checkout</span>
+          </div>
           <div className="hero-actions">
-            <Link className="button button-primary" href={liveProduct.routePath}>
-              Get Started
+            <Link className="button button-primary" href={startHref}>
+              Start for $49/month
             </Link>
             <a className="button button-secondary" href="mailto:hello@omnitoolset.com?subject=OmniToolset%20Demo">
               Request Demo
@@ -29,15 +35,23 @@ export default async function HomePage({ searchParams }) {
           </div>
         </div>
         <div className="hero-panel">
-          <div className="panel-card">
+          <div className="panel-card hero-pricing-card">
             <StatusBadge status={liveProduct.status} />
-            <h2>{liveProduct.name}</h2>
-            <p>{liveProduct.summary}</p>
+            <h2>Launch SMS AI Assistant first.</h2>
+            <p>
+              Start with the only live OmniToolset product today, then expand into reviews,
+              follow-up, lead capture, and inbox workflows as the suite rolls out.
+            </p>
             <ul className="feature-list">
-              {liveProduct.highlights.map((highlight) => (
-                <li key={highlight}>{highlight}</li>
-              ))}
+              <li>Hosted Stripe checkout for a simple first step</li>
+              <li>Short onboarding after payment</li>
+              <li>Live SMS replies, missed-call follow-up, and booking flow</li>
             </ul>
+            <div className="hero-actions">
+              <Link className="button button-primary" href={startHref}>
+                Go to Checkout
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -78,6 +92,11 @@ export default async function HomePage({ searchParams }) {
             SMS AI Assistant handles the highest-friction moment for a local business: replying
             quickly enough to win the customer and get the booking.
           </p>
+          <div className="hero-actions">
+            <Link className="button button-primary" href={startHref}>
+              Start SMS AI Assistant
+            </Link>
+          </div>
         </div>
         <AccessForm
           compact

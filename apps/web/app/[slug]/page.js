@@ -43,6 +43,7 @@ export default async function ProductPage({ params, searchParams }) {
   }
 
   const { product, relatedProducts } = model;
+  const isLiveProduct = product.accessType === 'live';
 
   return (
     <div className="page">
@@ -52,8 +53,15 @@ export default async function ProductPage({ params, searchParams }) {
           <h1>{product.name}</h1>
           <p className="lede">{product.headline}</p>
           <p>{product.summary}</p>
+          {isLiveProduct ? (
+            <div className="hero-proof">
+              <span>Live now</span>
+              <span>$49/month</span>
+              <span>Checkout in under a minute</span>
+            </div>
+          ) : null}
           <div className="hero-actions">
-            {product.accessType === 'live' ? (
+            {isLiveProduct ? (
               <>
                 <a className="button button-primary" href="#start-now">
                   Start for $49/month
@@ -69,15 +77,19 @@ export default async function ProductPage({ params, searchParams }) {
             )}
           </div>
         </div>
-        <div className="product-hero-panel">
-          <p className="eyebrow">Platform Role</p>
-          <h2>{product.suiteRole}</h2>
-          <ul className="feature-list">
-            {product.highlights.map((highlight) => (
-              <li key={highlight}>{highlight}</li>
-            ))}
-          </ul>
-        </div>
+        {isLiveProduct ? (
+          <SmsCheckoutPanel compact />
+        ) : (
+          <div className="product-hero-panel">
+            <p className="eyebrow">Platform Role</p>
+            <h2>{product.suiteRole}</h2>
+            <ul className="feature-list">
+              {product.highlights.map((highlight) => (
+                <li key={highlight}>{highlight}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       {submissionState === '1' ? (
@@ -108,7 +120,7 @@ export default async function ProductPage({ params, searchParams }) {
         </section>
       ) : null}
 
-      {product.accessType !== 'live' ? (
+      {!isLiveProduct ? (
         <section className="shell section" id="early-access">
           <AccessForm
             description={`Tell us a bit about your business and we’ll reach out when ${product.name} opens up.`}
@@ -119,16 +131,28 @@ export default async function ProductPage({ params, searchParams }) {
         </section>
       ) : (
         <section className="shell section">
-          <div className="live-product-grid">
+          <div className="live-product-grid live-product-grid-secondary">
             <div className="live-product-callout">
-              <p className="eyebrow">Live Product</p>
-              <h2>SMS AI Assistant is the first real workflow in the suite.</h2>
+              <p className="eyebrow">What Happens Next</p>
+              <h2>Go from payment to live setup in one short flow.</h2>
               <p>
-                It handles inbound SMS, missed-call follow-up, short AI replies, booking
-                suggestions, booking confirmation, and persistence for conversations and bookings.
+                After checkout, we send you straight into onboarding so your business details,
+                hours, phone, and pricing note are ready before the assistant starts replying.
               </p>
             </div>
-            <SmsCheckoutPanel />
+            <div className="panel-card onboarding-steps-card">
+              <p className="eyebrow">Setup Flow</p>
+              <ol className="journey-list">
+                <li>Start subscription with Stripe Checkout.</li>
+                <li>Complete the onboarding form for your business details.</li>
+                <li>Activate SMS handling and manage it from the settings page.</li>
+              </ol>
+              <div className="hero-actions">
+                <a className="button button-primary" href="#start-now">
+                  Start Checkout
+                </a>
+              </div>
+            </div>
           </div>
         </section>
       )}

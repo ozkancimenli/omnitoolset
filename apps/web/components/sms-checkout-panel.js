@@ -8,7 +8,7 @@ const initialForm = {
   companyName: ''
 };
 
-export function SmsCheckoutPanel() {
+export function SmsCheckoutPanel({ compact = false }) {
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -52,7 +52,7 @@ export function SmsCheckoutPanel() {
   }
 
   return (
-    <section className="checkout-panel" id="start-now">
+    <section className={`checkout-panel ${compact ? 'checkout-panel-compact' : ''}`} id="start-now">
       <div className="section-copy">
         <p className="eyebrow">Start Now</p>
         <h2>Start for $49/month</h2>
@@ -61,6 +61,11 @@ export function SmsCheckoutPanel() {
           activate the subscription first, then use the billing record as the foundation for
           onboarding.
         </p>
+        <ul className="feature-list checkout-steps">
+          <li>Complete payment in hosted Stripe Checkout.</li>
+          <li>Finish one short onboarding form for your business.</li>
+          <li>Go live on your Twilio number once setup is saved.</li>
+        </ul>
       </div>
       <form className="access-form" onSubmit={handleSubmit}>
         <label>
@@ -106,7 +111,9 @@ export function SmsCheckoutPanel() {
         <button className="button button-primary" disabled={loading} type="submit">
           {loading ? 'Redirecting…' : 'Start for $49/month'}
         </button>
-        <p className="form-help">Hosted checkout by Stripe. Cancel any time from Stripe billing.</p>
+        <p className="form-help">
+          Hosted checkout by Stripe. Takes about a minute. Cancel any time from Stripe billing.
+        </p>
       </form>
     </section>
   );
