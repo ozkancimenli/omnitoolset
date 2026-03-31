@@ -20,16 +20,19 @@ const showroomCards = [
 
 const showroomExamples = [
   {
+    slug: 'northstar-aesthetics',
     name: 'Northstar Aesthetics',
     angle: 'Luxury medspa landing experience',
     outcome: 'Cleaner brand, stronger booking CTA, better lead capture.',
   },
   {
+    slug: 'harbor-smile-studio',
     name: 'Harbor Smile Studio',
     angle: 'Modern dental site refresh',
     outcome: 'Clearer service pages, better trust sections, simpler conversion path.',
   },
   {
+    slug: 'bluepeak-home-services',
     name: 'BluePeak Home Services',
     angle: 'Lead-first home services layout',
     outcome: 'Faster quote flow, clearer service structure, stronger local credibility.',
@@ -92,7 +95,7 @@ export default async function HomePage({ searchParams }) {
         </section>
       ) : null}
 
-      <section className="shell section">
+      <section id="how-it-works" className="shell section">
         <div className="section-heading">
           <p className="eyebrow">What we fix</p>
           <h2>Most local sites are leaving money on the table.</h2>
@@ -147,7 +150,7 @@ export default async function HomePage({ searchParams }) {
         </div>
         <div className="product-grid">
           {showroomExamples.map((example) => (
-            <div key={example.name} className="product-card showroom-card">
+            <Link key={example.name} href={`/showroom/${example.slug}`} className="product-card showroom-card showroom-link">
               <div className="showroom-browser">
                 <span />
                 <span />
@@ -157,8 +160,11 @@ export default async function HomePage({ searchParams }) {
                 <h3>{example.name}</h3>
                 <p className="product-role">{example.angle}</p>
                 <p className="product-copy">{example.outcome}</p>
+                <div className="showroom-link-row">
+                  <span>Open preview</span>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

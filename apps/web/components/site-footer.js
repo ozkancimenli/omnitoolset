@@ -5,13 +5,15 @@ export function SiteFooter() {
         <div>
           <p className="footer-brand">OmniToolset</p>
           <p className="footer-copy">
-            AI tools for local businesses that need more replies, more bookings, and less manual
-            follow-up.
+            Website upgrades, better lead capture, and follow-up systems for local businesses that
+            want more paying customers.
           </p>
         </div>
         <div>
-          <p className="footer-heading">Primary Product</p>
-          <p className="footer-copy">SMS AI Assistant is live now. The rest of the suite is staged for rollout.</p>
+          <p className="footer-heading">What we do</p>
+          <p className="footer-copy">
+            We help local businesses look better online, convert more visitors, and stop losing warm leads.
+          </p>
         </div>
       </div>
     </footer>

@@ -5,7 +5,7 @@ import './globals.css';
 export const metadata = {
   metadataBase: new URL('https://omnitoolset.com'),
   title: 'OmniToolset',
-  description: 'AI tools that help your business grow automatically.'
+  description: 'Website upgrades, lead capture, and follow-up systems for local businesses.'
 };
 
 export default function RootLayout({ children }) {
