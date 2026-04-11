@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.js",
-    "./products": "./src/products.js"
+    "./products": "./src/products.js",
+    "./platform": "./src/platform.js"
   }
 }

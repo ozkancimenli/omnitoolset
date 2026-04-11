@@ -7,6 +7,8 @@ import { productCatalog } from '@omnitoolset/shared/products';
 import { env } from './config/env.js';
 import { createAccessRequestsRouter } from './core/access-requests/controller.js';
 import { createAccessRequestService } from './core/access-requests/service.js';
+import { createAutomationRouter } from './core/automation/router.js';
+import { createAutomationService } from './core/automation/service.js';
 import { logger } from './core/logging/logger.js';
 import { createRepositories } from './db/index.js';
 import { createBillingModule } from './modules/billing/index.js';
@@ -42,6 +44,8 @@ export function createApp({ repositories = createRepositories(), stripe = undefi
   const allowedOrigins = buildAllowedOrigins();
   const accessRequestService = createAccessRequestService({ repositories });
   const accessRequestsRouter = createAccessRequestsRouter({ service: accessRequestService });
+  const automationService = createAutomationService({ repositories });
+  const automationRouter = createAutomationRouter({ service: automationService });
   const billingModule = createBillingModule({ repositories, stripe });
   const smsModule = createSmsAssistantModule({ repositories, billingService: billingModule.service });
   const reviewModule = createReviewBoosterModule();
@@ -113,6 +117,7 @@ export function createApp({ repositories = createRepositories(), stripe = undefi
   });
 
   app.use(accessRequestsRouter);
+  app.use('/api/automation', automationRouter);
   app.use('/api/billing', billingModule.router);
   app.use('/api/sms-assistant', smsModule.router);
   app.use('/api/reviews', reviewModule.router);

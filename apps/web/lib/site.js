@@ -4,8 +4,14 @@ import {
   getAccessProducts,
   getProductByRoutePath,
   getProductByModuleId,
-  productCatalog
+  productCatalog,
 } from '@omnitoolset/shared/products';
+import {
+  capabilityCatalog,
+  PLATFORM_SUMMARY,
+  integrationCatalog,
+  workflowCatalog
+} from '@omnitoolset/shared/platform';
 
 export function getSiteUrl() {
   return (process.env.NEXT_PUBLIC_APP_URL || PRIMARY_DOMAIN).replace(/\/$/, '');
@@ -25,7 +31,11 @@ export function buildAccessRequestAction() {
 
 export function getHomePageModel() {
   return {
+    platform: PLATFORM_SUMMARY,
     headline: HOMEPAGE_HEADLINE,
+    capabilities: capabilityCatalog,
+    integrations: integrationCatalog,
+    workflows: workflowCatalog,
     products: productCatalog,
     liveProduct: getProductByModuleId('sms_assistant'),
     accessProducts: getAccessProducts()

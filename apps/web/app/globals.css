@@ -265,6 +265,17 @@ main {
   margin-top: 24px;
 }
 
+.studio-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 24px;
+}
+
+.studio-side {
+  display: grid;
+  gap: 20px;
+}
+
 .compact-grid {
   margin-top: 20px;
 }
@@ -394,7 +405,20 @@ main {
   gap: 14px;
 }
 
+.studio-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
 .access-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.studio-form label {
   display: grid;
   gap: 8px;
   color: var(--muted);
@@ -403,7 +427,10 @@ main {
 
 .access-form input,
 .access-form select,
-.access-form textarea {
+.access-form textarea,
+.studio-form input,
+.studio-form textarea,
+.studio-select {
   width: 100%;
   border: 1px solid var(--border);
   background: var(--surface-strong);
@@ -415,9 +442,70 @@ main {
 
 .access-form input:focus,
 .access-form select:focus,
-.access-form textarea:focus {
+.access-form textarea:focus,
+.studio-form input:focus,
+.studio-form textarea:focus,
+.studio-select:focus {
   outline: 2px solid rgba(13, 122, 99, 0.24);
   border-color: rgba(13, 122, 99, 0.4);
+}
+
+.studio-workflow-summary,
+.studio-placeholder {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.studio-result-card pre,
+.code-panel pre {
+  overflow: auto;
+  margin: 16px 0 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: #1d1b19;
+  color: #f4efe8;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.studio-error {
+  margin: 0;
+  color: #8a2c28;
+  font-weight: 600;
+}
+
+.run-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.run-card {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.run-card p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.run-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.run-card-top span {
+  color: var(--accent-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: capitalize;
 }
 
 .notice-banner {
@@ -581,6 +669,7 @@ main {
   .hero,
   .product-hero,
   .duo-section,
+  .studio-grid,
   .live-product-grid,
   .access-panel,
   .checkout-panel,

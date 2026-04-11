@@ -5,14 +5,15 @@ export function SiteFooter() {
         <div>
           <p className="footer-brand">OmniToolset</p>
           <p className="footer-copy">
-            Website upgrades, better lead capture, and follow-up systems for local businesses that
-            want more paying customers.
+            A modular automation platform for live products, internal tools, reusable integrations,
+            and operator workflows.
           </p>
         </div>
         <div>
-          <p className="footer-heading">What we do</p>
+          <p className="footer-heading">What ships now</p>
           <p className="footer-copy">
-            We help local businesses look better online, convert more visitors, and stop losing warm leads.
+            SMS AI Assistant is the first live module. Workflow Studio and the shared automation core
+            make the next modules cheaper to ship.
           </p>
         </div>
       </div>

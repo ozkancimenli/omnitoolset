@@ -9,13 +9,14 @@ export function SiteHeader() {
         </Link>
         <div className="nav-group">
           <nav className="nav-links" aria-label="Primary">
-            <a href="/#showroom">Showroom</a>
-            <a href="/#how-it-works">How It Works</a>
-            <a href="/#audit">Free Audit</a>
+            <a href="/#platform">Platform</a>
+            <a href="/#modules">Modules</a>
+            <a href="/#workflows">Workflows</a>
+            <Link href="/studio">Studio</Link>
           </nav>
-          <a className="button button-primary button-small" href="/#audit">
-            Get Free Audit
-          </a>
+          <Link className="button button-primary button-small" href="/studio">
+            Open Studio
+          </Link>
         </div>
       </div>
     </header>

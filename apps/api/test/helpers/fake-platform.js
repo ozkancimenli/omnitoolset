@@ -25,6 +25,7 @@ export function createFakeRepositories() {
     conversations: [],
     messages: [],
     bookings: [],
+    workflowRuns: [],
     accessRequests: [],
     customers: [],
     subscriptions: [],
@@ -263,6 +264,51 @@ export function createFakeRepositories() {
         };
         store.subscriptions.push(subscription);
         return subscription;
+      }
+    },
+    workflowRuns: {
+      async create(payload) {
+        const run = {
+          id: store.workflowRuns.length + 1,
+          workflow_key: payload.workflowKey,
+          workflow_name: payload.workflowName,
+          trigger_source: payload.triggerSource,
+          status: payload.status || 'running',
+          input_payload: payload.inputPayload || {},
+          output_payload: null,
+          error_message: null,
+          step_trace: payload.stepTrace || [],
+          created_at: new Date().toISOString(),
+          completed_at: null
+        };
+
+        store.workflowRuns.push(run);
+        return run;
+      },
+      async complete({ id, status = 'completed', outputPayload = {}, stepTrace = [] }) {
+        const run = store.workflowRuns.find((entry) => entry.id === id);
+        Object.assign(run, {
+          status,
+          output_payload: outputPayload,
+          step_trace: stepTrace,
+          completed_at: new Date().toISOString()
+        });
+        return run;
+      },
+      async fail({ id, errorMessage, stepTrace = [] }) {
+        const run = store.workflowRuns.find((entry) => entry.id === id);
+        Object.assign(run, {
+          status: 'failed',
+          error_message: errorMessage,
+          step_trace: stepTrace,
+          completed_at: new Date().toISOString()
+        });
+        return run;
+      },
+      async listRecent(limit) {
+        return [...store.workflowRuns]
+          .sort((left, right) => new Date(right.created_at) - new Date(left.created_at))
+          .slice(0, limit);
       }
     },
     __store: store

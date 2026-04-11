@@ -43,6 +43,54 @@ test('api responds to allowed CORS preflight requests', async () => {
   assert.equal(response.headers['access-control-allow-origin'], 'https://omnitoolset.com');
 });
 
+test('automation overview endpoint returns core catalogs', async () => {
+  const app = createApp({ repositories: createFakeRepositories() });
+  const response = await request(app).get('/api/automation');
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.ok, true);
+  assert.equal(response.body.name, 'OmniToolset Automation Core');
+  assert.equal(response.body.workflows.length >= 2, true);
+});
+
+test('automation workflow run endpoint executes the text brief workflow', async () => {
+  const repositories = createFakeRepositories();
+  const app = createApp({ repositories });
+
+  const response = await request(app).post('/api/automation/workflows/text-brief/run').send({
+    text: 'Call Alex tomorrow about the invoice. Prepare a short update for the ops team and confirm the follow-up owner.',
+    instruction: 'Focus on next actions.'
+  });
+
+  assert.equal(response.statusCode, 201);
+  assert.equal(response.body.ok, true);
+  assert.equal(response.body.run.workflowKey, 'text-brief');
+  assert.equal(response.body.run.status, 'completed');
+  assert.equal(Array.isArray(response.body.run.output.actions), true);
+  assert.equal(repositories.__store.workflowRuns.length, 1);
+});
+
+test('automation workflow run endpoint captures access requests through shared service', async () => {
+  const repositories = createFakeRepositories();
+  const app = createApp({ repositories });
+
+  const response = await request(app)
+    .post('/api/automation/workflows/product-access-intake/run')
+    .send({
+      productSlug: 'review-booster',
+      name: 'Jordan Lee',
+      email: 'jordan@example.com',
+      companyName: 'Northstar Health',
+      note: 'Need a post-service review workflow.'
+    });
+
+  assert.equal(response.statusCode, 201);
+  assert.equal(response.body.ok, true);
+  assert.equal(response.body.run.output.product, 'review-booster');
+  assert.equal(repositories.__store.accessRequests.length, 1);
+  assert.equal(repositories.__store.workflowRuns.length, 1);
+});
+
 test('access request endpoint stores beta interest', async () => {
   const repositories = createFakeRepositories();
   const app = createApp({ repositories });

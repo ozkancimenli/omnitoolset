@@ -8,6 +8,7 @@ import { createConversationsRepository } from './repositories/conversations-repo
 import { createCustomersRepository } from './repositories/customers-repository.js';
 import { createMessagesRepository } from './repositories/messages-repository.js';
 import { createSubscriptionsRepository } from './repositories/subscriptions-repository.js';
+import { createWorkflowRunsRepository } from './repositories/workflow-runs-repository.js';
 
 export function createRepositories() {
   return {
@@ -18,7 +19,8 @@ export function createRepositories() {
     bookings: createBookingsRepository(db),
     accessRequests: createAccessRequestsRepository(db),
     customers: createCustomersRepository(db),
-    subscriptions: createSubscriptionsRepository(db)
+    subscriptions: createSubscriptionsRepository(db),
+    workflowRuns: createWorkflowRunsRepository(db)
   };
 }
 
