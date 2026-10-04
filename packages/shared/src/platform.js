@@ -2,7 +2,7 @@ export const PLATFORM_SUMMARY = {
   name: 'OmniToolset',
   tagline: 'One platform for tools, integrations, and repeatable operator workflows.',
   description:
-    'OmniToolset is a modular automation platform that brings products, internal tools, and external integrations into one extendable runtime.'
+    'OmniToolset combines live customer-communication tools with a reusable workflow engine so small teams can automate repeatable work without stitching together disconnected systems.'
 };
 
 export const platformPrinciples = [

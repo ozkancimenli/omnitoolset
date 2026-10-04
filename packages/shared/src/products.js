@@ -1,5 +1,5 @@
 export const PRIMARY_DOMAIN = 'https://omnitoolset.com';
-export const HOMEPAGE_HEADLINE = 'AI tools that help your business grow automatically.';
+export const HOMEPAGE_HEADLINE = 'Automate customer conversations and repeatable work from one modular system.';
 
 export const PRODUCT_STATUS = Object.freeze({
   LIVE: 'Live',

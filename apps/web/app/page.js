@@ -5,6 +5,7 @@ import { getHomePageModel } from '../lib/site';
 
 export default function HomePage() {
   const model = getHomePageModel();
+  const liveProduct = model.liveProduct;
 
   return (
     <div className="page">
@@ -12,46 +13,100 @@ export default function HomePage() {
         <div className="hero-copy">
           <p className="eyebrow">{model.platform.name}</p>
           <h1>{model.headline}</h1>
-          <p className="lede">{model.platform.description}</p>
+          <p className="lede">
+            Start with the live SMS AI Assistant, then add follow-up, reviews, lead capture,
+            inbox workflows, and custom automations on the same modular foundation.
+          </p>
           <div className="hero-proof">
-            <span>Modular tools</span>
-            <span>Workflow runtime</span>
-            <span>Operator-friendly integrations</span>
+            <span>Reply to inbound texts</span>
+            <span>Recover missed calls</span>
+            <span>Move conversations toward booking</span>
           </div>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/studio">
-              Open Workflow Studio
+            <Link className="button button-primary" href={liveProduct.routePath}>
+              See {liveProduct.shortName}
             </Link>
-            <Link className="button button-secondary" href="/sms">
-              Explore Live Module
+            <Link className="button button-secondary" href="/studio">
+              Open Workflow Studio
             </Link>
           </div>
         </div>
 
         <div className="hero-panel">
           <div className="panel-card hero-pricing-card">
-            <p className="eyebrow">MVP shape</p>
-            <h2>One live product, one generic runtime, one foundation worth extending.</h2>
-            <p>
-              The current build keeps the platform practical: a live SMS AI Assistant, staged product
-              modules, and a reusable automation core that can run shared workflows across the suite.
-            </p>
+            <p className="eyebrow">Live now</p>
+            <h2>{liveProduct.headline}</h2>
+            <p>{liveProduct.summary}</p>
             <ul className="feature-list">
-              {model.capabilities.map((capability) => (
-                <li key={capability.key}>{capability.name}: {capability.summary}</li>
+              {liveProduct.highlights.map((highlight) => (
+                <li key={highlight}>{highlight}</li>
               ))}
             </ul>
+            <div className="hero-actions">
+              <Link className="button button-primary" href={liveProduct.routePath}>
+                Get started
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="modules" className="shell section">
+        <div className="section-heading">
+          <p className="eyebrow">Product suite</p>
+          <h2>Automate one customer workflow first. Expand only when it earns its place.</h2>
+          <p>
+            OmniToolset is built as a suite, but it does not pretend every module is finished.
+            The SMS AI Assistant is live; beta and coming-soon modules are labeled clearly.
+          </p>
+        </div>
+        <div className="product-grid">
+          {model.products.map((product) => (
+            <ProductCard key={product.moduleId} product={product} />
+          ))}
+        </div>
+      </section>
+
+      <section id="workflows" className="shell section duo-section">
+        <div className="duo-copy">
+          <p className="eyebrow">Workflow engine</p>
+          <h2>Turn repeatable operator work into reusable workflows.</h2>
+          <p>
+            Use the same runtime behind the product suite for internal briefs, intake flows,
+            integrations, and custom automations without rebuilding the foundation each time.
+          </p>
+          <div className="product-grid compact-grid">
+            {model.workflows.map((workflow) => (
+              <article key={workflow.key} className="product-card compact-card">
+                <h3>{workflow.name}</h3>
+                <p className="product-copy">{workflow.summary}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="panel-card code-panel">
+          <p className="eyebrow">Operator mode</p>
+          <h3>Build and run workflows in one place.</h3>
+          <p>
+            The Studio exposes the workflow layer directly so the platform can serve both packaged
+            products and custom operator workflows.
+          </p>
+          <div className="hero-actions">
+            <Link className="button button-primary" href="/studio">
+              Open Studio
+            </Link>
           </div>
         </div>
       </section>
 
       <section id="platform" className="shell section">
         <div className="section-heading">
-          <p className="eyebrow">Architecture</p>
-          <h2>Built around a small core with clear extension points.</h2>
+          <p className="eyebrow">Why the platform can keep expanding</p>
+          <h2>A small shared core instead of five disconnected apps.</h2>
           <p>
-            Tools, integrations, workflows, and product modules stay separated so the platform can
-            grow without rewriting the base runtime.
+            Products, tools, integrations, and workflows share a clear runtime so new modules can
+            reuse the same contacts, conversations, automation primitives, and run history.
           </p>
         </div>
         <div className="product-grid">
@@ -67,62 +122,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="modules" className="shell section">
-        <div className="section-heading">
-          <p className="eyebrow">Product Modules</p>
-          <h2>Current suite under the OmniToolset umbrella.</h2>
-          <p>
-            The platform already supports multiple product modules, but only the SMS AI Assistant is
-            live today. The rest stay honest and scaffolded for the next implementation phases.
-          </p>
-        </div>
-        <div className="product-grid">
-          {model.products.map((product) => (
-            <ProductCard key={product.moduleId} product={product} />
-          ))}
-        </div>
-      </section>
-
-      <section id="workflows" className="shell section duo-section">
-        <div className="duo-copy">
-          <p className="eyebrow">Workflow Engine</p>
-          <h2>The first generic runtime is already usable.</h2>
-          <p>
-            OmniToolset now includes a small workflow runner with persisted run history, reusable
-            tools, and a clean endpoint layer. It is intentionally small, but it is real and ready to
-            extend.
-          </p>
-          <div className="product-grid compact-grid">
-            {model.workflows.map((workflow) => (
-              <article key={workflow.key} className="product-card compact-card">
-                <h3>{workflow.name}</h3>
-                <p className="product-copy">{workflow.summary}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel-card code-panel">
-          <p className="eyebrow">Example call</p>
-          <h3>Run a workflow over HTTP</h3>
-          <pre>{`curl -X POST https://api.omnitoolset.com/api/automation/workflows/text-brief/run \\
-  -H "Content-Type: application/json" \\
-  -d '{"text":"Call Alex tomorrow about the invoice."}'`}</pre>
-          <div className="hero-actions">
-            <Link className="button button-primary" href="/studio">
-              Try in Studio
-            </Link>
-          </div>
-        </div>
-      </section>
-
       <section className="shell section">
         <div className="section-heading">
           <p className="eyebrow">Integrations</p>
-          <h2>External services stay isolated behind clean clients.</h2>
+          <h2>External services stay replaceable instead of becoming the architecture.</h2>
           <p>
-            Credentials, transport logic, and vendor-specific behavior live in one place so products
-            and workflows can reuse them safely.
+            Vendor-specific logic stays behind focused clients so the product layer can evolve
+            without spreading credentials and transport code everywhere.
           </p>
         </div>
         <div className="product-grid compact-grid">
