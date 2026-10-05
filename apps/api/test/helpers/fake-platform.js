@@ -150,7 +150,12 @@ export function createFakeRepositories() {
             const contact = store.contacts.find((entry) => entry.id === conversation.contactId) || null;
             const lastMessage = [...store.messages]
               .filter((entry) => entry.conversationId === conversation.id)
-              .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt))[0];
+              // Match the production repository's deterministic created_at DESC, id DESC order.
+              // Multiple in-memory messages can share the same millisecond timestamp.
+              .sort((left, right) => {
+                const timeDelta = new Date(right.createdAt) - new Date(left.createdAt);
+                return timeDelta || right.id - left.id;
+              })[0];
 
             return {
               id: conversation.id,
