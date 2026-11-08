@@ -1,13 +1,6 @@
 node_modules
-.DS_Store
-.env
 .next
-coverage
-dist
-.turbo
-apps/api/.env
-apps/web/.env.local
-apps/web/.env
-apps/api/.env.local
-*.log
-legacy/data/
+out
+.vercel
+.env*.local
+.DS_Store
