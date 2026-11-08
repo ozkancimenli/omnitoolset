@@ -151,3 +151,39 @@ export function ImagesToPdf() {
     </div>
   );
 }
+
+export function RotatePdf() {
+  const [file, setFile] = useState(null);
+  const [count, setCount] = useState(0);
+  const [angle, setAngle] = useState(90);
+  const [pages, setPages] = useState('all');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+  const open = async (f) => {
+    setMsg('');
+    try { const { PDFDocument } = await pdfLib(); const d = await PDFDocument.load(await bytes(f)); setFile(f); setCount(d.getPageCount()); }
+    catch { setMsg('Could not open this PDF (it may be encrypted or damaged).'); }
+  };
+  const run = async () => {
+    setBusy(true); setMsg('');
+    try {
+      const { PDFDocument, degrees } = await pdfLib(); const doc = await PDFDocument.load(await bytes(file));
+      const idx = pages.trim().toLowerCase() === 'all' ? doc.getPageIndices() : parseRanges(pages, count);
+      for (const i of idx) { const p = doc.getPage(i); p.setRotation(degrees((p.getRotation().angle + angle) % 360)); }
+      download(new Blob([await doc.save()], { type: 'application/pdf' }), `${baseName(file.name)}-rotated.pdf`);
+      setMsg(`Rotated ${idx.length} page${idx.length === 1 ? '' : 's'} by ${angle}°.`);
+    } catch (e) { setMsg(e.message); }
+    setBusy(false);
+  };
+  return (
+    <div className="tool">
+      <FileDrop accept="application/pdf" multiple={false} onFiles={(f) => open(f[0])} label={file ? `${file.name} — ${count} pages (click to change)` : 'Drop a PDF here'} />
+      {file && <div className="row" style={{ marginTop: 16 }}>
+        <label>Rotate <select value={angle} onChange={(e) => setAngle(+e.target.value)}><option value={90}>90° clockwise</option><option value={180}>180°</option><option value={270}>90° counter-clockwise</option></select></label>
+        <label>Pages <input type="text" value={pages} onChange={(e) => setPages(e.target.value)} placeholder="all or 1-3, 5" style={{ width: 140 }} /></label>
+        <button className="btn" disabled={busy} onClick={run}>{busy ? 'Rotating…' : 'Rotate & download'}</button>
+      </div>}
+      {msg && <p>{msg}</p>}
+    </div>
+  );
+}

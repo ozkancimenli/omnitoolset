@@ -16,6 +16,8 @@ const MAP = {
   'merge-pdf': load(pdf, 'MergePdf'),
   'split-pdf': load(pdf, 'SplitPdf'),
   'jpg-to-pdf': load(pdf, 'ImagesToPdf'),
+  'rotate-pdf': load(pdf, 'RotatePdf'),
+  'unit-converter': load(() => import('@/components/tools/UnitConverter'), 'default'),
   'qr-code-generator': load(design, 'QrGenerator'),
   'og-image-generator': load(design, 'OgImageGenerator'),
   'color-converter': load(design, 'ColorConverter'),
