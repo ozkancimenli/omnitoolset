@@ -146,3 +146,57 @@ export function ColorConverter() {
     </div>
   );
 }
+
+const FAVICON_SIZES = [
+  { s: 16, name: 'favicon-16x16.png' }, { s: 32, name: 'favicon-32x32.png' }, { s: 180, name: 'apple-touch-icon.png' },
+  { s: 192, name: 'android-chrome-192x192.png' }, { s: 512, name: 'android-chrome-512x512.png' },
+];
+
+export function FaviconGenerator() {
+  const [img, setImg] = useState(null);
+  const [bg, setBg] = useState('transparent');
+  const [color, setColor] = useState('#ffffff');
+  const [pad, setPad] = useState(0);
+  const [radius, setRadius] = useState(0);
+  const [outs, setOuts] = useState([]);
+  const pick = (e) => { const f = e.target.files[0]; if (!f) return; const i = new Image(); i.onload = () => setImg(i); i.src = URL.createObjectURL(f); };
+  useEffect(() => {
+    if (!img) return;
+    let live = true;
+    Promise.all(FAVICON_SIZES.map(async ({ s, name }) => {
+      const c = document.createElement('canvas'); c.width = c.height = s; const ctx = c.getContext('2d');
+      const r = (radius / 100) * s / 2;
+      ctx.beginPath(); ctx.roundRect(0, 0, s, s, r); ctx.clip();
+      if (bg === 'color') { ctx.fillStyle = color; ctx.fillRect(0, 0, s, s); }
+      const p = (pad / 100) * s, box = s - 2 * p, sc = Math.min(box / img.width, box / img.height);
+      const w = img.width * sc, h = img.height * sc;
+      ctx.imageSmoothingQuality = 'high'; ctx.drawImage(img, (s - w) / 2, (s - h) / 2, w, h);
+      const blob = await canvasBlob(c, 'image/png');
+      return { s, name, blob, url: URL.createObjectURL(blob) };
+    })).then((r) => live && setOuts(r));
+    return () => { live = false; };
+  }, [img, bg, color, pad, radius]);
+  const manifest = JSON.stringify({ name: 'My Site', short_name: 'Site', icons: [192, 512].map((s) => ({ src: `/android-chrome-${s}x${s}.png`, sizes: `${s}x${s}`, type: 'image/png' })), theme_color: '#ffffff', background_color: '#ffffff', display: 'standalone' }, null, 2);
+  const html = `<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">\n<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">\n<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">\n<link rel="manifest" href="/site.webmanifest">`;
+  return (
+    <div className="tool">
+      <div className="row">
+        <label>Square logo or image <input type="file" accept="image/*" onChange={pick} /></label>
+        <label>Background <select value={bg} onChange={(e) => setBg(e.target.value)}><option value="transparent">Transparent</option><option value="color">Solid color</option></select></label>
+        {bg === 'color' && <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />}
+        <label>Padding {pad}% <input type="range" min="0" max="30" value={pad} onChange={(e) => setPad(+e.target.value)} /></label>
+        <label>Rounded {radius}% <input type="range" min="0" max="100" value={radius} onChange={(e) => setRadius(+e.target.value)} /></label>
+      </div>
+      {outs.length > 0 && <>
+        <ul className="files">{outs.map((o) => (
+          <li key={o.s}><img src={o.url} alt="" style={{ width: Math.min(o.s, 64), height: Math.min(o.s, 64), objectFit: 'contain', background: 'repeating-conic-gradient(#e2e8f0 0 25%, #fff 0 50%) 0 0/12px 12px' }} />
+            <span className="grow">{o.name} <span className="muted">{o.s}×{o.s}</span></span>
+            <button className="btn small" onClick={() => download(o.blob, o.name)}>Download</button></li>))}
+          <li><span className="grow">site.webmanifest</span><button className="btn small" onClick={() => download(new Blob([manifest], { type: 'application/manifest+json' }), 'site.webmanifest')}>Download</button></li>
+        </ul>
+        <p style={{ marginTop: 16 }}><b>Add to your page’s &lt;head&gt;:</b> <CopyButton text={html} /></p>
+        <textarea readOnly value={html} style={{ minHeight: 100 }} />
+      </>}
+    </div>
+  );
+}

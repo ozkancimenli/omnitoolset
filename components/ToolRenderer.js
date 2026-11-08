@@ -23,6 +23,8 @@ const MAP = {
   'qr-code-generator': load(design, 'QrGenerator'),
   'og-image-generator': load(design, 'OgImageGenerator'),
   'color-converter': load(design, 'ColorConverter'),
+  'favicon-generator': load(design, 'FaviconGenerator'),
+  'diff-checker': load(() => import('@/components/tools/DiffChecker'), 'default'),
   'word-counter': load(text, 'WordCounter'),
   'case-converter': load(text, 'CaseConverter'),
   'json-formatter': load(text, 'JsonFormatter'),
