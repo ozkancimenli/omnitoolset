@@ -18,14 +18,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {SITE.adsenseClient && (
+        {SITE.adsenseClient ? (
           <Script
             async
             strategy="afterInteractive"
             crossOrigin="anonymous"
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClient}`}
           />
-        )}
+        ) : null}
       </head>
       <body>
         <header className="site-header">
