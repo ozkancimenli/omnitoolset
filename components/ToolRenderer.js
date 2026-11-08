@@ -28,6 +28,8 @@ const MAP = {
   'og-image-generator': load(design, 'OgImageGenerator'),
   'color-converter': load(design, 'ColorConverter'),
   'favicon-generator': load(design, 'FaviconGenerator'),
+  'image-color-picker': load(design, 'ImageColorPicker'),
+  'markdown-to-html': load(() => import('@/components/tools/MarkdownHtml'), 'default'),
   'diff-checker': load(() => import('@/components/tools/DiffChecker'), 'default'),
   'word-counter': load(text, 'WordCounter'),
   'case-converter': load(text, 'CaseConverter'),

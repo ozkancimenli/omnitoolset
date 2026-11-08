@@ -200,3 +200,49 @@ export function FaviconGenerator() {
     </div>
   );
 }
+
+// Basit k-means ile baskın renkler (küçültülmüş örnek üzerinde).
+export function dominantColors(data, k = 6) {
+  const px = []; for (let i = 0; i < data.length; i += 16) if (data[i + 3] > 200) px.push([data[i], data[i + 1], data[i + 2]]);
+  if (!px.length) return [];
+  let cs = Array.from({ length: k }, (_, j) => px[Math.floor((j + .5) * px.length / k)].slice());
+  for (let it = 0; it < 8; it++) {
+    const sum = cs.map(() => [0, 0, 0, 0]);
+    for (const p of px) { let b = 0, bd = 1e9; cs.forEach((c, j) => { const d = (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2 + (p[2] - c[2]) ** 2; if (d < bd) { bd = d; b = j; } }); const s = sum[b]; s[0] += p[0]; s[1] += p[1]; s[2] += p[2]; s[3]++; }
+    cs = sum.map((s, j) => (s[3] ? [s[0] / s[3], s[1] / s[3], s[2] / s[3], s[3]] : [...cs[j].slice(0, 3), 0]));
+  }
+  return cs.filter((c) => c[3]).sort((a, b) => b[3] - a[3]).map((c) => rgbToHex(...c.slice(0, 3).map(Math.round)));
+}
+
+export function ImageColorPicker() {
+  const ref = useRef(null);
+  const [img, setImg] = useState(null);
+  const [picked, setPicked] = useState([]);
+  const [palette, setPalette] = useState([]);
+  const [hover, setHover] = useState(null);
+  const open = (e) => { const f = e.target.files[0]; if (!f) return; const i = new Image(); i.onload = () => setImg(i); i.src = URL.createObjectURL(f); };
+  useEffect(() => {
+    if (!img || !ref.current) return;
+    const c = ref.current, s = Math.min(1, 900 / img.naturalWidth); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+    const ctx = c.getContext('2d', { willReadFrequently: true }); ctx.drawImage(img, 0, 0, c.width, c.height);
+    setPalette(dominantColors(ctx.getImageData(0, 0, c.width, c.height).data));
+  }, [img]);
+  const at = (e) => { const c = ref.current, r = c.getBoundingClientRect(); const x = Math.floor((e.clientX - r.left) * c.width / r.width), y = Math.floor((e.clientY - r.top) * c.height / r.height); const d = c.getContext('2d').getImageData(x, y, 1, 1).data; return rgbToHex(d[0], d[1], d[2]); };
+  const Swatch = ({ hex }) => { const rgb = hexToRgb(hex); return (
+    <div className="row" style={{ margin: '6px 0' }}><span style={{ width: 34, height: 34, borderRadius: 6, background: hex, border: '1px solid var(--line)' }} />
+      <code>{hex}</code><code>rgb({rgb.join(', ')})</code><CopyButton text={hex} /></div>); };
+  return (
+    <div className="tool">
+      <label>Choose an image <input type="file" accept="image/*" onChange={open} /></label>
+      {img && <>
+        <p className="muted">Click anywhere on the image to pick a color.{hover && <> Under cursor: <b style={{ color: 'var(--ink)' }}>{hover}</b></>}</p>
+        <canvas ref={ref} className="preview" style={{ cursor: 'crosshair' }} onMouseMove={(e) => setHover(at(e))} onMouseLeave={() => setHover(null)}
+          onClick={(e) => { const h = at(e); setPicked((p) => [h, ...p.filter((x) => x !== h)].slice(0, 8)); }} />
+        <div className="row" style={{ alignItems: 'flex-start', marginTop: 14 }}>
+          <div style={{ flex: 1, minWidth: 260 }}><h3>Picked colors</h3>{picked.length ? picked.map((h) => <Swatch key={h} hex={h} />) : <p className="muted">None yet.</p>}</div>
+          <div style={{ flex: 1, minWidth: 260 }}><h3>Dominant palette</h3>{palette.map((h) => <Swatch key={h} hex={h} />)}</div>
+        </div>
+      </>}
+    </div>
+  );
+}
