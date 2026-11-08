@@ -187,3 +187,39 @@ export function RotatePdf() {
     </div>
   );
 }
+
+export function RemovePdfPages() {
+  const [file, setFile] = useState(null);
+  const [count, setCount] = useState(0);
+  const [ranges, setRanges] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+  const open = async (f) => {
+    setMsg('');
+    try { const { PDFDocument } = await pdfLib(); const d = await PDFDocument.load(await bytes(f)); setFile(f); setCount(d.getPageCount()); }
+    catch { setMsg('Could not open this PDF (it may be encrypted or damaged).'); }
+  };
+  const run = async () => {
+    setBusy(true); setMsg('');
+    try {
+      const drop = new Set(parseRanges(ranges, count));
+      if (drop.size >= count) throw new Error('You can’t remove every page.');
+      const { PDFDocument } = await pdfLib(); const src = await PDFDocument.load(await bytes(file)); const out = await PDFDocument.create();
+      const keep = src.getPageIndices().filter((i) => !drop.has(i));
+      (await out.copyPages(src, keep)).forEach((p) => out.addPage(p));
+      download(new Blob([await out.save()], { type: 'application/pdf' }), `${baseName(file.name)}-edited.pdf`);
+      setMsg(`Removed ${drop.size} page${drop.size === 1 ? '' : 's'} — ${keep.length} left.`);
+    } catch (e) { setMsg(e.message); }
+    setBusy(false);
+  };
+  return (
+    <div className="tool">
+      <FileDrop accept="application/pdf" multiple={false} onFiles={(f) => open(f[0])} label={file ? `${file.name} — ${count} pages (click to change)` : 'Drop a PDF here'} />
+      {file && <div className="row" style={{ marginTop: 16 }}>
+        <label>Pages to remove <input type="text" value={ranges} onChange={(e) => setRanges(e.target.value)} placeholder="2, 5-7" /></label>
+        <button className="btn" disabled={busy || !ranges.trim()} onClick={run}>{busy ? 'Working…' : 'Remove pages'}</button>
+      </div>}
+      {msg && <p>{msg}</p>}
+    </div>
+  );
+}

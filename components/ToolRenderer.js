@@ -17,6 +17,8 @@ const MAP = {
   'split-pdf': load(pdf, 'SplitPdf'),
   'jpg-to-pdf': load(pdf, 'ImagesToPdf'),
   'rotate-pdf': load(pdf, 'RotatePdf'),
+  'remove-pdf-pages': load(pdf, 'RemovePdfPages'),
+  'timestamp-converter': load(() => import('@/components/tools/TimestampConverter'), 'default'),
   'unit-converter': load(() => import('@/components/tools/UnitConverter'), 'default'),
   'qr-code-generator': load(design, 'QrGenerator'),
   'og-image-generator': load(design, 'OgImageGenerator'),
