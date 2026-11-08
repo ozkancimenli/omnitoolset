@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import FileDrop, { fmtBytes, download, baseName, loadImage, canvasBlob } from '@/components/FileDrop';
 
 const MIME = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
@@ -129,6 +129,117 @@ export function Resizer() {
         {items.length > 0 && <button className="btn ghost" onClick={clear}>Clear</button>}
       </div>
       <Results items={items} ext={(x) => guessFormat(x.file)} />
+    </div>
+  );
+}
+
+const ASPECTS = { free: null, '1:1': 1, '4:5': 4 / 5, '16:9': 16 / 9, '9:16': 9 / 16, '3:2': 3 / 2 };
+
+export function Cropper() {
+  const [src, setSrc] = useState(null);
+  const [file, setFile] = useState(null);
+  const [aspect, setAspect] = useState('1:1');
+  const [zoom, setZoom] = useState(1);
+  const [ox, setOx] = useState(0.5);
+  const [oy, setOy] = useState(0.5);
+  const [fw, setFw] = useState(0.8);
+  const [fh, setFh] = useState(0.8);
+  const ref = useRef(null);
+  const rect = () => {
+    const W = src.naturalWidth, H = src.naturalHeight, a = ASPECTS[aspect];
+    let w, h;
+    if (a) { w = Math.min(W, H * a) / zoom; h = w / a; } else { w = W * fw; h = H * fh; }
+    return { x: Math.round((W - w) * ox), y: Math.round((H - h) * oy), w: Math.round(w), h: Math.round(h) };
+  };
+  useEffect(() => {
+    if (!src || !ref.current) return;
+    const c = ref.current, W = src.naturalWidth, H = src.naturalHeight, s = Math.min(1, 900 / W);
+    c.width = W * s; c.height = H * s; const ctx = c.getContext('2d');
+    ctx.drawImage(src, 0, 0, c.width, c.height);
+    const r = rect();
+    ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(src, r.x, r.y, r.w, r.h, r.x * s, r.y * s, r.w * s, r.h * s);
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.strokeRect(r.x * s, r.y * s, r.w * s, r.h * s);
+  });
+  const open = async (f) => { const { img } = await loadImage(f); setFile(f); setSrc(img); };
+  const save = async () => {
+    const r = rect(); const c = document.createElement('canvas'); c.width = r.w; c.height = r.h;
+    c.getContext('2d').drawImage(src, r.x, r.y, r.w, r.h, 0, 0, r.w, r.h);
+    const fmt = guessFormat(file);
+    download(await canvasBlob(c, MIME[fmt], 0.92), `${baseName(file.name)}-cropped.${fmt}`);
+  };
+  const slider = (label, v, set, min = 0, max = 1, step = 0.01) => (
+    <label>{label} <input type="range" min={min} max={max} step={step} value={v} onChange={(e) => set(+e.target.value)} /></label>
+  );
+  return (
+    <div className="tool">
+      <FileDrop accept="image/*" multiple={false} onFiles={(f) => open(f[0])} label={file ? `${file.name} (click to change)` : 'Drop an image to crop'} />
+      {src && <>
+        <div className="row" style={{ marginTop: 16 }}>
+          <label>Aspect <select value={aspect} onChange={(e) => setAspect(e.target.value)}>{Object.keys(ASPECTS).map((k) => <option key={k} value={k}>{k === 'free' ? 'Free' : k}</option>)}</select></label>
+          {ASPECTS[aspect] ? slider('Zoom', zoom, setZoom, 1, 4, 0.05) : <>{slider('Width', fw, setFw, 0.05, 1)}{slider('Height', fh, setFh, 0.05, 1)}</>}
+          {slider('Left ↔ Right', ox, setOx)}
+          {slider('Top ↕ Bottom', oy, setOy)}
+        </div>
+        <canvas ref={ref} className="preview" style={{ marginTop: 14 }} />
+        <div className="row" style={{ marginTop: 12 }}>
+          <span className="muted">Output: {rect().w} × {rect().h} px</span>
+          <button className="btn" onClick={save}>Download cropped image</button>
+        </div>
+      </>}
+    </div>
+  );
+}
+
+function exifInfo(buf) {
+  const v = new DataView(buf);
+  if (v.getUint16(0) !== 0xffd8) return { jpeg: false };
+  let i = 2;
+  while (i + 4 < v.byteLength) {
+    const marker = v.getUint16(i), len = v.getUint16(i + 2);
+    if (marker === 0xffe1 && v.getUint32(i + 4) === 0x45786966) {
+      const seg = new Uint8Array(buf, i + 4, len - 2); let gps = false;
+      for (let k = 0; k < seg.length - 1; k++) if (seg[k] === 0x88 && seg[k + 1] === 0x25 || seg[k] === 0x25 && seg[k + 1] === 0x88) { gps = true; break; }
+      return { jpeg: true, exif: true, gps, bytes: len };
+    }
+    if (marker === 0xffda) break;
+    i += 2 + len;
+  }
+  return { jpeg: true, exif: false };
+}
+
+export function ExifRemover() {
+  const { items, add, update, clear } = useItems();
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    setBusy(true);
+    for (const x of items) {
+      try {
+        const info = exifInfo(await x.file.arrayBuffer());
+        const fmt = guessFormat(x.file);
+        update(x.id, { info, out: await render(x.file, { format: fmt, quality: 0.95 }), error: null });
+      } catch (e) { update(x.id, { error: e.message }); }
+    }
+    setBusy(false);
+  };
+  return (
+    <div className="tool">
+      <FileDrop accept="image/jpeg,image/png,image/webp" onFiles={add} label="Drop photos to remove EXIF and location data" />
+      <div className="row" style={{ marginTop: 16 }}>
+        <button className="btn" disabled={!items.length || busy} onClick={run}>{busy ? 'Cleaning…' : 'Remove metadata'}</button>
+        {items.length > 0 && <button className="btn ghost" onClick={clear}>Clear</button>}
+      </div>
+      <ul className="files">
+        {items.map((x) => (
+          <li key={x.id}>
+            {x.out?.src && <img src={x.out.src} alt="" />}
+            <span className="grow">{x.file.name}<br /><span className="muted">
+              {x.info && (x.info.exif ? <>EXIF found{x.info.gps ? <b className="err"> — includes GPS location</b> : ''}. Removed ✓</> : 'No EXIF block found. Re-saved clean ✓')}
+            </span>{x.error && <span className="err"> {x.error}</span>}</span>
+            {x.out && <button className="btn small" onClick={() => download(x.out.blob, `${baseName(x.file.name)}-clean.${guessFormat(x.file)}`)}>Download</button>}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

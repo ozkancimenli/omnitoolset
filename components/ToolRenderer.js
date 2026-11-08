@@ -11,6 +11,8 @@ const MAP = {
   'compress-image': load(img, 'Compressor'),
   'convert-image': load(img, 'Converter'),
   'resize-image': load(img, 'Resizer'),
+  'crop-image': load(img, 'Cropper'),
+  'remove-exif': load(img, 'ExifRemover'),
   'merge-pdf': load(pdf, 'MergePdf'),
   'split-pdf': load(pdf, 'SplitPdf'),
   'jpg-to-pdf': load(pdf, 'ImagesToPdf'),
