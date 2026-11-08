@@ -1,24 +1,21 @@
 {
   "name": "omnitoolset",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "private": true,
-  "description": "OmniToolset hybrid SaaS platform monorepo",
-  "engines": {
-    "node": ">=20 <21"
-  },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "description": "Free online tools that run entirely in your browser",
   "scripts": {
-    "dev:web": "npm run dev --workspace @omnitoolset/web",
-    "dev:api": "npm run dev --workspace @omnitoolset/api",
-    "build:web": "npm run build --workspace @omnitoolset/web",
-    "vercel-build": "npm run build --workspace @omnitoolset/web",
-    "build:api": "npm run check --workspace @omnitoolset/api",
-    "db:migrate": "npm run db:migrate --workspace @omnitoolset/api",
-    "db:seed": "npm run db:seed --workspace @omnitoolset/api",
-    "test:api": "npm run test --workspace @omnitoolset/api",
-    "check": "npm run test:api && npm run build:web"
+    "dev": "next dev",
+    "build": "next build",
+    "vercel-build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.5.0",
+    "next": "15.5.29",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.4",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
   }
 }
