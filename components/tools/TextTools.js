@@ -143,3 +143,41 @@ export function PasswordGenerator() {
     </div>
   );
 }
+
+const LOREM = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
+const cap = (s) => s[0].toUpperCase() + s.slice(1);
+
+export function loremIpsum(unit, n, classic = true, rnd = Math.random) {
+  const word = () => LOREM[Math.floor(rnd() * LOREM.length)];
+  const sentence = () => { const len = 6 + Math.floor(rnd() * 10); return cap(Array.from({ length: len }, word).join(' ')) + '.'; };
+  const paragraph = () => Array.from({ length: 3 + Math.floor(rnd() * 4) }, sentence).join(' ');
+  let out;
+  if (unit === 'words') out = Array.from({ length: n }, word).join(' ');
+  else if (unit === 'sentences') out = Array.from({ length: n }, sentence).join(' ');
+  else out = Array.from({ length: n }, paragraph).join('\n\n');
+  if (classic) { const start = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'; out = unit === 'words' ? LOREM.slice(0, Math.min(n, 8)).join(' ').replace(/^l/, 'L') + (n > 8 ? ' ' + out.split(' ').slice(8).join(' ') : '') : start + '. ' + out; }
+  return out;
+}
+
+export function LoremIpsum() {
+  const [unit, setUnit] = useState('paragraphs');
+  const [n, setN] = useState(3);
+  const [classic, setClassic] = useState(true);
+  const [text, setText] = useState('');
+  const [html, setHtml] = useState(false);
+  const make = () => setText(loremIpsum(unit, Math.max(1, Math.min(200, +n || 1)), classic));
+  const shown = html && unit === 'paragraphs' ? text.split('\n\n').map((p) => `<p>${p}</p>`).join('\n') : text;
+  return (
+    <div className="tool">
+      <div className="row">
+        <input type="number" min="1" max="200" value={n} onChange={(e) => setN(e.target.value)} style={{ width: 90 }} />
+        <select value={unit} onChange={(e) => setUnit(e.target.value)}><option value="paragraphs">Paragraphs</option><option value="sentences">Sentences</option><option value="words">Words</option></select>
+        <label><input type="checkbox" checked={classic} onChange={(e) => setClassic(e.target.checked)} /> Start with “Lorem ipsum…”</label>
+        {unit === 'paragraphs' && <label><input type="checkbox" checked={html} onChange={(e) => setHtml(e.target.checked)} /> Wrap in &lt;p&gt; tags</label>}
+        <button className="btn" onClick={make}>Generate</button>
+        <CopyButton text={shown} />
+      </div>
+      <textarea readOnly value={shown} style={{ marginTop: 12, minHeight: 240, fontFamily: 'inherit', fontSize: 15 }} />
+    </div>
+  );
+}

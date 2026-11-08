@@ -15,6 +15,8 @@ const MAP = {
   'remove-exif': load(img, 'ExifRemover'),
   'watermark-image': load(img, 'Watermark'),
   'csv-to-json': load(() => import('@/components/tools/CsvJson'), 'default'),
+  'json-to-csv': load(() => import('@/components/tools/CsvJson'), 'JsonToCsv'),
+  'lorem-ipsum-generator': load(text, 'LoremIpsum'),
   'merge-pdf': load(pdf, 'MergePdf'),
   'split-pdf': load(pdf, 'SplitPdf'),
   'jpg-to-pdf': load(pdf, 'ImagesToPdf'),

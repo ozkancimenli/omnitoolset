@@ -52,3 +52,38 @@ export default function CsvToJson() {
     </div>
   );
 }
+
+const cell = (v, d) => {
+  if (v === null || v === undefined) return '';
+  const s = typeof v === 'object' ? JSON.stringify(v) : String(v);
+  return /["\r\n]/.test(s) || s.includes(d) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+
+export function jsonToCsv(data, d = ',') {
+  const rows = Array.isArray(data) ? data : [data];
+  if (rows.every((r) => Array.isArray(r))) return rows.map((r) => r.map((v) => cell(v, d)).join(d)).join('\n');
+  const keys = [...new Set(rows.flatMap((r) => (r && typeof r === 'object' ? Object.keys(r) : [])))];
+  return [keys.map((k) => cell(k, d)).join(d), ...rows.map((r) => keys.map((k) => cell(r?.[k], d)).join(d))].join('\n');
+}
+
+export function JsonToCsv() {
+  const [json, setJson] = useState('[\n  {"name": "Ada", "age": 36, "city": "London"},\n  {"name": "Smith, John", "age": 41, "city": "New York"}\n]');
+  const [delim, setDelim] = useState(',');
+  let csv = '', err = '';
+  try { csv = jsonToCsv(JSON.parse(json), delim === 'tab' ? '\t' : delim); } catch (e) { err = 'Invalid JSON: ' + e.message; }
+  return (
+    <div className="tool">
+      <div className="row" style={{ marginBottom: 10 }}>
+        <label>Delimiter <select value={delim} onChange={(e) => setDelim(e.target.value)}><option value=",">Comma</option><option value=";">Semicolon</option><option value="tab">Tab</option></select></label>
+        <label>or open a file <input type="file" accept=".json,application/json" onChange={async (e) => e.target.files[0] && setJson(await e.target.files[0].text())} /></label>
+      </div>
+      <textarea value={json} onChange={(e) => setJson(e.target.value)} spellCheck={false} placeholder="Paste a JSON array of objects" />
+      <div className="row" style={{ margin: '10px 0' }}>
+        <b>CSV</b>{err && <span className="err">{err}</span>}
+        <CopyButton text={csv} />
+        <button className="btn small ghost" disabled={!csv} onClick={() => download(new Blob(['﻿' + csv], { type: 'text/csv' }), 'data.csv')}>Download .csv</button>
+      </div>
+      <textarea readOnly value={csv} />
+    </div>
+  );
+}
