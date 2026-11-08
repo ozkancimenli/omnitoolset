@@ -60,3 +60,53 @@ export function AgeCalculator() {
     </div>
   );
 }
+
+const money = (n) => (Number.isFinite(n) ? n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—');
+
+export function discountTotals(price, pct, tax) {
+  const saved = price * pct / 100; const after = price - saved; const taxAmt = after * tax / 100;
+  return { saved, after, taxAmt, total: after + taxAmt };
+}
+
+export function DiscountCalculator() {
+  const [price, setPrice] = useState('120'); const [pct, setPct] = useState('25'); const [tax, setTax] = useState('0');
+  const r = discountTotals(num(price), num(pct), num(tax) || 0);
+  return (
+    <div className="tool">
+      <div className="row">
+        <label>Original price <input type="number" min="0" value={price} onChange={(e) => setPrice(e.target.value)} style={{ width: 120 }} /></label>
+        <label>Discount % <input type="number" min="0" max="100" value={pct} onChange={(e) => setPct(e.target.value)} style={{ width: 90 }} /></label>
+        <label>Sales tax % (optional) <input type="number" min="0" value={tax} onChange={(e) => setTax(e.target.value)} style={{ width: 90 }} /></label>
+      </div>
+      <div className="row" style={{ margin: '10px 0' }}>{[10, 15, 20, 25, 30, 40, 50, 70].map((p) => <button key={p} className={'btn small' + (num(pct) === p ? '' : ' ghost')} onClick={() => setPct(String(p))}>{p}%</button>)}</div>
+      <div className="stats">
+        {[['Final price', money(r.total)], ['You save', money(r.saved)], ['Price after discount', money(r.after)], ['Tax', money(r.taxAmt)]].map(([k, v]) => <div className="stat" key={k}><b>{v}</b><span>{k}</span></div>)}
+      </div>
+    </div>
+  );
+}
+
+export function tipSplit(bill, pct, people, roundUp) {
+  const tip = bill * pct / 100; const total = bill + tip; let each = total / Math.max(1, people);
+  if (roundUp) each = Math.ceil(each);
+  return { tip, total, each, eachTip: tip / Math.max(1, people) };
+}
+
+export function TipCalculator() {
+  const [bill, setBill] = useState('84.50'); const [pct, setPct] = useState('18'); const [people, setPeople] = useState('2'); const [round, setRound] = useState(false);
+  const r = tipSplit(num(bill), num(pct), Math.max(1, Math.floor(num(people) || 1)), round);
+  return (
+    <div className="tool">
+      <div className="row">
+        <label>Bill amount <input type="number" min="0" step="0.01" value={bill} onChange={(e) => setBill(e.target.value)} style={{ width: 120 }} /></label>
+        <label>Tip % <input type="number" min="0" value={pct} onChange={(e) => setPct(e.target.value)} style={{ width: 80 }} /></label>
+        <label>People <input type="number" min="1" value={people} onChange={(e) => setPeople(e.target.value)} style={{ width: 80 }} /></label>
+        <label><input type="checkbox" checked={round} onChange={(e) => setRound(e.target.checked)} /> Round up per person</label>
+      </div>
+      <div className="row" style={{ margin: '10px 0' }}>{[10, 15, 18, 20, 22, 25].map((p) => <button key={p} className={'btn small' + (num(pct) === p ? '' : ' ghost')} onClick={() => setPct(String(p))}>{p}%</button>)}</div>
+      <div className="stats">
+        {[['Per person', money(r.each)], ['Tip', money(r.tip)], ['Total', money(r.total)], ['Tip per person', money(r.eachTip)]].map(([k, v]) => <div className="stat" key={k}><b>{v}</b><span>{k}</span></div>)}
+      </div>
+    </div>
+  );
+}

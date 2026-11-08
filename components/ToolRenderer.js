@@ -12,6 +12,8 @@ const calc = () => import('@/components/tools/Calculators');
 const MAP = {
   'percentage-calculator': load(calc, 'PercentageCalculator'),
   'age-calculator': load(calc, 'AgeCalculator'),
+  'discount-calculator': load(calc, 'DiscountCalculator'),
+  'tip-calculator': load(calc, 'TipCalculator'),
   'compress-image': load(img, 'Compressor'),
   'convert-image': load(img, 'Converter'),
   'resize-image': load(img, 'Resizer'),
