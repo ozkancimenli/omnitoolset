@@ -7,7 +7,11 @@ const pdf = () => import('@/components/tools/PdfTools');
 const text = () => import('@/components/tools/TextTools');
 const design = () => import('@/components/tools/DesignTools');
 
+const calc = () => import('@/components/tools/Calculators');
+
 const MAP = {
+  'percentage-calculator': load(calc, 'PercentageCalculator'),
+  'age-calculator': load(calc, 'AgeCalculator'),
   'compress-image': load(img, 'Compressor'),
   'convert-image': load(img, 'Converter'),
   'resize-image': load(img, 'Resizer'),
