@@ -243,3 +243,63 @@ export function ExifRemover() {
     </div>
   );
 }
+
+const POSITIONS = ['bottom-right', 'bottom-left', 'top-right', 'top-left', 'center', 'tiled'];
+
+export function Watermark() {
+  const { items, add, update, clear } = useItems();
+  const [text, setText] = useState('© Your Name');
+  const [pos, setPos] = useState('bottom-right');
+  const [opacity, setOpacity] = useState(0.6);
+  const [size, setSize] = useState(4);
+  const [color, setColor] = useState('#ffffff');
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    setBusy(true);
+    for (const x of items) {
+      try {
+        const { img, url } = await loadImage(x.file); const W = img.naturalWidth, H = img.naturalHeight;
+        const c = document.createElement('canvas'); c.width = W; c.height = H; const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0); URL.revokeObjectURL(url);
+        const fs = Math.max(12, Math.round(Math.min(W, H) * size / 100)); const m = Math.round(fs * 0.8);
+        ctx.font = `600 ${fs}px system-ui, -apple-system, Segoe UI, Roboto, sans-serif`; ctx.globalAlpha = opacity;
+        ctx.fillStyle = color; ctx.strokeStyle = color.toLowerCase() === '#ffffff' ? 'rgba(0,0,0,.45)' : 'rgba(255,255,255,.45)'; ctx.lineWidth = Math.max(1, fs / 18);
+        const draw = (tx, ty) => { ctx.strokeText(text, tx, ty); ctx.fillText(text, tx, ty); };
+        if (pos === 'tiled') {
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const tw = ctx.measureText(text).width + fs * 3, th = fs * 4;
+          ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate(-Math.PI / 6);
+          for (let yy = -H; yy < H; yy += th) for (let xx = -W; xx < W; xx += tw) draw(xx, yy);
+          ctx.restore();
+        } else {
+          ctx.textAlign = pos.includes('right') ? 'right' : pos.includes('left') ? 'left' : 'center';
+          ctx.textBaseline = pos.startsWith('top') ? 'top' : pos.startsWith('bottom') ? 'bottom' : 'middle';
+          draw(pos.includes('right') ? W - m : pos.includes('left') ? m : W / 2, pos.startsWith('top') ? m : pos.startsWith('bottom') ? H - m : H / 2);
+        }
+        const fmt = guessFormat(x.file); const blob = await canvasBlob(c, MIME[fmt], 0.92);
+        update(x.id, { out: { blob, w: W, h: H, src: URL.createObjectURL(blob) }, error: null });
+      } catch (e) { update(x.id, { error: e.message }); }
+    }
+    setBusy(false);
+  };
+  return (
+    <div className="tool">
+      <FileDrop accept="image/*" onFiles={add} label="Drop images to watermark" />
+      <div className="row" style={{ marginTop: 16 }}>
+        <label>Text <input type="text" value={text} onChange={(e) => setText(e.target.value)} /></label>
+        <label>Position <select value={pos} onChange={(e) => setPos(e.target.value)}>{POSITIONS.map((p) => <option key={p}>{p}</option>)}</select></label>
+        <label>Size {size}% <input type="range" min="2" max="12" step="0.5" value={size} onChange={(e) => setSize(+e.target.value)} /></label>
+        <label>Opacity {Math.round(opacity * 100)}% <input type="range" min="0.1" max="1" step="0.05" value={opacity} onChange={(e) => setOpacity(+e.target.value)} /></label>
+        <label>Color <input type="color" value={color} onChange={(e) => setColor(e.target.value)} /></label>
+      </div>
+      <div className="row" style={{ marginTop: 12 }}>
+        <button className="btn" disabled={!items.length || busy || !text.trim()} onClick={run}>{busy ? 'Applying…' : 'Add watermark'}</button>
+        {items.length > 0 && <button className="btn ghost" onClick={clear}>Clear</button>}
+      </div>
+      <ul className="files">{items.map((x) => (
+        <li key={x.id}>{x.out?.src && <img src={x.out.src} alt="" style={{ width: 120, height: 'auto' }} />}
+          <span className="grow">{x.file.name}{x.error && <span className="err"> {x.error}</span>}</span>
+          {x.out && <button className="btn small" onClick={() => download(x.out.blob, `${baseName(x.file.name)}-watermarked.${guessFormat(x.file)}`)}>Download</button>}</li>))}
+      </ul>
+    </div>
+  );
+}

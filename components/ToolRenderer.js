@@ -13,6 +13,8 @@ const MAP = {
   'resize-image': load(img, 'Resizer'),
   'crop-image': load(img, 'Cropper'),
   'remove-exif': load(img, 'ExifRemover'),
+  'watermark-image': load(img, 'Watermark'),
+  'csv-to-json': load(() => import('@/components/tools/CsvJson'), 'default'),
   'merge-pdf': load(pdf, 'MergePdf'),
   'split-pdf': load(pdf, 'SplitPdf'),
   'jpg-to-pdf': load(pdf, 'ImagesToPdf'),
