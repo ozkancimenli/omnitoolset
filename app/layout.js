@@ -1,6 +1,5 @@
 import './globals.css';
 import Link from 'next/link';
-import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/next';
 import { SITE } from '@/lib/site';
 
@@ -10,6 +9,7 @@ export const metadata = {
   description: SITE.description,
   openGraph: { siteName: SITE.name, type: 'website' },
   twitter: { card: 'summary_large_image' },
+  other: SITE.adsenseClient ? { 'google-adsense-account': SITE.adsenseClient } : {},
 };
 
 export const viewport = { themeColor: '#0f172a' };
@@ -19,9 +19,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         {SITE.adsenseClient ? (
-          <Script
+          <script
             async
-            strategy="afterInteractive"
             crossOrigin="anonymous"
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClient}`}
           />
