@@ -187,3 +187,71 @@ export function LoanCalculator() {
     </div>
   );
 }
+
+export function randomInts(min, max, count, unique, rand = (n) => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; }) {
+  const lo = Math.ceil(Math.min(min, max)), hi = Math.floor(Math.max(min, max)), span = hi - lo + 1;
+  if (!(span > 0) || !(count > 0)) return [];
+  if (unique && count > span) throw new Error(`Only ${span} unique numbers exist between ${lo} and ${hi}.`);
+  if (unique) { const pool = Array.from({ length: span }, (_, i) => lo + i); for (let i = 0; i < count; i++) { const j = i + rand(span - i); [pool[i], pool[j]] = [pool[j], pool[i]]; } return pool.slice(0, count); }
+  return Array.from({ length: count }, () => lo + rand(span));
+}
+
+export function RandomNumberGenerator() {
+  const [min, setMin] = useState('1'); const [max, setMax] = useState('100'); const [count, setCount] = useState('1');
+  const [unique, setUnique] = useState(true); const [sort, setSort] = useState(false);
+  const [out, setOut] = useState([]); const [err, setErr] = useState('');
+  const go = () => { try { let r = randomInts(num(min), num(max), Math.min(10000, Math.floor(num(count) || 1)), unique); if (sort) r = [...r].sort((a, b) => a - b); setOut(r); setErr(''); } catch (e) { setErr(e.message); } };
+  return (
+    <div className="tool">
+      <div className="row">
+        <label>Min <input type="number" value={min} onChange={(e) => setMin(e.target.value)} style={{ width: 100 }} /></label>
+        <label>Max <input type="number" value={max} onChange={(e) => setMax(e.target.value)} style={{ width: 100 }} /></label>
+        <label>How many <input type="number" min="1" value={count} onChange={(e) => setCount(e.target.value)} style={{ width: 80 }} /></label>
+        <label><input type="checkbox" checked={unique} onChange={(e) => setUnique(e.target.checked)} /> No repeats</label>
+        <label><input type="checkbox" checked={sort} onChange={(e) => setSort(e.target.checked)} /> Sort</label>
+        <button className="btn" onClick={go}>Generate</button>
+      </div>
+      {err && <p className="err">{err}</p>}
+      {out.length > 0 && <p style={{ fontSize: out.length === 1 ? 56 : 20, fontWeight: 800, margin: '18px 0', wordBreak: 'break-word' }}>{out.join(', ')}</p>}
+      {out.length > 0 && <CopyButtonLocal text={out.join(', ')} />}
+    </div>
+  );
+}
+
+function CopyButtonLocal({ text }) {
+  const [done, setDone] = useState(false);
+  return <button className="btn small ghost" onClick={async () => { try { await navigator.clipboard.writeText(text); setDone(true); setTimeout(() => setDone(false), 1500); } catch {} }}>{done ? 'Copied ✓' : 'Copy'}</button>;
+}
+
+export function daysBetween(a, b, includeEnd = false) {
+  const d = Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) - Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 864e5);
+  return d + (includeEnd ? Math.sign(d || 1) : 0);
+}
+export function businessDays(a, b) {
+  let s = a <= b ? a : b, e = a <= b ? b : a, n = 0; const c = new Date(s.getFullYear(), s.getMonth(), s.getDate());
+  while (c < e) { const w = c.getDay(); if (w !== 0 && w !== 6) n++; c.setDate(c.getDate() + 1); }
+  return n;
+}
+
+export function DaysBetween() {
+  const today = iso(new Date());
+  const [a, setA] = useState(today); const [b, setB] = useState(`${new Date().getFullYear()}-12-25`); const [incl, setIncl] = useState(false);
+  const A = parse(a), B = parse(b); const d = A && B ? daysBetween(A, B, incl) : NaN;
+  const abs = Math.abs(d);
+  return (
+    <div className="tool">
+      <div className="row">
+        <label>Start date <input type="date" value={a} onChange={(e) => setA(e.target.value)} /></label>
+        <label>End date <input type="date" value={b} onChange={(e) => setB(e.target.value)} /></label>
+        <label><input type="checkbox" checked={incl} onChange={(e) => setIncl(e.target.checked)} /> Include end date</label>
+      </div>
+      {Number.isFinite(d) && <>
+        <p style={{ fontSize: 26, margin: '18px 0 6px' }}><b>{abs.toLocaleString()} day{abs === 1 ? '' : 's'}</b> {d < 0 ? '(end date is before start date)' : ''}</p>
+        <div className="stats">
+          {[['Weeks + days', `${Math.floor(abs / 7)} w ${abs % 7} d`], ['Business days (Mon–Fri)', businessDays(A, B).toLocaleString()], ['Hours', (abs * 24).toLocaleString()], ['Approx. months', (abs / 30.4375).toFixed(1)]].map(([k, v]) => <div className="stat" key={k}><b>{v}</b><span>{k}</span></div>)}
+        </div>
+        <p className="muted" style={{ fontSize: 13 }}>Business days exclude weekends but not public holidays. The start date is counted; the end date only if you tick the box.</p>
+      </>}
+    </div>
+  );
+}

@@ -16,6 +16,8 @@ const MAP = {
   'tip-calculator': load(calc, 'TipCalculator'),
   'bmi-calculator': load(calc, 'BmiCalculator'),
   'loan-calculator': load(calc, 'LoanCalculator'),
+  'random-number-generator': load(calc, 'RandomNumberGenerator'),
+  'days-between-dates': load(calc, 'DaysBetween'),
   'compress-image': load(img, 'Compressor'),
   'convert-image': load(img, 'Converter'),
   'resize-image': load(img, 'Resizer'),
