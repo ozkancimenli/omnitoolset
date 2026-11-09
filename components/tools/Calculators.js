@@ -110,3 +110,80 @@ export function TipCalculator() {
     </div>
   );
 }
+
+export function bmi(kg, m) { return kg / (m * m); }
+export function bmiCategory(b) {
+  if (!Number.isFinite(b)) return '';
+  return b < 18.5 ? 'Underweight' : b < 25 ? 'Healthy weight' : b < 30 ? 'Overweight' : 'Obesity';
+}
+
+export function BmiCalculator() {
+  const [unit, setUnit] = useState('metric');
+  const [cm, setCm] = useState('175'); const [kg, setKg] = useState('70');
+  const [ft, setFt] = useState('5'); const [inch, setInch] = useState('9'); const [lb, setLb] = useState('154');
+  const m = unit === 'metric' ? num(cm) / 100 : (num(ft) * 12 + (num(inch) || 0)) * 0.0254;
+  const w = unit === 'metric' ? num(kg) : num(lb) * 0.45359237;
+  const b = m > 0 && w > 0 ? bmi(w, m) : NaN;
+  const lo = 18.5 * m * m, hi = 24.9 * m * m;
+  const range = unit === 'metric' ? `${lo.toFixed(1)}–${hi.toFixed(1)} kg` : `${(lo / 0.45359237).toFixed(0)}–${(hi / 0.45359237).toFixed(0)} lb`;
+  return (
+    <div className="tool">
+      <div className="row" style={{ marginBottom: 12 }}>
+        <button className={'btn small' + (unit === 'metric' ? '' : ' ghost')} onClick={() => setUnit('metric')}>Metric (cm, kg)</button>
+        <button className={'btn small' + (unit === 'us' ? '' : ' ghost')} onClick={() => setUnit('us')}>US (ft, in, lb)</button>
+      </div>
+      {unit === 'metric' ? <div className="row">
+        <label>Height (cm) <input type="number" value={cm} onChange={(e) => setCm(e.target.value)} style={{ width: 100 }} /></label>
+        <label>Weight (kg) <input type="number" value={kg} onChange={(e) => setKg(e.target.value)} style={{ width: 100 }} /></label>
+      </div> : <div className="row">
+        <label>Height <input type="number" value={ft} onChange={(e) => setFt(e.target.value)} style={{ width: 70 }} /> ft <input type="number" value={inch} onChange={(e) => setInch(e.target.value)} style={{ width: 70 }} /> in</label>
+        <label>Weight (lb) <input type="number" value={lb} onChange={(e) => setLb(e.target.value)} style={{ width: 100 }} /></label>
+      </div>}
+      {Number.isFinite(b) && <>
+        <p style={{ fontSize: 26, margin: '18px 0 4px' }}><b>BMI {b.toFixed(1)}</b> — {bmiCategory(b)}</p>
+        <p className="muted">A BMI of 18.5–24.9 for this height corresponds to about {range}.</p>
+      </>}
+      <p className="muted" style={{ fontSize: 13 }}>BMI is a screening measure for adults and does not account for muscle, age, sex or body composition. It is not medical advice — talk to a healthcare professional about your health.</p>
+    </div>
+  );
+}
+
+export function loanPayment(principal, annualRate, years) {
+  const n = Math.round(years * 12), r = annualRate / 100 / 12;
+  if (!(principal > 0) || !(n > 0)) return null;
+  const pay = r === 0 ? principal / n : principal * r / (1 - Math.pow(1 + r, -n));
+  const rows = []; let bal = principal;
+  for (let y = 1; y <= Math.ceil(n / 12); y++) {
+    let int = 0, pr = 0;
+    for (let k = 0; k < 12 && (y - 1) * 12 + k < n; k++) { const i = bal * r; int += i; pr += pay - i; bal -= pay - i; }
+    rows.push({ y, int, pr, bal: Math.max(0, bal) });
+  }
+  return { pay, n, total: pay * n, interest: pay * n - principal, rows };
+}
+
+export function LoanCalculator() {
+  const [p, setP] = useState('300000'); const [rate, setRate] = useState('6.5'); const [yrs, setYrs] = useState('30');
+  const r = loanPayment(num(p), num(rate) || 0, num(yrs));
+  return (
+    <div className="tool">
+      <div className="row">
+        <label>Loan amount <input type="number" value={p} onChange={(e) => setP(e.target.value)} style={{ width: 130 }} /></label>
+        <label>Interest rate (APR %) <input type="number" step="0.01" value={rate} onChange={(e) => setRate(e.target.value)} style={{ width: 90 }} /></label>
+        <label>Term (years) <input type="number" value={yrs} onChange={(e) => setYrs(e.target.value)} style={{ width: 80 }} /></label>
+      </div>
+      <div className="row" style={{ margin: '10px 0' }}>{[10, 15, 20, 30].map((y) => <button key={y} className={'btn small' + (num(yrs) === y ? '' : ' ghost')} onClick={() => setYrs(String(y))}>{y} years</button>)}</div>
+      {r ? <>
+        <div className="stats">
+          {[['Monthly payment', money(r.pay)], ['Total interest', money(r.interest)], ['Total paid', money(r.total)], ['Payments', r.n]].map(([k, v]) => <div className="stat" key={k}><b>{v}</b><span>{k}</span></div>)}
+        </div>
+        <details style={{ marginTop: 16 }}><summary>Yearly amortization schedule</summary>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, marginTop: 8 }}>
+            <thead><tr>{['Year', 'Principal paid', 'Interest paid', 'Balance'].map((h) => <th key={h} style={{ textAlign: 'right', borderBottom: '1px solid var(--line)', padding: 6 }}>{h}</th>)}</tr></thead>
+            <tbody>{r.rows.map((x) => <tr key={x.y}>{[x.y, money(x.pr), money(x.int), money(x.bal)].map((v, i) => <td key={i} style={{ textAlign: 'right', padding: 6, borderBottom: '1px solid var(--line)' }}>{v}</td>)}</tr>)}</tbody>
+          </table>
+        </details>
+        <p className="muted" style={{ fontSize: 13 }}>Principal and interest only. Mortgage payments usually also include property tax, homeowners insurance and sometimes PMI or HOA fees.</p>
+      </> : <p className="err">Enter a loan amount and term.</p>}
+    </div>
+  );
+}

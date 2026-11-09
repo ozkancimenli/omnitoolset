@@ -14,6 +14,8 @@ const MAP = {
   'age-calculator': load(calc, 'AgeCalculator'),
   'discount-calculator': load(calc, 'DiscountCalculator'),
   'tip-calculator': load(calc, 'TipCalculator'),
+  'bmi-calculator': load(calc, 'BmiCalculator'),
+  'loan-calculator': load(calc, 'LoanCalculator'),
   'compress-image': load(img, 'Compressor'),
   'convert-image': load(img, 'Converter'),
   'resize-image': load(img, 'Resizer'),
