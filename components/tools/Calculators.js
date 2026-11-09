@@ -188,7 +188,10 @@ export function LoanCalculator() {
   );
 }
 
-export function randomInts(min, max, count, unique, rand = (n) => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; }) {
+// Yanlılıksız [0, n) — reddetme örneklemesi
+const secureRand = (n) => { const lim = Math.floor(4294967296 / n) * n; const a = new Uint32Array(1); do crypto.getRandomValues(a); while (a[0] >= lim); return a[0] % n; };
+
+export function randomInts(min, max, count, unique, rand = secureRand) {
   const lo = Math.ceil(Math.min(min, max)), hi = Math.floor(Math.max(min, max)), span = hi - lo + 1;
   if (!(span > 0) || !(count > 0)) return [];
   if (unique && count > span) throw new Error(`Only ${span} unique numbers exist between ${lo} and ${hi}.`);
